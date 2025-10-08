@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis/redis-stack:latest
+    container_name: bsc-redis
+    ports:
+      - "6379:6379"    # Redis
+      - "8001:8001"    # RedisInsight (Web UI)
+    volumes:
+      - redis-data:/data
+    environment:
+      - REDIS_ARGS=--save 60 1000 --appendonly yes
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: bsc-agent
+    ports:
+      - "8501:8501"    # Streamlit
+      - "8000:8000"    # FastAPI (opcional)
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    command: streamlit run app/main.py --server.port=8501 --server.address=0.0.0.0
+
+volumes:
+  redis-data:
+    driver: local
