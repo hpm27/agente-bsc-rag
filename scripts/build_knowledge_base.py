@@ -70,14 +70,13 @@ def main():
         logger.info(f"   ⚠️  Contextual Retrieval: Desabilitado")
     
     # Cria/recria índice
-    logger.info(f"\n🔨 Criando índice '{settings.vector_store_index}'...")
+    logger.info(f"\n[SETUP] Criando índice '{settings.vector_store_index}'...")
     try:
         vector_store.create_index(
             index_name=settings.vector_store_index,
-            dimension=embedding_manager.embedding_dim,
             force_recreate=True
         )
-        logger.info("   ✅ Índice criado com sucesso")
+        logger.info("   [OK] Índice criado com sucesso")
     except Exception as e:
         logger.error(f"   ❌ Erro ao criar índice: {e}")
         return
@@ -85,47 +84,69 @@ def main():
     # Carrega documentos
     literature_dir = Path(settings.literature_dir)
     pdf_files = list(literature_dir.glob("*.pdf"))
+    md_files = list(literature_dir.glob("*.md"))
+    all_files = pdf_files + md_files
     
-    if not pdf_files:
-        logger.warning(f"\n⚠️  Nenhum arquivo PDF encontrado em {literature_dir}")
-        logger.info("💡 Por favor, adicione arquivos PDF da literatura BSC neste diretório.")
+    if not all_files:
+        logger.warning(f"\n[WARN] Nenhum arquivo PDF ou MD encontrado em {literature_dir}")
+        logger.info("[INFO] Por favor, adicione arquivos da literatura BSC neste diretório.")
         logger.info("   Exemplo: papers sobre Balanced Scorecard, livros, artigos, etc.")
         return
     
-    logger.info(f"\n📄 Encontrados {len(pdf_files)} arquivos PDF")
+    logger.info(f"\n[INFO] Encontrados {len(pdf_files)} PDFs e {len(md_files)} Markdown")
     
     all_chunks: List[Dict[str, Any]] = []
     
-    # Processa cada PDF
-    logger.info("\n📚 Processando documentos...")
-    for pdf_file in tqdm(pdf_files, desc="PDFs"):
-        logger.info(f"   📖 {pdf_file.name}")
+    # Processa cada documento
+    logger.info("\n[PROCESS] Processando documentos...")
+    for doc_file in tqdm(all_files, desc="Documentos"):
+        logger.info(f"   [DOC] {doc_file.name}")
         
-        # Carrega PDF
-        doc = load_pdf(str(pdf_file))
+        # Carrega documento (PDF ou MD)
+        if doc_file.suffix == '.pdf':
+            doc = load_pdf(str(doc_file))
+        else:  # .md
+            with open(doc_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+                doc = {
+                    "content": content,
+                    "source": doc_file.name,
+                    "num_pages": 1
+                }
+        
         if not doc:
-            logger.error(f"      ❌ Erro ao carregar")
+            logger.error(f"      [ERRO] Erro ao carregar")
             continue
         
-        # Divide em chunks
-        chunks = chunker.chunk_text(
-            doc["content"],
-            metadata={
-                "source": doc["source"],
-                "num_pages": doc["num_pages"]
-            }
-        )
-        
-        # Aplica Contextual Retrieval se habilitado
+        # Divide em chunks (com ou sem Contextual Retrieval)
         if contextual_chunker:
-            logger.info(f"      🔍 Aplicando Contextual Retrieval...")
-            chunks = contextual_chunker.add_context_to_chunks(
-                chunks=chunks,
-                document_context=f"Documento: {doc['source']}"
+            logger.info(f"      [CONTEXT] Aplicando Contextual Retrieval...")
+            contextual_chunks = contextual_chunker.chunk_text(
+                text=doc["content"],
+                metadata={
+                    "source": doc["source"],
+                    "num_pages": doc["num_pages"]
+                }
+            )
+            # Converte ContextualChunk para dict format
+            chunks = [
+                {
+                    "content": c.contextual_content,  # Usa conteúdo com contexto
+                    **c.metadata
+                }
+                for c in contextual_chunks
+            ]
+        else:
+            chunks = chunker.chunk_text(
+                doc["content"],
+                metadata={
+                    "source": doc["source"],
+                    "num_pages": doc["num_pages"]
+                }
             )
         
         all_chunks.extend(chunks)
-        logger.info(f"      ✅ {len(chunks)} chunks criados")
+        logger.info(f"      [OK] {len(chunks)} chunks criados")
     
     logger.info(f"\n📊 Total de chunks: {len(all_chunks)}")
     
@@ -147,22 +168,47 @@ def main():
     embeddings_list = []
     
     for i, (chunk, embedding) in enumerate(zip(all_chunks, embeddings)):
+        # Monta doc_dict com metadata corretamente
+        metadata = {k: v for k, v in chunk.items() if k != "content"}
+        
         doc_dict = {
             "id": f"doc_{i}",
             "content": chunk["content"],
-            "metadata": chunk.get("metadata", {})
+            "metadata": metadata
         }
         documents_to_add.append(doc_dict)
-        embeddings_list.append(embedding.tolist() if hasattr(embedding, 'tolist') else embedding)
+        
+        # Converte embedding para lista se for numpy array
+        if hasattr(embedding, 'tolist'):
+            embeddings_list.append(embedding.tolist())
+        elif isinstance(embedding, list):
+            embeddings_list.append(embedding)
+        else:
+            # Se já for outro formato, converte para lista
+            embeddings_list.append(list(embedding))
     
     try:
-        vector_store.add_documents(
-            documents=documents_to_add,
-            embeddings=embeddings_list
-        )
-        logger.info("   ✅ Documentos adicionados com sucesso")
+        # Adiciona em batches para evitar payload muito grande
+        batch_size = 100  # Qdrant tem limite de 33MB por request
+        total_docs = len(documents_to_add)
+        
+        logger.info(f"[DEBUG] Adicionando {total_docs} docs em batches de {batch_size}...")
+        
+        for i in range(0, total_docs, batch_size):
+            batch_docs = documents_to_add[i:i+batch_size]
+            batch_embeddings = embeddings_list[i:i+batch_size]
+            
+            vector_store.add_documents(
+                documents=batch_docs,
+                embeddings=batch_embeddings
+            )
+            logger.info(f"   [BATCH] {i+len(batch_docs)}/{total_docs} documentos adicionados ({int((i+len(batch_docs))/total_docs*100)}%)")
+        
+        logger.info("   ✅ Todos os documentos adicionados com sucesso")
     except Exception as e:
+        import traceback
         logger.error(f"   ❌ Erro ao adicionar documentos: {e}")
+        logger.error(f"[DEBUG] Traceback completo:\n{traceback.format_exc()}")
         return
     
     # Estatísticas finais
@@ -184,10 +230,10 @@ def main():
     test_query = "O que é Balanced Scorecard?"
     
     try:
-        test_embedding = embedding_manager.embed_text(test_query).tolist()
+        test_embedding = embedding_manager.embed_text(test_query)
         results = vector_store.vector_search(
             query_embedding=test_embedding,
-            limit=3
+            k=3
         )
         
         logger.info(f"   Query: '{test_query}'")

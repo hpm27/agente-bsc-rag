@@ -141,10 +141,18 @@ class QdrantVectorStore(BaseVectorStore):
                 payload.update(doc['metadata'])
             
             # Cria ponto
+            # Converte embedding para lista se necessário
+            if hasattr(embedding, 'tolist'):
+                vector = embedding.tolist()
+            elif isinstance(embedding, list):
+                vector = embedding
+            else:
+                vector = list(embedding)
+            
             points.append(
                 PointStruct(
                     id=hash(point_id) % (2**63),  # Qdrant usa int64 como ID
-                    vector=embedding.tolist(),
+                    vector=vector,
                     payload=payload
                 )
             )
@@ -179,18 +187,18 @@ class QdrantVectorStore(BaseVectorStore):
         index_name = index_name or self.default_index_name
         
         # Cria filtros se especificados
-        query_filter = self._build_filter(filter_dict) if filter_dict else None
+        search_filter = self._build_filter(filter_dict) if filter_dict else None
         
-        # Executa busca
-        results = self.client.search(
+        # Executa busca usando query_points (novo método unificado)
+        response = self.client.query_points(
             collection_name=index_name,
-            query_vector=query_embedding.tolist(),
+            query=query_embedding.tolist(),
             limit=k,
-            query_filter=query_filter
+            query_filter=search_filter  # query_filter ainda é suportado como alias
         )
         
-        # Converte para SearchResult
-        return self._convert_results(results, search_type='vector')
+        # Extrai os points da resposta e converte para SearchResult
+        return self._convert_results(response.points, search_type='vector')
     
     def text_search(
         self,

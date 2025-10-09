@@ -1,93 +1,122 @@
 # 🎯 Agente de IA Consultor em Balanced Scorecard (BSC)
 
-Sistema avançado de IA para consultoria especializada em implementação de Balanced Scorecard, utilizando arquitetura multi-agente com RAG otimizado.
+Sistema avançado de IA para consultoria especializada em implementação de Balanced Scorecard, utilizando arquitetura multi-agente com RAG otimizado e tecnologias de ponta 2025.
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura MVP (Fase 1 - Completa)
 
 ```
 LangGraph (Orquestração Multi-Agente)
-  ├── Redis (Vector Store + Hybrid Search)
-  ├── Fine-tuned Embeddings (Domínio BSC)
-  ├── Re-ranking (Cohere Rerank)
+  ├── Qdrant/Weaviate (Vector Store Moderno + Hybrid Search Nativo)
+  ├── GPT-5 (Modelo LLM Estado da Arte - Ago/2025)
+  ├── Claude Sonnet 4.5 (Contextual Retrieval - Set/2025)
+  ├── OpenAI text-embedding-3-large (Embeddings 3072-dim)
+  ├── Cohere Rerank v3.0 Multilingual (Re-ranking)
   ├── LLM as Judge (Validação de Qualidade)
-  └── GPT-4 (Geração de Respostas)
+  └── Streamlit (Interface Web Moderna)
 ```
 
-## ✨ Características
+## 🆕 Novidades 2025
 
-- **🎯 Multi-Agente:** Agentes especializados para cada perspectiva do BSC
-- **📚 RAG Otimizado:** Retrieval de alta qualidade (>95% acurácia esperada)
-- **🔍 Hybrid Search:** Busca semântica + palavras-chave (BM25)
-- **🎓 Fine-tuned Embeddings:** Treinado com literatura especializada em BSC
-- **📊 Re-ranking:** Reordenação inteligente dos resultados
-- **✅ LLM as Judge:** Validação automática da qualidade das respostas
-- **💾 Memória Persistente:** Contexto mantido entre sessões
-- **🔄 Human-in-the-loop:** Aprovação para decisões críticas
+- ✅ **GPT-5** - Lançado em 07/08/2025 (400K context, melhor raciocínio)
+- ✅ **Claude Sonnet 4.5** - Lançado em 29/09/2025 (best-in-class para agentes)
+- ✅ **Contextual Retrieval** - Técnica Anthropic que melhora precisão em 35-49%
+- ✅ **Qdrant** - Vector DB moderno com hybrid search nativo
+- ✅ **LangGraph** - Orquestração de workflows complexos com estados
+
+## ✨ Características Principais
+
+### 🤖 Sistema Multi-Agente
+- **4 Agentes Especialistas BSC** (Financeira, Cliente, Processos, Aprendizado)
+- **Orchestrator Inteligente** para roteamento de queries
+- **Judge Agent** para validação de qualidade das respostas
+- **LangGraph Workflow** com estados e ciclos de refinamento
+
+### 📚 RAG Avançado
+- **Contextual Retrieval** (Anthropic) - +35-49% precisão
+- **Hybrid Search** - Semântica (70%) + BM25 (30%)
+- **Cohere Rerank v3.0** - Re-ranking multilíngue de alta qualidade
+- **Semantic Chunking** - Preserva contexto semântico
+- **Table-Aware Chunking** - Mantém tabelas intactas
+
+### 🔧 Tecnologias 2025
+- **GPT-5** (400K tokens context) - Raciocínio superior
+- **Claude Sonnet 4.5** - Best-in-class para agentes e código
+- **text-embedding-3-large** (3072 dimensões) - Embeddings estado da arte
+- **Qdrant/Weaviate** - Vector stores modernos
+- **Streamlit** - Interface web responsiva e intuitiva
+
+### 📊 Qualidade e Validação
+- **LLM as Judge** - Validação automática de respostas
+- **Refinement Loops** - Até 2 iterações para melhorar qualidade
+- **Source Attribution** - Rastreabilidade completa
+- **Confidence Scores** - Métricas de confiança por resposta
+- **Multi-Perspective Coverage** - Respostas abrangentes
 
 ## 📋 Pré-requisitos
 
-- Python 3.11+
-- Redis Stack (com RedisSearch e RedisJSON)
-- Docker e Docker Compose (opcional, mas recomendado)
-- Chaves de API:
-  - OpenAI API Key (GPT-4)
-  - Cohere API Key (Re-ranking)
+- **Python 3.9+** (Testado em 3.9, 3.10, 3.11)
+- **Docker Desktop** (para Qdrant/Weaviate/Redis)
+- **10GB RAM** (mínimo recomendado)
+- **Chaves de API:**
+  - ✅ **OpenAI API Key** (GPT-5 + Embeddings) - **OBRIGATÓRIO**
+  - ✅ **Cohere API Key** (Re-ranking) - **OBRIGATÓRIO**
+  - ⚠️ **Anthropic API Key** (Contextual Retrieval) - **OPCIONAL** (mas recomendado)
 
-## 🚀 Instalação Rápida
+## 🚀 Instalação Rápida (5 minutos)
 
-### 1. Clone o repositório
+### Setup Automatizado (Windows PowerShell)
 
-```bash
+```powershell
+# 1. Clone o repositório
 git clone https://github.com/seu-usuario/agente-bsc-rag.git
 cd agente-bsc-rag
+
+# 2. Execute o setup automatizado
+.\setup.ps1
 ```
 
-### 2. Configure o ambiente
+O script `setup.ps1` fará **TUDO** automaticamente:
+- ✅ Criar ambiente virtual Python
+- ✅ Instalar todas as dependências
+- ✅ Iniciar Docker containers (Qdrant, Weaviate, Redis)
+- ✅ Criar arquivo `.env` com templates
+- ✅ Validar configuração completa
 
-```bash
-# Crie um ambiente virtual
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
+### 3. Configure suas API Keys
 
-# Instale as dependências
-pip install -r requirements.txt
+Edite `.env` e adicione suas chaves:
+
+```env
+OPENAI_API_KEY=sk-...
+COHERE_API_KEY=...
+ANTHROPIC_API_KEY=sk-ant-...  # Opcional
 ```
 
-### 3. Configure as variáveis de ambiente
+### 4. Indexe Documentos BSC
 
-```bash
-cp .env.example .env
-# Edite o arquivo .env com suas chaves de API
-```
-
-### 4. Inicie o Redis com Docker
-
-```bash
-docker-compose up -d
-```
-
-### 5. Prepare a base de conhecimento
-
-```bash
-# Adicione PDFs da literatura BSC em data/bsc_literature/
-# Execute o script de indexação
+```powershell
+# Adicione PDFs/MD em data/bsc_literature/
+# Depois execute:
+.\venv\Scripts\Activate.ps1
 python scripts/build_knowledge_base.py
 ```
 
-### 6. (Opcional) Fine-tune dos embeddings
+### 5. Inicie a Interface Web
 
-```bash
-# Se você tiver dados de treinamento
-python scripts/finetune_embeddings.py
-```
-
-### 7. Execute a aplicação
-
-```bash
+```powershell
 streamlit run app/main.py
 ```
 
-Acesse: http://localhost:8501
+🎉 **Pronto!** Acesse: [http://localhost:8501](http://localhost:8501)
+
+---
+
+## 📖 Documentação Completa
+
+- 📘 **[Guia Rápido](docs/QUICKSTART.md)** - Tutoriais e exemplos
+- 📗 **[API Reference](docs/API_REFERENCE.md)** - Referência completa da API
+- 📕 **[Arquitetura](docs/ARCHITECTURE.md)** - Detalhes da arquitetura
+- 📙 **[Plano de Desenvolvimento](moderniza--o-rag-bsc.plan.md)** - Roadmap completo
 
 ## 📁 Estrutura do Projeto
 

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     
     # OpenAI
     openai_api_key: str
-    openai_model: str = "gpt-4-turbo-preview"
+    openai_model: str = "gpt-5"
     openai_embedding_model: str = "text-embedding-3-large"
     
     # Cohere
@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     
     # Anthropic (para Contextual Retrieval)
     anthropic_api_key: Optional[str] = None
+    anthropic_model: str = "claude-sonnet-4-5-20250929"
     
     # Vector Store Configuration
     vector_store_type: str = "qdrant"  # 'qdrant', 'weaviate', ou 'redis'
@@ -55,7 +56,7 @@ class Settings(BaseSettings):
     
     # Contextual Retrieval (Anthropic)
     enable_contextual_retrieval: bool = True
-    contextual_model: str = "claude-3-5-sonnet-20241022"
+    contextual_model: str = "claude-sonnet-4-5-20250929"
     contextual_cache_enabled: bool = True
     
     # Agent Configuration

@@ -1,0 +1,133 @@
+{
+  "factual_queries": [
+    {
+      "id": "f001",
+      "query": "Quais são os principais KPIs da perspectiva financeira?",
+      "expected_perspectives": ["financial"],
+      "complexity": "simple"
+    },
+    {
+      "id": "f002",
+      "query": "Como medir a satisfação do cliente no BSC?",
+      "expected_perspectives": ["customer"],
+      "complexity": "simple"
+    },
+    {
+      "id": "f003",
+      "query": "Que métricas são usadas na perspectiva de aprendizado?",
+      "expected_perspectives": ["learning"],
+      "complexity": "simple"
+    },
+    {
+      "id": "f004",
+      "query": "Quais são as métricas de processos internos?",
+      "expected_perspectives": ["process"],
+      "complexity": "simple"
+    }
+  ],
+  "conceptual_queries": [
+    {
+      "id": "c001",
+      "query": "Como implementar BSC em uma empresa?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "c002",
+      "query": "Qual a relação entre as perspectivas do BSC?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "c003",
+      "query": "Por que o BSC é importante para estratégia?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "c004",
+      "query": "O que é um mapa estratégico no BSC?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "moderate"
+    }
+  ],
+  "comparative_queries": [
+    {
+      "id": "comp001",
+      "query": "Qual a diferença entre KPIs financeiros e de clientes?",
+      "expected_perspectives": ["financial", "customer"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "comp002",
+      "query": "Como BSC se compara com outros frameworks de gestão?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "comp003",
+      "query": "Quais perspectivas impactam mais a lucratividade?",
+      "expected_perspectives": ["financial", "customer", "process"],
+      "complexity": "complex"
+    },
+    {
+      "id": "comp004",
+      "query": "Qual a relação entre satisfação de clientes e lucratividade?",
+      "expected_perspectives": ["financial", "customer"],
+      "complexity": "moderate"
+    }
+  ],
+  "complex_queries": [
+    {
+      "id": "cx001",
+      "query": "Como alinhar objetivos estratégicos com métricas BSC?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "cx002",
+      "query": "Quais são as melhores práticas para implementação de BSC?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "cx003",
+      "query": "Como criar um mapa estratégico BSC completo?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "cx004",
+      "query": "Como o BSC pode ajudar na transformação digital?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    },
+    {
+      "id": "cx005",
+      "query": "Como integrar BSC com OKRs e outras metodologias?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "complex"
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "edge001",
+      "query": "BSC?",
+      "expected_perspectives": [],
+      "complexity": "ambiguous"
+    },
+    {
+      "id": "edge002",
+      "query": "Explique tudo sobre Balanced Scorecard em detalhes completos",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "very_complex"
+    },
+    {
+      "id": "edge003",
+      "query": "Qual a perspectiva mais importante?",
+      "expected_perspectives": ["financial", "customer", "process", "learning"],
+      "complexity": "subjective"
+    }
+  ]
+}
+
