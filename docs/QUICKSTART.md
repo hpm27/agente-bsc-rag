@@ -20,6 +20,7 @@ cd agente-bsc-rag
 ```
 
 O script `setup.ps1` irá:
+
 - Criar ambiente virtual Python
 - Instalar todas as dependências
 - Iniciar containers Docker (Qdrant, Weaviate, Redis)
@@ -77,18 +78,21 @@ Acesse: [http://localhost:8501](http://localhost:8501)
 ### Exemplos de Perguntas
 
 **Factuais (simples):**
+
 ```
 Quais são os principais KPIs da perspectiva financeira?
 Como medir satisfação do cliente no BSC?
 ```
 
 **Conceituais (moderadas):**
+
 ```
 Como implementar BSC em uma empresa?
 Por que o BSC é importante para estratégia?
 ```
 
 **Complexas:**
+
 ```
 Como alinhar objetivos estratégicos com métricas BSC?
 Como criar um mapa estratégico completo?
@@ -101,6 +105,7 @@ Como criar um mapa estratégico completo?
 ### Vector Store
 
 No `.env`, você pode escolher:
+
 ```env
 VECTOR_STORE_TYPE=qdrant  # ou 'weaviate' ou 'redis'
 ```
@@ -110,6 +115,7 @@ VECTOR_STORE_TYPE=qdrant  # ou 'weaviate' ou 'redis'
 ### Contextual Retrieval
 
 Para ativar a técnica avançada da Anthropic:
+
 ```env
 ENABLE_CONTEXTUAL_RETRIEVAL=true
 ANTHROPIC_API_KEY=sua-chave-aqui
@@ -120,6 +126,7 @@ Isso melhora a precisão em 35-49%, mas requer chave Anthropic.
 ### Chunking
 
 Ajuste o tamanho dos chunks:
+
 ```env
 CHUNK_SIZE=1000        # Tamanho de cada chunk (tokens)
 CHUNK_OVERLAP=200      # Sobreposição entre chunks
@@ -128,6 +135,7 @@ CHUNK_OVERLAP=200      # Sobreposição entre chunks
 ### Retrieval
 
 Configure quantos documentos buscar:
+
 ```env
 TOP_K_RETRIEVAL=10     # Documentos retornados pela busca
 TOP_N_RERANK=5         # Documentos após re-ranking
@@ -136,6 +144,7 @@ TOP_N_RERANK=5         # Documentos após re-ranking
 ### Hybrid Search
 
 Ajuste pesos da busca híbrida:
+
 ```env
 HYBRID_SEARCH_WEIGHT_SEMANTIC=0.7   # Peso da busca semântica
 HYBRID_SEARCH_WEIGHT_BM25=0.3       # Peso da busca por palavras-chave
@@ -166,12 +175,14 @@ pytest tests/ --cov=src --cov-report=html
 ### Logs
 
 Logs são salvos em `logs/`:
+
 - `app.log` - Logs gerais da aplicação
 - `errors.log` - Apenas erros
 
 ### Métricas
 
 Na interface Streamlit, você pode ver:
+
 - Perspectivas ativadas
 - Score do Judge
 - Número de fontes consultadas
@@ -202,6 +213,7 @@ pip install -r requirements.txt --force-reinstall
 ### Erro de API Key
 
 Verifique se o `.env` está no diretório raiz e com as chaves corretas:
+
 ```powershell
 cat .env | Select-String "API_KEY"
 ```
@@ -209,6 +221,7 @@ cat .env | Select-String "API_KEY"
 ### Indexação lenta
 
 Para documentos grandes, a indexação pode levar tempo. Com Contextual Retrieval ativado:
+
 - ~5-10 documentos: 2-5 minutos
 - ~20-50 documentos: 10-30 minutos
 
@@ -243,4 +256,3 @@ Seu sistema está funcionando bem se:
 ✅ Múltiplas perspectivas ativadas em queries complexas
 ✅ Fontes relevantes recuperadas (>3 documentos relevantes)
 ✅ Respostas coerentes e completas
-

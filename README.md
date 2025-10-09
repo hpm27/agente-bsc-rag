@@ -26,12 +26,14 @@ LangGraph (Orquestração Multi-Agente)
 ## ✨ Características Principais
 
 ### 🤖 Sistema Multi-Agente
+
 - **4 Agentes Especialistas BSC** (Financeira, Cliente, Processos, Aprendizado)
 - **Orchestrator Inteligente** para roteamento de queries
 - **Judge Agent** para validação de qualidade das respostas
 - **LangGraph Workflow** com estados e ciclos de refinamento
 
 ### 📚 RAG Avançado
+
 - **Contextual Retrieval** (Anthropic) - +35-49% precisão
 - **Hybrid Search** - Semântica (70%) + BM25 (30%)
 - **Cohere Rerank v3.0** - Re-ranking multilíngue de alta qualidade
@@ -39,6 +41,7 @@ LangGraph (Orquestração Multi-Agente)
 - **Table-Aware Chunking** - Mantém tabelas intactas
 
 ### 🔧 Tecnologias 2025
+
 - **GPT-5** (400K tokens context) - Raciocínio superior
 - **Claude Sonnet 4.5** - Best-in-class para agentes e código
 - **text-embedding-3-large** (3072 dimensões) - Embeddings estado da arte
@@ -46,6 +49,7 @@ LangGraph (Orquestração Multi-Agente)
 - **Streamlit** - Interface web responsiva e intuitiva
 
 ### 📊 Qualidade e Validação
+
 - **LLM as Judge** - Validação automática de respostas
 - **Refinement Loops** - Até 2 iterações para melhorar qualidade
 - **Source Attribution** - Rastreabilidade completa
@@ -76,6 +80,7 @@ cd agente-bsc-rag
 ```
 
 O script `setup.ps1` fará **TUDO** automaticamente:
+
 - ✅ Criar ambiente virtual Python
 - ✅ Instalar todas as dependências
 - ✅ Iniciar Docker containers (Qdrant, Weaviate, Redis)
@@ -179,6 +184,7 @@ agente-bsc-rag/
 ### Redis
 
 O Redis Stack é usado como vector store com suporte a:
+
 - **RedisSearch:** Busca vetorial e full-text
 - **RedisJSON:** Armazenamento de metadados
 
@@ -234,6 +240,7 @@ python scripts/evaluate_rag.py --test_set data/test_questions.json
 ```
 
 Métricas avaliadas:
+
 - **Precision@K:** Relevância dos top-K resultados
 - **Recall@K:** Cobertura dos documentos relevantes
 - **MRR (Mean Reciprocal Rank):** Posição do primeiro resultado relevante
@@ -314,8 +321,9 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 ## 📞 Suporte
 
 Para dúvidas ou suporte:
+
 - Abra uma [Issue](https://github.com/seu-usuario/agente-bsc-rag/issues)
-- Email: seu-email@exemplo.com
+- Email: <seu-email@exemplo.com>
 
 ---
 

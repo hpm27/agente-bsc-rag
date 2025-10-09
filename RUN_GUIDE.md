@@ -47,6 +47,7 @@ python scripts/build_knowledge_base.py
 ```
 
 **⏱️ Tempo estimado:**
+
 - Com Contextual Retrieval (recomendado): ~10-15 minutos
 - Sem Contextual Retrieval: ~2-3 minutos
 
@@ -59,6 +60,7 @@ streamlit run app/main.py
 ```
 
 Aguarde a mensagem:
+
 ```
 Local URL: http://localhost:8501
 ```
@@ -68,6 +70,7 @@ Local URL: http://localhost:8501
 Abra seu navegador em: [http://localhost:8501](http://localhost:8501)
 
 **Experimente perguntas como:**
+
 - "Quais são os principais KPIs da perspectiva financeira?"
 - "Como implementar BSC em uma empresa?"
 - "Qual a relação entre satisfação de clientes e lucratividade?"
@@ -79,6 +82,7 @@ Abra seu navegador em: [http://localhost:8501](http://localhost:8501)
 ### Problema: Docker não inicia
 
 **Solução:**
+
 ```powershell
 # Verificar se Docker Desktop está aberto
 # Se não, abrir e aguardar inicialização
@@ -90,6 +94,7 @@ docker-compose up -d qdrant redis
 ### Problema: "ModuleNotFoundError"
 
 **Solução:**
+
 ```powershell
 # Reinstalar dependências
 .\venv\Scripts\Activate.ps1
@@ -99,6 +104,7 @@ pip install -r requirements.txt
 ### Problema: "Invalid API Key"
 
 **Solução:**
+
 1. Verifique se o arquivo `.env` existe na raiz
 2. Verifique se as chaves estão corretas (sem espaços)
 3. OpenAI keys começam com `sk-proj-...`
@@ -107,18 +113,21 @@ pip install -r requirements.txt
 ### Problema: Indexação muito lenta
 
 **Opção 1: Desativar Contextual Retrieval (mais rápido, menos preciso)**
+
 ```env
 # No .env
 ENABLE_CONTEXTUAL_RETRIEVAL=false
 ```
 
 **Opção 2: Aguardar (recomendado)**
+
 - Primeira indexação é lenta (API calls)
 - Próximas serão incrementais e rápidas
 
 ### Problema: "Connection refused" ao Qdrant
 
 **Solução:**
+
 ```powershell
 # Verificar se container está rodando
 docker ps | Select-String qdrant
@@ -133,6 +142,7 @@ Start-Sleep -Seconds 10
 ### Problema: Streamlit não abre no navegador
 
 **Solução:**
+
 ```powershell
 # Abrir manualmente
 Start-Process "http://localhost:8501"
@@ -199,6 +209,7 @@ docker-compose logs -f weaviate
 Acesse: [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
 
 **Ver:**
+
 - Collections (índices)
 - Número de vetores
 - Status do cluster
@@ -288,7 +299,7 @@ python scripts/build_knowledge_base.py
 
 ### 3. Verifique no Qdrant UI
 
-- Acesse: http://localhost:6333/dashboard
+- Acesse: <http://localhost:6333/dashboard>
 - Verifique a collection `bsc_documents`
 - Confirme aumento no número de vetores
 
@@ -296,7 +307,7 @@ python scripts/build_knowledge_base.py
 
 ## 🔄 Reiniciar Completamente
 
-### Limpar TUDO e recomeçar:
+### Limpar TUDO e recomeçar
 
 ```powershell
 # 1. Parar containers
@@ -346,12 +357,14 @@ netstat -ano | Select-String "6333|8501|6379"
 ## 🆘 Suporte
 
 **Antes de abrir issue:**
+
 1. ✅ Verifique logs: `logs/app.log` e `logs/errors.log`
 2. ✅ Execute: `python scripts/validate_setup.py`
 3. ✅ Confirme Docker rodando: `docker ps`
 4. ✅ Verifique API keys no `.env`
 
 **Se ainda tiver problemas:**
+
 - 📧 Abra uma issue no GitHub
 - 📝 Inclua logs relevantes
 - 💻 Mencione sistema operacional e versão Python
@@ -371,6 +384,7 @@ Antes de usar o sistema, confirme:
 - [ ] Script de validação passou (`validate_setup.py`)
 
 **Se todos os itens estão OK, execute:**
+
 ```powershell
 streamlit run app/main.py
 ```
@@ -390,4 +404,3 @@ E aproveite! 🎉
 
 **Última atualização:** 09/10/2025
 **Versão:** 1.0.0 (MVP)
-

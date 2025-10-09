@@ -25,10 +25,12 @@ workflow = BSCWorkflow()
 Executa o workflow completo para uma query.
 
 **Parâmetros:**
+
 - `query` (str): Pergunta do usuário
 - `session_id` (str, opcional): ID da sessão para rastreamento
 
 **Retorna:**
+
 ```python
 {
     "response": str,              # Resposta final agregada
@@ -51,6 +53,7 @@ Executa o workflow completo para uma query.
 ```
 
 **Exemplo:**
+
 ```python
 import asyncio
 from src.graph.workflow import create_bsc_workflow
@@ -115,6 +118,7 @@ Todos os agentes especialistas (`FinancialAgent`, `CustomerAgent`, `ProcessAgent
 Processa uma query na perspectiva do agente.
 
 **Retorna:**
+
 ```python
 {
     "content": str,           # Resposta do agente
@@ -125,6 +129,7 @@ Processa uma query na perspectiva do agente.
 ```
 
 **Exemplo:**
+
 ```python
 from src.agents.financial_agent import FinancialAgent
 
@@ -144,6 +149,7 @@ Avalia qualidade e relevância das respostas.
 Avalia uma resposta gerada.
 
 **Retorna:**
+
 ```python
 {
     "approved": bool,         # Se a resposta foi aprovada
@@ -508,4 +514,3 @@ print(workflow.agents.keys())
 - [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
 - [Qdrant Documentation](https://qdrant.tech/documentation/)
 - [Cohere Rerank](https://docs.cohere.com/docs/reranking)
-
