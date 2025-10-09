@@ -1,34 +1,46 @@
 """
 Gerenciamento do Redis como Vector Store.
+
+NOTA: Esta implementação está mantida para compatibilidade,
+mas Qdrant ou Weaviate são recomendados para novos projetos.
 """
 import redis
 from redis.commands.search.field import TextField, VectorField, NumericField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
 import numpy as np
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from loguru import logger
 
 from config.settings import settings
+from .base_vector_store import BaseVectorStore, SearchResult, VectorStoreStats
 
 
-class RedisVectorStore:
+class RedisVectorStore(BaseVectorStore):
     """Redis Vector Store com suporte a Hybrid Search."""
     
-    def __init__(self):
+    def __init__(
+        self,
+        host: str = None,
+        port: int = None,
+        password: str = None,
+        db: int = 0,
+        embedding_dim: int = 3072
+    ):
         """Inicializa conexão com Redis."""
+        super().__init__(embedding_dim)
+        
         self.client = redis.Redis(
-            host=settings.redis_host,
-            port=settings.redis_port,
-            password=settings.redis_password,
-            db=settings.redis_db,
+            host=host or settings.redis_host,
+            port=port or settings.redis_port,
+            password=password or getattr(settings, 'redis_password', None),
+            db=db,
             decode_responses=False
         )
         
-        self.index_name = settings.redis_index_name
-        self.embedding_dim = 3072  # text-embedding-3-large dimension
+        self.default_index_name = getattr(settings, 'redis_index_name', 'bsc_documents')
         
-        logger.info(f"Conectado ao Redis em {settings.redis_host}:{settings.redis_port}")
+        logger.info(f"Conectado ao Redis em {self.client.connection_pool.connection_kwargs['host']}:{self.client.connection_pool.connection_kwargs['port']}")
     
     def create_index(self, force_recreate: bool = False):
         """

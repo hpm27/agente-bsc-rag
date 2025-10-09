@@ -23,7 +23,22 @@ class Settings(BaseSettings):
     # Cohere
     cohere_api_key: str
     
-    # Redis
+    # Anthropic (para Contextual Retrieval)
+    anthropic_api_key: Optional[str] = None
+    
+    # Vector Store Configuration
+    vector_store_type: str = "qdrant"  # 'qdrant', 'weaviate', ou 'redis'
+    vector_store_index: str = "bsc_documents"
+    
+    # Qdrant
+    qdrant_host: str = "localhost"
+    qdrant_port: int = 6333
+    
+    # Weaviate
+    weaviate_host: str = "localhost"
+    weaviate_port: int = 8080
+    
+    # Redis (mantido para compatibilidade)
     redis_host: str = "localhost"
     redis_port: int = 6379
     redis_password: Optional[str] = None
@@ -37,6 +52,11 @@ class Settings(BaseSettings):
     top_n_rerank: int = 5
     hybrid_search_weight_semantic: float = 0.7
     hybrid_search_weight_bm25: float = 0.3
+    
+    # Contextual Retrieval (Anthropic)
+    enable_contextual_retrieval: bool = True
+    contextual_model: str = "claude-3-5-sonnet-20241022"
+    contextual_cache_enabled: bool = True
     
     # Agent Configuration
     max_iterations: int = 10

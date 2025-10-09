@@ -1,75 +1,105 @@
 """
 Retriever que integra vector store, embeddings e re-ranking.
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from loguru import logger
 
-from src.rag.vector_store import RedisVectorStore
+from src.rag.vector_store_factory import create_vector_store
+from src.rag.base_vector_store import BaseVectorStore, SearchResult
 from src.rag.embeddings import EmbeddingManager
-from src.rag.reranker import HybridReranker
+from src.rag.reranker import CohereReranker, FusionReranker
 from config.settings import settings
 
 
 class BSCRetriever:
-    """Retriever otimizado para documentos BSC."""
+    """Retriever otimizado para documentos BSC com Hybrid Search."""
     
-    def __init__(self):
-        """Inicializa o retriever."""
-        self.vector_store = RedisVectorStore()
-        self.embedding_manager = EmbeddingManager()
-        self.reranker = HybridReranker()
+    def __init__(self, vector_store: Optional[BaseVectorStore] = None):
+        """
+        Inicializa o retriever.
         
-        logger.info("BSC Retriever inicializado")
+        Args:
+            vector_store: Vector store a usar (se None, cria via factory)
+        """
+        self.vector_store = vector_store or create_vector_store()
+        self.embedding_manager = EmbeddingManager()
+        self.cohere_reranker = CohereReranker()
+        self.fusion_reranker = FusionReranker()
+        
+        logger.info(f"BSC Retriever inicializado com {type(self.vector_store).__name__}")
     
     def retrieve(
         self,
         query: str,
         k: int = None,
         use_rerank: bool = True,
-        use_hybrid: bool = True
-    ) -> List[Dict[str, Any]]:
+        use_hybrid: bool = True,
+        filters: Optional[Dict[str, Any]] = None
+    ) -> List[SearchResult]:
         """
-        Recupera documentos relevantes para a query.
+        Recupera documentos relevantes para a query com Hybrid Search.
         
         Args:
             query: Query do usuário
             k: Número de documentos a retornar
-            use_rerank: Se deve usar re-ranking
-            use_hybrid: Se deve usar busca híbrida
+            use_rerank: Se deve usar re-ranking Cohere
+            use_hybrid: Se deve usar busca híbrida (semantic + BM25)
+            filters: Filtros de metadados (ex: {"source": "kaplan.pdf"})
             
         Returns:
-            Lista de documentos relevantes
+            Lista de documentos relevantes (SearchResult objects)
         """
         k = k or settings.top_k_retrieval
         
         # Gera embedding da query
-        query_embedding = self.embedding_manager.embed_text(query)
+        query_embedding = self.embedding_manager.embed_text(query).tolist()
         
         if use_hybrid:
-            # Busca híbrida (semântica + texto)
+            # Busca híbrida (semântica + BM25 keyword)
             results = self.vector_store.hybrid_search(
-                query=query,
+                query_text=query,
                 query_embedding=query_embedding,
-                k=k * 2,  # Pega mais para re-rankear
-                weights=(
-                    settings.hybrid_search_weight_semantic,
-                    settings.hybrid_search_weight_bm25
-                )
+                limit=k * 2,  # Pega mais para re-rankear
+                filters=filters,
+                alpha=settings.hybrid_search_weight_semantic
             )
         else:
-            # Apenas busca vetorial
+            # Apenas busca vetorial semântica
             results = self.vector_store.vector_search(
                 query_embedding=query_embedding,
-                k=k * 2
+                limit=k * 2,
+                filters=filters
             )
         
-        # Re-ranking
+        # Re-ranking com Cohere
         if use_rerank and len(results) > 0:
-            results = self.reranker.cohere_reranker.rerank(
+            # Converte SearchResult para dict para Cohere
+            docs_dict = [
+                {
+                    "id": r.id,
+                    "content": r.content,
+                    "metadata": r.metadata,
+                    "score": r.score
+                }
+                for r in results
+            ]
+            
+            reranked_docs = self.cohere_reranker.rerank(
                 query=query,
-                documents=results,
+                documents=docs_dict,
                 top_n=k
             )
+            
+            # Converte de volta para SearchResult
+            results = [
+                SearchResult(
+                    id=doc["id"],
+                    content=doc["content"],
+                    metadata=doc["metadata"],
+                    score=doc.get("rerank_score", doc["score"])
+                )
+                for doc in reranked_docs
+            ]
         else:
             results = results[:k]
         
@@ -106,26 +136,49 @@ class BSCRetriever:
         self,
         queries: List[str],
         k: int = None
-    ) -> List[Dict[str, Any]]:
+    ) -> List[SearchResult]:
         """
-        Recupera documentos para múltiplas queries e combina resultados.
+        Recupera documentos para múltiplas queries e combina com RRF.
         
         Args:
             queries: Lista de queries
             k: Número total de documentos
             
         Returns:
-            Documentos combinados
+            Documentos combinados e ranqueados
         """
         k = k or settings.top_k_retrieval
         
         all_results = []
         for query in queries:
             results = self.retrieve(query, k=k, use_rerank=False)
-            all_results.append(results)
+            # Converte SearchResult para dict para RRF
+            results_dict = [
+                {
+                    "id": r.id,
+                    "content": r.content,
+                    "metadata": r.metadata,
+                    "score": r.score,
+                    "source": r.metadata.get("source", ""),
+                    "page": r.metadata.get("page", 0)
+                }
+                for r in results
+            ]
+            all_results.append(results_dict)
         
-        # Fuse resultados
-        fused = self.reranker.fusion_reranker.fuse(all_results, top_n=k)
+        # Fuse resultados com RRF
+        fused_dicts = self.fusion_reranker.fuse(all_results, top_n=k)
+        
+        # Converte de volta para SearchResult
+        fused = [
+            SearchResult(
+                id=doc["id"],
+                content=doc["content"],
+                metadata=doc["metadata"],
+                score=doc.get("rrf_score", doc["score"])
+            )
+            for doc in fused_dicts
+        ]
         
         return fused
     
@@ -182,14 +235,14 @@ class BSCRetriever:
     
     def format_context(
         self,
-        documents: List[Dict[str, Any]],
+        documents: List[SearchResult],
         max_tokens: int = 4000
     ) -> str:
         """
         Formata documentos recuperados como contexto para o LLM.
         
         Args:
-            documents: Documentos recuperados
+            documents: Documentos recuperados (SearchResult objects)
             max_tokens: Número máximo de tokens (aproximado)
             
         Returns:
@@ -200,19 +253,19 @@ class BSCRetriever:
         
         for i, doc in enumerate(documents, 1):
             # Estimativa grosseira: 1 token ≈ 4 caracteres
-            doc_tokens = len(doc["content"]) // 4
+            doc_tokens = len(doc.content) // 4
             
             if current_tokens + doc_tokens > max_tokens:
                 break
             
             # Formata documento
-            source = doc.get("source", "unknown")
-            page = doc.get("page", "?")
-            score = doc.get("rerank_score", doc.get("combined_score", doc.get("score", 0)))
+            source = doc.metadata.get("source", "unknown")
+            page = doc.metadata.get("page", "?")
+            score = doc.score
             
             context_parts.append(
-                f"[Documento {i}] (Fonte: {source}, Página: {page}, Relevância: {score:.2f})\n"
-                f"{doc['content']}\n"
+                f"[Documento {i}] (Fonte: {source}, Página: {page}, Relevância: {score:.3f})\n"
+                f"{doc.content}\n"
             )
             
             current_tokens += doc_tokens
