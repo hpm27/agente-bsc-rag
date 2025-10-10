@@ -1,0 +1,4 @@
+{
+  "context": "Este trecho aborda os desafios iniciais de implementação do BSC relacionados à disponibilidade de métricas, alertando contra o erro comum de adaptar a estratégia aos dados existentes ao invés de desenvolver as medições necessárias. O contexto ilustra com exemplos práticos (Chemical Bank, Mobil, Reuters) que a falta de dados iniciais não deve comprometer a integridade do design do scorecard.",
+  "cache_key": "4dd641a658f2dee1d35750a69ae00dfc"
+}

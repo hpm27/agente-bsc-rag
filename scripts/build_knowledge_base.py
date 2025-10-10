@@ -8,6 +8,11 @@ Pipeline completo:
 4. Embeddings (OpenAI text-embedding-3-large)
 5. Armazena em Vector Store (Qdrant/Weaviate/Redis)
 """
+import warnings
+# Suprimir warnings de deprecation do Pydantic v1 ANTES dos imports
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=".*ForwardRef._evaluate.*")
+
 import os
 import sys
 from pathlib import Path
@@ -51,23 +56,23 @@ def main():
     logger.info("=" * 70)
     
     # Inicializa componentes
-    logger.info("\n📦 Inicializando componentes...")
+    logger.info("\n[INIT] Inicializando componentes...")
     vector_store = create_vector_store()
-    logger.info(f"   ✅ Vector Store: {type(vector_store).__name__}")
+    logger.info(f"   [OK] Vector Store: {type(vector_store).__name__}")
     
     embedding_manager = EmbeddingManager()
-    logger.info(f"   ✅ Embeddings: {embedding_manager.provider} ({embedding_manager.model_name if embedding_manager.provider == 'openai' else 'fine-tuned'})")
+    logger.info(f"   [OK] Embeddings: {embedding_manager.provider} ({embedding_manager.model_name if embedding_manager.provider == 'openai' else 'fine-tuned'})")
     
     chunker = TableAwareChunker()
-    logger.info(f"   ✅ Chunker: TableAwareChunker")
+    logger.info(f"   [OK] Chunker: TableAwareChunker")
     
     # Contextual Retrieval (opcional)
     contextual_chunker = None
     if settings.enable_contextual_retrieval and settings.anthropic_api_key:
         contextual_chunker = ContextualChunker()
-        logger.info(f"   ✅ Contextual Retrieval: Habilitado (Anthropic)")
+        logger.info(f"   [OK] Contextual Retrieval: Habilitado (Anthropic)")
     else:
-        logger.info(f"   ⚠️  Contextual Retrieval: Desabilitado")
+        logger.info(f"   [WARN]  Contextual Retrieval: Desabilitado")
     
     # Cria/recria índice
     logger.info(f"\n[SETUP] Criando índice '{settings.vector_store_index}'...")
@@ -78,7 +83,7 @@ def main():
         )
         logger.info("   [OK] Índice criado com sucesso")
     except Exception as e:
-        logger.error(f"   ❌ Erro ao criar índice: {e}")
+        logger.error(f"   [ERRO] Erro ao criar índice: {e}")
         return
     
     # Carrega documentos
@@ -148,20 +153,20 @@ def main():
         all_chunks.extend(chunks)
         logger.info(f"      [OK] {len(chunks)} chunks criados")
     
-    logger.info(f"\n📊 Total de chunks: {len(all_chunks)}")
+    logger.info(f"\n[STATS] Total de chunks: {len(all_chunks)}")
     
     if not all_chunks:
-        logger.error("❌ Nenhum chunk foi criado. Verifique os documentos.")
+        logger.error("[ERRO] Nenhum chunk foi criado. Verifique os documentos.")
         return
     
     # Gera embeddings
-    logger.info("\n🧬 Gerando embeddings...")
+    logger.info("\n[EMBED] Gerando embeddings...")
     texts = [chunk["content"] for chunk in all_chunks]
     embeddings = embedding_manager.embed_batch(texts, batch_size=32)
-    logger.info(f"   ✅ {len(embeddings)} embeddings gerados")
+    logger.info(f"   [OK] {len(embeddings)} embeddings gerados")
     
     # Adiciona ao vector store
-    logger.info(f"\n💾 Adicionando ao {type(vector_store).__name__}...")
+    logger.info(f"\n[STORE] Adicionando ao {type(vector_store).__name__}...")
     
     # Prepara documentos com IDs únicos
     documents_to_add = []
@@ -204,29 +209,29 @@ def main():
             )
             logger.info(f"   [BATCH] {i+len(batch_docs)}/{total_docs} documentos adicionados ({int((i+len(batch_docs))/total_docs*100)}%)")
         
-        logger.info("   ✅ Todos os documentos adicionados com sucesso")
+        logger.info("   [OK] Todos os documentos adicionados com sucesso")
     except Exception as e:
         import traceback
-        logger.error(f"   ❌ Erro ao adicionar documentos: {e}")
+        logger.error(f"   [ERRO] Erro ao adicionar documentos: {e}")
         logger.error(f"[DEBUG] Traceback completo:\n{traceback.format_exc()}")
         return
     
     # Estatísticas finais
     logger.info("\n" + "=" * 70)
-    logger.info("✅ Base de Conhecimento Construída com Sucesso!")
+    logger.info("[OK] Base de Conhecimento Construída com Sucesso!")
     logger.info("=" * 70)
     
     try:
         stats = vector_store.get_stats()
-        logger.info(f"📊 Estatísticas:")
-        logger.info(f"   • Documentos indexados: {stats.num_docs}")
-        logger.info(f"   • Dimensão dos vetores: {stats.vector_dimension}")
-        logger.info(f"   • Vector Store: {stats.store_type}")
+        logger.info(f"[STATS] Estatisticas:")
+        logger.info(f"   Documentos indexados: {stats.num_documents}")
+        logger.info(f"   Dimensao dos vetores: {stats.vector_dimensions}")
+        logger.info(f"   Metrica de distancia: {stats.distance_metric}")
     except Exception as e:
-        logger.warning(f"⚠️  Não foi possível obter estatísticas: {e}")
+        logger.warning(f"[WARN] Nao foi possivel obter estatisticas: {e}")
     
     # Teste rápido de retrieval
-    logger.info("\n🧪 Executando teste rápido...")
+    logger.info("\n[TEST] Executando teste rápido...")
     test_query = "O que é Balanced Scorecard?"
     
     try:
@@ -240,19 +245,19 @@ def main():
         logger.info(f"   Resultados: {len(results)}")
         
         if results:
-            logger.info(f"\n   📄 Melhor resultado:")
+            logger.info(f"\n   [DOC] Melhor resultado:")
             logger.info(f"      Fonte: {results[0].metadata.get('source', 'N/A')}")
             logger.info(f"      Score: {results[0].score:.4f}")
             logger.info(f"      Preview: {results[0].content[:150]}...")
         else:
-            logger.warning("   ⚠️  Nenhum resultado encontrado")
+            logger.warning("   [WARN]  Nenhum resultado encontrado")
     except Exception as e:
-        logger.error(f"   ❌ Erro no teste: {e}")
+        logger.error(f"   [ERRO] Erro no teste: {e}")
     
     logger.info("\n" + "=" * 70)
-    logger.info("🎉 Pipeline de Ingestão Completo!")
+    logger.info("[SUCCESS] Pipeline de Ingestão Completo!")
     logger.info("=" * 70)
-    logger.info("💡 Próximos passos:")
+    logger.info("[INFO] Próximos passos:")
     logger.info("   1. Testar retrieval com queries reais")
     logger.info("   2. Ajustar parâmetros de chunking se necessário")
     logger.info("   3. Avaliar qualidade dos resultados")
