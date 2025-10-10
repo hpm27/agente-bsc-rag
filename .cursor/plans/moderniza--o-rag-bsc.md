@@ -46,28 +46,33 @@
 **Pipeline de Ingestão Otimizado**: COMPLETO ✅
 
 **Contextual Retrieval com Processamento Paralelo**:
+
 - ✅ ThreadPoolExecutor com 10 workers simultâneos (20% do limite Tier 4 Anthropic)
 - ✅ Retry logic com exponential backoff para rate limits
 - ✅ Progress logging thread-safe (logs a cada 10 chunks ou 5 segundos)
 - ✅ Cache otimizado salvando 100% do tempo em re-execuções
 
 **Batch Upload para Qdrant**:
+
 - ✅ Sistema de batches (100 docs/batch) resolvendo limite de 32MB do Qdrant
 - ✅ Progress tracking por batch com percentual
 - ✅ 14 batches processados com sucesso (1332 documentos totais)
 
 **Atualização para API Moderna do Qdrant**:
+
 - ✅ Migração de `search()` (deprecado) para `query_points()` (API unificada 2025)
 - ✅ Sem warnings de deprecation
 - ✅ Código futureproof
 
 **Métricas Alcançadas**:
+
 - 📊 **1332 chunks** contextualizados e indexados do documento BSC
 - ⚡ **0.4 segundos** para processar 1332 chunks (com cache ativo)
 - 🎯 **Score de retrieval: 0.66-0.67** (boa relevância)
 - 🚀 **Batch upload: 3.8 segundos** para 1332 documentos em 14 batches
 
 **Arquivos Otimizados**:
+
 - `src/rag/contextual_chunker.py` - Processamento paralelo + retry logic
 - `scripts/build_knowledge_base.py` - Batch upload + progress tracking
 - `src/rag/qdrant_vector_store.py` - API moderna query_points()
@@ -741,35 +746,40 @@ Ao final da Fase 1, teremos:
 ### ⚡ IMEDIATO (Próxima Sessão)
 
 1. **Expandir Dataset BSC** 📚
-   - Adicionar mais documentos acadêmicos sobre BSC
-   - Casos de uso e exemplos práticos
-   - Papers de Kaplan & Norton
-   - **Objetivo**: Enriquecer base de conhecimento
+
+- Adicionar mais documentos acadêmicos sobre BSC
+- Casos de uso e exemplos práticos
+- Papers de Kaplan & Norton
+- **Objetivo**: Enriquecer base de conhecimento
 
 2. **LangGraph Workflow** 🔗 (Fase 1C.9)
-   - Criar `src/graph/workflow.py`
-   - Orquestração visual do fluxo multi-agente
-   - State management e branching condicional
-   - **Tempo estimado**: 2 dias
+
+- Criar `src/graph/workflow.py`
+- Orquestração visual do fluxo multi-agente
+- State management e branching condicional
+- **Tempo estimado**: 2 dias
 
 3. **Interface Streamlit** 🖥️ (Fase 1C.11)
-   - Criar `app/main.py`
-   - Chat interface web
-   - Visualização de perspectivas BSC consultadas
-   - Display de fontes e scores
-   - **Tempo estimado**: 2 dias
+
+- Criar `app/main.py`
+- Chat interface web
+- Visualização de perspectivas BSC consultadas
+- Display de fontes e scores
+- **Tempo estimado**: 2 dias
 
 ### 📅 CURTO PRAZO (Esta Semana)
 
 4. **Testes End-to-End** 🧪 (Fase 1D.12)
-   - Suite completa de testes E2E
-   - Validar fluxo: query → orchestrator → synthesis
-   - Métricas de latência e qualidade
+
+- Suite completa de testes E2E
+- Validar fluxo: query → orchestrator → synthesis
+- Métricas de latência e qualidade
 
 5. **Documentação Final** 📖 (Fase 1D.13)
-   - Atualizar README com arquitetura completa
-   - QUICKSTART.md para onboarding rápido
-   - API Reference dos agentes
+
+- Atualizar README com arquitetura completa
+- QUICKSTART.md para onboarding rápido
+- API Reference dos agentes
 
 ---
 
@@ -821,3 +831,46 @@ Ao final da Fase 1, teremos:
 - [ ] Fine-tune embeddings para domínio BSC (opcional)
 - [ ] Avaliar RAPTOR (opcional)
 - [ ] Avaliar Graph RAG (opcional)
+
+### To-dos
+
+#### ✅ Fase 0 & 1A-1B: CONCLUÍDAS
+
+- [x] Setup Completo do Ambiente (venv + deps + Docker)
+- [x] Implementar módulo de Embeddings OpenAI
+- [x] Implementar Retriever com Hybrid Search
+- [x] Implementar Re-ranker Cohere
+- [x] Implementar Contextual Retrieval (Anthropic) + Cache + Paralelização (10 workers)
+- [x] Criar Pipeline de Ingestão completo + Batch Upload Qdrant + Otimizações
+- [x] Avaliar Qdrant vs Weaviate (escolhemos Qdrant)
+- [x] Migrar de Redis para Qdrant (implementado com query_points API moderna)
+- [x] Criar Ferramentas RAG para Agentes
+- [x] Implementar 4 Agentes Especialistas BSC (Financeiro, Cliente, Processos, Aprendizado)
+- [x] Implementar Judge Agent
+- [x] Implementar Orchestrator
+
+#### ⏳ Fase 1C-1D: EM ANDAMENTO (MVP)
+
+- [ ] Expandir Dataset BSC de Exemplo (atualmente: 1 documento apenas)
+- [ ] Criar LangGraph Workflow (src/graph/workflow.py)
+- [ ] Implementar Interface Streamlit (app/main.py)
+- [ ] Criar Testes End-to-End
+- [ ] Documentar MVP completo
+- [ ] Testes e validação completa da Fase 1
+
+#### 🔮 Fase 2: RAG Avançado (PLANEJADO)
+
+- [ ] Implementar Query Decomposition
+- [ ] Implementar HyDE (Hypothetical Document Embeddings)
+- [ ] Implementar Adaptive Retrieval
+- [ ] Implementar Iterative Retrieval
+- [ ] Melhorar sistema de re-ranking
+- [ ] Testes e validação completa da Fase 2
+
+#### 🚀 Fase 3: Produção (FUTURO)
+
+- [ ] Fine-tune embeddings para domínio BSC
+- [ ] Avaliar e decidir sobre implementação de RAPTOR
+- [ ] Avaliar e decidir sobre implementação de Graph RAG
+- [ ] Otimizações de performance para produção
+- [ ] Documentação final e preparação para deploy

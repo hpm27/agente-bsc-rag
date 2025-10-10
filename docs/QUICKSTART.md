@@ -256,3 +256,5 @@ Seu sistema está funcionando bem se:
 ✅ Múltiplas perspectivas ativadas em queries complexas
 ✅ Fontes relevantes recuperadas (>3 documentos relevantes)
 ✅ Respostas coerentes e completas
+
+

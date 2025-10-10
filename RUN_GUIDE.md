@@ -404,3 +404,5 @@ E aproveite! 🎉
 
 **Última atualização:** 09/10/2025
 **Versão:** 1.0.0 (MVP)
+
+

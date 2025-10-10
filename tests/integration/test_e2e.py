@@ -213,3 +213,5 @@ if __name__ == "__main__":
     # Executar testes
     pytest.main([__file__, "-v", "-s"])
 
+
+

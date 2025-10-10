@@ -440,3 +440,5 @@ O sistema Agente BSC RAG está pronto para uso com:
 **Desenvolvido com:** LangGraph, GPT-5, Claude Sonnet 4.5, Qdrant, Streamlit
 **Data de Conclusão:** 09/10/2025
 **Status:** ✅ PRONTO PARA PRODUÇÃO (MVP)
+
+
