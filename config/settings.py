@@ -2,8 +2,10 @@
 Configurações gerais da aplicação.
 """
 from pydantic_settings import BaseSettings
-from typing import Optional
+from typing import Optional, Any, Dict
 import os
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 
 class Settings(BaseSettings):
@@ -17,8 +19,10 @@ class Settings(BaseSettings):
     
     # OpenAI
     openai_api_key: str
-    openai_model: str = "gpt-5"
     openai_embedding_model: str = "text-embedding-3-large"
+    
+    # Default LLM Model (provider-agnostico: pode ser gpt-* ou claude-*)
+    default_llm_model: str = "claude-sonnet-4-5-20250929"
     
     # Cohere
     cohere_api_key: str
@@ -54,19 +58,32 @@ class Settings(BaseSettings):
     hybrid_search_weight_semantic: float = 0.7
     hybrid_search_weight_bm25: float = 0.3
     
-    # Contextual Retrieval (Anthropic)
+    # Contextual Retrieval (Anthropic ou OpenAI)
     enable_contextual_retrieval: bool = True
     contextual_model: str = "claude-sonnet-4-5-20250929"
     contextual_cache_enabled: bool = True
+    contextual_provider: str = "openai"  # "openai" ou "anthropic"
+    
+    # GPT-5 Configuration (para Contextual Retrieval)
+    gpt5_model: str = "gpt-5-2025-08-07"
+    gpt5_max_completion_tokens: int = 2048
+    gpt5_reasoning_effort: str = "minimal"  # "minimal", "low", "medium", "high"
     
     # Agent Configuration
     max_iterations: int = 10
     temperature: float = 0.0
     max_tokens: int = 2000
+    agent_max_workers: int = 4
     
     # Embedding Fine-tuning
     use_finetuned_embeddings: bool = False
     finetuned_model_path: str = "./models/bsc-embeddings"
+    
+    # Embedding Cache Configuration
+    embedding_cache_enabled: bool = True
+    embedding_cache_dir: str = ".cache/embeddings"
+    embedding_cache_ttl_days: int = 30
+    embedding_cache_max_size_gb: int = 5
     
     # Human-in-the-loop
     require_approval_for_critical: bool = True
@@ -89,6 +106,64 @@ class Settings(BaseSettings):
 
 # Singleton instance
 settings = Settings()
+
+
+def get_llm(
+    model: Optional[str] = None,
+    temperature: Optional[float] = None,
+    max_tokens: Optional[int] = None,
+    **kwargs: Any
+):
+    """
+    Factory function que retorna ChatOpenAI ou ChatAnthropic baseado no modelo.
+    
+    Provider é detectado automaticamente pelo prefixo do modelo:
+    - 'gpt-*' → ChatOpenAI
+    - 'claude-*' → ChatAnthropic
+    
+    Args:
+        model: Nome do modelo (usa settings.default_llm_model se None)
+        temperature: Temperatura do modelo (usa settings.temperature se None)
+        max_tokens: Max tokens de output (usa settings.max_tokens se None)
+        **kwargs: Argumentos adicionais para o LLM
+        
+    Returns:
+        ChatOpenAI ou ChatAnthropic configurado
+    """
+    model = model or settings.default_llm_model
+    temperature = temperature if temperature is not None else settings.temperature
+    max_tokens = max_tokens or settings.max_tokens
+    
+    # Detecta provider pelo nome do modelo
+    if model.startswith("claude-"):
+        # Modelo Anthropic
+        if not settings.anthropic_api_key:
+            raise ValueError(
+                "ANTHROPIC_API_KEY nao configurada no .env. "
+                "Necessaria para usar modelos Claude."
+            )
+        
+        return ChatAnthropic(
+            model=model,
+            anthropic_api_key=settings.anthropic_api_key,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            **kwargs
+        )
+    elif model.startswith("gpt-"):
+        # Modelo OpenAI
+        return ChatOpenAI(
+            model=model,
+            api_key=settings.openai_api_key,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            **kwargs
+        )
+    else:
+        raise ValueError(
+            f"Modelo '{model}' nao reconhecido. "
+            f"Deve comecar com 'gpt-' (OpenAI) ou 'claude-' (Anthropic)."
+        )
 
 
 # Ensure directories exist

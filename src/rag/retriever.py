@@ -52,32 +52,38 @@ class BSCRetriever:
         k = k or settings.top_k_retrieval
         
         # Gera embedding da query
-        query_embedding = self.embedding_manager.embed_text(query).tolist()
+        # embed_text ja retorna lista (nao precisa .tolist())
+        query_embedding = self.embedding_manager.embed_text(query)
         
         if use_hybrid:
             # Busca híbrida (semântica + BM25 keyword)
+            # Converter alpha (0.0-1.0) para weights (peso_vector, peso_text)
+            weight_vector = settings.hybrid_search_weight_semantic
+            weight_text = 1.0 - weight_vector
+            
             results = self.vector_store.hybrid_search(
-                query_text=query,
+                query=query,
                 query_embedding=query_embedding,
-                limit=k * 2,  # Pega mais para re-rankear
-                filters=filters,
-                alpha=settings.hybrid_search_weight_semantic
+                k=k * 2,  # Pega mais para re-rankear
+                weights=(weight_vector, weight_text),
+                filter_dict=filters
             )
         else:
             # Apenas busca vetorial semântica
             results = self.vector_store.vector_search(
                 query_embedding=query_embedding,
-                limit=k * 2,
-                filters=filters
+                k=k * 2,
+                filter_dict=filters
             )
         
         # Re-ranking com Cohere
         if use_rerank and len(results) > 0:
-            # Converte SearchResult para dict para Cohere
+            # Converte SearchResult para dict para Cohere (inclui source e page)
             docs_dict = [
                 {
-                    "id": r.id,
                     "content": r.content,
+                    "source": r.source,
+                    "page": r.page,
                     "metadata": r.metadata,
                     "score": r.score
                 }
@@ -93,10 +99,12 @@ class BSCRetriever:
             # Converte de volta para SearchResult
             results = [
                 SearchResult(
-                    id=doc["id"],
                     content=doc["content"],
-                    metadata=doc["metadata"],
-                    score=doc.get("rerank_score", doc["score"])
+                    source=doc.get("source", "unknown"),
+                    page=doc.get("page", 0),
+                    score=doc.get("rerank_score", doc["score"]),
+                    search_type="reranked",
+                    metadata=doc["metadata"]
                 )
                 for doc in reranked_docs
             ]
@@ -152,15 +160,14 @@ class BSCRetriever:
         all_results = []
         for query in queries:
             results = self.retrieve(query, k=k, use_rerank=False)
-            # Converte SearchResult para dict para RRF
+            # Converte SearchResult para dict para RRF (inclui source e page)
             results_dict = [
                 {
-                    "id": r.id,
                     "content": r.content,
+                    "source": r.source,
+                    "page": r.page,
                     "metadata": r.metadata,
-                    "score": r.score,
-                    "source": r.metadata.get("source", ""),
-                    "page": r.metadata.get("page", 0)
+                    "score": r.score
                 }
                 for r in results
             ]
@@ -172,10 +179,12 @@ class BSCRetriever:
         # Converte de volta para SearchResult
         fused = [
             SearchResult(
-                id=doc["id"],
                 content=doc["content"],
-                metadata=doc["metadata"],
-                score=doc.get("rrf_score", doc["score"])
+                source=doc.get("source", "unknown"),
+                page=doc.get("page", 0),
+                score=doc.get("rrf_score", doc["score"]),
+                search_type="hybrid",
+                metadata=doc["metadata"]
             )
             for doc in fused_dicts
         ]
@@ -236,7 +245,7 @@ class BSCRetriever:
     def format_context(
         self,
         documents: List[SearchResult],
-        max_tokens: int = 4000
+        max_tokens: int = 32000
     ) -> str:
         """
         Formata documentos recuperados como contexto para o LLM.
@@ -259,12 +268,16 @@ class BSCRetriever:
                 break
             
             # Formata documento
-            source = doc.metadata.get("source", "unknown")
-            page = doc.metadata.get("page", "?")
+            # Usa campos diretos do SearchResult (source e page nao estao em metadata)
+            source = doc.source if hasattr(doc, 'source') else doc.metadata.get("source", "unknown")
+            page = doc.page if hasattr(doc, 'page') else doc.metadata.get("page", "?")
             score = doc.score
             
+            # Para arquivos .md, usar "Seção" ao invés de "Página"
+            page_label = "Seção" if source.endswith('.md') else "Página"
+            
             context_parts.append(
-                f"[Documento {i}] (Fonte: {source}, Página: {page}, Relevância: {score:.3f})\n"
+                f"[Documento {i}] (Fonte: {source}, {page_label}: {page}, Relevância: {score:.3f})\n"
                 f"{doc.content}\n"
             )
             

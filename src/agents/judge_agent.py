@@ -9,12 +9,11 @@ Responsável por:
 - Sugerir melhorias ou perguntas complementares
 """
 from typing import List, Dict, Any
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from loguru import logger
 
-from config.settings import settings
+from config.settings import settings, get_llm
 
 
 class JudgmentResult(BaseModel):
@@ -57,12 +56,10 @@ class JudgeAgent:
         """Inicializa o Judge Agent."""
         self.name = "Judge Agent"
         
-        # LLM com temperatura 0 para consistência
-        self.llm = ChatOpenAI(
-            model=settings.openai_model,
+        # LLM com temperatura 0 para consistência (usa factory)
+        self.llm = get_llm(
             temperature=0.0,  # Máxima consistência
-            max_tokens=1500,
-            api_key=settings.openai_api_key
+            max_tokens=16384  # Limite alto para avaliacoes detalhadas
         )
         
         # Prompt de avaliação
@@ -71,7 +68,7 @@ class JudgeAgent:
         # Chain estruturado
         self.chain = self.prompt | self.llm.with_structured_output(JudgmentResult)
         
-        logger.info(f"✅ {self.name} inicializado")
+        logger.info(f"[OK] {self.name} inicializado")
     
     def _create_prompt(self) -> ChatPromptTemplate:
         """Cria o prompt de avaliação."""
@@ -102,12 +99,12 @@ Sua tarefa é avaliar criticamente a resposta fornecida por um agente especialis
 - issues: Liste problemas encontrados (ex: "Não cita fontes", "Informação X não está nos documentos")
 - suggestions: Sugestões de melhoria (ex: "Adicionar citação na afirmação Y")
 - verdict: 
-  * 'approved' se quality_score >= 0.8 e is_grounded=True
-  * 'needs_improvement' se 0.5 <= quality_score < 0.8
-  * 'rejected' se quality_score < 0.5 ou is_grounded=False
+  * 'approved' se quality_score >= 0.7 E (is_grounded=True OU quality_score >= 0.85)
+  * 'needs_improvement' se 0.5 <= quality_score < 0.7 OU (quality_score >= 0.7 e is_grounded=False e quality_score < 0.85)
+  * 'rejected' se quality_score < 0.5 OU (is_grounded=False e has_sources=False e quality_score < 0.7)
 - reasoning: Justificativa em 2-3 sentenças
 
-Seja rigoroso mas justo. Priorize respostas fundamentadas em fontes."""
+Seja equilibrado: respostas de alta qualidade (>= 0.85) podem ser aprovadas mesmo com fundamentação imperfeita, mas respostas mediocres precisam boa fundamentação."""
 
         return ChatPromptTemplate.from_template(template)
     
@@ -131,7 +128,7 @@ Seja rigoroso mas justo. Priorize respostas fundamentadas em fontes."""
             Resultado da avaliação
         """
         try:
-            logger.info(f"⚖️ {self.name} avaliando resposta de {agent_name}")
+            logger.info(f"[JUDGE] {self.name} avaliando resposta de {agent_name}")
             
             result = self.chain.invoke({
                 "original_query": original_query,
@@ -140,7 +137,7 @@ Seja rigoroso mas justo. Priorize respostas fundamentadas em fontes."""
             })
             
             logger.info(
-                f"✅ Avaliação completa: "
+                f"[OK] Avaliação completa: "
                 f"score={result.quality_score:.2f}, "
                 f"verdict={result.verdict}"
             )
@@ -148,7 +145,7 @@ Seja rigoroso mas justo. Priorize respostas fundamentadas em fontes."""
             return result
             
         except Exception as e:
-            logger.error(f"❌ Erro no {self.name}: {e}")
+            logger.error(f"[ERRO] Erro no {self.name}: {e}")
             # Retorna avaliação neutra em caso de erro
             return JudgmentResult(
                 quality_score=0.5,
@@ -198,7 +195,7 @@ Seja rigoroso mas justo. Priorize respostas fundamentadas em fontes."""
         # Ordena por quality_score (melhor primeiro)
         results.sort(key=lambda x: x["judgment"].quality_score, reverse=True)
         
-        logger.info(f"✅ Avaliadas {len(results)} respostas")
+        logger.info(f"[OK] Avaliadas {len(results)} respostas")
         return results
     
     def get_name(self) -> str:

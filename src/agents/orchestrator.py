@@ -8,13 +8,15 @@ Responsável por:
 - Combinar e sintetizar respostas
 - Usar Judge Agent para validação
 """
+import asyncio
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Any, Optional
-from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from loguru import logger
 
-from config.settings import settings
+from config.settings import settings, get_llm
 from src.agents.financial_agent import FinancialAgent
 from src.agents.customer_agent import CustomerAgent
 from src.agents.process_agent import ProcessAgent
@@ -59,13 +61,8 @@ class Orchestrator:
         """Inicializa o orquestrador."""
         self.name = "Orchestrator"
         
-        # LLM para routing e synthesis
-        self.llm = ChatOpenAI(
-            model=settings.openai_model,
-            temperature=0.3,
-            max_tokens=settings.max_tokens,
-            api_key=settings.openai_api_key
-        )
+        # LLM para routing e synthesis (usa factory)
+        self.llm = get_llm(temperature=0.3)
         
         # Agentes especialistas
         self.agents = {
@@ -86,7 +83,7 @@ class Orchestrator:
         self.routing_chain = self.routing_prompt | self.llm.with_structured_output(RoutingDecision)
         self.synthesis_chain = self.synthesis_prompt | self.llm.with_structured_output(SynthesisResult)
         
-        logger.info(f"✅ {self.name} inicializado com {len(self.agents)} agentes especialistas")
+        logger.info(f"[OK] {self.name} inicializado com {len(self.agents)} agentes especialistas")
     
     def _create_routing_prompt(self) -> ChatPromptTemplate:
         """Cria prompt para routing de agentes."""
@@ -171,25 +168,75 @@ Calcule confidence baseado em:
             Decisão de roteamento
         """
         try:
-            logger.info(f"🧭 {self.name} roteando query: '{query[:50]}...'")
+            logger.info(f"[ROUTING] {self.name} roteando query: '{query[:50]}...'")
             
             decision = self.routing_chain.invoke({"query": query})
             
             logger.info(
-                f"✅ Roteamento: {len(decision.agents_to_use)} agente(s) - "
+                f"[OK] Roteamento: {len(decision.agents_to_use)} agente(s) - "
                 f"{', '.join(decision.agents_to_use)}"
             )
             
             return decision
             
         except Exception as e:
-            logger.error(f"❌ Erro no roteamento: {e}")
+            logger.error(f"[ERRO] Erro no roteamento: {e}")
             # Fallback: aciona todos os agentes
             return RoutingDecision(
                 agents_to_use=["financeira", "cliente", "processos", "aprendizado"],
                 reasoning=f"Erro no roteamento, acionando todos os agentes. Erro: {str(e)}",
                 is_general_question=True
             )
+    
+    def _invoke_single_agent(
+        self,
+        agent_name: str,
+        query: str,
+        chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Invoca um unico agente especialista.
+        Metodo auxiliar para execucao paralela com ThreadPoolExecutor.
+        
+        Args:
+            agent_name: Nome do agente a invocar
+            query: Pergunta do usuario
+            chat_history: Historico da conversa
+            
+        Returns:
+            Dicionario com resposta do agente ou None se agente nao encontrado
+        """
+        if agent_name not in self.agents:
+            logger.warning(f"[WARN] Agente '{agent_name}' nao encontrado")
+            return None
+        
+        agent = self.agents[agent_name]
+        agent_start = time.time()
+        
+        try:
+            result = agent.invoke(query, chat_history)
+            elapsed = time.time() - agent_start
+            
+            logger.info(f"[OK] {agent.get_name()} concluido em {elapsed:.2f}s")
+            
+            return {
+                "agent_name": agent.get_name(),
+                "perspective": agent.get_perspective(),
+                "response": result.get("output", ""),
+                "intermediate_steps": result.get("intermediate_steps", []),
+                "execution_time": elapsed
+            }
+            
+        except Exception as e:
+            elapsed = time.time() - agent_start
+            logger.error(f"[ERRO] Erro ao invocar {agent.get_name()}: {e}")
+            return {
+                "agent_name": agent.get_name(),
+                "perspective": agent.get_perspective(),
+                "response": f"Erro ao processar consulta: {str(e)}",
+                "intermediate_steps": [],
+                "execution_time": elapsed
+            }
     
     def invoke_agents(
         self,
@@ -198,43 +245,167 @@ Calcule confidence baseado em:
         chat_history: Optional[List[Dict[str, str]]] = None
     ) -> List[Dict[str, Any]]:
         """
-        Invoca múltiplos agentes especialistas.
+        Invoca multiplos agentes especialistas EM PARALELO usando ThreadPoolExecutor.
         
         Args:
-            query: Pergunta do usuário
+            query: Pergunta do usuario
             agent_names: Lista de perspectivas a acionar
-            chat_history: Histórico da conversa
+            chat_history: Historico da conversa
             
         Returns:
-            Lista de respostas dos agentes
+            Lista de respostas dos agentes (com execution_time para cada)
         """
+        # Timer total de execucao
+        start_time = time.time()
+        
+        # Determinar max_workers (minimo entre num de agentes e config)
+        max_workers = min(len(agent_names), settings.agent_max_workers)
+        
+        logger.info(
+            f"[PARALLEL] Executando {len(agent_names)} agente(s) "
+            f"com {max_workers} worker(s)"
+        )
+        
         responses = []
         
-        for agent_name in agent_names:
-            if agent_name not in self.agents:
-                logger.warning(f"⚠️ Agente '{agent_name}' não encontrado")
-                continue
+        # ThreadPoolExecutor para paralelizacao
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all tasks simultaneamente
+            future_to_agent = {
+                executor.submit(
+                    self._invoke_single_agent,
+                    agent_name,
+                    query,
+                    chat_history
+                ): agent_name
+                for agent_name in agent_names
+            }
             
-            agent = self.agents[agent_name]
+            # Collect results conforme completam
+            for future in as_completed(future_to_agent):
+                agent_name = future_to_agent[future]
+                try:
+                    result = future.result()
+                    if result is not None:
+                        responses.append(result)
+                except Exception as e:
+                    logger.error(
+                        f"[ERRO] Excecao ao aguardar {agent_name}: {e}"
+                    )
+        
+        # Log final com performance
+        total_elapsed = time.time() - start_time
+        avg_time = total_elapsed / len(responses) if responses else 0
+        
+        logger.info(
+            f"[OK] {len(responses)} agente(s) executado(s) em {total_elapsed:.2f}s "
+            f"(media {avg_time:.2f}s/agente, paralelo com {max_workers} workers)"
+        )
+        
+        return responses
+    
+    async def _ainvoke_single_agent(
+        self,
+        agent_name: str,
+        query: str,
+        chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Invoca um unico agente especialista de forma assincrona.
+        Metodo auxiliar para execucao paralela com asyncio.gather().
+        
+        Args:
+            agent_name: Nome do agente a invocar
+            query: Pergunta do usuario
+            chat_history: Historico da conversa
             
-            try:
-                result = agent.invoke(query, chat_history)
-                
-                responses.append({
-                    "agent_name": agent.get_name(),
-                    "perspective": agent.get_perspective(),
-                    "response": result.get("output", ""),
-                    "intermediate_steps": result.get("intermediate_steps", [])
-                })
-                
-            except Exception as e:
-                logger.error(f"❌ Erro ao invocar {agent.get_name()}: {e}")
-                responses.append({
-                    "agent_name": agent.get_name(),
-                    "perspective": agent.get_perspective(),
-                    "response": f"Erro ao processar consulta: {str(e)}",
-                    "intermediate_steps": []
-                })
+        Returns:
+            Dicionario com resposta do agente ou None se agente nao encontrado
+        """
+        if agent_name not in self.agents:
+            logger.warning(f"[WARN] Agente '{agent_name}' nao encontrado")
+            return None
+        
+        agent = self.agents[agent_name]
+        agent_start = time.time()
+        
+        try:
+            # Chamar ainvoke() do agente (async)
+            result = await agent.ainvoke(query, chat_history)
+            elapsed = time.time() - agent_start
+            
+            logger.info(f"[OK] {agent.get_name()} concluido em {elapsed:.2f}s (async)")
+            
+            return {
+                "agent_name": agent.get_name(),
+                "perspective": agent.get_perspective(),
+                "response": result.get("output", ""),
+                "intermediate_steps": result.get("intermediate_steps", []),
+                "execution_time": elapsed
+            }
+            
+        except Exception as e:
+            elapsed = time.time() - agent_start
+            logger.error(f"[ERRO] Erro ao invocar {agent.get_name()} (async): {e}")
+            return {
+                "agent_name": agent.get_name(),
+                "perspective": agent.get_perspective(),
+                "response": f"Erro ao processar consulta: {str(e)}",
+                "intermediate_steps": [],
+                "execution_time": elapsed
+            }
+    
+    async def ainvoke_agents(
+        self,
+        query: str,
+        agent_names: List[str],
+        chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Invoca multiplos agentes especialistas EM PARALELO usando asyncio.gather().
+        VERSAO ASYNC: 10-15% mais rapida que ThreadPoolExecutor para I/O-bound tasks.
+        
+        Args:
+            query: Pergunta do usuario
+            agent_names: Lista de perspectivas a acionar
+            chat_history: Historico da conversa
+            
+        Returns:
+            Lista de respostas dos agentes (com execution_time para cada)
+        """
+        # Timer total de execucao
+        start_time = time.time()
+        
+        logger.info(
+            f"[ASYNC] Executando {len(agent_names)} agente(s) com asyncio.gather()"
+        )
+        
+        # Criar tasks para todos os agentes
+        tasks = [
+            self._ainvoke_single_agent(agent_name, query, chat_history)
+            for agent_name in agent_names
+        ]
+        
+        # Executar todos simultaneamente com asyncio.gather()
+        # return_exceptions=True garante que erros nao quebrem todo o gather
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Filtrar resultados validos (None ou Exception sao ignorados)
+        responses = []
+        for result in results:
+            if result is not None and not isinstance(result, Exception):
+                responses.append(result)
+            elif isinstance(result, Exception):
+                logger.error(f"[ERRO] Excecao durante gather: {result}")
+        
+        # Log final com performance
+        total_elapsed = time.time() - start_time
+        avg_time = total_elapsed / len(responses) if responses else 0
+        
+        logger.info(
+            f"[OK] {len(responses)} agente(s) executado(s) em {total_elapsed:.2f}s "
+            f"(media {avg_time:.2f}s/agente, async com asyncio.gather)"
+        )
         
         return responses
     
@@ -254,7 +425,7 @@ Calcule confidence baseado em:
             Resposta sintetizada
         """
         try:
-            logger.info(f"🔄 {self.name} sintetizando {len(agent_responses)} respostas")
+            logger.info(f"[SYNTH] {self.name} sintetizando {len(agent_responses)} respostas")
             
             # Formata respostas para o prompt
             formatted_responses = "\n\n".join([
@@ -267,11 +438,11 @@ Calcule confidence baseado em:
                 "agent_responses": formatted_responses
             })
             
-            logger.info(f"✅ Síntese completa (confidence: {synthesis.confidence:.2f})")
+            logger.info(f"[OK] Síntese completa (confidence: {synthesis.confidence:.2f})")
             return synthesis
             
         except Exception as e:
-            logger.error(f"❌ Erro na síntese: {e}")
+            logger.error(f"[ERRO] Erro na síntese: {e}")
             # Fallback: concatena respostas
             fallback_answer = "## Respostas dos Especialistas\n\n" + "\n\n".join([
                 f"### {resp['agent_name']}\n{resp['response']}"
@@ -303,7 +474,7 @@ Calcule confidence baseado em:
         """
         try:
             logger.info(f"\n{'='*70}")
-            logger.info(f"🚀 {self.name} processando query")
+            logger.info(f"[START] {self.name} processando query")
             logger.info(f"{'='*70}")
             
             # 1. Roteamento
@@ -331,7 +502,7 @@ Calcule confidence baseado em:
             # 4. Avaliação (opcional)
             evaluations = []
             if use_judge:
-                logger.info("⚖️ Executando avaliação com Judge Agent")
+                logger.info("[JUDGE] Executando avaliação com Judge Agent")
                 evaluations = self.judge.evaluate_multiple(
                     original_query=query,
                     agent_responses=agent_responses,
@@ -348,13 +519,13 @@ Calcule confidence baseado em:
             }
             
             logger.info(f"{'='*70}")
-            logger.info(f"✅ Query processada com sucesso")
+            logger.info(f"[OK] Query processada com sucesso")
             logger.info(f"{'='*70}\n")
             
             return result
             
         except Exception as e:
-            logger.error(f"❌ Erro no processamento: {e}")
+            logger.error(f"[ERRO] Erro no processamento: {e}")
             return {
                 "answer": f"Erro ao processar consulta: {str(e)}",
                 "perspectives": [],

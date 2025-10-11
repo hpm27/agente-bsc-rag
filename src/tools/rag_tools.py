@@ -6,7 +6,7 @@ permitindo que os agentes especializados busquem informações relevantes
 na base de conhecimento BSC.
 """
 from typing import List, Dict, Any, Optional
-from langchain.tools import Tool
+from langchain.tools import Tool, StructuredTool
 from langchain_core.pydantic_v1 import BaseModel, Field
 from loguru import logger
 
@@ -64,7 +64,7 @@ class RAGTools:
             Contexto formatado com os documentos relevantes
         """
         try:
-            logger.info(f"🔍 Buscando: '{query[:50]}...'")
+            logger.info(f"[SEARCH] Buscando: '{query[:50]}...'")
             
             k = top_k or settings.top_k_retrieval
             
@@ -85,7 +85,7 @@ class RAGTools:
                 max_tokens=settings.max_tokens
             )
             
-            logger.info(f"✅ Encontrados {len(results)} documentos relevantes")
+            logger.info(f"[OK] Encontrados {len(results)} documentos relevantes")
             return context
             
         except Exception as e:
@@ -110,7 +110,7 @@ class RAGTools:
             Contexto formatado focado na perspectiva
         """
         try:
-            logger.info(f"🎯 Buscando (perspectiva {perspective}): '{query[:50]}...'")
+            logger.info(f"[PERSPECTIVE] Buscando (perspectiva {perspective}): '{query[:50]}...'")
             
             k = top_k or settings.top_k_retrieval
             
@@ -137,7 +137,7 @@ class RAGTools:
                 max_tokens=settings.max_tokens
             )
             
-            logger.info(f"✅ Encontrados {len(results)} documentos para perspectiva {perspective}")
+            logger.info(f"[OK] Encontrados {len(results)} documentos para perspectiva {perspective}")
             return context
             
         except Exception as e:
@@ -160,7 +160,7 @@ class RAGTools:
             Contexto formatado com documentos mais relevantes
         """
         try:
-            logger.info(f"🔍 Busca multi-query: {len(queries)} queries")
+            logger.info(f"[MULTI] Busca multi-query: {len(queries)} queries")
             
             k = top_k or settings.top_k_retrieval
             
@@ -178,22 +178,23 @@ class RAGTools:
                 max_tokens=settings.max_tokens
             )
             
-            logger.info(f"✅ Combinados resultados de {len(queries)} queries")
+            logger.info(f"[OK] Combinados resultados de {len(queries)} queries")
             return context
             
         except Exception as e:
             logger.error(f"Erro na busca multi-query: {e}")
             return f"Erro ao buscar com múltiplas queries: {str(e)}"
     
-    def get_langchain_tools(self) -> List[Tool]:
+    def get_langchain_tools(self) -> List[StructuredTool]:
         """
         Retorna lista de ferramentas LangChain para uso pelos agentes.
         
         Returns:
-            Lista de Tools do LangChain
+            Lista de StructuredTools do LangChain
         """
         tools = [
-            Tool(
+            StructuredTool.from_function(
+                func=self.search_knowledge_base,
                 name="search_knowledge_base",
                 description=(
                     "Busca informações na base de conhecimento do Balanced Scorecard (BSC). "
@@ -201,10 +202,10 @@ class RAGTools:
                     "metodologias, melhores práticas ou exemplos relacionados ao BSC. "
                     "Input: Uma query/pergunta em linguagem natural."
                 ),
-                func=lambda query: self.search_knowledge_base(query),
                 args_schema=SearchInput
             ),
-            Tool(
+            StructuredTool.from_function(
+                func=self.search_by_perspective,
                 name="search_by_perspective",
                 description=(
                     "Busca informações focadas em uma perspectiva específica do BSC: "
@@ -214,10 +215,10 @@ class RAGTools:
                     "'aprendizado' (capacitação, inovação, crescimento). "
                     "Input: query (a pergunta) e perspective (uma das 4 perspectivas)."
                 ),
-                func=lambda query, perspective: self.search_by_perspective(query, perspective),
                 args_schema=PerspectiveSearchInput
             ),
-            Tool(
+            StructuredTool.from_function(
+                func=self.search_multi_query,
                 name="search_multi_query",
                 description=(
                     "Busca usando múltiplas queries relacionadas e combina os resultados. "
@@ -225,7 +226,6 @@ class RAGTools:
                     "quando a pergunta pode ser decomposta em sub-perguntas. "
                     "Input: Lista de queries relacionadas."
                 ),
-                func=lambda queries: self.search_multi_query(queries),
                 args_schema=MultiQuerySearchInput
             )
         ]
@@ -244,12 +244,12 @@ def create_rag_tools() -> RAGTools:
     return RAGTools()
 
 
-def get_tools_for_agent() -> List[Tool]:
+def get_tools_for_agent() -> List[StructuredTool]:
     """
     Função de conveniência para obter tools LangChain prontas para uso.
     
     Returns:
-        Lista de Tools configuradas
+        Lista de StructuredTools configuradas
     """
     rag_tools = create_rag_tools()
     return rag_tools.get_langchain_tools()

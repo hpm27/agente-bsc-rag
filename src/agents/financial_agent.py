@@ -8,13 +8,12 @@ Responsável por:
 - Relação entre estratégia e resultados financeiros
 """
 from typing import List, Dict, Any
-from langchain.agents import AgentExecutor, create_openai_functions_agent
-from langchain_openai import ChatOpenAI
+from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.tools import Tool
 from loguru import logger
 
-from config.settings import settings
+from config.settings import settings, get_llm
 from src.tools.rag_tools import get_tools_for_agent
 
 
@@ -26,13 +25,8 @@ class FinancialAgent:
         self.name = "Financial Agent"
         self.perspective = "financeira"
         
-        # LLM
-        self.llm = ChatOpenAI(
-            model=settings.openai_model,
-            temperature=settings.temperature,
-            max_tokens=settings.max_tokens,
-            api_key=settings.openai_api_key
-        )
+        # LLM (usa factory que detecta provider automaticamente)
+        self.llm = get_llm()
         
         # Tools
         self.tools = get_tools_for_agent()
@@ -40,8 +34,8 @@ class FinancialAgent:
         # Prompt especializado
         self.prompt = self._create_prompt()
         
-        # Agent executor
-        self.agent = create_openai_functions_agent(
+        # Agent executor (tool calling - compatible com Claude/OpenAI/Gemini)
+        self.agent = create_tool_calling_agent(
             llm=self.llm,
             tools=self.tools,
             prompt=self.prompt
@@ -55,18 +49,18 @@ class FinancialAgent:
             return_intermediate_steps=True
         )
         
-        logger.info(f"✅ {self.name} inicializado")
+        logger.info(f"[OK] {self.name} inicializado")
     
     def _create_prompt(self) -> ChatPromptTemplate:
         """Cria o prompt especializado para perspectiva financeira."""
         system_message = """Você é um especialista em Balanced Scorecard, focado na **Perspectiva Financeira**.
 
 Sua especialidade inclui:
-- 📊 Indicadores financeiros: receita, lucro, ROI, EVA, margem de contribuição
-- 💰 Análise de custos e eficiência operacional
-- 🎯 Objetivos e metas financeiras estratégicas
-- 📈 Relação entre estratégia empresarial e resultados financeiros
-- 💡 Criação de valor para acionistas e stakeholders
+- Indicadores financeiros: receita, lucro, ROI, EVA, margem de contribuição
+- Análise de custos e eficiência operacional
+- Objetivos e metas financeiras estratégicas
+- Relação entre estratégia empresarial e resultados financeiros
+- Criação de valor para acionistas e stakeholders
 
 Quando responder perguntas:
 1. Use a ferramenta `search_by_perspective` com perspective='financeira' para buscar informações específicas
@@ -96,18 +90,47 @@ Seja objetivo, técnico e baseie suas respostas nas melhores práticas da litera
             Resposta do agente com steps intermediários
         """
         try:
-            logger.info(f"💰 {self.name} processando: '{query[:50]}...'")
+            logger.info(f"[FIN] {self.name} processando: '{query[:50]}...'")
             
             result = self.executor.invoke({
                 "input": query,
                 "chat_history": chat_history or []
             })
             
-            logger.info(f"✅ {self.name} completou processamento")
+            logger.info(f"[OK] {self.name} completou processamento")
             return result
             
         except Exception as e:
-            logger.error(f"❌ Erro no {self.name}: {e}")
+            logger.error(f"[ERRO] Erro no {self.name}: {e}")
+            return {
+                "output": f"Erro ao processar consulta na perspectiva financeira: {str(e)}",
+                "intermediate_steps": []
+            }
+    
+    async def ainvoke(self, query: str, chat_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+        """
+        Versao assincrona do invoke - processa query sobre perspectiva financeira.
+        
+        Args:
+            query: Pergunta do usuario
+            chat_history: Historico da conversa
+            
+        Returns:
+            Resposta do agente com steps intermediarios
+        """
+        try:
+            logger.info(f"[FIN] {self.name} processando (async): '{query[:50]}...'")
+            
+            result = await self.executor.ainvoke({
+                "input": query,
+                "chat_history": chat_history or []
+            })
+            
+            logger.info(f"[OK] {self.name} completou processamento (async)")
+            return result
+            
+        except Exception as e:
+            logger.error(f"[ERRO] Erro no {self.name} (async): {e}")
             return {
                 "output": f"Erro ao processar consulta na perspectiva financeira: {str(e)}",
                 "intermediate_steps": []

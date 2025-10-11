@@ -1,2 +1,14 @@
 # Don't index SpecStory auto-save files, but allow explicit context inclusion via @ references
-.specstory/**
+.specstory/
+.pytest_cache/
+.coverage/**
+.tox/**
+.env/**
+.env.local/**
+.env.*.local/**
+.env.example/**
+.gitignore/**
+.git/**
+.gitignore/**
+data/contextual_cache/
+venv/

@@ -62,8 +62,10 @@ notepad .env
 ```env
 # OpenAI (OBRIGATÓRIO)
 OPENAI_API_KEY=sk-your-openai-key-here
-OPENAI_MODEL=gpt-4-turbo-preview
 OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+
+# Default LLM Model (provider-agnostico: gpt-* ou claude-*)
+DEFAULT_LLM_MODEL=claude-sonnet-4-5-20250929
 
 # Cohere (OBRIGATÓRIO para re-ranking)
 COHERE_API_KEY=your-cohere-key-here
@@ -178,6 +180,7 @@ python scripts/build_knowledge_base.py
 ```
 
 Isso irá:
+
 - ✅ Carregar PDFs
 - ✅ Fazer chunking (TableAware)
 - ✅ Aplicar Contextual Retrieval (se habilitado)
@@ -186,7 +189,7 @@ Isso irá:
 
 ## ✅ Passo 7: Validar Setup
 
-### Teste Rápido de Retrieval:
+### Teste Rápido de Retrieval
 
 ```python
 from src.rag.retriever import BSCRetriever
@@ -200,7 +203,7 @@ for i, result in enumerate(results, 1):
     print(f"   Preview: {result.content[:100]}...")
 ```
 
-### Teste dos Agentes:
+### Teste dos Agentes
 
 ```python
 from src.agents.orchestrator import Orchestrator
@@ -216,6 +219,7 @@ print(result["answer"])
 ## 🐛 Troubleshooting
 
 ### Erro: "Module not found"
+
 ```powershell
 # Verificar se venv está ativado
 # Reinstalar dependências
@@ -223,6 +227,7 @@ pip install -r requirements.txt --force-reinstall
 ```
 
 ### Erro: "Docker não está rodando"
+
 ```powershell
 # Iniciar Docker Desktop
 # Verificar status
@@ -230,6 +235,7 @@ docker ps
 ```
 
 ### Erro: "API Key inválida"
+
 ```powershell
 # Verificar se .env está na raiz do projeto
 # Verificar se as keys estão corretas
@@ -237,6 +243,7 @@ docker ps
 ```
 
 ### Erro: "Port already in use"
+
 ```powershell
 # Parar containers
 docker-compose down
@@ -278,9 +285,9 @@ agente-bsc-rag/
 ## 📞 Suporte
 
 Se encontrar problemas, verifique:
+
 1. Logs do Docker: `docker-compose logs`
 2. Logs da aplicação: `./logs/`
 3. Versões das dependências: `pip list`
 
 **Dica**: Execute cada passo sequencialmente e valide antes de avançar!
-

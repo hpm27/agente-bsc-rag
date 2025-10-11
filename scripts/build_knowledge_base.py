@@ -52,7 +52,7 @@ def load_pdf(file_path: str) -> dict:
 def main():
     """Função principal do pipeline de ingestão."""
     logger.info("=" * 70)
-    logger.info("🚀 Pipeline de Ingestão - Base de Conhecimento BSC")
+    logger.info("[START] Pipeline de Ingestao - Base de Conhecimento BSC")
     logger.info("=" * 70)
     
     # Inicializa componentes
@@ -133,22 +133,34 @@ def main():
                     "num_pages": doc["num_pages"]
                 }
             )
-            # Converte ContextualChunk para dict format
+            # Converte ContextualChunk para dict format e adiciona 'page' baseado em chunk_index
             chunks = [
                 {
                     "content": c.contextual_content,  # Usa conteúdo com contexto
-                    **c.metadata
+                    "source": c.metadata.get('source', doc["source"]),  # Garante source
+                    "page": c.metadata.get('chunk_index', i) + 1,  # 1-based page number (seção)
+                    **{k: v for k, v in c.metadata.items() if k not in ['content', 'source', 'page']}
                 }
-                for c in contextual_chunks
+                for i, c in enumerate(contextual_chunks)
             ]
         else:
-            chunks = chunker.chunk_text(
+            base_chunks = chunker.chunk_text(
                 doc["content"],
                 metadata={
                     "source": doc["source"],
                     "num_pages": doc["num_pages"]
                 }
             )
+            # Adiciona 'page' baseado em chunk_index e garante 'source'
+            chunks = [
+                {
+                    "content": chunk["content"],
+                    "source": chunk.get("source", doc["source"]),  # Garante source
+                    "page": chunk.get('chunk_index', i) + 1,  # 1-based page number (seção)
+                    **{k: v for k, v in chunk.items() if k not in ['content', 'source', 'page']}
+                }
+                for i, chunk in enumerate(base_chunks)
+            ]
         
         all_chunks.extend(chunks)
         logger.info(f"      [OK] {len(chunks)} chunks criados")
@@ -173,12 +185,17 @@ def main():
     embeddings_list = []
     
     for i, (chunk, embedding) in enumerate(zip(all_chunks, embeddings)):
-        # Monta doc_dict com metadata corretamente
-        metadata = {k: v for k, v in chunk.items() if k != "content"}
+        # Monta doc_dict com source/page no nível raiz e resto em metadata
+        source = chunk.get("source", "unknown")
+        page = chunk.get("page", 0)
+        metadata = {k: v for k, v in chunk.items() 
+                   if k not in ["content", "source", "page"]}
         
         doc_dict = {
             "id": f"doc_{i}",
             "content": chunk["content"],
+            "source": source,
+            "page": page,
             "metadata": metadata
         }
         documents_to_add.append(doc_dict)
@@ -245,8 +262,11 @@ def main():
         logger.info(f"   Resultados: {len(results)}")
         
         if results:
+            source = results[0].source
+            page_label = "Seção" if source.endswith('.md') else "Página"
             logger.info(f"\n   [DOC] Melhor resultado:")
-            logger.info(f"      Fonte: {results[0].metadata.get('source', 'N/A')}")
+            logger.info(f"      Fonte: {source}")
+            logger.info(f"      {page_label}: {results[0].page}")
             logger.info(f"      Score: {results[0].score:.4f}")
             logger.info(f"      Preview: {results[0].content[:150]}...")
         else:

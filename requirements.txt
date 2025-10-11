@@ -7,8 +7,9 @@ pydantic-settings==2.1.0
 langchain==0.1.0
 langgraph==0.0.20
 langchain-openai==0.0.5
+langchain-anthropic==0.3.22
 langchain-community==0.0.13
-langchain-core==0.1.10
+langchain-core==0.3.79
 
 # Vector Databases
 redis==5.0.1
@@ -83,5 +84,6 @@ anthropic==0.18.1
 # Development
 black==23.12.1
 flake8==6.1.0
+ruff==0.1.13
 mypy==1.7.1
 pre-commit==3.6.0

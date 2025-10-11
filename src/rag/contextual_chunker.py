@@ -17,6 +17,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from loguru import logger
 from anthropic import Anthropic, RateLimitError
+from openai import OpenAI, RateLimitError as OpenAIRateLimitError
 
 from .chunker import SemanticChunker, TableAwareChunker
 from config.settings import settings
@@ -56,7 +57,8 @@ class ContextualChunker:
         api_key: Optional[str] = None,
         model: Optional[str] = None,
         cache_dir: Optional[str] = None,
-        enable_caching: bool = True
+        enable_caching: bool = True,
+        provider: Optional[str] = None
     ):
         """
         Inicializa Contextual Chunker.
@@ -64,10 +66,11 @@ class ContextualChunker:
         Args:
             base_chunker: Chunker base (se None, cria um novo)
             use_table_aware: Se True, usa TableAwareChunker
-            api_key: Chave API Anthropic (usa settings se None)
-            model: Modelo Claude a usar (usa settings.contextual_model se None)
+            api_key: Chave API (usa settings se None)
+            model: Modelo a usar (usa settings baseado no provider se None)
             cache_dir: Diretório para cache de contextos
             enable_caching: Se True, cacheia contextos gerados
+            provider: "openai" ou "anthropic" (usa settings.contextual_provider se None)
         """
         # Chunker base
         if base_chunker is None:
@@ -75,17 +78,28 @@ class ContextualChunker:
         else:
             self.base_chunker = base_chunker
         
-        # Cliente Anthropic
-        self.client = Anthropic(api_key=api_key or getattr(settings, 'anthropic_api_key', None))
-        self.model = model or settings.contextual_model
+        # Provider e configuração
+        self.provider = provider or settings.contextual_provider
+        
+        # Inicializa cliente baseado no provider
+        if self.provider == "openai":
+            # Cliente OpenAI para GPT-5
+            self.client = OpenAI(api_key=api_key or settings.openai_api_key)
+            self.model = model or settings.gpt5_model
+            self.max_completion_tokens = settings.gpt5_max_completion_tokens
+            self.reasoning_effort = settings.gpt5_reasoning_effort
+            logger.info(f"ContextualChunker inicializado com GPT-5 ({self.model}, reasoning_effort={self.reasoning_effort})")
+        else:
+            # Cliente Anthropic para Claude
+            self.client = Anthropic(api_key=api_key or getattr(settings, 'anthropic_api_key', None))
+            self.model = model or settings.contextual_model
+            logger.info(f"ContextualChunker inicializado com Claude ({self.model})")
         
         # Cache
         self.enable_caching = enable_caching
         self.cache_dir = Path(cache_dir or "./data/contextual_cache")
         if self.enable_caching:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-        
-        logger.info(f"ContextualChunker inicializado com modelo {self.model}")
     
     def _generate_context_with_retry(
         self,
@@ -113,7 +127,7 @@ class ContextualChunker:
                     document_summary=document_summary,
                     document=document
                 )
-            except RateLimitError as e:
+            except (RateLimitError, OpenAIRateLimitError) as e:
                 if attempt < max_retries - 1:
                     wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
                     logger.warning(f"[RATE_LIMIT] Tentativa {attempt+1}/{max_retries} falhou. Aguardando {wait_time}s...")
@@ -297,14 +311,25 @@ Conteúdo:
 Resumo (2-3 sentenças):"""
 
         try:
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=200,
-                temperature=0.0,
-                messages=[{"role": "user", "content": prompt}]
-            )
+            if self.provider == "openai":
+                # GPT-5 - usa max_completion_tokens e reasoning_effort
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    max_completion_tokens=200,
+                    reasoning_effort=self.reasoning_effort,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                summary = response.choices[0].message.content.strip()
+            else:
+                # Claude - usa API Anthropic
+                response = self.client.messages.create(
+                    model=self.model,
+                    max_tokens=200,
+                    temperature=0.0,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                summary = response.content[0].text.strip()
             
-            summary = response.content[0].text.strip()
             logger.debug(f"Resumo do documento gerado: {summary[:100]}...")
             return summary
             
@@ -351,23 +376,38 @@ Trecho do documento:
 Contexto (1-2 sentenças):"""
 
         try:
-            # Usa Prompt Caching da Anthropic para reduzir custos
-            # O document_summary é cacheado entre chunks do mesmo documento
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=150,
-                temperature=0.0,
-                system=[
-                    {
-                        "type": "text",
-                        "text": "Você é um especialista em contextualização de documentos para sistemas de busca semântica.",
-                        "cache_control": {"type": "ephemeral"}
-                    }
-                ],
-                messages=[{"role": "user", "content": prompt}]
-            )
-            
-            context = response.content[0].text.strip()
+            if self.provider == "openai":
+                # GPT-5 - usa max_completion_tokens e reasoning_effort
+                # System message como primeira mensagem do usuário (GPT-5 não tem system separado)
+                system_context = "Você é um especialista em contextualização de documentos para sistemas de busca semântica."
+                full_prompt = f"{system_context}\n\n{prompt}"
+                
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    max_completion_tokens=150,
+                    reasoning_effort=self.reasoning_effort,
+                    messages=[{"role": "user", "content": full_prompt}]
+                )
+                
+                context = response.choices[0].message.content.strip()
+            else:
+                # Claude - usa API Anthropic com Prompt Caching
+                # O document_summary é cacheado entre chunks do mesmo documento
+                response = self.client.messages.create(
+                    model=self.model,
+                    max_tokens=150,
+                    temperature=0.0,
+                    system=[
+                        {
+                            "type": "text",
+                            "text": "Você é um especialista em contextualização de documentos para sistemas de busca semântica.",
+                            "cache_control": {"type": "ephemeral"}
+                        }
+                    ],
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                
+                context = response.content[0].text.strip()
             
             # Remove aspas se houver
             context = context.strip('"\'')

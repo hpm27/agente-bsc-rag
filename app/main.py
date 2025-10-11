@@ -1,282 +1,299 @@
 """
-Interface Streamlit para o Agente BSC RAG.
+Aplicacao principal Streamlit para o Agente BSC RAG.
+
+Interface web interativa para consultar o sistema multi-agente
+de Balanced Scorecard com LangGraph.
+
+Uso:
+    streamlit run app/main.py
 """
+
 import streamlit as st
-import asyncio
-from datetime import datetime
-from loguru import logger
+from typing import Dict, Any
 import sys
 from pathlib import Path
 
-# Adicionar diretório raiz ao path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Adicionar diretorio raiz ao path para imports
+root_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(root_dir))
 
-from src.graph.workflow import create_bsc_workflow
 from app.utils import (
-    initialize_session_state,
-    add_message,
-    clear_chat_history,
-    format_timestamp,
-    format_latency,
-    create_metrics_display,
-    display_perspective_responses,
-    display_judge_evaluation
+    load_environment,
+    check_required_env_vars,
+    init_workflow,
+    init_session_state,
+    save_message,
 )
-from config.settings import settings
+from app.components.sidebar import render_sidebar, get_active_perspectives
+from app.components.results import render_results
 
 
-# Configuração da página
+# ============================================================================
+# Configuracao da Pagina
+# ============================================================================
+
 st.set_page_config(
-    page_title="Agente BSC",
-    page_icon="📊",
+    page_title="Agente BSC RAG",
+    page_icon="[BSC]",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        "Get Help": "https://github.com/seu-usuario/agente-bsc-rag",
+        "Report a bug": "https://github.com/seu-usuario/agente-bsc-rag/issues",
+        "About": "Sistema multi-agente para consultoria em Balanced Scorecard",
+    },
 )
 
-# CSS customizado
-st.markdown("""
+
+# ============================================================================
+# CSS Customizado
+# ============================================================================
+
+st.markdown(
+    """
 <style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
-        text-align: center;
+    /* Estilo geral */
+    .main {
+        padding: 1rem;
+    }
+
+    /* Mensagens de chat */
+    .stChatMessage {
+        padding: 1rem;
+        border-radius: 0.5rem;
         margin-bottom: 1rem;
     }
-    .sub-header {
-        font-size: 1.2rem;
-        color: #666;
-        text-align: center;
-        margin-bottom: 2rem;
+
+    /* Badges de perspectiva */
+    .perspective-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-right: 0.5rem;
     }
-    .stAlert {
-        margin-top: 1rem;
+
+    /* Cores das perspectivas */
+    .financial { background-color: #1f77b4; color: white; }
+    .customer { background-color: #2ca02c; color: white; }
+    .process { background-color: #ff7f0e; color: white; }
+    .learning { background-color: #9467bd; color: white; }
+
+    /* Metricas */
+    .metric-card {
+        background-color: #f0f2f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+
+    /* Loading spinner customizado */
+    .stSpinner > div {
+        border-color: #1f77b4;
     }
 </style>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 
-def main():
-    """Função principal da aplicação."""
-    
-    # Inicializar estado
-    initialize_session_state()
-    
-    # Header
-    st.markdown('<div class="main-header">📊 Agente BSC</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="sub-header">Sistema RAG Multi-Agente para Balanced Scorecard</div>',
-        unsafe_allow_html=True
-    )
-    
-    # Sidebar
-    with st.sidebar:
-        st.header("⚙️ Configurações")
-        
-        # Informações do sistema
-        st.subheader("Sistema")
-        st.info(f"""
-        **Versão**: {settings.app_version}
-        **Modelo**: {settings.openai_model}
-        **Vector Store**: {settings.vector_store_type.upper()}
-        **Sessão**: {st.session_state.session_id}
-        """)
-        
-        # Configurações de execução
-        st.subheader("Execução")
-        
-        enable_perspectives = st.multiselect(
-            "Perspectivas Ativas",
-            options=["financial", "customer", "process", "learning"],
-            default=["financial", "customer", "process", "learning"],
-            format_func=lambda x: {
-                "financial": "💰 Financeira",
-                "customer": "👥 Cliente",
-                "process": "⚙️ Processos",
-                "learning": "📚 Aprendizado"
-            }[x]
+# ============================================================================
+# Inicializacao
+# ============================================================================
+
+def initialize_app() -> None:
+    """
+    Inicializa a aplicacao: carrega env vars, verifica config, inicializa workflow.
+    """
+    # Carregar variaveis de ambiente
+    load_environment()
+
+    # Verificar variaveis obrigatorias
+    if not check_required_env_vars():
+        st.error("[ERRO] Configuracao incompleta. Corrija as variaveis de ambiente e recarregue.")
+        st.stop()
+
+    # Inicializar session state
+    init_session_state()
+
+    # Inicializar workflow (cached)
+    if not st.session_state.workflow_initialized:
+        with st.spinner("Inicializando workflow LangGraph..."):
+            st.session_state.workflow = init_workflow()
+            st.session_state.workflow_initialized = True
+
+
+def process_query(query: str) -> Dict[str, Any]:
+    """
+    Processa query do usuario usando o workflow LangGraph.
+
+    Args:
+        query: Pergunta do usuario
+
+    Returns:
+        Dict: Resultado do workflow (BSCState)
+    """
+    workflow = st.session_state.workflow
+    config = st.session_state.config
+
+    # Gerar session_id unico para rastreamento
+    import uuid
+    session_id = f"streamlit_{uuid.uuid4().hex[:8]}"
+
+    # Obter historico de chat
+    chat_history = [
+        {"role": msg["role"], "content": msg["content"]}
+        for msg in st.session_state.messages[-5:]  # Ultimas 5 mensagens
+        if msg["role"] in ["user", "assistant"]
+    ]
+
+    try:
+        # Executar workflow (configuracoes vem do .env por enquanto)
+        # TODO: Refatorar workflow para aceitar config dinamico
+        result = workflow.run(
+            query=query,
+            session_id=session_id,
+            chat_history=chat_history if chat_history else None
         )
-        
-        show_details = st.checkbox("Mostrar Detalhes", value=True)
-        show_sources = st.checkbox("Mostrar Fontes", value=True)
-        show_judge = st.checkbox("Mostrar Avaliação Judge", value=True)
-        
-        st.divider()
-        
-        # Estatísticas
-        st.subheader("📈 Estatísticas")
-        st.metric("Queries Realizadas", st.session_state.query_count)
-        st.metric("Mensagens no Chat", len(st.session_state.messages))
-        
-        st.divider()
-        
-        # Ações
-        if st.button("🗑️ Limpar Chat", use_container_width=True):
-            clear_chat_history()
-            st.rerun()
-        
-        if st.button("🔄 Reiniciar Sessão", use_container_width=True):
-            st.session_state.clear()
-            st.rerun()
-    
-    # Área principal
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        st.subheader("💬 Chat")
-        
-        # Container para mensagens
-        chat_container = st.container()
-        
-        with chat_container:
-            # Exibir histórico de mensagens
-            for message in st.session_state.messages:
-                role = message["role"]
-                content = message["content"]
-                metadata = message.get("metadata", {})
-                timestamp = message.get("timestamp")
-                
-                with st.chat_message(role):
-                    st.markdown(content)
-                    
-                    if role == "assistant" and show_details and metadata:
-                        # Métricas
-                        if "judge_score" in metadata:
-                            create_metrics_display(metadata)
-                        
-                        # Perspectivas
-                        perspectives = metadata.get("perspectives", [])
-                        if perspectives and show_sources:
-                            st.markdown("---")
-                            display_perspective_responses(perspectives)
-                        
-                        # Judge
-                        judge_eval = metadata.get("judge_evaluation")
-                        if judge_eval and show_judge:
-                            st.markdown("---")
-                            display_judge_evaluation(judge_eval)
-                    
-                    # Timestamp
-                    if timestamp:
-                        st.caption(f"🕐 {format_timestamp(timestamp)}")
-        
-        # Input de query
-        query = st.chat_input("Faça sua pergunta sobre Balanced Scorecard...")
-        
-        if query:
-            # Adicionar mensagem do usuário
-            add_message("user", query)
-            st.session_state.query_count += 1
-            
-            # Exibir mensagem do usuário imediatamente
-            with st.chat_message("user"):
-                st.markdown(query)
-                st.caption(f"🕐 {format_timestamp()}")
-            
-            # Processar query
-            with st.chat_message("assistant"):
-                with st.spinner("Processando sua pergunta..."):
-                    try:
-                        # Executar workflow
-                        start_time = datetime.now()
-                        
-                        # Criar workflow
-                        workflow = create_bsc_workflow()
-                        
-                        # Executar
-                        result = asyncio.run(workflow.run(
-                            query=query,
-                            session_id=st.session_state.session_id
-                        ))
-                        
-                        end_time = datetime.now()
-                        latency = (end_time - start_time).total_seconds()
-                        
-                        # Resposta
-                        response = result.get("response", "Desculpe, não consegui gerar uma resposta.")
-                        metadata = result.get("metadata", {})
-                        metadata["latency"] = latency
-                        
-                        # Adicionar metadados do resultado
-                        metadata["judge_evaluation"] = result.get("judge_evaluation")
-                        metadata["perspectives"] = result.get("perspectives", [])
-                        
-                        # Exibir resposta
-                        st.markdown(response)
-                        
-                        # Exibir latência
-                        st.caption(f"⚡ Processado em {format_latency(latency)}")
-                        
-                        # Exibir detalhes
-                        if show_details:
-                            # Métricas
-                            if "judge_score" in metadata:
-                                create_metrics_display(metadata)
-                            
-                            # Perspectivas
-                            perspectives = metadata.get("perspectives", [])
-                            if perspectives and show_sources:
-                                st.markdown("---")
-                                display_perspective_responses(perspectives)
-                            
-                            # Judge
-                            judge_eval = metadata.get("judge_evaluation")
-                            if judge_eval and show_judge:
-                                st.markdown("---")
-                                display_judge_evaluation(judge_eval)
-                        
-                        # Timestamp
-                        st.caption(f"🕐 {format_timestamp()}")
-                        
-                        # Adicionar mensagem do assistente ao histórico
-                        add_message("assistant", response, metadata)
-                        
-                    except Exception as e:
-                        logger.error(f"Erro ao processar query: {e}")
-                        error_msg = f"❌ Erro ao processar sua pergunta: {str(e)}"
-                        st.error(error_msg)
-                        add_message("assistant", error_msg)
-    
-    with col2:
-        st.subheader("📚 Exemplos de Queries")
-        
-        st.markdown("""
-        **Queries Factuais:**
-        - Quais são os principais KPIs da perspectiva financeira?
-        - Como medir a satisfação do cliente no BSC?
-        - Que métricas são usadas na perspectiva de aprendizado?
-        
-        **Queries Conceituais:**
-        - Como implementar BSC em uma empresa?
-        - Qual a relação entre as perspectivas do BSC?
-        - Por que o BSC é importante para estratégia?
-        
-        **Queries Comparativas:**
-        - Qual a diferença entre KPIs financeiros e de clientes?
-        - Como BSC se compara com outros frameworks?
-        - Quais perspectivas impactam mais a lucratividade?
-        
-        **Queries Complexas:**
-        - Como alinhar objetivos estratégicos com métricas BSC?
-        - Quais são as melhores práticas para implementação?
-        - Como criar um mapa estratégico BSC completo?
-        """)
-        
-        st.divider()
-        
-        st.subheader("ℹ️ Sobre")
-        st.markdown("""
-        Este sistema utiliza:
-        - **RAG (Retrieval-Augmented Generation)** com vector store moderno
-        - **Multi-Agentes** especializados em cada perspectiva BSC
-        - **LangGraph** para orquestração inteligente
-        - **Judge Agent** para validação de qualidade
-        - **Contextual Retrieval** para melhor precisão
-        """)
 
+        # Converter BSCState para dict se necessario
+        if hasattr(result, "model_dump"):
+            result = result.model_dump()
+        elif hasattr(result, "dict"):
+            result = result.dict()
+
+        return result
+
+    except Exception as e:
+        st.error(f"[ERRO] Falha ao processar query: {e}")
+        raise
+
+
+def render_chat_history() -> None:
+    """
+    Renderiza historico de mensagens do chat.
+    """
+    for message in st.session_state.messages:
+        role = message["role"]
+        content = message["content"]
+
+        with st.chat_message(role):
+            st.markdown(content)
+
+            # Se for resposta do assistant, mostrar detalhes
+            if role == "assistant" and "metadata" in message:
+                metadata = message["metadata"]
+                render_results(metadata)
+
+
+def render_welcome_message() -> None:
+    """
+    Renderiza mensagem de boas-vindas quando nao ha historico.
+    """
+    st.markdown(
+        """
+        # Bem-vindo ao Agente BSC RAG
+
+        Sistema inteligente de consultoria em **Balanced Scorecard** usando IA generativa
+        e arquitetura multi-agente.
+
+        ## Como usar
+
+        1. **Configure as perspectivas** na barra lateral (Financeira, Cliente, Processos, Aprendizado)
+        2. **Digite sua pergunta** no campo abaixo
+        3. **Receba uma resposta** consultando multiplas perspectivas BSC simultaneamente
+
+        ## Exemplos de perguntas
+
+        - "Quais sao os principais KPIs da perspectiva financeira?"
+        - "Como implementar um Balanced Scorecard em uma empresa?"
+        - "Qual a relacao entre satisfacao de clientes e lucratividade?"
+        - "Explique o conceito de mapa estrategico no BSC"
+        - "Quais indicadores usar para processos internos?"
+
+        ## Recursos
+
+        - [OK] Sistema multi-agente com 4 especialistas BSC
+        - [OK] Validacao de qualidade com Judge Agent
+        - [OK] Base de conhecimento com livros de Kaplan & Norton
+        - [OK] Refinamento iterativo de respostas
+        - [OK] Rastreabilidade de fontes
+
+        **Digite sua pergunta abaixo para comecar!**
+        """
+    )
+
+
+# ============================================================================
+# Interface Principal
+# ============================================================================
+
+def main() -> None:
+    """
+    Funcao principal da aplicacao.
+    """
+    # Inicializar aplicacao
+    initialize_app()
+
+    # Renderizar sidebar
+    render_sidebar()
+
+    # Header principal
+    st.title("Agente BSC RAG")
+    st.caption("Consultor Inteligente em Balanced Scorecard")
+
+    # Mostrar mensagem de boas-vindas ou historico
+    if not st.session_state.messages:
+        render_welcome_message()
+    else:
+        render_chat_history()
+
+    # Chat input
+    user_query = st.chat_input("Digite sua pergunta sobre Balanced Scorecard...")
+
+    if user_query:
+        # Adicionar pergunta do usuario ao chat
+        save_message("user", user_query)
+
+        with st.chat_message("user"):
+            st.markdown(user_query)
+
+        # Processar query
+        with st.chat_message("assistant"):
+            with st.spinner("Consultando especialistas BSC..."):
+                try:
+                    # Executar workflow
+                    result = process_query(user_query)
+
+                    # Extrair resposta final
+                    final_answer = result.get(
+                        "final_response", "Desculpe, nao consegui gerar uma resposta."
+                    )
+
+                    # Mostrar resposta
+                    st.markdown(final_answer)
+
+                    # Mostrar detalhes
+                    render_results(result)
+
+                    # Salvar resposta no historico
+                    save_message("assistant", final_answer, metadata=result)
+
+                    # Rerun para atualizar interface
+                    st.rerun()
+
+                except Exception as e:
+                    error_msg = f"Erro ao processar sua pergunta: {str(e)}"
+                    st.error(f"[ERRO] {error_msg}")
+
+                    # Salvar erro no historico
+                    save_message("assistant", error_msg)
+
+
+# ============================================================================
+# Entry Point
+# ============================================================================
 
 if __name__ == "__main__":
     main()
-
-
-

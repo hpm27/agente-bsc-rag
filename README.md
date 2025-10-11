@@ -32,6 +32,25 @@ LangGraph (Orquestração Multi-Agente)
 - **Judge Agent** para validação de qualidade das respostas
 - **LangGraph Workflow** com estados e ciclos de refinamento
 
+#### LangGraph Workflow ✅ **IMPLEMENTADO**
+
+Workflow de orquestração com grafo de estados explícito:
+
+```
+START → analyze_query → execute_agents → synthesize_response 
+→ judge_evaluation → decide_next_step → [finalize OR refine loop] → END
+```
+
+**Características**:
+
+- ✅ Execução paralela de agentes
+- ✅ Refinamento iterativo (até 2 iterações)
+- ✅ State management com Pydantic
+- ✅ Decisão condicional baseada em qualidade
+- ✅ Recuperação de erros em cada nó
+
+**Documentação completa**: [`docs/LANGGRAPH_WORKFLOW.md`](docs/LANGGRAPH_WORKFLOW.md)
+
 ### 📚 RAG Avançado
 
 - **Contextual Retrieval** (Anthropic) - +35-49% precisão
@@ -55,6 +74,29 @@ LangGraph (Orquestração Multi-Agente)
 - **Source Attribution** - Rastreabilidade completa
 - **Confidence Scores** - Métricas de confiança por resposta
 - **Multi-Perspective Coverage** - Respostas abrangentes
+
+## 🛡️ Qualidade de Codigo - Pre-Commit Hooks
+
+Este projeto utiliza **pre-commit hooks** para garantir qualidade de codigo e prevenir erros de encoding:
+
+- **Anti-Emoji Hook** - Bloqueia emojis em codigo Python (previne `UnicodeEncodeError` no Windows)
+- **Ruff Linter** - Linting rapido e moderno (150-200x mais rapido que flake8)
+- **Black Formatter** - Formatacao automatica consistente
+- **MyPy** - Verificacao de tipos gradual
+
+**Para desenvolvedores**:
+
+```bash
+# Instalar hooks apos clonar o repositorio
+pre-commit install
+
+# Executar manualmente em todos os arquivos
+pre-commit run --all-files
+```
+
+**Documentacao completa**: [`docs/PRE_COMMIT_SETUP.md`](docs/PRE_COMMIT_SETUP.md)
+
+---
 
 ## 📋 Pré-requisitos
 
@@ -108,11 +150,21 @@ python scripts/build_knowledge_base.py
 
 ### 5. Inicie a Interface Web
 
+**Metodo 1: Script de conveniencia**
+
+```powershell
+python run_streamlit.py
+```
+
+**Metodo 2: Streamlit CLI**
+
 ```powershell
 streamlit run app/main.py
 ```
 
-🎉 **Pronto!** Acesse: [http://localhost:8501](http://localhost:8501)
+🎉 **Pronto!** A interface sera aberta automaticamente no navegador em [http://localhost:8501](http://localhost:8501)
+
+**Guia completo**: Ver [`docs/STREAMLIT_GUIDE.md`](docs/STREAMLIT_GUIDE.md) para detalhes de uso, configuracoes e troubleshooting
 
 ---
 
@@ -293,6 +345,7 @@ pytest --cov=src tests/
 - [Arquitetura Detalhada](docs/ARCHITECTURE.md)
 - [Otimização do RAG](docs/RAG_OPTIMIZATION.md)
 - [Guia de Deployment](docs/DEPLOYMENT.md)
+- [Configuração GPT-5 para Contextual Retrieval](docs/GPT5_CONTEXTUAL_RETRIEVAL.md) 🆕
 
 ## 🤝 Contribuindo
 

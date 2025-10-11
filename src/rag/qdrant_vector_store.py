@@ -5,7 +5,7 @@ Qdrant é um vector database otimizado para retrieval semântico,
 com excelente performance e integração com LangChain.
 """
 
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Union
 import numpy as np
 from loguru import logger
 
@@ -167,7 +167,7 @@ class QdrantVectorStore(BaseVectorStore):
     
     def vector_search(
         self,
-        query_embedding: np.ndarray,
+        query_embedding: Union[List[float], np.ndarray],
         k: int = 10,
         filter_dict: Optional[Dict[str, Any]] = None,
         index_name: Optional[str] = None
@@ -189,10 +189,18 @@ class QdrantVectorStore(BaseVectorStore):
         # Cria filtros se especificados
         search_filter = self._build_filter(filter_dict) if filter_dict else None
         
+        # Converte query_embedding para lista se necessário
+        if hasattr(query_embedding, 'tolist'):
+            query_vector = query_embedding.tolist()
+        elif isinstance(query_embedding, list):
+            query_vector = query_embedding
+        else:
+            query_vector = list(query_embedding)
+        
         # Executa busca usando query_points (novo método unificado)
         response = self.client.query_points(
             collection_name=index_name,
-            query=query_embedding.tolist(),
+            query=query_vector,
             limit=k,
             query_filter=search_filter  # query_filter ainda é suportado como alias
         )
@@ -240,7 +248,7 @@ class QdrantVectorStore(BaseVectorStore):
     def hybrid_search(
         self,
         query: str,
-        query_embedding: np.ndarray,
+        query_embedding: Union[List[float], np.ndarray],
         k: int = 10,
         weights: Tuple[float, float] = (0.7, 0.3),
         filter_dict: Optional[Dict[str, Any]] = None,

@@ -514,5 +514,3 @@ print(workflow.agents.keys())
 - [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
 - [Qdrant Documentation](https://qdrant.tech/documentation/)
 - [Cohere Rerank](https://docs.cohere.com/docs/reranking)
-
-

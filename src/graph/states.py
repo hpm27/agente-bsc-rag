@@ -30,6 +30,10 @@ class JudgeEvaluation(BaseModel):
     feedback: str
     issues: List[str] = Field(default_factory=list)
     suggestions: List[str] = Field(default_factory=list)
+    verdict: Optional[str] = None
+    is_complete: Optional[bool] = None
+    is_grounded: Optional[bool] = None
+    has_sources: Optional[bool] = None
 
 
 class BSCState(BaseModel):

@@ -1,21 +1,53 @@
 """
-Gerenciamento de embeddings com suporte a fine-tuning.
+Gerenciamento de embeddings com suporte a fine-tuning e caching.
 """
 import numpy as np
-from typing import List, Union
+import hashlib
+import os
+from typing import List, Union, Optional
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 from loguru import logger
+from diskcache import Cache
 
 from config.settings import settings
 
 
 class EmbeddingManager:
-    """Gerenciador de embeddings."""
+    """Gerenciador de embeddings com caching persistente."""
     
     def __init__(self):
         """Inicializa o gerenciador de embeddings."""
         self.use_finetuned = settings.use_finetuned_embeddings
+        
+        # Inicializar cache
+        self.cache_enabled = settings.embedding_cache_enabled
+        self.cache: Optional[Cache] = None
+        self.cache_hits = 0
+        self.cache_misses = 0
+        
+        if self.cache_enabled:
+            # Criar diretorio de cache
+            cache_dir = settings.embedding_cache_dir
+            os.makedirs(cache_dir, exist_ok=True)
+            
+            # Inicializar diskcache com TTL e tamanho maximo
+            ttl_seconds = settings.embedding_cache_ttl_days * 24 * 60 * 60
+            size_limit_bytes = settings.embedding_cache_max_size_gb * 1024 * 1024 * 1024
+            
+            self.cache = Cache(
+                directory=cache_dir,
+                size_limit=size_limit_bytes,
+                eviction_policy='least-recently-used'
+            )
+            self.cache_ttl = ttl_seconds
+            logger.info(
+                f"[CACHE] Embedding cache ativado: {cache_dir} "
+                f"(TTL: {settings.embedding_cache_ttl_days} dias, "
+                f"Max Size: {settings.embedding_cache_max_size_gb} GB)"
+            )
+        else:
+            logger.info("[CACHE] Embedding cache desativado")
         
         if self.use_finetuned:
             # Carrega modelo fine-tuned
@@ -31,28 +63,89 @@ class EmbeddingManager:
             self.embedding_dim = 3072  # text-embedding-3-large
             self.provider = "openai"
     
-    def embed_text(self, text: str) -> np.ndarray:
+    def _get_cache_key(self, text: str) -> str:
         """
-        Gera embedding para um texto.
+        Gera chave de cache unica para um texto.
+        Usa SHA256 do texto normalizado + provedor + modelo.
+        
+        Args:
+            text: Texto para gerar chave
+            
+        Returns:
+            Chave de cache (hash SHA256)
+        """
+        # Normalizar texto (strip whitespace, lowercase)
+        normalized_text = text.strip().lower()
+        
+        # Incluir provedor e modelo na chave para evitar colisoes
+        if self.provider == "openai":
+            cache_input = f"{self.provider}:{self.model_name}:{normalized_text}"
+        else:
+            cache_input = f"{self.provider}:{self.model.model_name_or_path}:{normalized_text}"
+        
+        # Gerar hash SHA256
+        return hashlib.sha256(cache_input.encode('utf-8')).hexdigest()
+    
+    def _log_cache_stats(self):
+        """Log periodico de estatisticas do cache."""
+        if self.cache_enabled and (self.cache_hits + self.cache_misses) > 0:
+            total = self.cache_hits + self.cache_misses
+            hit_rate = (self.cache_hits / total) * 100
+            logger.info(
+                f"[CACHE STATS] Hits: {self.cache_hits}, "
+                f"Misses: {self.cache_misses}, "
+                f"Hit Rate: {hit_rate:.1f}%"
+            )
+    
+    def embed_text(self, text: str) -> List[float]:
+        """
+        Gera embedding para um texto (com caching automático).
         
         Args:
             text: Texto para gerar embedding
             
         Returns:
-            Embedding como numpy array
+            Embedding como lista de floats
         """
+        # Verificar cache primeiro
+        if self.cache_enabled and self.cache is not None:
+            cache_key = self._get_cache_key(text)
+            cached_embedding = self.cache.get(cache_key)
+            
+            if cached_embedding is not None:
+                self.cache_hits += 1
+                logger.debug(f"[CACHE HIT] Embedding recuperado do cache")
+                return cached_embedding
+            else:
+                self.cache_misses += 1
+                logger.debug(f"[CACHE MISS] Gerando novo embedding")
+        
+        # Gerar embedding
         if self.provider == "finetuned":
-            return self.model.encode(text, convert_to_numpy=True)
+            # Fine-tuned retorna numpy, converter para lista
+            embedding = self.model.encode(text, convert_to_numpy=True).tolist()
         else:
+            # OpenAI API ja retorna lista diretamente
             response = self.client.embeddings.create(
                 input=text,
                 model=self.model_name
             )
-            return np.array(response.data[0].embedding)
+            embedding = response.data[0].embedding
+        
+        # Armazenar em cache
+        if self.cache_enabled and self.cache is not None:
+            self.cache.set(cache_key, embedding, expire=self.cache_ttl)
+        
+        # Log stats periodicamente (a cada 100 chamadas)
+        if (self.cache_hits + self.cache_misses) % 100 == 0:
+            self._log_cache_stats()
+        
+        return embedding
     
     def embed_batch(self, texts: List[str], batch_size: int = 32) -> List[np.ndarray]:
         """
-        Gera embeddings para um lote de textos.
+        Gera embeddings para um lote de textos (com caching automático).
+        Processa apenas textos que não estão em cache.
         
         Args:
             texts: Lista de textos
@@ -61,28 +154,70 @@ class EmbeddingManager:
         Returns:
             Lista de embeddings
         """
-        if self.provider == "finetuned":
-            return self.model.encode(
-                texts,
-                batch_size=batch_size,
-                convert_to_numpy=True,
-                show_progress_bar=True
-            )
-        else:
-            embeddings = []
-            for i in range(0, len(texts), batch_size):
-                batch = texts[i:i+batch_size]
-                response = self.client.embeddings.create(
-                    input=batch,
-                    model=self.model_name
-                )
-                batch_embeddings = [np.array(item.embedding) for item in response.data]
-                embeddings.extend(batch_embeddings)
+        embeddings = [None] * len(texts)
+        texts_to_process = []
+        indices_to_process = []
+        
+        # Verificar cache para cada texto
+        if self.cache_enabled and self.cache is not None:
+            for i, text in enumerate(texts):
+                cache_key = self._get_cache_key(text)
+                cached_embedding = self.cache.get(cache_key)
                 
-                if (i + batch_size) % 100 == 0:
-                    logger.info(f"Processados {i + batch_size}/{len(texts)} textos")
+                if cached_embedding is not None:
+                    self.cache_hits += 1
+                    embeddings[i] = np.array(cached_embedding)
+                else:
+                    self.cache_misses += 1
+                    texts_to_process.append(text)
+                    indices_to_process.append(i)
             
-            return embeddings
+            if texts_to_process:
+                logger.info(
+                    f"[CACHE] {len(texts) - len(texts_to_process)}/{len(texts)} "
+                    f"embeddings recuperados do cache ({(1 - len(texts_to_process)/len(texts))*100:.1f}%)"
+                )
+        else:
+            # Cache desativado, processar todos
+            texts_to_process = texts
+            indices_to_process = list(range(len(texts)))
+        
+        # Processar textos que não estão em cache
+        if texts_to_process:
+            if self.provider == "finetuned":
+                new_embeddings = self.model.encode(
+                    texts_to_process,
+                    batch_size=batch_size,
+                    convert_to_numpy=True,
+                    show_progress_bar=True
+                )
+            else:
+                new_embeddings = []
+                for i in range(0, len(texts_to_process), batch_size):
+                    batch = texts_to_process[i:i+batch_size]
+                    response = self.client.embeddings.create(
+                        input=batch,
+                        model=self.model_name
+                    )
+                    batch_embeddings = [np.array(item.embedding) for item in response.data]
+                    new_embeddings.extend(batch_embeddings)
+                    
+                    if (i + batch_size) % 100 == 0:
+                        logger.info(f"Processados {i + batch_size}/{len(texts_to_process)} textos")
+            
+            # Armazenar novos embeddings em cache e preencher resultado
+            for idx, text_idx in enumerate(indices_to_process):
+                embeddings[text_idx] = new_embeddings[idx]
+                
+                # Armazenar em cache
+                if self.cache_enabled and self.cache is not None:
+                    cache_key = self._get_cache_key(texts_to_process[idx])
+                    self.cache.set(cache_key, new_embeddings[idx].tolist(), expire=self.cache_ttl)
+        
+        # Log stats
+        self._log_cache_stats()
+        
+        return embeddings
     
     def similarity(self, emb1: np.ndarray, emb2: np.ndarray) -> float:
         """

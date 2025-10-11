@@ -78,3 +78,6 @@ docs/_build/
 # OS
 Thumbs.db
 .DS_Store
+
+data/contextual_cache/
+venv/

@@ -1,7 +1,8 @@
 """
-Módulo de interface web do Agente BSC.
+Interface Streamlit para o Agente BSC RAG.
+
+Este modulo contem a aplicacao web interativa para consultar
+o sistema multi-agente de Balanced Scorecard.
 """
-__version__ = "1.0.0"
 
-
-
+__version__ = "0.1.0"

@@ -1,15 +1,16 @@
 """
 Módulo de orquestração com LangGraph.
 """
-from .workflow import create_bsc_workflow, BSCWorkflow
-from .states import BSCState, AgentResponse, JudgeEvaluation
+from .workflow import BSCWorkflow, get_workflow
+from .states import BSCState, AgentResponse, JudgeEvaluation, PerspectiveType
 
 __all__ = [
-    "create_bsc_workflow",
     "BSCWorkflow",
+    "get_workflow",
     "BSCState",
     "AgentResponse",
     "JudgeEvaluation",
+    "PerspectiveType",
 ]
 
 

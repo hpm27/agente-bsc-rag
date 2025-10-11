@@ -1,0 +1,168 @@
+# pyproject.toml - Configuracao do projeto Python
+# Seguindo padroes PEP 518 e PEP 621
+
+[project]
+name = "agente-bsc-rag"
+version = "0.1.0"
+description = "Sistema RAG Multi-Agente para Balanced Scorecard com LangGraph"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "ENGELAR", email = "contato@engelar.eng.br"}
+]
+keywords = ["RAG", "BSC", "Balanced Scorecard", "LangGraph", "Multi-Agent", "AI"]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+# ============================================================================
+# BLACK - Formatacao de Codigo
+# ============================================================================
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | \.mypy_cache
+  | \.pytest_cache
+  | __pycache__
+  | build
+  | dist
+  | data/contextual_cache
+)/
+'''
+
+# ============================================================================
+# RUFF - Linter Moderno Python (Substituto de Flake8)
+# ============================================================================
+[tool.ruff]
+# Comprimento de linha consistente com Black
+line-length = 100
+target-version = "py310"
+
+# Diretorio com codigo Python
+src = ["src", "app", "scripts", "tests"]
+
+# Diretorios a ignorar
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+    "data/contextual_cache",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+]
+
+# Regras Ruff (substitui flake8, isort, pydocstyle, etc)
+[tool.ruff.lint]
+# Selecionar regras ativas (ver https://docs.astral.sh/ruff/rules/)
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort (import sorting)
+    "N",      # pep8-naming
+    "UP",     # pyupgrade (moderniza codigo Python)
+    "B",      # flake8-bugbear (detecta bugs comuns)
+    "C4",     # flake8-comprehensions
+    "PIE",    # flake8-pie
+    "RET",    # flake8-return
+    "SIM",    # flake8-simplify
+    "RUF",    # Ruff-specific rules
+    "PL",     # Pylint
+]
+
+# Regras a ignorar
+ignore = [
+    "E501",   # line-too-long (ja tratado pelo Black)
+    "B008",   # function-call-in-default-argument (comum em FastAPI/LangChain)
+    "RUF001", # ambiguous-unicode-character-string (pode dar falso positivo)
+    "RUF002", # ambiguous-unicode-character-docstring
+    "RUF003", # ambiguous-unicode-character-comment
+    "PLR0913", # too-many-arguments (comum em configuracoes)
+    "PLR2004", # magic-value-comparison (muitos falsos positivos)
+]
+
+# Permitir auto-fix para regras selecionadas
+fixable = ["ALL"]
+unfixable = []
+
+# Regras especificas por arquivo
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]  # Permitir imports nao usados em __init__.py
+"tests/**/*.py" = ["S101", "PLR2004"]  # Permitir asserts e magic values em testes
+
+# Configuracao de imports (isort)
+[tool.ruff.lint.isort]
+known-first-party = ["src", "app", "scripts"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+# ============================================================================
+# MYPY - Verificacao de Tipos
+# ============================================================================
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Gradualmente ativar
+ignore_missing_imports = true  # Muitas libs sem stubs
+strict_optional = false
+
+# Modulos especificos
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+# ============================================================================
+# PYTEST - Testes
+# ============================================================================
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# ============================================================================
+# COVERAGE - Cobertura de Testes
+# ============================================================================
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/venv/*",
+    "*/.venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
