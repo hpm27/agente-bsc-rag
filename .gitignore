@@ -42,6 +42,7 @@ env/
 
 # Data and Models
 data/bsc_literature/*.pdf
+data/contextual_cache/
 models/
 *.pkl
 *.h5
