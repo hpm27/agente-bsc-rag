@@ -41,22 +41,38 @@ class QueryTranslator:
         # Acentuação portuguesa
         has_pt_accents = bool(re.search(r'[áàâãéêíóôõúüç]', text_lower))
         
-        # Palavras comuns em português
+        # Sufixos típicos do português (não existem em inglês)
+        has_pt_suffixes = bool(re.search(r'\b\w*(ção|ões|ário|ários|eira|eiras|eiro|eiros)\b', text_lower))
+        
+        # Palavras comuns em português (expandidas com termos BSC)
         pt_keywords = [
             "o que", "como", "por que", "porque", "quando", "onde", "qual", "quais",
             "é", "são", "está", "estão", "foi", "foram", "ser", "estar",
-            "implementar", "gestão", "estratégia", "plano", "objetivo"
+            "implementar", "gestão", "estratégia", "plano", "objetivo",
+            "perspectiva", "perspectivas", "criar", "desenvolver", "medir",
+            "indicador", "indicadores", "meta", "metas", "processo", "processos",
+            "financeira", "financeiro", "financeiros", "cliente", "clientes", "aprendizado",
+            "crescimento", "interno", "internos", "completo", "completa"
         ]
         
-        # Palavras exclusivas EN
-        en_keywords = ["what", "how", "why", "when", "where", "which", "is", "are", "was", "were"]
+        # Palavras exclusivas EN (expandidas)
+        en_keywords = [
+            "what", "how", "why", "when", "where", "which", "is", "are", "was", "were",
+            "perspective", "perspectives", "create", "develop", "measure",
+            "indicator", "indicators", "goal", "goals", "process", "processes",
+            "financial", "customer", "customers", "learning", "growth",
+            "internal", "complete"
+        ]
         
-        # Contagem de keywords
-        pt_count = sum(1 for kw in pt_keywords if kw in text_lower)
-        en_count = sum(1 for kw in en_keywords if kw in text_lower)
+        # Contagem de keywords (usando word boundaries para evitar substrings)
+        pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
+        en_count = sum(1 for kw in en_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
         
         # Decisão
         if has_pt_accents:
+            return "pt-br"
+        elif has_pt_suffixes:
+            # Sufixos portugueses são forte indicador
             return "pt-br"
         elif pt_count >= 1 and en_count == 0:
             return "pt-br"
@@ -66,7 +82,14 @@ class QueryTranslator:
             return "pt-br"
         elif en_count > pt_count:
             return "en"
+        elif pt_count == 0 and en_count == 0:
+            # Caso especial: nenhuma keyword encontrada
+            # Assumir PT-BR como padrão (contexto brasileiro)
+            logger.debug(f"[DETECT] Query sem keywords detectáveis: '{text[:50]}...' - Assumindo PT-BR")
+            return "pt-br"
         else:
+            # Empate com keywords: situação ambígua
+            logger.debug(f"[DETECT] Query ambígua (PT={pt_count}, EN={en_count}): '{text[:50]}...' - Retornando 'other'")
             return "other"
     
     def _get_cache_key(self, text: str, target_lang: str) -> str:
@@ -150,18 +173,20 @@ class QueryTranslator:
         source_lang = self._detect_language(query)
         
         if source_lang == "pt-br":
+            logger.debug(f"[DETECT] Query detectada como PT-BR: '{query[:50]}...'")
             return {
                 "pt-br": query,
                 "en": self.translate(query, "en")
             }
         elif source_lang == "en":
+            logger.debug(f"[DETECT] Query detectada como EN: '{query[:50]}...'")
             return {
                 "pt-br": self.translate(query, "pt-br"),
                 "en": query
             }
         else:
-            # Idioma desconhecido, assumir PT-BR
-            logger.warning(f"[WARN] Idioma desconhecido, assumindo PT-BR")
+            # Idioma ambíguo/desconhecido, assumir PT-BR como fallback
+            logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumindo PT-BR como fallback")
             return {
                 "pt-br": query,
                 "en": self.translate(query, "en")

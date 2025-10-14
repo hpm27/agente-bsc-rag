@@ -14,3 +14,173 @@ globs: *
 ## DEBUGGING
 
 When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+
+When running pytest in parallel, use the following flags:
+
+*   `-n <num_workers>`: Specifies the number of workers for parallel execution.
+*   `-v`: Enables verbose output.
+*   `--tb=short`: Uses a short traceback format.
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
+
+Regarding `.cursorignore` files:
+
+*   Cursor IDE uses `.cursorignore` files to control which files Cursor can access. This is for security and performance.
+*   `.env` files are ignored by default.
+*   To unignore a file, place an exclamation mark `!` in front of the ignore glob pattern in the `.cursorignore` file. For example: `!.env`.
+*   You can edit the global ignore list in Cursor's settings. Go to `File > Preferences > VS code settings` and search for "Global Cursor Ignore List". You can remove patterns from the list there.
+*   If you don't have a `.cursorignore` file, but `.env` files are still ignored, check the global ignore list.
+*   Global cursorignore negations do not override `.gitignore` rules unless specific syntax is used.
+
+### How to Liberate .env from the Global Cursor Ignore
+
+Based on collected information, Cursor ignores `.env` files by default through global configuration. Here are three ways to liberate the file:
+
+#### Method 1: Modify Global Ignore List (Recommended)
+
+1.  **Open Cursor Settings:**
+    *   Press `Ctrl + ,` (Windows) or `Cmd + ,` (Mac)
+    *   Or go to: `File > Preferences > Settings`
+2.  **Search for "Global Cursor Ignore":**
+    *   Type in the search bar: `cursor ignore`
+    *   Locate: **"Cursor > General: Global Cursor Ignore List"**
+3.  **Remove or Comment the `.env` Entry:**
+    *   You will see a list with patterns like:
+
+    ```
+    **/node_modules/**
+    **/.git/**
+    **/.env
+    ```
+    *   **Delete** the line `**/.env` or patterns related to `.env*`
+    *   Click **"OK"** or save the settings.
+
+#### Method 2: Use `.cursorignore` to "Unignore" (Local Override)
+
+Create or edit the `.cursorignore` file in the **root of your project**:
+
+```bash
+# .cursorignore
+
+# Unignore .env files (overrides the global ignore)
+!.env
+!.env.local
+!.env.development
+
+# You can also be more specific
+!**/.env
+```
+
+**Important:** The `!` (exclamation) prefix **reverses** the ignore, allowing the file.
+
+#### Method 3: Via Cursor Interface (Quick Shortcut)
+
+1.  **Access Indexing Settings:**
+    *   Go to: `Settings > Cursor > Indexing and Docs`
+    *   Or search for: `cursor indexing`
+2.  **Edit .cursorignore:**
+    *   Click **"Edit .cursorignore"**
+    *   Add the line: `!.env`
+3.  **Reload the Index:**
+    *   Press `Ctrl + Shift + P` (Windows) or `Cmd + Shift + P` (Mac)
+    *   Type: `Cursor: Reindex Codebase`
+    *   Execute the command
+
+**IMPORTANT: Security Considerations**
+
+Brightdata's research revealed important community discussions:
+
+> **"Cursor ignores env files by default. Although risky, you can remove env files from the ignore list..."**
+
+**Why does Cursor ignore `.env` by default?**
+
+1.  **Credential Protection:** `.env` files contain API keys, passwords, and sensitive tokens.
+2.  **Leakage Prevention:** Prevents information from being inadvertently sent to AI servers.
+3.  **Context Security:** Prevents credentials from appearing in chat/completions context.
+
+**If you REALLY need to liberate `.env`:**
+
+✅ **Best Practice:**
+
+*   Use `.env.example` or `.env.template` with dummy values.
+*   Liberate **only** these template files in the ignore.
+*   Keep the real `.env` ignored.
+
+❌ **Avoid:**
+
+*   Liberating `.env` in public/shared projects.
+*   Exposing real credentials in the AI context.
+*   Removing protection in repositories with multiple collaborators.
+
+**Test if it Worked**
+
+1.  **Check the File Icon:**
+
+    *   In the Cursor Explorer, ignored files show a 🚫 icon.
+    *   After liberating, the icon should disappear.
+2.  **Test in Chat:**
+
+    *   Open Cursor Chat.
+    *   Type: `@.env` (mention the file).
+    *   If it works, the file has been successfully liberated.
+3.  **Verify Indexing:**
+
+    *   `Ctrl + P` → Type `.env`
+    *   The file should appear in the results.
+
+**Complete Example: `.cursorignore`**
+
+```bash
+# .cursorignore - Complete Example
+
+# Keep ignored (security)
+**/.env
+**/.env.local
+**/.env.production
+
+# Liberate templates (safe)
+!.env.example
+!.env.template
+
+# Other useful ignores
+**/node_modules/**
+**/.git/**
+**/dist/**
+**/build/**
+**/__pycache__/**
+**/.pytest_cache/**
+**/.venv/**
+**/venv/**
+```
+
+**Sources (2025)**
+
+*   [Cursor Docs - Ignore Files](https://cursor.com/docs/context/ignore-files)
+*   [Cursor Forum - You can unignore files in .cursorignore](https://forum.cursor.com/t/you-can-unignore-files-in-cursorignore/38074)
+*   [GitHub Issue #3101 - .env files ignored by default](https://github.com/cursor/cursor/issues/3101)
+*   [Reddit r/cursor - How to disable .env from .cursorignore](https://www.reddit.com/r/cursor/comments/1ki08ww/)
+
+### Language Detection Improvements
+
+When the language detector in `src/rag/query_translator.py` is unable to determine the language of a query, it defaults to PT-BR. To improve language detection accuracy:
+
+*   The `_detect_language` function has been enhanced with a regular expression to identify Portuguese suffixes (ção, ões, ário, ários, eira, eiras, eiro, eiros).
+*   Word boundaries are used in keyword searches to prevent substring matches (e.g., "financial" in "financeiros").
+*   The logging message has been updated to provide more context when the language is ambiguous.
+*   Expand the list of keywords to include common BSC terms to improve language detection for technical queries.
+*   When no keywords are detected, the system defaults to PT-BR, assuming a Brazilian context.
+
+#### Code Snippets:
+
+*   **Detecting Portuguese Suffixes:**
+
+    ```python
+    has_pt_suffixes = bool(re.search(r'\b\w*(ção|ões|ário|ários|eira|eiras|eiro|eiros)\b', text_lower))
+    ```
+
+*   **Keyword Search with Word Boundaries:**
+
+    ```python
+    pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
+    en_count = sum(1 for kw in en_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
+    ```
