@@ -1,18 +1,20 @@
 """
 Retriever que integra vector store, embeddings e re-ranking.
 """
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from loguru import logger
+from collections import defaultdict
 
 from src.rag.vector_store_factory import create_vector_store
 from src.rag.base_vector_store import BaseVectorStore, SearchResult
 from src.rag.embeddings import EmbeddingManager
 from src.rag.reranker import CohereReranker, FusionReranker
+from src.rag.query_translator import QueryTranslator
 from config.settings import settings
 
 
 class BSCRetriever:
-    """Retriever otimizado para documentos BSC com Hybrid Search."""
+    """Retriever otimizado para documentos BSC com Hybrid Search e busca multilíngue."""
     
     def __init__(self, vector_store: Optional[BaseVectorStore] = None):
         """
@@ -25,8 +27,76 @@ class BSCRetriever:
         self.embedding_manager = EmbeddingManager()
         self.cohere_reranker = CohereReranker()
         self.fusion_reranker = FusionReranker()
+        self.query_translator = QueryTranslator()
         
         logger.info(f"BSC Retriever inicializado com {type(self.vector_store).__name__}")
+    
+    def _reciprocal_rank_fusion(
+        self,
+        results_list: List[List[SearchResult]],
+        k: int = 60
+    ) -> List[SearchResult]:
+        """
+        Combina múltiplas listas de resultados usando Reciprocal Rank Fusion (RRF).
+        
+        RRF Score = sum(1 / (k + rank_i)) para cada documento em cada lista
+        
+        Args:
+            results_list: Lista de listas de SearchResult
+            k: Constante RRF (default 60, padrão da literatura)
+            
+        Returns:
+            Lista única de SearchResult rankeados por RRF score
+        """
+        if not results_list:
+            return []
+        
+        if len(results_list) == 1:
+            return results_list[0]
+        
+        # Mapear cada documento único por (source, page, content_hash)
+        doc_scores: Dict[Tuple[str, int, str], Dict[str, Any]] = defaultdict(lambda: {
+            "rrf_score": 0.0,
+            "original_scores": [],
+            "ranks": [],
+            "doc": None
+        })
+        
+        # Calcular RRF score para cada documento
+        for results in results_list:
+            for rank, result in enumerate(results, start=1):
+                # Identificador único do documento
+                content_hash = hash(result.content[:100])  # Hash dos primeiros 100 chars
+                doc_id = (result.source, result.page, content_hash)
+                
+                # RRF formula: 1 / (k + rank)
+                rrf_contribution = 1.0 / (k + rank)
+                doc_scores[doc_id]["rrf_score"] += rrf_contribution
+                doc_scores[doc_id]["original_scores"].append(result.score)
+                doc_scores[doc_id]["ranks"].append(rank)
+                
+                # Armazenar documento (primeira ocorrência)
+                if doc_scores[doc_id]["doc"] is None:
+                    doc_scores[doc_id]["doc"] = result
+        
+        # Ordenar por RRF score
+        sorted_docs = sorted(
+            doc_scores.items(),
+            key=lambda x: x[1]["rrf_score"],
+            reverse=True
+        )
+        
+        # Criar SearchResult com RRF score
+        final_results = []
+        for doc_id, info in sorted_docs:
+            result = info["doc"]
+            # Atualizar score com RRF score (normalizado 0-1)
+            max_possible_score = len(results_list) * (1.0 / (k + 1))  # Max score teórico
+            result.score = min(1.0, info["rrf_score"] / max_possible_score)
+            final_results.append(result)
+        
+        logger.debug(f"[RRF] Fusionados {len(results_list)} result sets -> {len(final_results)} docs únicos")
+        return final_results
     
     def retrieve(
         self,
@@ -34,6 +104,7 @@ class BSCRetriever:
         k: int = None,
         use_rerank: bool = True,
         use_hybrid: bool = True,
+        multilingual: bool = True,
         filters: Optional[Dict[str, Any]] = None
     ) -> List[SearchResult]:
         """
@@ -44,6 +115,7 @@ class BSCRetriever:
             k: Número de documentos a retornar
             use_rerank: Se deve usar re-ranking Cohere
             use_hybrid: Se deve usar busca híbrida (semantic + BM25)
+            multilingual: Se deve expandir query para PT-BR e EN (usa RRF)
             filters: Filtros de metadados (ex: {"source": "kaplan.pdf"})
             
         Returns:
@@ -51,30 +123,66 @@ class BSCRetriever:
         """
         k = k or settings.top_k_retrieval
         
-        # Gera embedding da query
-        # embed_text ja retorna lista (nao precisa .tolist())
-        query_embedding = self.embedding_manager.embed_text(query)
-        
-        if use_hybrid:
-            # Busca híbrida (semântica + BM25 keyword)
-            # Converter alpha (0.0-1.0) para weights (peso_vector, peso_text)
-            weight_vector = settings.hybrid_search_weight_semantic
-            weight_text = 1.0 - weight_vector
+        # EXPANSÃO MULTILÍNGUE: buscar com query em PT-BR e EN
+        if multilingual:
+            logger.info(f"[MULTILINGUAL] Expandindo query para PT-BR e EN")
+            expanded_queries = self.query_translator.expand_query(query)
             
-            results = self.vector_store.hybrid_search(
-                query=query,
-                query_embedding=query_embedding,
-                k=k * 2,  # Pega mais para re-rankear
-                weights=(weight_vector, weight_text),
-                filter_dict=filters
-            )
+            # Buscar com ambas queries
+            all_results = []
+            for lang, translated_query in expanded_queries.items():
+                logger.debug(f"[SEARCH {lang.upper()}] '{translated_query}'")
+                
+                # Gerar embedding para query traduzida
+                query_embedding = self.embedding_manager.embed_text(translated_query)
+                
+                # Executar busca
+                if use_hybrid:
+                    weight_vector = settings.hybrid_search_weight_semantic
+                    weight_text = 1.0 - weight_vector
+                    
+                    results = self.vector_store.hybrid_search(
+                        query=translated_query,
+                        query_embedding=query_embedding,
+                        k=k * 2,
+                        weights=(weight_vector, weight_text),
+                        filter_dict=filters
+                    )
+                else:
+                    results = self.vector_store.vector_search(
+                        query_embedding=query_embedding,
+                        k=k * 2,
+                        filter_dict=filters
+                    )
+                
+                all_results.append(results)
+            
+            # Combinar resultados com RRF
+            results = self._reciprocal_rank_fusion(all_results, k=60)
+            logger.info(f"[RRF] {len(results)} documentos após fusão multilíngue")
         else:
-            # Apenas busca vetorial semântica
-            results = self.vector_store.vector_search(
-                query_embedding=query_embedding,
-                k=k * 2,
-                filter_dict=filters
-            )
+            # Busca monolíngue normal
+            query_embedding = self.embedding_manager.embed_text(query)
+            
+            if use_hybrid:
+                # Busca híbrida (semântica + BM25 keyword)
+                weight_vector = settings.hybrid_search_weight_semantic
+                weight_text = 1.0 - weight_vector
+                
+                results = self.vector_store.hybrid_search(
+                    query=query,
+                    query_embedding=query_embedding,
+                    k=k * 2,  # Pega mais para re-rankear
+                    weights=(weight_vector, weight_text),
+                    filter_dict=filters
+                )
+            else:
+                # Apenas busca vetorial semântica
+                results = self.vector_store.vector_search(
+                    query_embedding=query_embedding,
+                    k=k * 2,
+                    filter_dict=filters
+                )
         
         # Re-ranking com Cohere
         if use_rerank and len(results) > 0:

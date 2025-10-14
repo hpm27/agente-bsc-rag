@@ -492,7 +492,7 @@ Calcule confidence baseado em:
                     "answer": "Nenhum agente pôde processar a consulta.",
                     "perspectives": [],
                     "confidence": 0.0,
-                    "routing": routing.dict(),
+                    "routing": routing.model_dump(),
                     "evaluations": []
                 }
             
@@ -513,9 +513,9 @@ Calcule confidence baseado em:
                 "answer": synthesis.synthesized_answer,
                 "perspectives": synthesis.perspectives_covered,
                 "confidence": synthesis.confidence,
-                "routing": routing.dict(),
+                "routing": routing.model_dump(),
                 "agent_responses": agent_responses,
-                "evaluations": [e["judgment"].dict() for e in evaluations] if evaluations else []
+                "evaluations": [e["judgment"].model_dump() for e in evaluations] if evaluations else []
             }
             
             logger.info(f"{'='*70}")

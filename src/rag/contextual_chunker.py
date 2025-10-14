@@ -4,6 +4,8 @@ Contextual Chunking - Anthropic's Contextual Retrieval Technique.
 Esta técnica adiciona contexto explicativo a cada chunk ANTES de embedar,
 reduzindo falhas de retrieval em 35-49% segundo paper da Anthropic (Set/2024).
 
+Agora com suporte BILÍNGUE: gera contextos em PT-BR e EN automaticamente.
+
 Referência: https://www.anthropic.com/news/contextual-retrieval
 """
 
@@ -18,6 +20,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from loguru import logger
 from anthropic import Anthropic, RateLimitError
 from openai import OpenAI, RateLimitError as OpenAIRateLimitError
+from deep_translator import GoogleTranslator
 
 from .chunker import SemanticChunker, TableAwareChunker
 from config.settings import settings
@@ -25,13 +28,19 @@ from config.settings import settings
 
 @dataclass
 class ContextualChunk:
-    """Chunk com contexto explicativo adicionado."""
+    """Chunk com contexto explicativo adicionado (bilíngue)."""
     original_content: str
-    contextual_content: str  # Content com contexto prepended
-    context: str  # Apenas o contexto gerado
+    contextual_content: str  # Content com contexto PT-BR prepended
+    context_pt: str  # Contexto em PT-BR
+    context_en: str  # Contexto em EN (tradução automática)
     metadata: Dict[str, Any]
     chunk_index: int
     total_chunks: int
+    
+    @property
+    def context(self) -> str:
+        """Retorna context_pt para compatibilidade com código legado."""
+        return self.context_pt
 
 
 class ContextualChunker:
@@ -100,6 +109,40 @@ class ContextualChunker:
         self.cache_dir = Path(cache_dir or "./data/contextual_cache")
         if self.enable_caching:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Tradutor para contextos bilíngues
+        self.translator = GoogleTranslator(source='pt', target='en')
+        logger.info("[BILINGUAL] Tradutor PT->EN inicializado para contextos")
+    
+    def _translate_context(self, context_pt: str) -> str:
+        """
+        Traduz contexto de PT-BR para EN usando Google Translate.
+        
+        Args:
+            context_pt: Contexto em português
+            
+        Returns:
+            Contexto traduzido para inglês
+        """
+        if not context_pt or len(context_pt.strip()) == 0:
+            return ""
+        
+        try:
+            # Google Translate tem limite de 5000 chars por request
+            if len(context_pt) > 4500:
+                # Truncar contexto muito longo
+                context_pt_truncated = context_pt[:4500] + "..."
+                logger.warning(f"[TRANSLATE] Contexto truncado de {len(context_pt)} para 4500 chars")
+                context_pt = context_pt_truncated
+            
+            context_en = self.translator.translate(context_pt)
+            logger.debug(f"[TRANSLATE] '{context_pt[:50]}...' -> '{context_en[:50]}...'")
+            return context_en
+            
+        except Exception as e:
+            logger.error(f"[TRANSLATE ERROR] Falha ao traduzir contexto: {e}")
+            # Fallback: retornar contexto original
+            return context_pt
     
     def _generate_context_with_retry(
         self,
@@ -203,13 +246,17 @@ class ContextualChunker:
                 if use_cache:
                     self._save_to_cache(cache_key, context)
             
-            # Cria chunk contextualizado
+            # Traduzir contexto PT-BR -> EN (tradução automática gratuita)
+            context_en = self._translate_context(context)
+            
+            # Cria chunk contextualizado (com ambos contextos armazenados)
             contextual_content = f"{context}\n\n{chunk_data['content']}"
             
             contextual_chunk = ContextualChunk(
                 original_content=chunk_data['content'],
                 contextual_content=contextual_content,
-                context=context,
+                context_pt=context,
+                context_en=context_en,
                 metadata={k: v for k, v in chunk_data.items() if k != 'content'},
                 chunk_index=chunk_data.get('chunk_index', 0),
                 total_chunks=chunk_data.get('total_chunks', len(base_chunks))

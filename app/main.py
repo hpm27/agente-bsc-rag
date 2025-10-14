@@ -8,6 +8,11 @@ Uso:
     streamlit run app/main.py
 """
 
+# Fix PyTorch-Streamlit path inspection warning
+# Ref: https://github.com/streamlit/streamlit/issues/9845
+import os
+os.environ["STREAMLIT_SERVER_ENABLE_FILE_WATCHER"] = "false"
+
 import streamlit as st
 from typing import Dict, Any
 import sys

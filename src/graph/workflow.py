@@ -571,7 +571,7 @@ class BSCWorkflow:
                     for r in final_state.get("agent_responses", [])
                 ],
                 "judge_evaluation": (
-                    final_state["judge_evaluation"].dict()
+                    final_state["judge_evaluation"].model_dump()
                     if final_state.get("judge_evaluation") else None
                 ),
                 "refinement_iterations": final_state.get("refinement_iteration", 0),

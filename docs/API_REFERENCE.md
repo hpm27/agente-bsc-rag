@@ -1,516 +1,995 @@
-# Referência da API - Agente BSC RAG
+# 📗 Referência da API - Agente BSC RAG
 
-## 📦 Módulos Principais
+> Documentação técnica completa da API do sistema BSC RAG para uso programático
 
-### `src.graph.workflow`
+---
 
-#### `BSCWorkflow`
+## 📋 Índice
 
-Classe principal que orquestra o fluxo de execução com LangGraph.
+- [Visão Geral](#visão-geral)
+- [LangGraph Workflow](#langgraph-workflow)
+- [Orchestrator](#orchestrator)
+- [Agentes Especialistas BSC](#agentes-especialistas-bsc)
+- [Judge Agent](#judge-agent)
+- [Pipeline RAG](#pipeline-rag)
+- [Ferramentas RAG](#ferramentas-rag)
+- [Configurações](#configurações)
+- [Tipos e Modelos](#tipos-e-modelos)
 
-**Métodos:**
+---
 
-##### `__init__()`
+## 🎯 Visão Geral
 
-Inicializa o workflow com todos os agentes e constrói o grafo.
+A API do Agente BSC RAG segue uma arquitetura modular baseada em:
+
+- **LangGraph Workflow**: Orquestração com grafo de estados
+- **Orchestrator**: Coordenação de agentes especialistas
+- **Agentes BSC**: 4 especialistas (Financial, Customer, Process, Learning) + Judge
+- **Pipeline RAG**: Retrieval, reranking, query expansion multilíngue
+- **Ferramentas**: Search tools para acesso ao conhecimento BSC
+
+---
+
+## 🔗 LangGraph Workflow
+
+### `get_workflow()`
+
+Retorna a instância singleton do workflow BSC.
 
 ```python
-from src.graph.workflow import BSCWorkflow
+from src.graph.workflow import get_workflow
 
-workflow = BSCWorkflow()
+workflow = get_workflow()
 ```
 
-##### `run(query: str, session_id: str = None) -> Dict[str, Any]`
+**Retorno**: `BSCWorkflow` - Instância do workflow LangGraph
 
-Executa o workflow completo para uma query.
+**Características**:
+- ✅ Singleton (sempre retorna a mesma instância)
+- ✅ Thread-safe
+- ✅ Carregamento lazy (inicializa apenas no primeiro uso)
 
-**Parâmetros:**
+---
 
-- `query` (str): Pergunta do usuário
-- `session_id` (str, opcional): ID da sessão para rastreamento
+### `BSCWorkflow.run()`
 
-**Retorna:**
+Executa o workflow completo para processar uma query BSC.
+
+```python
+result = workflow.run(
+    query="Como definir objetivos para a perspectiva financeira?",
+    session_id="my-session-123",
+    max_iterations=2,
+    judge_threshold=0.7
+)
+```
+
+**Parâmetros**:
+
+| Parâmetro | Tipo | Padrão | Descrição |
+|-----------|------|--------|-----------|
+| `query` | `str` | (obrigatório) | Query do usuário |
+| `session_id` | `str` | `None` | ID da sessão para contexto |
+| `max_iterations` | `int` | `2` | Máximo de refinamentos |
+| `judge_threshold` | `float` | `0.7` | Score mínimo do Judge (0-1) |
+
+**Retorno**: `dict` com estrutura:
 
 ```python
 {
-    "response": str,              # Resposta final agregada
-    "metadata": {
-        "perspectives_used": List[str],
-        "judge_score": float,
-        "refinement_iterations": int,
-        "total_sources": int,
-        "latency": float
+    "query": str,                      # Query original
+    "final_response": str,             # Resposta final sintetizada
+    "perspectives": List[str],         # Perspectivas consultadas
+    "perspectives_covered": List[str], # Perspectivas na resposta
+    "agent_responses": List[dict],     # Respostas individuais dos agentes
+    "judge_evaluation": {              # Avaliação do Judge
+        "score": float,                # Score 0-1
+        "approved": bool,              # Se foi aprovado
+        "feedback": str,               # Feedback detalhado
+        "completeness": float,         # Score de completude
+        "grounding": float,            # Score de fundamentação
+        "source_citation": float,      # Score de citação de fontes
+        "issues": List[str],           # Problemas identificados
+        "suggestions": List[str]       # Sugestões de melhoria
     },
-    "judge_evaluation": {
-        "approved": bool,
-        "score": float,
-        "feedback": str,
-        "issues": List[str],
-        "suggestions": List[str]
-    },
-    "perspectives": List[Dict]    # Respostas individuais por perspectiva
+    "refinement_iterations": int,      # Número de refinamentos
+    "metadata": dict                   # Metadados adicionais
 }
 ```
 
-**Exemplo:**
+**Exemplo Completo**:
 
 ```python
-import asyncio
-from src.graph.workflow import create_bsc_workflow
+from src.graph.workflow import get_workflow
 
-async def main():
-    workflow = create_bsc_workflow()
-    result = await workflow.run(
-        query="Quais são os principais KPIs financeiros?",
-        session_id="session-123"
-    )
-    print(result["response"])
+workflow = get_workflow()
 
-asyncio.run(main())
+result = workflow.run(
+    query="Quais são os principais KPIs da perspectiva financeira?",
+    session_id="session-001"
+)
+
+# Acessar resposta
+print(result["final_response"])
+
+# Verificar aprovação do Judge
+if result["judge_evaluation"]["approved"]:
+    print(f"Resposta aprovada com score {result['judge_evaluation']['score']:.2f}")
+else:
+    print("Resposta reprovada:")
+    print(result["judge_evaluation"]["feedback"])
+
+# Listar perspectivas consultadas
+for perspective in result["perspectives"]:
+    print(f"- {perspective}")
 ```
 
 ---
 
-### `src.agents`
+### `BSCWorkflow.get_graph_visualization()`
 
-#### `Orchestrator`
+Retorna visualização ASCII do grafo LangGraph.
 
-Orquestrador central que analisa queries e coordena agentes.
+```python
+viz = workflow.get_graph_visualization()
+print(viz)
+```
 
-**Métodos:**
+**Retorno**: `str` - Diagrama ASCII do grafo
 
-##### `analyze_query(query: str) -> Dict[str, Any]`
+**Exemplo de Saída**:
 
-Analisa a query para determinar tipo e complexidade.
+```
+START → analyze_query → execute_agents → synthesize_response 
+→ judge_evaluation → decide_next_step → [finalize OR refine] → END
+```
+
+---
+
+## 🎛️ Orchestrator
+
+Classe responsável por coordenar agentes especialistas.
+
+### Inicialização
 
 ```python
 from src.agents.orchestrator import Orchestrator
 
 orchestrator = Orchestrator()
-analysis = await orchestrator.analyze_query("Como implementar BSC?")
-# {'type': 'conceptual', 'complexity': 'moderate', ...}
 ```
 
-##### `route_to_perspectives(query: str, query_type: str) -> List[PerspectiveType]`
-
-Determina quais perspectivas BSC são relevantes.
+**Propriedades**:
 
 ```python
-perspectives = await orchestrator.route_to_perspectives(
-    query="Quais KPIs financeiros usar?",
-    query_type="factual"
-)
-# [PerspectiveType.FINANCIAL]
+orchestrator.name            # "Orchestrator"
+orchestrator.llm             # LLM configurado (Claude/GPT)
+orchestrator.agents          # Dict com 4 agentes BSC
+orchestrator.judge           # JudgeAgent instance
 ```
-
-##### `aggregate_responses(query: str, responses: List[Dict]) -> str`
-
-Agrega respostas de múltiplos agentes.
 
 ---
 
-#### Agentes Especialistas
+### `analyze_query()`
 
-Todos os agentes especialistas (`FinancialAgent`, `CustomerAgent`, `ProcessAgent`, `LearningAgent`) compartilham a mesma interface:
+Analisa a query e determina quais agentes acionar.
 
-##### `process(query: str, context: Dict = None) -> Dict[str, Any]`
+```python
+from src.agents.orchestrator import Orchestrator
 
-Processa uma query na perspectiva do agente.
+orchestrator = Orchestrator()
 
-**Retorna:**
+routing = orchestrator.analyze_query(
+    query="Como a satisfação do cliente impacta a lucratividade?"
+)
+```
+
+**Parâmetros**:
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `query` | `str` | Query do usuário |
+
+**Retorno**: `RoutingDecision` (Pydantic Model)
 
 ```python
 {
-    "content": str,           # Resposta do agente
-    "confidence": float,      # Confiança (0-1)
-    "sources": List[Dict],    # Fontes consultadas
-    "reasoning": str          # Raciocínio (opcional)
+    "agents_to_use": ["cliente", "financeira"],
+    "reasoning": "Query envolve satisfação (cliente) e lucratividade (financeira)",
+    "is_general_question": False
 }
 ```
 
-**Exemplo:**
+---
+
+### `invoke_agents()` (Síncrono)
+
+Executa agentes selecionados de forma **síncrona** (sequencial).
+
+```python
+responses = orchestrator.invoke_agents(
+    query="Quais são os KPIs financeiros?",
+    agents_to_use=["financeira"]
+)
+```
+
+**Parâmetros**:
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `query` | `str` | Query do usuário |
+| `agents_to_use` | `List[str]` | Nomes dos agentes: `["financeira", "cliente", "processos", "aprendizado"]` |
+
+**Retorno**: `List[AgentResponse]`
+
+```python
+[
+    {
+        "perspective": "Financial",
+        "response": "Os principais KPIs financeiros incluem...",
+        "confidence": 0.92,
+        "sources": [
+            {"source": "The Balanced Scorecard", "page": 42, "score": 0.95}
+        ]
+    }
+]
+```
+
+---
+
+### `ainvoke_agents()` (Assíncrono) ⚡
+
+Executa agentes selecionados de forma **assíncrona** (paralela).
+
+```python
+import asyncio
+
+responses = asyncio.run(
+    orchestrator.ainvoke_agents(
+        query="Como implementar BSC?",
+        agents_to_use=["financeira", "cliente", "processos", "aprendizado"]
+    )
+)
+```
+
+**Vantagens**:
+- ⚡ **3.34x mais rápido** que execução síncrona
+- ✅ Execução paralela com `asyncio.gather()`
+- ✅ Mesma interface que `invoke_agents()`
+
+**Performance**:
+- 4 agentes sequencial: ~120s
+- 4 agentes paralelo (AsyncIO): ~36s
+
+---
+
+### `synthesize_response()`
+
+Combina respostas de múltiplos agentes em uma resposta coesa.
+
+```python
+synthesis = orchestrator.synthesize_response(
+    query="Como satisfação do cliente impacta lucratividade?",
+    agent_responses=[
+        {"perspective": "Customer", "response": "...", "confidence": 0.9},
+        {"perspective": "Financial", "response": "...", "confidence": 0.88}
+    ]
+)
+```
+
+**Retorno**: `SynthesisResult` (Pydantic Model)
+
+```python
+{
+    "synthesized_answer": "A satisfação do cliente impacta a lucratividade através de...",
+    "perspectives_covered": ["Customer", "Financial"],
+    "confidence": 0.89
+}
+```
+
+---
+
+## 🤖 Agentes Especialistas BSC
+
+### Estrutura Comum
+
+Todos os 4 agentes especialistas seguem a mesma interface:
+
+```python
+# Financial, Customer, Process, Learning Agents
+from src.agents.financial_agent import FinancialAgent
+
+agent = FinancialAgent()
+
+# Invocação síncrona
+response = agent.invoke(query="Quais são os KPIs de receita?")
+
+# Invocação assíncrona
+response = await agent.ainvoke(query="Quais são os KPIs de receita?")
+```
+
+**Retorno**: `AgentResponse` (dict)
+
+```python
+{
+    "perspective": "Financial",
+    "response": "Os principais KPIs de receita incluem...",
+    "confidence": 0.91,
+    "sources": [
+        {
+            "source": "The Balanced Scorecard",
+            "page": 65,
+            "score": 0.94,
+            "content": "Revenue growth is a key financial metric..."
+        }
+    ]
+}
+```
+
+---
+
+### `FinancialAgent` 💰
+
+**Especialização**: Perspectiva Financeira do BSC
+
+**Áreas de Expertise**:
+- ROI, crescimento de receita, lucratividade
+- Produtividade, redução de custos
+- Mix de produtos, valor para acionistas
+
+**Exemplo**:
 
 ```python
 from src.agents.financial_agent import FinancialAgent
 
 agent = FinancialAgent()
-result = await agent.process("Quais métricas de ROI usar?")
-print(f"Confiança: {result['confidence']}")
+response = agent.invoke("Como medir ROI em BSC?")
+
+print(response["response"])
 ```
 
 ---
 
-#### `JudgeAgent`
+### `CustomerAgent` 👥
 
-Avalia qualidade e relevância das respostas.
+**Especialização**: Perspectiva de Clientes
 
-##### `evaluate(query: str, response: str, sources: List[Dict]) -> Dict[str, Any]`
+**Áreas de Expertise**:
+- Satisfação, retenção, NPS
+- Proposta de valor, experiência do cliente
+- Quota de mercado, fidelização
 
-Avalia uma resposta gerada.
+**Exemplo**:
 
-**Retorna:**
+```python
+from src.agents.customer_agent import CustomerAgent
+
+agent = CustomerAgent()
+response = agent.invoke("Como medir satisfação do cliente no BSC?")
+```
+
+---
+
+### `ProcessAgent` ⚙️
+
+**Especialização**: Perspectiva de Processos Internos
+
+**Áreas de Expertise**:
+- Eficiência operacional, qualidade
+- Ciclo de tempo, produtividade
+- Inovação, melhoria contínua
+
+**Exemplo**:
+
+```python
+from src.agents.process_agent import ProcessAgent
+
+agent = ProcessAgent()
+response = agent.invoke("Quais processos críticos monitorar no BSC?")
+```
+
+---
+
+### `LearningAgent` 🎓
+
+**Especialização**: Perspectiva de Aprendizado e Crescimento
+
+**Áreas de Expertise**:
+- Capacitação de funcionários
+- Cultura organizacional, clima
+- Sistemas de informação, infraestrutura
+
+**Exemplo**:
+
+```python
+from src.agents.learning_agent import LearningAgent
+
+agent = LearningAgent()
+response = agent.invoke("Como desenvolver capacidades organizacionais?")
+```
+
+---
+
+## ⚖️ Judge Agent
+
+Agente de validação de qualidade (LLM as Judge).
+
+### Inicialização
+
+```python
+from src.agents.judge_agent import JudgeAgent
+
+judge = JudgeAgent()
+```
+
+---
+
+### `evaluate()`
+
+Avalia a qualidade de uma resposta gerada.
+
+```python
+evaluation = judge.evaluate(
+    query="Quais são os KPIs financeiros?",
+    response="Os principais KPIs financeiros são ROI, crescimento de receita...",
+    sources=[
+        {"source": "The Balanced Scorecard", "page": 42, "score": 0.95}
+    ],
+    perspectives=["Financial"]
+)
+```
+
+**Parâmetros**:
+
+| Parâmetro | Tipo | Descrição |
+|-----------|------|-----------|
+| `query` | `str` | Query original do usuário |
+| `response` | `str` | Resposta gerada pelo sistema |
+| `sources` | `List[dict]` | Fontes utilizadas |
+| `perspectives` | `List[str]` | Perspectivas BSC consultadas |
+
+**Retorno**: `JudgeEvaluation` (Pydantic Model)
 
 ```python
 {
-    "approved": bool,         # Se a resposta foi aprovada
-    "score": float,           # Score de qualidade (0-1)
-    "feedback": str,          # Feedback textual
-    "issues": List[str],      # Problemas identificados
-    "suggestions": List[str]  # Sugestões de melhoria
+    "score": 0.92,                    # Score geral (0-1)
+    "approved": True,                 # Se passou no threshold (0.7)
+    "completeness": 0.95,             # Completude da resposta
+    "grounding": 0.91,                # Fundamentação em fontes
+    "source_citation": 0.89,          # Citação adequada de fontes
+    "feedback": "Resposta bem fundamentada cobrindo aspectos financeiros...",
+    "issues": [],                     # Problemas identificados
+    "suggestions": [
+        "Adicionar exemplo prático de cálculo de ROI"
+    ]
 }
 ```
 
+**Critérios de Avaliação**:
+
+| Critério | Peso | Descrição |
+|----------|------|-----------|
+| **Completeness** | 35% | Responde totalmente à query? |
+| **Grounding** | 35% | Fundamentada em fontes? Sem alucinações? |
+| **Source Citation** | 30% | Cita fontes adequadamente? |
+
+**Thresholds Padrão**:
+- ✅ Aprovado: score ≥ 0.7
+- ⚠️ Revisar: 0.5 ≤ score < 0.7
+- ❌ Reprovado: score < 0.5
+
 ---
 
-### `src.rag`
+## 📚 Pipeline RAG
 
-#### `BSCRetriever`
+### `BSCRetriever`
 
-Sistema de retrieval híbrido (semântico + BM25).
+Classe principal de retrieval com hybrid search e multilingual expansion.
 
-**Métodos:**
-
-##### `retrieve(query: str, top_k: int = 10, filters: Dict = None) -> List[SearchResult]`
-
-Busca documentos relevantes.
+#### Inicialização
 
 ```python
 from src.rag.retriever import BSCRetriever
 
 retriever = BSCRetriever()
-results = retriever.retrieve(
-    query="KPIs financeiros",
-    top_k=10,
-    filters={"perspective": "financial"}
-)
-```
-
-##### `retrieve_with_rerank(query: str, top_k: int = 10, top_n: int = 5) -> List[SearchResult]`
-
-Busca com re-ranking Cohere.
-
-```python
-results = retriever.retrieve_with_rerank(
-    query="Como medir satisfação do cliente?",
-    top_k=20,  # Buscar 20
-    top_n=5    # Re-rankar para 5 melhores
-)
 ```
 
 ---
 
-#### `EmbeddingManager`
+#### `retrieve()`
 
-Gerencia geração de embeddings com OpenAI.
+Recupera documentos relevantes para uma query.
 
-**Métodos:**
+```python
+from src.rag.retriever import BSCRetriever
 
-##### `embed_text(text: str) -> List[float]`
+retriever = BSCRetriever()
 
-Gera embedding para texto.
+results = retriever.retrieve(
+    query="Quais são os KPIs financeiros?",
+    top_k=10,
+    threshold=0.7,
+    multilingual=True
+)
+```
+
+**Parâmetros**:
+
+| Parâmetro | Tipo | Padrão | Descrição |
+|-----------|------|--------|-----------|
+| `query` | `str` | (obrigatório) | Query do usuário |
+| `top_k` | `int` | `10` | Número de documentos a retornar |
+| `threshold` | `float` | `0.7` | Score mínimo de relevância (0-1) |
+| `multilingual` | `bool` | `True` | Ativar query expansion PT-BR ↔ EN |
+
+**Retorno**: `List[SearchResult]`
+
+```python
+[
+    {
+        "content": "ROI (Return on Investment) is a key financial metric...",
+        "source": "The Balanced Scorecard",
+        "page": 42,
+        "score": 0.95,
+        "metadata": {
+            "context_pt": "Contexto em português...",
+            "context_en": "Context in English...",
+            "chunk_index": 1234
+        }
+    },
+    # ... mais resultados
+]
+```
+
+**Pipeline Interno**:
+
+1. **Query Translation** (se `multilingual=True`):
+   - Detecta idioma (PT-BR vs EN)
+   - Traduz query PT-BR → EN
+   - Gera segunda query em inglês
+
+2. **Hybrid Search** (Qdrant nativo):
+   - 70% busca semântica (embeddings)
+   - 30% busca lexical (BM25)
+
+3. **Reciprocal Rank Fusion** (RRF):
+   - Combina resultados PT-BR + EN
+   - Formula: `score = Σ 1/(k + rank)`
+   - k=60 (padrão da literatura)
+
+4. **Adaptive Reranking** (Cohere):
+   - Detecção automática de idioma
+   - top_n ajustado (+20% se PT-BR)
+   - Modelo: rerank-multilingual-v3.0
+
+**Performance**:
+- +106% precisão top-1 (vs busca monolíngue)
+- +70% recall (query expansion)
+- +200-300ms latência (tradução GPT-4o-mini)
+
+---
+
+### `EmbeddingManager`
+
+Gerenciador de embeddings com cache persistente.
+
+#### `embed_text()`
+
+Gera embedding para um texto.
 
 ```python
 from src.rag.embeddings import EmbeddingManager
 
-embedder = EmbeddingManager()
-embedding = embedder.embed_text("Balanced Scorecard")
-# [0.123, -0.456, ...]  (3072 dimensões)
+embedding_manager = EmbeddingManager()
+
+embedding = embedding_manager.embed_text("Balanced Scorecard KPIs")
 ```
 
-##### `embed_batch(texts: List[str], batch_size: int = 100) -> List[List[float]]`
+**Retorno**: `List[float]` - Vector de 3072 dimensões
 
-Gera embeddings em batch.
+**Cache**:
+- ✅ Cache automático em disco (diskcache)
+- ✅ 949x speedup para textos repetidos
+- ✅ 87.5% hit rate em cenários realistas
+- ✅ Thread-safe e multiprocess-safe
+- ✅ TTL: 30 dias (configurável)
+- ✅ Tamanho máximo: 5GB com LRU eviction
 
----
-
-#### Vector Stores
-
-Todos os vector stores (`QdrantVectorStore`, `WeaviateVectorStore`, `RedisVectorStore`) implementam `BaseVectorStore`:
-
-##### `add_documents(documents: List[Dict]) -> List[str]`
-
-Adiciona documentos ao índice.
+**Estatísticas**:
 
 ```python
-from src.rag.vector_store_factory import create_vector_store
+stats = embedding_manager.get_cache_stats()
 
-store = create_vector_store()
-doc_ids = store.add_documents([
-    {
-        "id": "doc1",
-        "content": "...",
-        "metadata": {"perspective": "financial"}
-    }
-])
-```
-
-##### `hybrid_search(query_text: str, query_embedding: List[float], top_k: int = 10) -> List[SearchResult]`
-
-Busca híbrida (semântica + keyword).
-
-```python
-results = store.hybrid_search(
-    query_text="ROI metrics",
-    query_embedding=embedding,
-    top_k=10
-)
+print(f"Hits: {stats['hits']}")
+print(f"Misses: {stats['misses']}")
+print(f"Hit Rate: {stats['hit_rate']:.1%}")
+print(f"Size: {stats['size_mb']:.2f} MB")
 ```
 
 ---
 
-### `src.tools`
+### `QueryTranslator`
 
-#### `RAGTools`
+Tradutor de queries para busca multilíngue.
 
-Ferramentas RAG para uso pelos agentes.
+#### `translate()`
 
-**Métodos:**
-
-##### `search_knowledge_base(query: str, top_k: int = 10) -> List[Dict]`
-
-Busca na base de conhecimento.
+Traduz query PT-BR ↔ EN.
 
 ```python
-from src.tools.rag_tools import RAGTools
+from src.rag.query_translator import QueryTranslator
 
-tools = RAGTools()
-results = tools.search_knowledge_base(
-    query="BSC implementation",
-    top_k=5
+translator = QueryTranslator()
+
+translation = translator.translate(
+    query="Quais são os KPIs financeiros?",
+    target_lang="en"
 )
 ```
 
-##### `search_by_perspective(query: str, perspective: str, top_k: int = 10) -> List[Dict]`
+**Retorno**: `str` - "What are the financial KPIs?"
 
-Busca filtrada por perspectiva BSC.
+**Cache**:
+- ✅ Cache in-memory automático
+- ✅ LLM: GPT-4o-mini (rápido e barato: ~$0.001/query)
+
+---
+
+## 🛠️ Ferramentas RAG
+
+### `SearchTool`
+
+Ferramenta de busca básica para agentes.
 
 ```python
-results = tools.search_by_perspective(
-    query="KPIs",
-    perspective="financial",
-    top_k=10
-)
+from src.tools.rag_tools import SearchTool
+
+search_tool = SearchTool()
+
+results = search_tool.invoke({
+    "query": "ROI calculation methods",
+    "top_k": 5
+})
+```
+
+**Parâmetros do invoke**:
+
+```python
+{
+    "query": str,     # Query de busca
+    "top_k": int      # Número de resultados (padrão: 10)
+}
+```
+
+**Retorno**: `str` - Resultados formatados para o agente
+
+```
+Source 1 (Score: 0.95):
+Content: ROI is calculated as...
+Reference: The Balanced Scorecard, p. 42
+
+Source 2 (Score: 0.89):
+...
 ```
 
 ---
 
-## 🔧 Configuração
+## ⚙️ Configurações
 
-### `config.settings`
+### Arquivo `.env`
 
-Objeto singleton com todas as configurações:
+Todas as configurações são gerenciadas via `.env`:
+
+```env
+# ==============================================================================
+# APIs de IA
+# ==============================================================================
+
+OPENAI_API_KEY=sk-proj-...
+OPENAI_EMBEDDING_MODEL=text-embedding-3-large
+
+COHERE_API_KEY=...
+
+ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
+
+DEFAULT_LLM_MODEL=claude-sonnet-4-5-20250929
+
+# ==============================================================================
+# Vector Store
+# ==============================================================================
+
+VECTOR_STORE_TYPE=qdrant
+VECTOR_STORE_INDEX=bsc_documents
+
+QDRANT_HOST=localhost
+QDRANT_PORT=6333
+
+# ==============================================================================
+# RAG Configuration
+# ==============================================================================
+
+TOP_K_RETRIEVAL=10
+RERANK_TOP_N=5
+SIMILARITY_THRESHOLD=0.7
+
+ENABLE_MULTILINGUAL_SEARCH=true
+ENABLE_QUERY_EXPANSION=true
+ENABLE_ADAPTIVE_RERANKING=true
+
+# ==============================================================================
+# Performance
+# ==============================================================================
+
+ENABLE_EMBEDDING_CACHE=true
+EMBEDDING_CACHE_DIR=.cache/embeddings
+EMBEDDING_CACHE_TTL_DAYS=30
+EMBEDDING_CACHE_SIZE_GB=5
+
+AGENT_MAX_WORKERS=4
+
+# ==============================================================================
+# Judge Configuration
+# ==============================================================================
+
+JUDGE_THRESHOLD=0.7
+JUDGE_MAX_TOKENS=16384
+```
+
+---
+
+### `settings.py`
+
+Classe `Settings` centralizada (Pydantic BaseSettings):
 
 ```python
 from config.settings import settings
 
 # Acessar configurações
-print(settings.openai_model)           # "gpt-5"
-print(settings.vector_store_type)      # "qdrant"
-print(settings.chunk_size)             # 1000
+print(settings.openai_api_key)
+print(settings.vector_store_type)
+print(settings.top_k_retrieval)
+print(settings.enable_embedding_cache)
+
+# LLM factory
+llm = settings.get_llm(temperature=0.7)
 ```
 
-**Principais Settings:**
+**Propriedades Principais**:
 
-| Configuração | Tipo | Padrão | Descrição |
-|--------------|------|--------|-----------|
-| `openai_model` | str | gpt-5 | Modelo LLM principal |
-| `openai_embedding_model` | str | text-embedding-3-large | Modelo de embeddings |
-| `vector_store_type` | str | qdrant | Vector store (qdrant/weaviate/redis) |
-| `chunk_size` | int | 1000 | Tamanho dos chunks |
-| `chunk_overlap` | int | 200 | Sobreposição entre chunks |
-| `top_k_retrieval` | int | 10 | Documentos retornados |
-| `top_n_rerank` | int | 5 | Documentos após re-ranking |
-| `enable_contextual_retrieval` | bool | True | Ativar Contextual Retrieval |
-| `temperature` | float | 0.0 | Temperatura do LLM |
-| `max_tokens` | int | 2000 | Tokens máximos por resposta |
+```python
+settings.openai_api_key: str
+settings.cohere_api_key: str
+settings.anthropic_api_key: str
+
+settings.default_llm_model: str
+settings.openai_embedding_model: str
+
+settings.vector_store_type: str  # "qdrant" | "weaviate" | "redis"
+settings.vector_store_index: str
+
+settings.qdrant_host: str
+settings.qdrant_port: int
+
+settings.top_k_retrieval: int
+settings.rerank_top_n: int
+settings.similarity_threshold: float
+
+settings.enable_multilingual_search: bool
+settings.enable_embedding_cache: bool
+settings.embedding_cache_dir: str
+
+settings.judge_threshold: float
+settings.agent_max_workers: int
+```
 
 ---
 
-## 📊 Modelos de Dados
+## 📐 Tipos e Modelos
 
-### `BSCState`
+### Pydantic Models
 
-Estado do grafo de execução:
+Todos os modelos principais usam Pydantic para validação:
+
+#### `BSCState` (LangGraph State)
 
 ```python
 from src.graph.states import BSCState
 
 state = BSCState(
     query="Como implementar BSC?",
-    session_id="123",
-    relevant_perspectives=[PerspectiveType.FINANCIAL],
-    agent_responses=[...],
-    aggregated_response="...",
-    judge_evaluation=JudgeEvaluation(...),
-    final_response="...",
-    is_complete=True
+    perspectives=["financeira", "cliente"],
+    final_response="",
+    refinement_iterations=0
 )
 ```
 
-### `AgentResponse`
-
-Resposta de um agente especialista:
+**Campos**:
 
 ```python
-from src.graph.states import AgentResponse, PerspectiveType
+{
+    "query": str,
+    "perspectives": List[str],
+    "agent_responses": List[AgentResponse],
+    "synthesized_response": Optional[str],
+    "judge_evaluation": Optional[JudgeEvaluation],
+    "final_response": str,
+    "refinement_iterations": int,
+    "max_iterations": int,
+    "metadata": dict
+}
+```
+
+---
+
+#### `AgentResponse`
+
+```python
+from src.graph.states import AgentResponse
 
 response = AgentResponse(
-    perspective=PerspectiveType.FINANCIAL,
-    content="KPIs financeiros incluem...",
-    confidence=0.85,
-    sources=[...],
-    reasoning="Baseado em..."
-)
-```
-
-### `SearchResult`
-
-Resultado de busca do vector store:
-
-```python
-from src.rag.base_vector_store import SearchResult
-
-result = SearchResult(
-    id="doc_1",
-    content="Texto do documento...",
-    score=0.92,
-    metadata={"perspective": "financial", "source": "kaplan_1996.pdf"}
+    perspective="Financial",
+    response="Os KPIs financeiros incluem...",
+    confidence=0.92,
+    sources=[...]
 )
 ```
 
 ---
 
-## 🎯 Exemplos de Uso
-
-### Exemplo 1: Workflow Simples
+#### `JudgeEvaluation`
 
 ```python
-import asyncio
-from src.graph.workflow import create_bsc_workflow
+from src.graph.states import JudgeEvaluation
 
-async def main():
-    workflow = create_bsc_workflow()
-    
-    result = await workflow.run(
-        query="Quais são os KPIs principais do BSC?"
-    )
-    
-    print("Resposta:", result["response"])
-    print("Score Judge:", result["metadata"]["judge_score"])
-    print("Perspectivas:", result["metadata"]["perspectives_used"])
-
-asyncio.run(main())
+evaluation = JudgeEvaluation(
+    score=0.89,
+    approved=True,
+    completeness=0.91,
+    grounding=0.88,
+    source_citation=0.87,
+    feedback="Resposta bem fundamentada...",
+    issues=[],
+    suggestions=["Adicionar exemplo prático"]
+)
 ```
 
-### Exemplo 2: Busca Manual com Retriever
+---
+
+#### `PerspectiveType` (Enum)
+
+```python
+from src.graph.states import PerspectiveType
+
+# Valores possíveis
+PerspectiveType.FINANCIAL    # "Financial"
+PerspectiveType.CUSTOMER     # "Customer"
+PerspectiveType.PROCESS      # "Process"
+PerspectiveType.LEARNING     # "Learning"
+```
+
+---
+
+## 🧪 Exemplos Completos
+
+### Exemplo 1: Uso Básico do Workflow
+
+```python
+from src.graph.workflow import get_workflow
+
+# Inicializar workflow
+workflow = get_workflow()
+
+# Executar query
+result = workflow.run(
+    query="Como definir objetivos para a perspectiva financeira?",
+    session_id="session-001"
+)
+
+# Processar resultado
+if result["judge_evaluation"]["approved"]:
+    print("✅ Resposta aprovada!")
+    print(f"\nResposta:\n{result['final_response']}\n")
+    
+    print(f"Perspectivas consultadas:")
+    for p in result["perspectives"]:
+        print(f"  - {p}")
+    
+    print(f"\nScore do Judge: {result['judge_evaluation']['score']:.2f}")
+else:
+    print("❌ Resposta reprovada")
+    print(f"Feedback: {result['judge_evaluation']['feedback']}")
+```
+
+---
+
+### Exemplo 2: Uso Direto de Agentes
+
+```python
+from src.agents.financial_agent import FinancialAgent
+from src.agents.customer_agent import CustomerAgent
+
+# Inicializar agentes
+financial_agent = FinancialAgent()
+customer_agent = CustomerAgent()
+
+# Executar queries específicas
+financial_response = financial_agent.invoke("Quais são os KPIs de ROI?")
+customer_response = customer_agent.invoke("Como medir NPS?")
+
+# Processar respostas
+print(f"Financial Agent (confidence {financial_response['confidence']:.2f}):")
+print(financial_response['response'])
+
+print(f"\nCustomer Agent (confidence {customer_response['confidence']:.2f}):")
+print(customer_response['response'])
+```
+
+---
+
+### Exemplo 3: Busca RAG Direta
 
 ```python
 from src.rag.retriever import BSCRetriever
 
+# Inicializar retriever
 retriever = BSCRetriever()
 
-# Busca simples
-results = retriever.retrieve("balanced scorecard implementation")
-
-for result in results[:3]:
-    print(f"Score: {result.score:.3f}")
-    print(f"Content: {result.content[:100]}...")
-    print("---")
-```
-
-### Exemplo 3: Usar Agente Específico
-
-```python
-from src.agents.financial_agent import FinancialAgent
-
-async def financial_query():
-    agent = FinancialAgent()
-    
-    response = await agent.process(
-        query="Como calcular ROI no contexto BSC?",
-        context={"company_size": "large"}
-    )
-    
-    print(f"Resposta: {response['content']}")
-    print(f"Confiança: {response['confidence']}")
-
-asyncio.run(financial_query())
-```
-
-### Exemplo 4: Indexação Programática
-
-```python
-from src.rag.vector_store_factory import create_vector_store
-from src.rag.embeddings import EmbeddingManager
-from src.rag.chunker import SemanticChunker
-
-# Setup
-store = create_vector_store()
-embedder = EmbeddingManager()
-chunker = SemanticChunker()
-
-# Texto para indexar
-text = "O Balanced Scorecard é um framework..."
-
-# Chunking
-chunks = chunker.chunk(text)
-
-# Embedding
-embeddings = embedder.embed_batch([c.content for c in chunks])
-
-# Indexar
-documents = [
-    {
-        "id": f"doc_{i}",
-        "content": chunk.content,
-        "embedding": emb,
-        "metadata": {"source": "manual"}
-    }
-    for i, (chunk, emb) in enumerate(zip(chunks, embeddings))
-]
-
-doc_ids = store.add_documents(documents)
-print(f"Indexados {len(doc_ids)} documentos")
-```
-
----
-
-## 🔍 Debugging
-
-### Ativar Logs Verbosos
-
-```python
-from loguru import logger
-import sys
-
-# Remover handler padrão
-logger.remove()
-
-# Adicionar handler verbose
-logger.add(
-    sys.stderr,
-    level="DEBUG",
-    format="<green>{time}</green> | <level>{level}</level> | {message}"
+# Busca multilíngue
+results = retriever.retrieve(
+    query="Quais são os objetivos da perspectiva de processos?",
+    top_k=5,
+    multilingual=True
 )
-```
 
-### Inspecionar Estado do Workflow
-
-```python
-workflow = BSCWorkflow()
-
-# Grafo compilado
-print(workflow.graph)
-
-# Agentes disponíveis
-print(workflow.agents.keys())
+# Processar resultados
+for i, result in enumerate(results, 1):
+    print(f"\n[{i}] Score: {result['score']:.3f}")
+    print(f"Fonte: {result['source']}, Seção {result['page']}")
+    print(f"Conteúdo: {result['content'][:200]}...")
 ```
 
 ---
 
-## 📚 Referências
+### Exemplo 4: Validação com Judge
 
-- [Documentação LangGraph](https://langchain-ai.github.io/langgraph/)
-- [OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings)
-- [Qdrant Documentation](https://qdrant.tech/documentation/)
-- [Cohere Rerank](https://docs.cohere.com/docs/reranking)
+```python
+from src.agents.judge_agent import JudgeAgent
+
+# Inicializar Judge
+judge = JudgeAgent()
+
+# Avaliar resposta
+evaluation = judge.evaluate(
+    query="O que é Balanced Scorecard?",
+    response="Balanced Scorecard é uma metodologia de gestão estratégica...",
+    sources=[
+        {"source": "The Balanced Scorecard", "page": 1, "score": 0.98}
+    ],
+    perspectives=["Financial", "Customer", "Process", "Learning"]
+)
+
+# Verificar aprovação
+if evaluation["approved"]:
+    print(f"✅ Aprovado com score {evaluation['score']:.2f}")
+else:
+    print(f"❌ Reprovado")
+    print(f"Issues: {', '.join(evaluation['issues'])}")
+    print(f"Sugestões: {', '.join(evaluation['suggestions'])}")
+```
+
+---
+
+## 📞 Suporte
+
+Para dúvidas técnicas sobre a API:
+
+- 📖 Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para detalhes de arquitetura
+- 📘 Veja [TUTORIAL.md](TUTORIAL.md) para casos de uso práticos
+- 🐛 Reporte bugs em [Issues](https://github.com/seu-usuario/agente-bsc-rag/issues)
+
+---
+
+<p align="center">
+  <strong>📗 API Reference v1.0</strong><br>
+  <em>Agente BSC RAG - MVP Out/2025</em>
+</p>

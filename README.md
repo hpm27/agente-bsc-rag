@@ -1,383 +1,632 @@
-# 🎯 Agente de IA Consultor em Balanced Scorecard (BSC)
+# 🎯 Agente BSC RAG - Sistema Multi-Agente para Consultoria em Balanced Scorecard
 
-Sistema avançado de IA para consultoria especializada em implementação de Balanced Scorecard, utilizando arquitetura multi-agente com RAG otimizado e tecnologias de ponta 2025.
+<p align="center">
+  <strong>Sistema avançado de IA para consultoria especializada em Balanced Scorecard</strong><br>
+  Arquitetura multi-agente com RAG contextual otimizado e tecnologias 2025
+</p>
 
-## 🏗️ Arquitetura MVP (Fase 1 - Completa)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.12+-blue.svg" alt="Python 3.12+">
+  <img src="https://img.shields.io/badge/LangGraph-0.2+-green.svg" alt="LangGraph">
+  <img src="https://img.shields.io/badge/Claude-Sonnet_4.5-purple.svg" alt="Claude Sonnet 4.5">
+  <img src="https://img.shields.io/badge/Streamlit-1.37+-red.svg" alt="Streamlit">
+  <img src="https://img.shields.io/badge/Qdrant-1.11+-orange.svg" alt="Qdrant">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License">
+</p>
 
-```
-LangGraph (Orquestração Multi-Agente)
-  ├── Qdrant/Weaviate (Vector Store Moderno + Hybrid Search Nativo)
-  ├── GPT-5 (Modelo LLM Estado da Arte - Ago/2025)
-  ├── Claude Sonnet 4.5 (Contextual Retrieval - Set/2025)
-  ├── OpenAI text-embedding-3-large (Embeddings 3072-dim)
-  ├── Cohere Rerank v3.0 Multilingual (Re-ranking)
-  ├── LLM as Judge (Validação de Qualidade)
-  └── Streamlit (Interface Web Moderna)
-```
+---
 
-## 🆕 Novidades 2025
+## 📋 Índice
 
-- ✅ **GPT-5** - Lançado em 07/08/2025 (400K context, melhor raciocínio)
-- ✅ **Claude Sonnet 4.5** - Lançado em 29/09/2025 (best-in-class para agentes)
-- ✅ **Contextual Retrieval** - Técnica Anthropic que melhora precisão em 35-49%
-- ✅ **Qdrant** - Vector DB moderno com hybrid search nativo
-- ✅ **LangGraph** - Orquestração de workflows complexos com estados
+- [Visão Geral](#-visão-geral)
+- [Características Principais](#-características-principais)
+- [Arquitetura](#-arquitetura)
+- [Tecnologias](#-tecnologias)
+- [Instalação Rápida](#-instalação-rápida)
+- [Documentação](#-documentação)
+- [Performance e Otimizações](#-performance-e-otimizações)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Testes e Validação](#-testes-e-validação)
+- [Roadmap](#-roadmap)
+- [Contribuindo](#-contribuindo)
+- [Licença](#-licença)
+
+---
+
+## 🌟 Visão Geral
+
+O **Agente BSC RAG** é um sistema inteligente baseado em IA para consultoria especializada em **Balanced Scorecard** (metodologia de Kaplan & Norton). Combina:
+
+- 🤖 **Sistema Multi-Agente**: 4 especialistas BSC (Financeira, Clientes, Processos, Aprendizado) + Judge + Orchestrator
+- 📚 **RAG Contextual Otimizado**: Recuperação augmentada com contexto (Anthropic), +106% precisão multilíngue
+- 🔗 **LangGraph Workflow**: Orquestração com grafo de estados, refinamento iterativo
+- 🖥️ **Interface Streamlit**: Chat web responsivo com visualização completa
+- ⚡ **Otimizações de Performance**: 949x speedup (cache), 3.34x (paralelização), busca multilíngue nativa
+
+### 🎯 Casos de Uso
+
+- ✅ Análise estratégica e desenvolvimento de BSC
+- ✅ Geração de KPIs e iniciativas por perspectiva
+- ✅ Consultas sobre metodologia BSC (framework Kaplan & Norton)
+- ✅ Validação de mapas estratégicos
+- ✅ Consultoria especializada em implementação BSC
+
+---
 
 ## ✨ Características Principais
 
-### 🤖 Sistema Multi-Agente
-
-- **4 Agentes Especialistas BSC** (Financeira, Cliente, Processos, Aprendizado)
-- **Orchestrator Inteligente** para roteamento de queries
-- **Judge Agent** para validação de qualidade das respostas
-- **LangGraph Workflow** com estados e ciclos de refinamento
-
-#### LangGraph Workflow ✅ **IMPLEMENTADO**
-
-Workflow de orquestração com grafo de estados explícito:
+### 🤖 Sistema Multi-Agente LangGraph
 
 ```
 START → analyze_query → execute_agents → synthesize_response 
 → judge_evaluation → decide_next_step → [finalize OR refine loop] → END
 ```
 
-**Características**:
+**Agentes Especialistas**:
+- 💰 **Financial Agent** - Perspectiva Financeira (ROI, crescimento de receita, produtividade)
+- 👥 **Customer Agent** - Perspectiva de Clientes (satisfação, retenção, valor)
+- ⚙️ **Process Agent** - Perspectiva de Processos Internos (qualidade, eficiência, inovação)
+- 🎓 **Learning Agent** - Perspectiva de Aprendizado e Crescimento (capacitação, clima, sistemas)
 
-- ✅ Execução paralela de agentes
-- ✅ Refinamento iterativo (até 2 iterações)
-- ✅ State management com Pydantic
-- ✅ Decisão condicional baseada em qualidade
+**Orquestração Inteligente**:
+- ✅ Execução paralela assíncrona (AsyncIO)
+- ✅ Refinamento iterativo baseado em feedback do Judge (até 2 ciclos)
+- ✅ State management com Pydantic (type-safe)
 - ✅ Recuperação de erros em cada nó
 
-**Documentação completa**: [`docs/LANGGRAPH_WORKFLOW.md`](docs/LANGGRAPH_WORKFLOW.md)
+**Documentação**: [LANGGRAPH_WORKFLOW.md](docs/LANGGRAPH_WORKFLOW.md)
 
-### 📚 RAG Avançado
+### 📚 RAG Avançado e Multilíngue 🌐
 
-- **Contextual Retrieval** (Anthropic) - +35-49% precisão
-- **Hybrid Search** - Semântica (70%) + BM25 (30%)
-- **Cohere Rerank v3.0** - Re-ranking multilíngue de alta qualidade
-- **Semantic Chunking** - Preserva contexto semântico
-- **Table-Aware Chunking** - Mantém tabelas intactas
+**Pipeline Completo**:
+1. **Chunking Semântico** - Preserva contexto semântico
+2. **Contextual Retrieval** - Contextos bilíngues PT-BR + EN (Anthropic)
+3. **Hybrid Search** - 70% semântica + 30% BM25 (Qdrant nativo)
+4. **Query Expansion** - Tradução automática PT-BR ↔ EN + Reciprocal Rank Fusion
+5. **Adaptive Reranking** - Cohere Rerank Multilingual v3.0 (detecção automática de idioma)
 
-### 🔧 Tecnologias 2025
+**Resultados**:
+- 🎯 **+106% precisão top-1** (busca cross-lingual)
+- 🎯 **+70% recall** (query expansion com RRF)
+- 🌐 **Busca multilíngue nativa** (queries PT-BR + docs EN, automático)
+- 📚 **7.965 chunks indexados** (5 livros BSC + contextos bilíngues)
 
-- **GPT-5** (400K tokens context) - Raciocínio superior
-- **Claude Sonnet 4.5** - Best-in-class para agentes e código
-- **text-embedding-3-large** (3072 dimensões) - Embeddings estado da arte
-- **Qdrant/Weaviate** - Vector stores modernos
-- **Streamlit** - Interface web responsiva e intuitiva
+**Documentação**: [MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)
 
-### 📊 Qualidade e Validação
+### ⚡ Performance Otimizada
 
-- **LLM as Judge** - Validação automática de respostas
-- **Refinement Loops** - Até 2 iterações para melhorar qualidade
-- **Source Attribution** - Rastreabilidade completa
-- **Confidence Scores** - Métricas de confiança por resposta
-- **Multi-Perspective Coverage** - Respostas abrangentes
+| Otimização | Speedup | Descrição |
+|------------|---------|-----------|
+| **Embedding Cache** | **949x** | Cache persistente em disco (diskcache, 87.5% hit rate) |
+| **Paralelização AsyncIO** | **3.34x** | Execução paralela de 4 agentes BSC |
+| **Batch Upload Qdrant** | **10x** | 100 docs/batch (resolveu limite 32MB) |
+| **Contextual Chunker Paralelo** | **8x** | 10 workers ThreadPoolExecutor |
+| **Query Expansion RRF** | **+106%** | Fusão de resultados PT-BR + EN |
 
-## 🛡️ Qualidade de Codigo - Pre-Commit Hooks
+**Economia de Custos**:
+- 💰 87.5% redução em chamadas OpenAI Embeddings (cache)
+- 💰 ~$0.001/query para tradução multilíngue (GPT-4o-mini)
+- 💰 Tradução gratuita de contextos (Google Translate vs LLM)
 
-Este projeto utiliza **pre-commit hooks** para garantir qualidade de codigo e prevenir erros de encoding:
+### 🖥️ Interface Streamlit Moderna
 
-- **Anti-Emoji Hook** - Bloqueia emojis em codigo Python (previne `UnicodeEncodeError` no Windows)
-- **Ruff Linter** - Linting rapido e moderno (150-200x mais rapido que flake8)
-- **Black Formatter** - Formatacao automatica consistente
-- **MyPy** - Verificacao de tipos gradual
+- 💬 **Chat Interface** - Histórico de conversação persistente
+- 📊 **Visualização BSC** - Perspectivas consultadas com confidence scores
+- 📖 **Display de Fontes** - Documentos recuperados com relevância
+- ⚖️ **Judge Evaluation** - Score, feedback, issues, sugestões
+- ⚙️ **Configurações** - Parâmetros de retrieval e perspectivas
 
-**Para desenvolvedores**:
+**Executar**: `python run_streamlit.py` → [http://localhost:8501](http://localhost:8501)
 
-```bash
-# Instalar hooks apos clonar o repositorio
-pre-commit install
+**Documentação**: [STREAMLIT_GUIDE.md](docs/STREAMLIT_GUIDE.md)
 
-# Executar manualmente em todos os arquivos
-pre-commit run --all-files
-```
+### ⚖️ Validação com LLM as Judge
 
-**Documentacao completa**: [`docs/PRE_COMMIT_SETUP.md`](docs/PRE_COMMIT_SETUP.md)
+- ✅ Avaliação automática de completude, relevância e fundamentação
+- ✅ Score 0-1 com threshold configurável (padrão: 0.7)
+- ✅ Feedback detalhado e sugestões de melhoria
+- ✅ Detecção de alucinações e problemas de qualidade
+- ✅ Taxa de aprovação validada >70% (testes E2E)
 
 ---
 
-## 📋 Pré-requisitos
+## 🏗️ Arquitetura
 
-- **Python 3.9+** (Testado em 3.9, 3.10, 3.11)
-- **Docker Desktop** (para Qdrant/Weaviate/Redis)
-- **10GB RAM** (mínimo recomendado)
-- **Chaves de API:**
-  - ✅ **OpenAI API Key** (GPT-5 + Embeddings) - **OBRIGATÓRIO**
-  - ✅ **Cohere API Key** (Re-ranking) - **OBRIGATÓRIO**
-  - ⚠️ **Anthropic API Key** (Contextual Retrieval) - **OPCIONAL** (mas recomendado)
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        STREAMLIT UI                              │
+│                    (Chat + Visualizações)                        │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    LANGGRAPH WORKFLOW                            │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    │
+│  │ Analyze  │ → │ Execute  │ → │Synthesize│ → │  Judge   │    │
+│  │  Query   │   │  Agents  │   │ Response │   │  Eval    │    │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘    │
+│       │               ║                             │            │
+│       │               ║ (AsyncIO Parallel)          │            │
+│       │               ║                             │            │
+│       │         ┌─────┼─────┐                       │            │
+│       │         │     │     │                       │            │
+│       │         ▼     ▼     ▼                       ▼            │
+│       │    ┌────┐ ┌────┐ ┌────┐ ┌────┐        ┌────────┐       │
+│       │    │Fin │ │Cust│ │Proc│ │Lear│        │Finalize│       │
+│       │    │Agt │ │Agt │ │Agt │ │Agt │        │  OR    │       │
+│       │    └────┘ └────┘ └────┘ └────┘        │ Refine │       │
+│       │         │     │     │     │            └────────┘       │
+│       └─────────┴─────┴─────┴─────┘                             │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       BSC RETRIEVER                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │   Query      │→ │ Multilingual │→ │   Adaptive   │          │
+│  │  Translator  │  │     RRF      │  │   Reranker   │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└──────────────────────────┬──────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      QDRANT (Vector Store)                       │
+│  - 7.965 chunks indexados                                        │
+│  - Contextos bilíngues (PT-BR + EN)                              │
+│  - Hybrid Search nativo (70% semântica + 30% BM25)               │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-## 🚀 Instalação Rápida (5 minutos)
+**Documentação**: [ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-### Setup Automatizado (Windows PowerShell)
+---
+
+## 🔧 Tecnologias
+
+### LLMs e APIs
+
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| **Claude Sonnet 4.5** | 2025-09-29 | LLM principal (agentes, contextual retrieval) |
+| **OpenAI text-embedding-3-large** | 3072-dim | Embeddings multilíngues |
+| **Cohere Rerank Multilingual** | v3.0 | Re-ranking cross-lingual |
+| **GPT-4o-mini** | 2024-07-18 | Query translation (barato e rápido) |
+
+### Framework e Orquestração
+
+- **LangGraph** 0.2+ - Workflows com grafos de estados
+- **LangChain** 0.3+ - Base de agentes e ferramentas
+- **Pydantic** 2.0+ - Validação e settings
+
+### Vector Store e RAG
+
+- **Qdrant** 1.11+ - Vector database (recomendado)
+- **Weaviate** 1.26+ - Alternativa (hybrid search nativo)
+- **diskcache** 5.6+ - Cache persistente de embeddings
+
+### Interface e Deployment
+
+- **Streamlit** 1.37+ - Interface web
+- **Docker Compose** - Orquestração de containers
+- **Python** 3.12+ - Runtime
+
+---
+
+## 🚀 Instalação Rápida
+
+### Pré-requisitos
+
+- ✅ **Python 3.12+** (testado em 3.12)
+- ✅ **Docker Desktop** (para Qdrant)
+- ✅ **8GB RAM** mínimo recomendado
+- ✅ **API Keys**:
+  - OpenAI API Key (embeddings + GPT-4o-mini)
+  - Cohere API Key (re-ranking)
+  - Anthropic API Key (Claude Sonnet 4.5 + contextual retrieval)
+
+### Setup em 5 Passos (10 minutos)
+
+#### 1️⃣ Clone e Configure Ambiente
 
 ```powershell
-# 1. Clone o repositório
+# Clone o repositório
 git clone https://github.com/seu-usuario/agente-bsc-rag.git
 cd agente-bsc-rag
 
-# 2. Execute o setup automatizado
+# Execute setup automatizado (Windows PowerShell)
 .\setup.ps1
 ```
 
-O script `setup.ps1` fará **TUDO** automaticamente:
-
+O script `setup.ps1` faz automaticamente:
 - ✅ Criar ambiente virtual Python
-- ✅ Instalar todas as dependências
-- ✅ Iniciar Docker containers (Qdrant, Weaviate, Redis)
-- ✅ Criar arquivo `.env` com templates
+- ✅ Instalar todas as dependências (requirements.txt)
+- ✅ Iniciar Docker containers (Qdrant em localhost:6333)
+- ✅ Criar arquivo .env com templates
 - ✅ Validar configuração completa
 
-### 3. Configure suas API Keys
+#### 2️⃣ Configure API Keys
 
 Edite `.env` e adicione suas chaves:
 
 ```env
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=sk-proj-...
 COHERE_API_KEY=...
-ANTHROPIC_API_KEY=sk-ant-...  # Opcional
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-### 4. Indexe Documentos BSC
+#### 3️⃣ Indexe Dataset BSC
 
 ```powershell
-# Adicione PDFs/MD em data/bsc_literature/
-# Depois execute:
+# Ativar ambiente virtual
 .\venv\Scripts\Activate.ps1
+
+# Indexar documentos BSC (5 livros incluídos)
 python scripts/build_knowledge_base.py
 ```
 
-### 5. Inicie a Interface Web
+**Resultado**: 7.965 chunks indexados com contextos bilíngues (~12 min)
 
-**Metodo 1: Script de conveniencia**
+#### 4️⃣ Inicie a Interface
 
 ```powershell
 python run_streamlit.py
 ```
 
-**Metodo 2: Streamlit CLI**
+🎉 **Pronto!** Interface abrirá em [http://localhost:8501](http://localhost:8501)
 
-```powershell
-streamlit run app/main.py
+#### 5️⃣ Primeira Query
+
+Digite na interface:
+
+```
+Quais são os principais KPIs da perspectiva financeira segundo Kaplan & Norton?
 ```
 
-🎉 **Pronto!** A interface sera aberta automaticamente no navegador em [http://localhost:8501](http://localhost:8501)
-
-**Guia completo**: Ver [`docs/STREAMLIT_GUIDE.md`](docs/STREAMLIT_GUIDE.md) para detalhes de uso, configuracoes e troubleshooting
+Você verá:
+- ✅ Resposta fundamentada em documentos BSC
+- ✅ Perspectivas consultadas (Financial Agent)
+- ✅ Fontes com scores de relevância
+- ✅ Avaliação do Judge (score, feedback)
 
 ---
 
-## 📖 Documentação Completa
+## 📖 Documentação
 
-- 📘 **[Guia Rápido](docs/QUICKSTART.md)** - Tutoriais e exemplos
-- 📗 **[API Reference](docs/API_REFERENCE.md)** - Referência completa da API
-- 📕 **[Arquitetura](docs/ARCHITECTURE.md)** - Detalhes da arquitetura
-- 📙 **[Plano de Desenvolvimento](moderniza--o-rag-bsc.plan.md)** - Roadmap completo
+### Guias de Início Rápido
+
+- 📘 **[QUICKSTART.md](docs/QUICKSTART.md)** - Onboarding em 10 minutos, primeiros passos
+- 📗 **[TUTORIAL.md](docs/TUTORIAL.md)** - Uso avançado, casos práticos, customização
+- 📕 **[STREAMLIT_GUIDE.md](docs/STREAMLIT_GUIDE.md)** - Interface web completa
+
+### Referência Técnica
+
+- 📙 **[API_REFERENCE.md](docs/API_REFERENCE.md)** - API de agentes, tools, workflow
+- 📔 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura detalhada
+- 📓 **[LANGGRAPH_WORKFLOW.md](docs/LANGGRAPH_WORKFLOW.md)** - Workflow LangGraph
+
+### Deployment e Operação
+
+- 🚀 **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deploy local, Docker, cloud (AWS/Azure/GCP)
+- 🧪 **[TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** - Testes E2E, métricas, validação
+
+### Otimizações e Análises
+
+- ⚡ **[MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)** - Busca cross-lingual
+- 📊 **[VECTOR_DB_COMPARISON.md](docs/VECTOR_DB_COMPARISON.md)** - Benchmark Qdrant vs Weaviate
+- 📚 **[GPT5_CONTEXTUAL_RETRIEVAL.md](docs/GPT5_CONTEXTUAL_RETRIEVAL.md)** - Contextual chunking
+- 🎓 **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** - Lições aprendidas
+
+---
+
+## ⚡ Performance e Otimizações
+
+### Métricas de Performance (MVP Validado)
+
+| Métrica | Valor | Referência |
+|---------|-------|------------|
+| **Latência P50 (E2E)** | 71s | Aceitável para MVP (Claude API externa) |
+| **Latência P95 (E2E)** | 122s | Threshold: <180s |
+| **Embedding Cache Hit Rate** | >80% | Validado em testes E2E |
+| **Taxa Aprovação Judge** | >70% | Threshold configurável |
+| **Precisão Top-1 (Multilíngue)** | +106% | vs busca monolíngue |
+| **Recall (Query Expansion)** | +70% | 10 → 17 docs únicos |
+
+### Otimizações Implementadas
+
+1. **Caching de Embeddings** (949x speedup)
+   - Cache persistente com diskcache
+   - Hit rate 87.5% em cenários realistas
+   - Thread-safe e multiprocess-safe
+   - Economia 87.5% em chamadas API OpenAI
+
+2. **Paralelização AsyncIO** (3.34x speedup)
+   - Execução paralela de 4 agentes BSC
+   - asyncio.gather() para coordenação
+   - Métodos ainvoke() em todos os agentes
+
+3. **Busca Multilíngue** (+106% precisão)
+   - Query expansion PT-BR ↔ EN automática
+   - Reciprocal Rank Fusion (RRF, k=60)
+   - Contextos bilíngues em metadata
+   - Adaptive reranking com detecção de idioma
+
+4. **Batch Processing**
+   - Batch upload Qdrant (100 docs/batch)
+   - Processamento paralelo chunker (10 workers)
+   - Retry logic com exponential backoff
+
+### Custos Estimados
+
+| Componente | Custo/Query | Observações |
+|------------|-------------|-------------|
+| Embeddings (OpenAI) | ~$0.002 | Com cache 87.5% hit: $0.00025 |
+| LLM Claude (4 agentes) | ~$0.05-0.10 | Dependente do tamanho da resposta |
+| Reranking (Cohere) | ~$0.002 | 10 docs |
+| Query Translation | ~$0.001 | GPT-4o-mini (opcional, multilíngue) |
+| **Total/Query** | **~$0.05-0.11** | Com otimizações |
+
+**Economia Mensal** (1000 queries):
+- Cache de embeddings: **$17.50** economizados
+- Tradução gratuita contextos: **$2.50** economizados
+
+---
 
 ## 📁 Estrutura do Projeto
 
 ```
 agente-bsc-rag/
-├── app/
-│   └── main.py                 # Interface Streamlit
+├── app/                          # Interface Streamlit
+│   ├── main.py                   # Aplicação principal
+│   ├── utils.py                  # Helpers e session state
+│   └── components/
+│       ├── sidebar.py            # Configurações BSC
+│       └── results.py            # Display de resultados
+│
 ├── src/
-│   ├── agents/
-│   │   ├── orchestrator.py     # Agente orquestrador principal
-│   │   ├── financial_agent.py  # Agente perspectiva financeira
-│   │   ├── customer_agent.py   # Agente perspectiva do cliente
-│   │   ├── process_agent.py    # Agente perspectiva de processos
-│   │   ├── learning_agent.py   # Agente perspectiva de aprendizado
-│   │   └── judge_agent.py      # Agente validador (LLM as Judge)
-│   ├── rag/
-│   │   ├── vector_store.py     # Gerenciamento do Redis
-│   │   ├── embeddings.py       # Embeddings e fine-tuning
-│   │   ├── retriever.py        # Retrieval com hybrid search
-│   │   ├── reranker.py         # Re-ranking com Cohere
-│   │   └── chunker.py          # Chunking semântico
-│   ├── tools/
-│   │   ├── strategy_analyzer.py    # Análise de estratégia
-│   │   ├── kpi_generator.py        # Gerador de indicadores
-│   │   ├── map_creator.py          # Criador de mapas estratégicos
-│   │   └── bsc_validator.py        # Validador de BSC
-│   ├── prompts/
-│   │   ├── orchestrator_prompt.py
-│   │   ├── specialist_prompts.py
-│   │   └── judge_prompt.py
-│   └── graph/
-│       └── workflow.py         # Definição do grafo LangGraph
+│   ├── agents/                   # Sistema Multi-Agente
+│   │   ├── orchestrator.py      # Coordenação de agentes
+│   │   ├── financial_agent.py   # Perspectiva Financeira
+│   │   ├── customer_agent.py    # Perspectiva de Clientes
+│   │   ├── process_agent.py     # Perspectiva de Processos
+│   │   ├── learning_agent.py    # Perspectiva de Aprendizado
+│   │   └── judge_agent.py       # Validação (LLM as Judge)
+│   │
+│   ├── graph/                    # LangGraph Workflow
+│   │   ├── workflow.py           # Definição do grafo
+│   │   └── states.py             # Pydantic models
+│   │
+│   ├── rag/                      # Pipeline RAG
+│   │   ├── embeddings.py         # Embeddings + cache
+│   │   ├── retriever.py          # Hybrid search + RRF
+│   │   ├── reranker.py           # Cohere adaptive reranking
+│   │   ├── query_translator.py   # Multilingual expansion
+│   │   ├── contextual_chunker.py # Contextual retrieval
+│   │   ├── chunker.py            # Semantic chunking
+│   │   ├── qdrant_vector_store.py# Qdrant integration
+│   │   ├── weaviate_vector_store.py
+│   │   └── vector_store_factory.py
+│   │
+│   ├── tools/                    # Ferramentas RAG
+│   │   └── rag_tools.py          # Search tools para agentes
+│   │
+│   └── prompts/                  # Prompts especializados
+│       ├── orchestrator_prompt.py
+│       ├── specialist_prompts.py
+│       ├── judge_prompt.py
+│       └── contextual_chunk_prompt.py
+│
 ├── config/
-│   ├── settings.py             # Configurações gerais
-│   └── redis_config.py         # Configurações do Redis
-├── data/
-│   └── bsc_literature/         # PDFs da literatura BSC
-├── tests/
-│   ├── test_rag.py
-│   ├── test_agents.py
-│   └── test_tools.py
+│   └── settings.py               # Configurações centralizadas
+│
 ├── scripts/
-│   ├── build_knowledge_base.py # Script para indexar documentos
-│   ├── finetune_embeddings.py  # Script para fine-tuning
-│   └── evaluate_rag.py         # Script para avaliar qualidade
-├── docs/
-│   ├── ARCHITECTURE.md         # Documentação da arquitetura
-│   ├── RAG_OPTIMIZATION.md     # Guia de otimização do RAG
-│   └── DEPLOYMENT.md           # Guia de deployment
-├── docker-compose.yml          # Redis Stack
-├── Dockerfile                  # Container da aplicação
-├── requirements.txt
-├── .env.example
-├── .gitignore
-└── README.md
+│   ├── build_knowledge_base.py   # Indexação de documentos
+│   ├── validate_setup.py         # Validação de ambiente
+│   └── valida_env.py             # Validação de .env
+│
+├── tests/
+│   ├── integration/
+│   │   ├── test_e2e.py           # Testes E2E (566 linhas, 22 testes)
+│   │   └── test_queries.json     # Dataset de queries BSC
+│   ├── test_embeddings.py
+│   ├── test_retriever.py
+│   ├── test_reranker.py
+│   └── test_embedding_cache.py
+│
+├── data/
+│   └── bsc_literature/           # Documentos BSC (5 livros)
+│       └── contextual_cache/     # Cache de contextos
+│
+├── docs/                         # Documentação completa
+│   ├── QUICKSTART.md
+│   ├── TUTORIAL.md
+│   ├── API_REFERENCE.md
+│   ├── DEPLOYMENT.md
+│   ├── ARCHITECTURE.md
+│   ├── LANGGRAPH_WORKFLOW.md
+│   ├── STREAMLIT_GUIDE.md
+│   ├── TESTING_GUIDE.md
+│   └── ...
+│
+├── examples/
+│   └── run_workflow_example.py   # Exemplos de uso programático
+│
+├── docker-compose.yml            # Qdrant + Weaviate + Redis
+├── Dockerfile                    # Container da aplicação
+├── requirements.txt              # Dependências Python
+├── .env                          # Configurações (API keys)
+├── .pre-commit-config.yaml       # Hooks de qualidade
+└── README.md                     # Este arquivo
 ```
-
-## 🔧 Configuração Avançada
-
-### Redis
-
-O Redis Stack é usado como vector store com suporte a:
-
-- **RedisSearch:** Busca vetorial e full-text
-- **RedisJSON:** Armazenamento de metadados
-
-Configuração no `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-services:
-  redis:
-    image: redis/redis-stack:latest
-    ports:
-      - "6379:6379"
-      - "8001:8001"  # RedisInsight (UI)
-    volumes:
-      - redis-data:/data
-```
-
-### Hybrid Search
-
-Combina busca vetorial (semântica) com BM25 (palavras-chave):
-
-```python
-# Peso para busca semântica: 0.7
-# Peso para BM25: 0.3
-results = retriever.hybrid_search(query, k=10, weights=(0.7, 0.3))
-```
-
-### Re-ranking
-
-Usa Cohere Rerank para reordenar os top-K resultados:
-
-```python
-reranked = reranker.rerank(query, documents, top_n=5)
-```
-
-### Fine-tuning de Embeddings
-
-Treine embeddings customizados com literatura BSC:
-
-```bash
-python scripts/finetune_embeddings.py \
-  --base_model sentence-transformers/all-mpnet-base-v2 \
-  --training_data data/training_pairs.json \
-  --output_dir models/bsc-embeddings
-```
-
-## 📊 Avaliação de Qualidade
-
-Execute testes de qualidade do RAG:
-
-```bash
-python scripts/evaluate_rag.py --test_set data/test_questions.json
-```
-
-Métricas avaliadas:
-
-- **Precision@K:** Relevância dos top-K resultados
-- **Recall@K:** Cobertura dos documentos relevantes
-- **MRR (Mean Reciprocal Rank):** Posição do primeiro resultado relevante
-- **NDCG (Normalized Discounted Cumulative Gain):** Qualidade do ranking
-- **Faithfulness:** Fidelidade da resposta ao contexto (LLM as Judge)
-
-## 🎯 Uso
-
-### Interface de Chat
-
-```python
-# A interface Streamlit permite:
-# 1. Fazer perguntas sobre BSC
-# 2. Solicitar análise de estratégia
-# 3. Gerar indicadores (KPIs)
-# 4. Criar mapas estratégicos
-# 5. Validar BSC completo
-```
-
-### API Programática
-
-```python
-from src.graph.workflow import create_bsc_agent
-
-agent = create_bsc_agent()
-
-response = agent.invoke({
-    "messages": [("user", "Como definir objetivos para a perspectiva financeira?")]
-})
-
-print(response["messages"][-1])
-```
-
-## 🧪 Testes
-
-```bash
-# Executar todos os testes
-pytest
-
-# Testes específicos
-pytest tests/test_rag.py -v
-pytest tests/test_agents.py -v
-
-# Com cobertura
-pytest --cov=src tests/
-```
-
-## 📚 Documentação
-
-- [Arquitetura Detalhada](docs/ARCHITECTURE.md)
-- [Otimização do RAG](docs/RAG_OPTIMIZATION.md)
-- [Guia de Deployment](docs/DEPLOYMENT.md)
-- [Configuração GPT-5 para Contextual Retrieval](docs/GPT5_CONTEXTUAL_RETRIEVAL.md) 🆕
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 👥 Autores
-
-- **Seu Nome** - *Desenvolvimento Inicial*
-
-## 🙏 Agradecimentos
-
-- Robert S. Kaplan e David P. Norton - Criadores do Balanced Scorecard
-- Comunidade LangChain e LangGraph
-- Redis Labs pela excelente documentação
-
-## 📞 Suporte
-
-Para dúvidas ou suporte:
-
-- Abra uma [Issue](https://github.com/seu-usuario/agente-bsc-rag/issues)
-- Email: <seu-email@exemplo.com>
 
 ---
 
-**Desenvolvido com ❤️ usando LangGraph, Redis e GPT-4**
+## 🧪 Testes e Validação
+
+### Suite de Testes E2E
+
+**Implementado**: 22 testes organizados em 6 classes (`tests/integration/test_e2e.py`)
+
+| Classe | Testes | Descrição |
+|--------|--------|-----------|
+| `TestSystemReadiness` | 3 | Prontidão (Qdrant, dataset, API keys) |
+| `TestE2EWorkflow` | 7 | Workflow completo end-to-end |
+| `TestQueryScenarios` | 4 | Queries por perspectiva BSC |
+| `TestPerformanceOptimizations` | 4 | Cache, multilíngue, paralelização |
+| `TestJudgeValidation` | 2 | Validação do Judge Agent |
+| `TestMetrics` | 2 | Latências P50/P95/P99, approval rate |
+
+**Validação**: 9 testes críticos executados (41% da suite), cobrindo todas as 6 classes.
+
+### Executar Testes
+
+```powershell
+# Suite completa E2E (22 testes)
+pytest tests/integration/test_e2e.py -v
+
+# Classe específica
+pytest tests/integration/test_e2e.py::TestSystemReadiness -v
+
+# Teste individual
+pytest tests/integration/test_e2e.py::TestMetrics::test_latency_percentiles -v
+
+# Com cobertura
+pytest tests/integration/test_e2e.py --cov=src --cov-report=html
+```
+
+**Documentação**: [TESTING_GUIDE.md](docs/TESTING_GUIDE.md)
+
+### Métricas Validadas (Testes E2E)
+
+✅ **Sistema 100% operacional**:
+- Qdrant rodando e acessível
+- 7.965 chunks indexados
+- API keys configuradas corretamente
+
+✅ **Workflow funcional**:
+- Query simple factual: OK
+- Query multi-perspectiva: OK
+- Refinamento iterativo: OK
+
+✅ **Otimizações confirmadas**:
+- Cache hit rate >80%
+- Latências aceitáveis (P50<90s, P95<180s)
+- Judge approval rate >70%
+
+---
+
+## 🗺️ Roadmap
+
+### ✅ Fase 1 - MVP (COMPLETA - Out/2025)
+
+- [x] Pipeline RAG completo (embeddings, retrieval, reranking)
+- [x] Sistema Multi-Agente (4 especialistas + Judge + Orchestrator)
+- [x] LangGraph Workflow (grafo de estados, refinamento)
+- [x] Interface Streamlit (chat, visualizações)
+- [x] Otimizações (AsyncIO, cache, multilíngue)
+- [x] Testes E2E (22 testes, 6 classes)
+- [x] Documentação completa (2500+ linhas)
+- [x] Dataset BSC (7.965 chunks, 5 livros)
+
+**Status**: **MVP 100% CONCLUÍDO** 🎉
+
+### 🔮 Fase 2 - RAG Avançado (Planejada - Nov/2025+)
+
+- [ ] Query Decomposition (queries complexas)
+- [ ] HyDE (Hypothetical Document Embeddings)
+- [ ] Adaptive Retrieval (roteamento inteligente)
+- [ ] Iterative Retrieval (refinamento multi-hop)
+- [ ] Fine-tuning de Embeddings (domínio BSC)
+- [ ] Avaliação de RAPTOR (retrieval hierárquico)
+- [ ] Avaliação de Graph RAG (relações causa-efeito)
+- [ ] Avaliação de Multi-modal RAG (strategy maps, dashboards)
+
+**Critério**: Implementar **APENAS após validar MVP com dados reais** e identificar necessidades específicas.
+
+### 🚀 Fase 3 - Produção (Planejada - Dez/2025+)
+
+- [ ] Autenticação e autorização (multi-tenant)
+- [ ] Rate limiting e quotas
+- [ ] Monitoramento e observabilidade (Prometheus, Grafana)
+- [ ] CI/CD pipeline (GitHub Actions)
+- [ ] Deploy em cloud (AWS/Azure/GCP)
+- [ ] Escalabilidade horizontal
+- [ ] Backup e disaster recovery
+
+---
+
+## 🛡️ Qualidade de Código
+
+### Pre-Commit Hooks
+
+Hooks configurados para garantir qualidade:
+
+- ✅ **Anti-Emoji Hook** - Bloqueia emojis em código Python (previne `UnicodeEncodeError` Windows)
+- ✅ **Ruff Linter** - Linting rápido e moderno (150-200x mais rápido que flake8)
+- ✅ **Black Formatter** - Formatação automática consistente
+- ✅ **MyPy** - Verificação de tipos gradual
+
+**Instalar hooks**:
+
+```bash
+pre-commit install
+pre-commit run --all-files
+```
+
+**Documentação**: [PRE_COMMIT_SETUP.md](docs/PRE_COMMIT_SETUP.md)
+
+---
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Siga o processo:
+
+1. **Fork** o projeto
+2. Crie uma **branch** para sua feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um **Pull Request**
+
+**Diretrizes**:
+- Siga o estilo de código existente (Black, Ruff)
+- Adicione testes para novas features
+- Atualize documentação relevante
+- Commits em português ou inglês
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença **MIT**. Veja [LICENSE](LICENSE) para detalhes.
+
+---
+
+## 👥 Autores
+
+- **Você** - *Desenvolvimento Inicial* - [GitHub](https://github.com/seu-usuario)
+
+---
+
+## 🙏 Agradecimentos
+
+- **Robert S. Kaplan e David P. Norton** - Criadores do Balanced Scorecard
+- **Anthropic** - Contextual Retrieval, Claude Sonnet 4.5
+- **OpenAI** - GPT-4o, text-embedding-3-large
+- **Cohere** - Rerank Multilingual v3.0
+- **Comunidades**: LangChain, LangGraph, Streamlit, Qdrant
+
+---
+
+## 📞 Suporte
+
+Dúvidas ou problemas?
+
+- 🐛 Abra uma [Issue](https://github.com/seu-usuario/agente-bsc-rag/issues)
+- 💬 Email: <seu-email@exemplo.com>
+- 📖 Consulte a [Documentação Completa](docs/)
+
+---
+
+<p align="center">
+  <strong>Desenvolvido com 💙 usando LangGraph, Claude Sonnet 4.5, Qdrant e Streamlit</strong><br>
+  <em>MVP 100% Completo - Out/2025</em>
+</p>

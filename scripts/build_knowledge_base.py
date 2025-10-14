@@ -133,12 +133,14 @@ def main():
                     "num_pages": doc["num_pages"]
                 }
             )
-            # Converte ContextualChunk para dict format e adiciona 'page' baseado em chunk_index
+            # Converte ContextualChunk para dict format e adiciona 'page' + contextos bilíngues
             chunks = [
                 {
-                    "content": c.contextual_content,  # Usa conteúdo com contexto
+                    "content": c.contextual_content,  # Usa conteúdo com contexto PT-BR
                     "source": c.metadata.get('source', doc["source"]),  # Garante source
                     "page": c.metadata.get('chunk_index', i) + 1,  # 1-based page number (seção)
+                    "context_pt": c.context_pt,  # Contexto em português
+                    "context_en": c.context_en,  # Contexto em inglês (tradução automática)
                     **{k: v for k, v in c.metadata.items() if k not in ['content', 'source', 'page']}
                 }
                 for i, c in enumerate(contextual_chunks)

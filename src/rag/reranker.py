@@ -1,27 +1,72 @@
 """
 Re-ranking de resultados de busca usando Cohere.
 """
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Literal
 import cohere
 from loguru import logger
+import re
 
 from config.settings import settings
 
 
 class CohereReranker:
-    """Re-ranker usando Cohere Rerank API."""
+    """Re-ranker usando Cohere Rerank API com suporte multilíngue."""
     
     def __init__(self):
         """Inicializa o cliente Cohere."""
         self.client = cohere.Client(settings.cohere_api_key)
-        self.model = "rerank-multilingual-v3.0"  # Suporta português
-        logger.info("Cohere Reranker inicializado")
+        self.model = "rerank-multilingual-v3.0"  # Suporta 100+ idiomas
+        logger.info(f"[INIT] Cohere Reranker inicializado (modelo: {self.model})")
+    
+    def _detect_language(self, text: str) -> Literal["pt-br", "en", "other"]:
+        """
+        Detecta o idioma do texto usando heurística simples.
+        
+        Args:
+            text: Texto para detectar idioma
+            
+        Returns:
+            "pt-br", "en" ou "other"
+        """
+        text_lower = text.lower()
+        
+        # Acentuação portuguesa (check mais forte)
+        has_pt_accents = bool(re.search(r'[áàâãéêíóôõúüç]', text_lower))
+        
+        # Palavras comuns em português (expandido)
+        pt_keywords = [
+            "o que", "como", "por que", "porque", "quando", "onde", "qual", "quais",
+            "é", "são", "está", "estão", "foi", "foram", "ser", "estar",
+            "implementar", "gestão", "estratégia", "plano", "objetivo"
+        ]
+        
+        # Palavras exclusivas EN
+        en_keywords = ["what", "how", "why", "when", "where", "which", "is", "are", "was", "were"]
+        
+        # Contagem de keywords
+        pt_count = sum(1 for kw in pt_keywords if kw in text_lower)
+        en_count = sum(1 for kw in en_keywords if kw in text_lower)
+        
+        # Decisão
+        if has_pt_accents:
+            return "pt-br"
+        elif pt_count >= 1 and en_count == 0:
+            return "pt-br"
+        elif en_count >= 1 and pt_count == 0:
+            return "en"
+        elif pt_count > en_count:
+            return "pt-br"
+        elif en_count > pt_count:
+            return "en"
+        else:
+            return "other"
     
     def rerank(
         self,
         query: str,
         documents: List[Dict[str, Any]],
-        top_n: int = None
+        top_n: int = None,
+        adaptive_multilingual: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Re-rankeia documentos baseado na relevância para a query.
@@ -30,6 +75,7 @@ class CohereReranker:
             query: Query do usuário
             documents: Lista de documentos recuperados
             top_n: Número de documentos a retornar (None = todos)
+            adaptive_multilingual: Se True, ajusta parâmetros para cross-lingual
             
         Returns:
             Documentos reordenados por relevância
@@ -38,6 +84,17 @@ class CohereReranker:
             return []
         
         top_n = top_n or settings.top_n_rerank
+        
+        # Detecção de idioma para otimização multilíngue
+        query_lang = self._detect_language(query) if adaptive_multilingual else "other"
+        
+        # Ajuste adaptativo: em cenários cross-lingual, aumentar top_n para compensar perda de precisão
+        if adaptive_multilingual and query_lang == "pt-br":
+            # Query em PT + docs em EN (provável) → solicitar +20% de documentos
+            adjusted_top_n = min(int(top_n * 1.2), len(documents))
+            logger.debug(f"[ADAPTIVE] Query PT-BR detectada, ajustando top_n: {top_n} -> {adjusted_top_n}")
+        else:
+            adjusted_top_n = min(top_n, len(documents))
         
         # Extrai textos dos documentos
         texts = [doc["content"] for doc in documents]
@@ -48,7 +105,7 @@ class CohereReranker:
                 model=self.model,
                 query=query,
                 documents=texts,
-                top_n=min(top_n, len(documents))
+                top_n=adjusted_top_n
             )
             
             # Reordena documentos originais

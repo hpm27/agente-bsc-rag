@@ -26,6 +26,9 @@ torch==2.8.0
 # Re-ranking
 cohere==4.37
 
+# Translation (para contextos bilíngues)
+deep-translator==1.11.4
+
 # Document Processing
 pypdf==3.17.0
 python-docx==1.1.0
