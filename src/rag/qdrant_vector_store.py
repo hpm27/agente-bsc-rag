@@ -76,18 +76,27 @@ class QdrantVectorStore(BaseVectorStore):
         """
         index_name = index_name or self.default_index_name
         
-        try:
-            # Verifica se coleção existe
-            self.client.get_collection(index_name)
-            
-            if force_recreate:
-                logger.info(f"Removendo coleção existente: {index_name}")
+        # Se force_recreate, tenta deletar independentemente de existir ou não
+        if force_recreate:
+            logger.info(f"force_recreate=True: tentando deletar coleção {index_name}")
+            try:
                 self.client.delete_collection(index_name)
-            else:
-                logger.info(f"Coleção {index_name} já existe")
+                logger.info(f"Coleção {index_name} deletada com sucesso")
+                # Aguarda um pouco para garantir que a deleção foi processada
+                import time
+                time.sleep(0.5)
+            except Exception as e:
+                # Se não existe, está ok - vamos criar
+                logger.info(f"Coleção {index_name} não existia (ou erro ao deletar): {e}")
+        else:
+            # Verifica se já existe
+            try:
+                self.client.get_collection(index_name)
+                logger.info(f"Coleção {index_name} já existe. Use force_recreate=True para recriar.")
                 return
-        except:
-            pass
+            except:
+                # Não existe, vamos criar
+                pass
         
         # Mapeia distância
         distance_map = {
@@ -97,16 +106,19 @@ class QdrantVectorStore(BaseVectorStore):
         }
         
         # Cria coleção
-        self.client.create_collection(
-            collection_name=index_name,
-            vectors_config=VectorParams(
-                size=self.embedding_dim,
-                distance=distance_map.get(distance_metric, Distance.COSINE)
-            ),
-            **kwargs
-        )
-        
-        logger.info(f"Coleção {index_name} criada com sucesso")
+        try:
+            self.client.create_collection(
+                collection_name=index_name,
+                vectors_config=VectorParams(
+                    size=self.embedding_dim,
+                    distance=distance_map.get(distance_metric, Distance.COSINE)
+                ),
+                **kwargs
+            )
+            logger.info(f"Coleção {index_name} criada com sucesso")
+        except Exception as e:
+            logger.error(f"Erro ao criar coleção {index_name}: {e}")
+            raise
     
     def add_documents(
         self,
@@ -197,16 +209,16 @@ class QdrantVectorStore(BaseVectorStore):
         else:
             query_vector = list(query_embedding)
         
-        # Executa busca usando query_points (novo método unificado)
-        response = self.client.query_points(
+        # Executa busca vetorial (versão 1.15+ usa query_points)
+        results = self.client.query_points(
             collection_name=index_name,
             query=query_vector,
             limit=k,
-            query_filter=search_filter  # query_filter ainda é suportado como alias
+            query_filter=search_filter
         )
         
-        # Extrai os points da resposta e converte para SearchResult
-        return self._convert_results(response.points, search_type='vector')
+        # query_points retorna um objeto com atributo 'points'
+        return self._convert_results(results.points, search_type='vector')
     
     def text_search(
         self,
@@ -359,27 +371,51 @@ class QdrantVectorStore(BaseVectorStore):
         index_name = index_name or self.default_index_name
         
         try:
+            # Usa REST API direta para evitar problemas de Pydantic validation
+            from qdrant_client.http.models import CollectionInfo
             info = self.client.get_collection(index_name)
             
+            # Acessa campos com segurança
+            num_docs = getattr(info, 'points_count', 0) or 0
+            indexed_count = getattr(info, 'indexed_vectors_count', 0) or 0
+            
+            # Tenta extrair distância de forma segura
+            distance_metric = 'cosine'
+            try:
+                if hasattr(info, 'config') and hasattr(info.config, 'params'):
+                    if hasattr(info.config.params, 'vectors'):
+                        if hasattr(info.config.params.vectors, 'distance'):
+                            distance_metric = info.config.params.vectors.distance.name.lower()
+            except:
+                pass
+            
             return VectorStoreStats(
-                num_documents=info.points_count,
+                num_documents=num_docs,
                 index_size_mb=0,  # Qdrant não expõe tamanho facilmente
                 vector_dimensions=self.embedding_dim,
-                distance_metric=info.config.params.vectors.distance.name,
+                distance_metric=distance_metric,
                 additional_info={
-                    'status': info.status.name,
-                    'optimizer_status': info.optimizer_status.name,
-                    'indexed_vectors_count': info.indexed_vectors_count
+                    'indexed_vectors_count': indexed_count
                 }
             )
         except Exception as e:
-            logger.error(f"Erro ao obter estatísticas da coleção {index_name}: {e}")
-            return VectorStoreStats(
-                num_documents=0,
-                index_size_mb=0,
-                vector_dimensions=self.embedding_dim,
-                distance_metric='unknown'
-            )
+            logger.warning(f"Não foi possível obter estatísticas detalhadas: {e}")
+            # Tenta método alternativo usando count
+            try:
+                count = self.client.count(collection_name=index_name)
+                return VectorStoreStats(
+                    num_documents=count.count if hasattr(count, 'count') else 0,
+                    index_size_mb=0,
+                    vector_dimensions=self.embedding_dim,
+                    distance_metric='cosine'
+                )
+            except:
+                return VectorStoreStats(
+                    num_documents=0,
+                    index_size_mb=0,
+                    vector_dimensions=self.embedding_dim,
+                    distance_metric='unknown'
+                )
     
     def health_check(self) -> bool:
         """

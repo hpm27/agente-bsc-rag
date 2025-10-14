@@ -6,10 +6,14 @@ Este script demonstra como usar o workflow completo para processar queries BSC.
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Adicionar src ao path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+
+# Carregar variáveis de ambiente do .env
+load_dotenv(project_root / ".env")
 
 from loguru import logger
 from src.graph.workflow import get_workflow

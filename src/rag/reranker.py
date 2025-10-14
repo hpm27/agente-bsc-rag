@@ -43,13 +43,12 @@ class CohereReranker:
         texts = [doc["content"] for doc in documents]
         
         try:
-            # Chama API de rerank
+            # Chama API de rerank (return_documents removido - deprecated em Cohere v5+)
             results = self.client.rerank(
                 model=self.model,
                 query=query,
                 documents=texts,
-                top_n=min(top_n, len(documents)),
-                return_documents=False
+                top_n=min(top_n, len(documents))
             )
             
             # Reordena documentos originais

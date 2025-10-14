@@ -56,6 +56,7 @@
 **Próximo**: 🎯 **Testes E2E** (Fase 1D.12) → Documentação Final MVP
 
 **✨ NOVIDADES DESTA SESSÃO (11/10 - Tarde/Noite)**:
+
 - ⚡ **Paralelização AsyncIO**: 3.34x speedup na execução de agentes
 - 🚀 **Caching de Embeddings**: 949x speedup, 99.9% redução de tempo
 - 💰 **Economia**: 87.5% menos chamadas à API OpenAI
@@ -149,6 +150,7 @@ PROGRESSO TOTAL MVP: ███████████████████�
 ### 🌟 **Destaques da Sessão (11/10/2025)**
 
 **1. Interface Streamlit Funcional** 🖥️
+
 - Chat web responsivo com histórico
 - Visualização completa de perspectivas BSC
 - Display de fontes com metadata correta
@@ -156,12 +158,14 @@ PROGRESSO TOTAL MVP: ███████████████████�
 - Documentação completa (909 linhas)
 
 **2. Migração Claude Sonnet 4.5** 🤖
+
 - Factory pattern para suporte multi-LLM
 - Tool calling universal (OpenAI + Anthropic)
 - Max tokens otimizados (64K Claude | 128K GPT-5)
 - 6 agentes migrados com sucesso
 
 **3. Otimizações de Performance Massivas** ⚡ **[NOVO - Tarde/Noite]**
+
 - Paralelização com AsyncIO (3.67% mais rápido que ThreadPoolExecutor)
 - Caching de embeddings (949x speedup, 99.9% redução de tempo)
 - Cache hit rate de 87.5% em testes
@@ -169,6 +173,7 @@ PROGRESSO TOTAL MVP: ███████████████████�
 - Sistema thread-safe e multiprocess-safe
 
 **4. 10+ Bug Fixes Críticos** 🔧
+
 - Metadata propagation (source/page)
 - Embeddings tolist() errors
 - SearchResult attribute errors
@@ -176,6 +181,7 @@ PROGRESSO TOTAL MVP: ███████████████████�
 - UX improvements (Seção vs Página)
 
 **5. Qualidade de Código** ✅
+
 - Pre-commit hooks funcionando
 - Zero emojis em código
 - Type hints completos
@@ -259,12 +265,14 @@ PROGRESSO TOTAL MVP: ███████████████████�
 **Análise Realizada**:
 
 1. **Crew AI - Pontos Fortes**:
+
    - Role-playing nativo e hierarquia de agentes
    - API declarativa e intuitiva
    - Memória compartilhada entre agentes
    - Framework especializado em colaboração agente-agente
 
 2. **Crew AI - Limitações para Nosso Caso**:
+
    - Requereria reescrever 82% do MVP já implementado
    - Estimativa: +2-3 semanas de retrabalho
    - Menor controle granular sobre workflow vs LangGraph
@@ -293,17 +301,20 @@ PROGRESSO TOTAL MVP: ███████████████████�
 **Contexto**: Durante implementação do LangGraph Workflow, foram introduzidos **31+ emojis Unicode** em código Python novo, causando `UnicodeEncodeError` em runtime no Windows (cp1252).
 
 **Arquivos Afetados**:
+
 - `src/graph/workflow.py` (10+ emojis em logs)
 - `src/agents/` (orchestrator, financial, customer, process, learning - 25+ emojis)
 - `src/tools/rag_tools.py` (6 emojis)
 - `scripts/build_knowledge_base.py` (1 emoji)
 
 **Impacto**:
+
 - 4 `UnicodeEncodeError` em runtime
 - 30-40 minutos gastos corrigindo manualmente
 - Usuário precisou apontar o erro explicitamente
 
 **Root Cause Identificada**:
+
 - ✅ **Memória existente**: Já havia memória [[9592459]] sobre NUNCA usar emojis em Windows
 - ❌ **Gap de processo**: Memórias são **REATIVAS** (ativadas por contexto) não **PROATIVAS** (checklist automático)
 - ❌ **Tendência natural**: Ao criar código novo do zero, emojis foram adicionados "para melhor UX"
@@ -311,21 +322,25 @@ PROGRESSO TOTAL MVP: ███████████████████�
 ### ✅ **Solução Implementada**
 
 1. **Correção Imediata**:
+
    - Varredura sistemática com `grep` por todos emojis Unicode
    - Substituição por ASCII: `[OK]`, `[ERRO]`, `[START]`, `[SEARCH]`, etc.
    - 31 emojis corrigidos em 7 arquivos
 
 2. **Prevenção Futura - 3 Memórias Criadas**:
+
    - [[9776249]] **Checklist Obrigatório** - 5 pontos a verificar ANTES de criar código
    - [[9776254]] **Lições Aprendidas** - Análise completa deste incidente
    - [[9592459]] **Memória Atualizada** - 5 justificativas (encoding + segurança + portabilidade + acessibilidade + logs)
 
 3. **Documentação**:
+
    - `LESSONS_LEARNED.md` (250+ linhas) - Análise detalhada, métricas, ROI, meta-lições
 
 ### 🔍 **Insight de Pesquisa (2025)**
 
 Pesquisa recente revelou que emojis não são apenas problema de **encoding**, mas também de **SEGURANÇA**:
+
 - Usados para jailbreaks em LLMs
 - Exploits com caracteres invisíveis (Unicode tag blocks)
 - Best practice de segurança AI em 2025
@@ -334,10 +349,14 @@ Pesquisa recente revelou que emojis não são apenas problema de **encoding**, m
 
 ### 🎯 **Resultado**
 
-✅ **Workflow 100% funcional** após correções  
-✅ **Testes 3/3 passando** (inicialização, singleton, visualização)  
-✅ **Zero erros de encoding**  
-✅ **Processo de prevenção estabelecido**  
+✅ **Workflow 100% funcional** após correções
+
+✅ **Testes 3/3 passando** (inicialização, singleton, visualização)
+
+✅ **Zero erros de encoding**
+
+✅ **Processo de prevenção estabelecido**
+
 ✅ **ROI**: Economizará 30+ minutos por projeto futuro
 
 **Documentação Completa**: Ver `LESSONS_LEARNED.md` para análise detalhada e template para futuras lições.
@@ -777,24 +796,28 @@ Pesquisa recente revelou que emojis não são apenas problema de **encoding**, m
 **Implementação Realizada**:
 
 1. **Grafo de Estados LangGraph**:
+
    - 5 nós principais: `analyze_query`, `execute_agents`, `synthesize_response`, `judge_evaluation`, `finalize`
    - 1 edge condicional: `decide_next_step` (approved → finalize | needs_refinement → execute_agents)
    - Loop de refinamento: Até 2 iterações se Judge reprovar
    - Entry point: `analyze_query` | Exit: `finalize` → END
 
 2. **State Management (Pydantic)**:
+
    - `BSCState`: Estado completo do workflow (type-safe)
    - `AgentResponse`: Respostas estruturadas com confidence + sources
    - `JudgeEvaluation`: Validação com score, feedback, issues, suggestions
    - `PerspectiveType`: Enum para perspectivas BSC (financial, customer, process, learning)
 
 3. **Integração com Componentes Existentes**:
+
    - ✅ Orchestrator (routing, synthesis)
    - ✅ 4 Agentes Especialistas BSC (execução paralela)
    - ✅ Judge Agent (avaliação de qualidade)
    - ✅ RAG Pipeline (retrieval, reranking)
 
 4. **Características Avançadas**:
+
    - Execução paralela de agentes (performance otimizada)
    - Refinamento iterativo baseado em feedback do Judge
    - Error handling robusto em cada nó
@@ -894,31 +917,37 @@ START → analyze_query → execute_agents → synthesize_response
 **Implementação Realizada**:
 
 1. **Chat Interface**:
+
    - Input de query com histórico persistente
    - Visualização de resposta final formatada
    - Mensagens de sistema e usuário diferenciadas
 
 2. **Visualização de Perspectivas BSC**:
+
    - Expandible sections para cada perspectiva consultada
    - Display de conteúdo detalhado por agente
    - Confidence scores por perspectiva
 
 3. **Display de Fontes**:
+
    - Documentos recuperados com scores de relevância
    - Source e page/seção identificados
    - Preview do conteúdo de cada documento
 
 4. **Judge Evaluation**:
+
    - Score geral, completude, fundamentação, citação de fontes
    - Feedback detalhado do Judge
    - Issues e sugestões de melhoria
 
 5. **Sidebar de Configurações**:
+
    - Seleção de perspectivas BSC a consultar
    - Parâmetros de retrieval (top_k, threshold)
    - Toggle para ativar/desativar Judge Agent
 
 6. **UX e Design**:
+
    - Interface limpa e responsiva
    - Cores e badges para status
    - Loading indicators durante processamento
@@ -1005,11 +1034,17 @@ START → analyze_query → execute_agents → synthesize_response
 Ao final da Fase 1, teremos:
 
 ✅ Sistema RAG completo e funcional
+
 ✅ 4 agentes especialistas BSC
+
 ✅ Orquestração com LangGraph
+
 ✅ Interface Streamlit
+
 ✅ Dataset BSC indexado
+
 ✅ Testes E2E
+
 ✅ Documentação completa
 
 **Métrica de Sucesso**:
@@ -1424,12 +1459,19 @@ Documentos BSC são **ricos em elementos visuais**:
 ---
 
 **Última atualização**: 2025-10-11 (Interface Streamlit COMPLETA ✅ | Migração Claude Sonnet 4.5 ✅ | **Otimizações 949x** ⚡)
+
 **Status**: Fases 1A, 1B e 1C **100% COMPLETAS + OTIMIZADAS** ✅ | Fase 1D: Testes E2E + Docs pendentes
+
 **Progresso MVP**: **95%** (19/20 tarefas concluídas) | **Sistema altamente otimizado** ⚡
+
 **Dataset**: 2 livros fundamentais indexados (2.881 chunks contextualizados)
+
 **Decisões**: LangGraph confirmado | Claude Sonnet 4.5 escolhido | AsyncIO + Caching implementados
+
 **Otimizações**: Paralelização AsyncIO (3.34x) | Caching embeddings (949x) | Cache hit 87.5%
+
 **Arquivos Novos (Sessão 11/10)**: Interface Streamlit + AsyncIO + Caching + 2 test suites + docs
+
 **Próximo**: **Testes End-to-End** ⚡⚡⚡ → Documentação Final → **MVP CONCLUÍDO** 🎉
 
 ### 📋 To-dos Consolidados (Atualizado 11/10/2025)
@@ -1498,9 +1540,11 @@ Documentos BSC são **ricos em elementos visuais**:
 ### ✅ To-dos MVP (Atualizado 11/10/2025)
 
 **Fase 0 - Setup**: ✅ COMPLETO
+
 - [x] Setup Completo do Ambiente (venv + deps + Docker)
 
 **Fase 1A - Pipeline RAG**: ✅ COMPLETO
+
 - [x] Implementar módulo de Embeddings OpenAI
 - [x] Implementar Retriever com Hybrid Search
 - [x] Implementar Re-ranker Cohere
@@ -1510,12 +1554,14 @@ Documentos BSC são **ricos em elementos visuais**:
 - [x] Implementar Contextual Retrieval (Anthropic)
 
 **Fase 1B - Sistema Multi-Agente**: ✅ COMPLETO
+
 - [x] Criar Ferramentas RAG para Agentes
 - [x] Implementar 4 Agentes Especialistas BSC
 - [x] Implementar Judge Agent
 - [x] Implementar Orchestrator
 
 **Fase 1C - Orquestração e Interface**: ✅ COMPLETO
+
 - [x] Criar Dataset BSC de Exemplo (2 livros, 2.881 chunks)
 - [x] Criar LangGraph Workflow (600 linhas, 17 testes)
 - [x] Implementar Interface Streamlit (5 arquivos, 750+ linhas)
@@ -1526,10 +1572,12 @@ Documentos BSC são **ricos em elementos visuais**:
 - [x] Caching de Embeddings Persistente (949x speedup) **[NOVO 11/10 - Tarde]**
 
 **Fase 1D - Validação**: ⏳ EM ANDAMENTO (0%)
+
 - [ ] Criar Testes End-to-End ⚡ **PRÓXIMO**
 - [ ] Documentar MVP completo
 
 **Fase 2 - RAG Avançado**: 🔮 FUTURO (após validar MVP)
+
 - [ ] Implementar Query Decomposition (se necessário)
 - [ ] Implementar HyDE (se necessário)
 - [ ] Implementar Adaptive Retrieval (se necessário)
@@ -1537,6 +1585,7 @@ Documentos BSC são **ricos em elementos visuais**:
 - [ ] Melhorar sistema de re-ranking (se necessário)
 
 **Fase 3 - Produção**: 🚀 FUTURO
+
 - [ ] Fine-tune embeddings para domínio BSC (opcional)
 - [ ] Avaliar RAPTOR (opcional)
 - [ ] Avaliar Graph RAG (opcional)

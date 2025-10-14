@@ -71,7 +71,7 @@ class BSCWorkflow:
         
         Fluxo:
         START → analyze_query → execute_agents → synthesize_response 
-        → judge_evaluation → decide_next → [finalize OR execute_agents (refinement)]
+        → judge_validation → decide_next → [finalize OR execute_agents (refinement)]
         → END
         """
         # Criar grafo com schema BSCState
@@ -81,7 +81,7 @@ class BSCWorkflow:
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
-        workflow.add_node("judge_evaluation", self.judge_evaluation)
+        workflow.add_node("judge_validation", self.judge_evaluation)  # Renomeado para evitar conflito com state key
         workflow.add_node("finalize", self.finalize)
         
         # Definir entry point
@@ -90,11 +90,11 @@ class BSCWorkflow:
         # Definir edges (transições)
         workflow.add_edge("analyze_query", "execute_agents")
         workflow.add_edge("execute_agents", "synthesize_response")
-        workflow.add_edge("synthesize_response", "judge_evaluation")
+        workflow.add_edge("synthesize_response", "judge_validation")
         
-        # Edge condicional: judge_evaluation → decide_next
+        # Edge condicional: judge_validation → decide_next
         workflow.add_conditional_edges(
-            "judge_evaluation",
+            "judge_validation",
             self.decide_next_step,
             {
                 "finalize": "finalize",
@@ -350,7 +350,7 @@ class BSCWorkflow:
             Estado atualizado com avaliação do Judge
         """
         try:
-            logger.info("[INFO] Nó: judge_evaluation | Avaliando resposta agregada")
+            logger.info("[INFO] Nó: judge_validation | Avaliando resposta agregada")
             
             if not state.aggregated_response:
                 logger.warning("[WARN] Nenhuma resposta agregada para avaliar")
@@ -618,7 +618,7 @@ execute_agents (Executa agentes especialistas em paralelo)
 synthesize_response (Sintetiza respostas em resposta unificada)
   |
   v
-judge_evaluation (Avalia qualidade com Judge Agent)
+judge_validation (Avalia qualidade com Judge Agent)
   |
   v
 decide_next_step (Decisao condicional)
