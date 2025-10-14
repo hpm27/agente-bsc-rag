@@ -12,3 +12,5 @@
 .gitignore/**
 data/contextual_cache/
 venv/
+# Don't index SpecStory auto-save files, but allow explicit context inclusion via @ references
+.specstory/**

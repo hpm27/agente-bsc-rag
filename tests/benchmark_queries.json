@@ -1,0 +1,293 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-10-14",
+    "total_queries": 20,
+    "categories": {
+      "multi_perspectiva": 5,
+      "relacional": 5,
+      "comparativa": 5,
+      "conceitual_complexa": 5
+    },
+    "description": "Benchmark dataset para Query Decomposition - 20 queries BSC diversas com ground truth"
+  },
+  "queries": [
+    {
+      "id": "multi_persp_001",
+      "category": "multi_perspectiva",
+      "query": "Como implementar BSC considerando as 4 perspectivas e suas interconexões?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["financeira", "clientes", "processos", "aprendizado", "interconexões"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "multi_persp_002",
+      "category": "multi_perspectiva",
+      "query": "Qual a relação entre perspectivas de aprendizado, processos e resultados financeiros no BSC?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["aprendizado", "processos", "financeira", "relação causa-efeito"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "multi_persp_003",
+      "category": "multi_perspectiva",
+      "query": "Como integrar objetivos de clientes com métricas financeiras no Balanced Scorecard?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["clientes", "financeira", "objetivos estratégicos", "métricas"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "multi_persp_004",
+      "category": "multi_perspectiva",
+      "query": "Explique o balanceamento entre perspectivas interna e externa do BSC e como elas se complementam",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["perspectivas internas", "perspectivas externas", "balanceamento", "complementaridade"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "multi_persp_005",
+      "category": "multi_perspectiva",
+      "query": "Como as quatro perspectivas do BSC se complementam na execução da estratégia organizacional?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["4 perspectivas", "execução estratégica", "complementaridade", "alinhamento"],
+      "ground_truth_docs": [
+        "The Strategy-Focused Organization",
+        "The Execution Premium"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "relacional_001",
+      "category": "relacional",
+      "query": "Qual o impacto de KPIs de aprendizado organizacional nos resultados dos processos internos?",
+      "complexity": "medium",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["KPIs aprendizado", "processos internos", "impacto", "causa-efeito"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "relacional_002",
+      "category": "relacional",
+      "query": "Como a satisfação do cliente influencia diretamente o desempenho financeiro segundo Kaplan e Norton?",
+      "complexity": "medium",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["satisfação cliente", "desempenho financeiro", "relação causal", "Kaplan Norton"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "relacional_003",
+      "category": "relacional",
+      "query": "Explique a cadeia de causa-efeito entre inovação, melhoria de processos e lucratividade no BSC",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["inovação", "processos", "lucratividade", "causa-efeito"],
+      "ground_truth_docs": [
+        "Strategy Maps",
+        "The Execution Premium"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "relacional_004",
+      "category": "relacional",
+      "query": "Quais são as dependências entre objetivos estratégicos das diferentes perspectivas do BSC?",
+      "complexity": "medium",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["objetivos estratégicos", "dependências", "perspectivas", "interconexões"],
+      "ground_truth_docs": [
+        "Strategy Maps",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "relacional_005",
+      "category": "relacional",
+      "query": "Como iniciativas de capacitação de pessoas afetam a perspectiva de clientes no modelo BSC?",
+      "complexity": "medium",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["capacitação", "aprendizado", "clientes", "impacto"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "comparativa_001",
+      "category": "comparativa",
+      "query": "Quais as diferenças na aplicação do BSC entre empresas de manufatura e empresas de serviços?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["manufatura", "serviços", "diferenças", "aplicação BSC"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "comparativa_002",
+      "category": "comparativa",
+      "query": "Compare as abordagens de BSC tradicional versus Strategy Maps de Kaplan e Norton",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["BSC tradicional", "Strategy Maps", "evolução", "diferenças"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "Strategy Maps"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "comparativa_003",
+      "category": "comparativa",
+      "query": "Qual a diferença entre indicadores de resultado (lagging) e indicadores de tendência (leading) no BSC?",
+      "complexity": "medium",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["lagging indicators", "leading indicators", "diferenças", "aplicação"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard",
+        "The Execution Premium"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "comparativa_004",
+      "category": "comparativa",
+      "query": "Compare a perspectiva de processos internos entre organizações com fins lucrativos e sem fins lucrativos",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["processos internos", "fins lucrativos", "sem fins lucrativos", "adaptação BSC"],
+      "ground_truth_docs": [
+        "The Strategy-Focused Organization",
+        "Alignment"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "comparativa_005",
+      "category": "comparativa",
+      "query": "Quais as semelhanças e diferenças entre BSC corporativo e BSC de unidades de negócio?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["BSC corporativo", "BSC unidades", "semelhanças", "diferenças", "alinhamento"],
+      "ground_truth_docs": [
+        "Alignment",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "conceitual_001",
+      "category": "conceitual_complexa",
+      "query": "O que é Balanced Scorecard?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["definição BSC", "conceito básico"],
+      "ground_truth_docs": [
+        "The_balanced_scorecard"
+      ],
+      "difficulty": "easy"
+    },
+    {
+      "id": "conceitual_002",
+      "category": "conceitual_complexa",
+      "query": "Explique o conceito de Strategy-Focused Organization segundo Kaplan e Norton",
+      "complexity": "medium",
+      "should_decompose": false,
+      "expected_topics": ["strategy-focused organization", "5 princípios", "transformação organizacional"],
+      "ground_truth_docs": [
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "conceitual_003",
+      "category": "conceitual_complexa",
+      "query": "Como o conceito de ativos intangíveis é tratado no framework do Balanced Scorecard e Strategy Maps?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["ativos intangíveis", "capital organizacional", "capital informacional", "capital humano"],
+      "ground_truth_docs": [
+        "Strategy Maps",
+        "The_balanced_scorecard"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "conceitual_004",
+      "category": "conceitual_complexa",
+      "query": "O que são Strategy Maps e como elas complementam o Balanced Scorecard na gestão estratégica?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 2,
+      "expected_topics": ["Strategy Maps", "BSC", "complementaridade", "gestão estratégica"],
+      "ground_truth_docs": [
+        "Strategy Maps",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "medium"
+    },
+    {
+      "id": "conceitual_005",
+      "category": "conceitual_complexa",
+      "query": "Explique o modelo do Execution Premium e sua relação com BSC para vincular estratégia a operações",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["Execution Premium", "BSC", "estratégia", "operações", "sistema integrado"],
+      "ground_truth_docs": [
+        "The Execution Premium",
+        "The Strategy-Focused Organization"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}
+

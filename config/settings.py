@@ -85,6 +85,34 @@ class Settings(BaseSettings):
     embedding_cache_ttl_days: int = 30
     embedding_cache_max_size_gb: int = 5
     
+    # Query Decomposition (RAG Avancado - Fase 2A.1)
+    enable_query_decomposition: bool = True
+    decomposition_min_query_length: int = 30
+    decomposition_score_threshold: int = 1
+    decomposition_llm: str = "gpt-4o-mini"
+    
+    # Diversity Re-ranking (RAG Avançado - Fase 2A.2)
+    enable_diversity_reranking: bool = True
+    diversity_lambda: float = 0.5  # Balanceamento: 0.5 = equilibrado relevância/diversidade
+    diversity_threshold: float = 0.8  # Similaridade máxima permitida entre docs
+    metadata_boost_enabled: bool = True
+    metadata_source_boost: float = 0.2  # Boost 20% para sources diferentes
+    metadata_perspective_boost: float = 0.15  # Boost 15% para perspectives BSC diferentes
+    adaptive_topn_enabled: bool = True  # Ajustar top_n baseado em complexidade da query
+    
+    # Router Inteligente (RAG Avançado - Fase 2A.3)
+    enable_query_router: bool = True
+    router_use_llm_fallback: bool = True  # Usar LLM para queries ambíguas (20% casos)
+    router_llm_model: str = "gpt-4o-mini"  # Modelo para LLM fallback
+    router_confidence_threshold: float = 0.8  # Threshold para confiar na heurística
+    router_log_decisions: bool = True  # Logar todas decisões de routing
+    router_log_file: str = "logs/routing_decisions.jsonl"
+    simple_query_max_words: int = 30  # Threshold para queries simples
+    complex_query_min_words: int = 30  # Threshold para queries complexas
+    relational_keywords: str = "relação,impacto,causa,efeito,depende,influencia,deriva"
+    enable_direct_answer_cache: bool = True  # Cache para DirectAnswerStrategy
+    direct_answer_cache_ttl: int = 3600  # TTL do cache (1 hora)
+    
     # Human-in-the-loop
     require_approval_for_critical: bool = True
     

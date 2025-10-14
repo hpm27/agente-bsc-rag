@@ -10,6 +10,7 @@ Orquestra o fluxo completo:
 6. Resposta final
 """
 from typing import Dict, Any, List, Literal
+import time
 from langgraph.graph import StateGraph, END
 from loguru import logger
 
@@ -120,8 +121,9 @@ class BSCWorkflow:
         Returns:
             Estado atualizado com perspectivas relevantes
         """
+        start_time = time.time()
         try:
-            logger.info(f"\n[INFO] Nó: analyze_query | Query: '{state.query[:60]}...'")
+            logger.info(f"\n[TIMING] [analyze_query] INICIADO | Query: '{state.query[:60]}...'")
             
             # Usa Orchestrator para routing
             routing_decision = self.orchestrator.route_query(state.query)
@@ -144,8 +146,10 @@ class BSCWorkflow:
             query_type = "general" if routing_decision.is_general_question else "specific"
             complexity = "complex" if len(relevant_perspectives) > 2 else "simple"
             
+            elapsed_time = time.time() - start_time
             logger.info(
-                f"[OK] Roteamento: {len(relevant_perspectives)} perspectiva(s) | "
+                f"[TIMING] [analyze_query] CONCLUÍDO em {elapsed_time:.3f}s | "
+                f"{len(relevant_perspectives)} perspectiva(s) | "
                 f"Tipo: {query_type} | Complexidade: {complexity}"
             )
             
@@ -178,13 +182,14 @@ class BSCWorkflow:
         Returns:
             Estado atualizado com respostas dos agentes
         """
+        start_time = time.time()
         try:
             iteration_label = ""
             if state.refinement_iteration > 0:
                 iteration_label = f" (Refinamento #{state.refinement_iteration})"
             
             logger.info(
-                f"[INFO] Nó: execute_agents{iteration_label} | "
+                f"[TIMING] [execute_agents] INICIADO{iteration_label} | "
                 f"Perspectivas: {[p.value for p in state.relevant_perspectives]}"
             )
             
@@ -244,7 +249,11 @@ class BSCWorkflow:
                     )
                 )
             
-            logger.info(f"[OK] Executados {len(agent_responses)} agente(s) com sucesso")
+            elapsed_time = time.time() - start_time
+            logger.info(
+                f"[TIMING] [execute_agents] CONCLUÍDO em {elapsed_time:.3f}s | "
+                f"Executados {len(agent_responses)} agente(s)"
+            )
             
             return {
                 "agent_responses": agent_responses
@@ -270,9 +279,10 @@ class BSCWorkflow:
         Returns:
             Estado atualizado com resposta agregada
         """
+        start_time = time.time()
         try:
             logger.info(
-                f"[INFO] Nó: synthesize_response | "
+                f"[TIMING] [synthesize_response] INICIADO | "
                 f"Sintetizando {len(state.agent_responses)} resposta(s)"
             )
             
@@ -312,7 +322,11 @@ class BSCWorkflow:
                 agent_responses=agent_responses_dict
             )
             
-            logger.info(f"[OK] Síntese completa | Confidence: {synthesis.confidence:.2f}")
+            elapsed_time = time.time() - start_time
+            logger.info(
+                f"[TIMING] [synthesize_response] CONCLUÍDO em {elapsed_time:.3f}s | "
+                f"Confidence: {synthesis.confidence:.2f}"
+            )
             
             return {
                 "aggregated_response": synthesis.synthesized_answer,
@@ -349,8 +363,9 @@ class BSCWorkflow:
         Returns:
             Estado atualizado com avaliação do Judge
         """
+        start_time = time.time()
         try:
-            logger.info("[INFO] Nó: judge_validation | Avaliando resposta agregada")
+            logger.info("[TIMING] [judge_validation] INICIADO | Avaliando resposta agregada")
             
             if not state.aggregated_response:
                 logger.warning("[WARN] Nenhuma resposta agregada para avaliar")
@@ -394,8 +409,10 @@ class BSCWorkflow:
                 has_sources=judgment.has_sources
             )
             
+            elapsed_time = time.time() - start_time
             logger.info(
-                f"[OK] Avaliação: {'APROVADA' if approved else 'REPROVADA'} | "
+                f"[TIMING] [judge_validation] CONCLUÍDO em {elapsed_time:.3f}s | "
+                f"{'APROVADA' if approved else 'REPROVADA'} | "
                 f"Score: {judgment.quality_score:.2f} | "
                 f"Veredito: {judgment.verdict}"
             )
@@ -540,9 +557,10 @@ class BSCWorkflow:
         Returns:
             Resultado completo com resposta final e metadados
         """
+        workflow_start_time = time.time()
         try:
             logger.info(f"\n{'='*80}")
-            logger.info(f"[INFO] Iniciando BSCWorkflow para query: '{query[:60]}...'")
+            logger.info(f"[TIMING] [WORKFLOW] INICIADO para query: '{query[:60]}...'")
             logger.info(f"{'='*80}\n")
             
             # Criar estado inicial
@@ -578,8 +596,16 @@ class BSCWorkflow:
                 "metadata": final_state.get("metadata", {})
             }
             
+            # Adicionar judge_approved ao metadata top-level para E2E tests
+            if final_state.get("judge_evaluation"):
+                result["metadata"]["judge_approved"] = final_state["judge_evaluation"].approved
+            
+            workflow_elapsed_time = time.time() - workflow_start_time
             logger.info(f"\n{'='*80}")
-            logger.info(f"[OK] BSCWorkflow finalizado com sucesso")
+            logger.info(
+                f"[TIMING] [WORKFLOW] CONCLUÍDO em {workflow_elapsed_time:.3f}s "
+                f"({workflow_elapsed_time/60:.2f} min)"
+            )
             logger.info(f"{'='*80}\n")
             
             return result

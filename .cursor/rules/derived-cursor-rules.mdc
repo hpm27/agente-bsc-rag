@@ -1,0 +1,16 @@
+---
+description: AI rules derived by SpecStory from the project AI interaction history
+globs: *
+---
+
+## HEADERS
+
+## TECH STACK
+
+## PROJECT DOCUMENTATION & CONTEXT SYSTEM
+
+## WORKFLOW & RELEASE RULES
+
+## DEBUGGING
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.

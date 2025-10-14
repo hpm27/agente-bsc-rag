@@ -22,6 +22,7 @@ from src.agents.customer_agent import CustomerAgent
 from src.agents.process_agent import ProcessAgent
 from src.agents.learning_agent import LearningAgent
 from src.agents.judge_agent import JudgeAgent
+from src.rag.query_router import QueryRouter, QueryCategory, RoutingDecision as QueryRoutingDecision
 
 
 class RoutingDecision(BaseModel):
@@ -75,6 +76,10 @@ class Orchestrator:
         # Judge agent
         self.judge = JudgeAgent()
         
+        # Query Router Inteligente (RAG Avançado - Fase 2A.3)
+        self.enable_query_router = settings.enable_query_router if hasattr(settings, 'enable_query_router') else False
+        self.query_router = QueryRouter() if self.enable_query_router else None
+        
         # Prompts
         self.routing_prompt = self._create_routing_prompt()
         self.synthesis_prompt = self._create_synthesis_prompt()
@@ -83,7 +88,10 @@ class Orchestrator:
         self.routing_chain = self.routing_prompt | self.llm.with_structured_output(RoutingDecision)
         self.synthesis_chain = self.synthesis_prompt | self.llm.with_structured_output(SynthesisResult)
         
-        logger.info(f"[OK] {self.name} inicializado com {len(self.agents)} agentes especialistas")
+        logger.info(
+            f"[OK] {self.name} inicializado com {len(self.agents)} agentes especialistas "
+            f"(QueryRouter={'enabled' if self.enable_query_router else 'disabled'})"
+        )
     
     def _create_routing_prompt(self) -> ChatPromptTemplate:
         """Cria prompt para routing de agentes."""
@@ -156,6 +164,62 @@ Calcule confidence baseado em:
 - <0.5: Informações insuficientes ou conflitantes"""
 
         return ChatPromptTemplate.from_template(template)
+    
+    def get_retrieval_strategy_metadata(self, query: str) -> Dict[str, Any]:
+        """
+        Usa Query Router para obter metadata sobre estratégia de retrieval.
+        
+        Esta metadata é adicionada ao BSCState para analytics e pode ser
+        usada pelos agentes para otimizar retrieval.
+        
+        Args:
+            query: Query do usuário
+            
+        Returns:
+            Dict com metadata de routing (categoria, estratégia, confidence, etc)
+        """
+        if not self.enable_query_router or self.query_router is None:
+            # Router desabilitado → retorna metadata padrão
+            return {
+                "router_enabled": False,
+                "category": "conceptual_broad",
+                "strategy": "HybridSearch",
+                "confidence": 1.0,
+                "complexity_score": 0
+            }
+        
+        try:
+            # Obter decisão de routing
+            routing_decision = self.query_router.route(query)
+            
+            logger.info(
+                f"[Router] Query classified: category={routing_decision.category.value}, "
+                f"strategy={routing_decision.strategy}, "
+                f"confidence={routing_decision.confidence:.2f}"
+            )
+            
+            # Retornar metadata para BSCState
+            return {
+                "router_enabled": True,
+                "category": routing_decision.category.value,
+                "strategy": routing_decision.strategy,
+                "confidence": routing_decision.confidence,
+                "heuristic_match": routing_decision.heuristic_match,
+                "complexity_score": routing_decision.complexity_score,
+                **routing_decision.metadata
+            }
+        
+        except Exception as e:
+            logger.error(f"[Router] Erro ao rotear query: {e}")
+            # Fallback para metadata padrão
+            return {
+                "router_enabled": True,
+                "router_error": str(e),
+                "category": "conceptual_broad",
+                "strategy": "HybridSearch",
+                "confidence": 0.5,
+                "complexity_score": 0
+            }
     
     def route_query(self, query: str) -> RoutingDecision:
         """
@@ -262,8 +326,9 @@ Calcule confidence baseado em:
         max_workers = min(len(agent_names), settings.agent_max_workers)
         
         logger.info(
-            f"[PARALLEL] Executando {len(agent_names)} agente(s) "
-            f"com {max_workers} worker(s)"
+            f"[TIMING] [invoke_agents] INICIADO | "
+            f"Executando {len(agent_names)} agente(s) em PARALELO "
+            f"com {max_workers} worker(s) | Agentes: {agent_names}"
         )
         
         responses = []
@@ -293,13 +358,20 @@ Calcule confidence baseado em:
                         f"[ERRO] Excecao ao aguardar {agent_name}: {e}"
                     )
         
-        # Log final com performance
+        # Log final com performance detalhado
         total_elapsed = time.time() - start_time
         avg_time = total_elapsed / len(responses) if responses else 0
         
+        # Calcular tempos individuais de cada agente
+        individual_times = [r.get("execution_time", 0) for r in responses]
+        max_individual = max(individual_times) if individual_times else 0
+        
         logger.info(
-            f"[OK] {len(responses)} agente(s) executado(s) em {total_elapsed:.2f}s "
-            f"(media {avg_time:.2f}s/agente, paralelo com {max_workers} workers)"
+            f"[TIMING] [invoke_agents] CONCLUÍDO em {total_elapsed:.3f}s | "
+            f"{len(responses)} agente(s) executados | "
+            f"Tempo médio: {avg_time:.3f}s/agente | "
+            f"Tempo máximo individual: {max_individual:.3f}s | "
+            f"Workers: {max_workers}"
         )
         
         return responses

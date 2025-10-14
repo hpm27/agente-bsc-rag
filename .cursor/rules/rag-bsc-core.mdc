@@ -1,0 +1,751 @@
+---
+alwaysApply: true
+description: "Router central para projeto BSC RAG - Workflow obrigatório, lições validadas do MVP, mapa de técnicas RAG avançadas, e guia de navegação. Sempre aplicado para garantir processo consistente durante toda a Fase 2 (6-8 semanas)."
+version: "1.0"
+last_updated: "2025-10-14"
+---
+
+# 🧠 BSC RAG - ROUTER CENTRAL
+
+**Sistema de Organização e Navegação para Implementação de Técnicas RAG Avançadas**
+
+Este router central é **sempre aplicado** durante todo o desenvolvimento da Fase 2 (RAG Avançado). Ele garante processo consistente, preserva contexto entre sessões, e acelera decisões técnicas através de navegação eficiente.
+
+---
+
+## 📋 ÍNDICE NAVEGÁVEL
+
+1. [🚨 Workflow Obrigatório RAG](#workflow-obrigatório-rag) - **7 steps** para implementar qualquer técnica
+2. [🎓 Lições de Produção MVP](#lições-de-produção-mvp) - **Top 5** descobertas validadas
+3. [🗺️ Mapa de Técnicas RAG](#mapa-de-técnicas-rag) - **8 técnicas** comparadas por ROI
+4. [🎯 Guia por Cenário](#guia-por-cenário-rag) - **4 cenários** práticos mapeados
+5. [📚 Localização da Documentação](#localização-da-documentação) - Navegação rápida
+
+---
+
+## 🚨 WORKFLOW OBRIGATÓRIO RAG
+
+**ANTES de implementar QUALQUER técnica RAG da Fase 2, siga estes 7 steps obrigatórios:**
+
+### **Step 1: 🧠 Sequential Thinking**
+
+**Objetivo:** Planejar arquitetura e identificar trade-offs ANTES de codificar.
+
+**Ações:**
+
+- Usar ferramenta Sequential Thinking para raciocinar sobre a técnica
+- Identificar complexidade, tempo estimado, dependências
+- Analisar trade-offs (latência, custo, complexidade vs benefício)
+- Validar se a técnica é necessária (evitar over-engineering)
+
+**Exemplo:**
+
+```
+Thought 1: Query Decomposition - O que é? Quebrar queries complexas em sub-queries.
+Thought 2: Por quê precisamos? Queries BSC são multi-perspectiva ("Como implementar BSC considerando finanças, clientes, processos?")
+Thought 3: Complexidade? Baixa - usa LLM + RRF já implementado
+Thought 4: ROI esperado? +30-50% answer quality (validado: Galileo AI, Epsilla)
+Thought 5: Decisão? IMPLEMENTAR - alinhamento perfeito com use case BSC
+```
+
+---
+
+### **Step 2: 🎯 Discovery (RAG Techniques Catalog)**
+
+**Objetivo:** Descobrir QUAL técnica usar baseado em necessidade.
+
+**Ações:**
+
+- Consultar seção [Mapa de Técnicas RAG](#mapa-de-técnicas-rag) abaixo
+- Comparar ROI, complexidade, tempo de implementação
+- Verificar quando usar vs quando NÃO usar
+- Priorizar técnicas de alto ROI e baixa complexidade (Quick Wins)
+
+**Recursos:**
+
+- `.cursor/rules/rag-techniques-catalog.mdc` ← Futuro (TIER 2)
+- Tabela comparativa na seção 3 deste documento
+
+---
+
+### **Step 3: 🗺️ Navigation (Docs Index)**
+
+**Objetivo:** Identificar documentação relevante rapidamente.
+
+**Ações:**
+
+- Consultar seção [Localização da Documentação](#localização-da-documentação)
+- Navegar para `docs/techniques/[TECHNIQUE].md` se existir
+- Buscar papers/artigos de referência (usar Brightdata se necessário)
+- Verificar `docs/history/` para lições aprendidas relacionadas
+
+**Recursos:**
+
+- `docs/DOCS_INDEX.md` ← Futuro (TIER 3)
+- Estrutura de diretórios na seção 5 deste documento
+
+---
+
+### **Step 4: 📚 Knowledge Base Específica**
+
+**Objetivo:** Estudar a técnica em profundidade antes de implementar.
+
+**Ações:**
+
+- Ler `docs/techniques/[TECHNIQUE].md` completamente
+- Estudar papers/artigos de referência citados
+- Analisar exemplos de código de implementações validadas
+- Entender métricas de sucesso esperadas
+
+**Fontes Principais (2025):**
+
+- Meilisearch, AnalyticsVidhya, DataCamp, Thoughtworks
+- Papers: Self-RAG, CRAG, GraphRAG, Multi-HyDE
+- Benchmarks: Microsoft BenchmarkQED, Galileo AI, Epsilla
+
+---
+
+### **Step 5: 📘 Implementação**
+
+**Objetivo:** Codificar seguindo padrões do projeto.
+
+**Ações:**
+
+- Criar `src/rag/[module].py` seguindo templates validados
+- Usar AsyncIO sempre que possível (lição MVP #1)
+- Adicionar type hints completos em todas funções
+- Escrever docstrings em português brasileiro
+- Seguir princípios SOLID e DRY
+- Implementar feature flags em `.env` (ENABLE_[FEATURE]=true/false)
+
+**Padrões Obrigatórios:**
+
+```python
+# src/rag/query_decomposer.py - Exemplo de estrutura
+
+from typing import List, Dict, Any
+import asyncio
+from langchain_core.language_models import BaseLLM
+from src.config.settings import settings
+
+class QueryDecomposer:
+    """Decompõe queries BSC complexas em sub-queries independentes.
+    
+    Usa LLM (GPT-4o-mini) para decomposição e Reciprocal Rank Fusion (RRF)
+    para agregar resultados. Ideal para queries multi-perspectiva.
+    
+    Métricas esperadas:
+    - Recall@10: +30-40% vs baseline
+    - Precision@5: +25-35% vs baseline
+    - Latência adicional: ~2s
+    """
+    
+    def __init__(self, llm: BaseLLM):
+        self.llm = llm
+        self.enabled = settings.ENABLE_QUERY_DECOMPOSITION
+        
+    def should_decompose(self, query: str) -> bool:
+        """Decide se query é complexa o suficiente para decomposição.
+        
+        Heurísticas:
+        - Comprimento > 50 caracteres
+        - Contém palavras de ligação ("e", "também", "considerando")
+        - Menciona múltiplas perspectivas BSC
+        """
+        pass
+    
+    async def decompose(self, query: str) -> List[str]:
+        """Decompõe query em 2-4 sub-queries independentes."""
+        pass
+```
+
+---
+
+### **Step 6: 🧪 Validação**
+
+**Objetivo:** Testar rigorosamente antes de considerar completo.
+
+**Ações Obrigatórias:**
+
+- Criar `tests/test_[module].py` com **15+ testes unitários**
+- Criar benchmark com **50 queries BSC** variadas (simples, complexas, relacionais)
+- Medir métricas: Recall@10, Precision@5, Latência P50/P95, Judge Approval
+- Comparar com **baseline** (não apenas 1 teste isolado!)
+- Executar suite E2E completa (22 testes) para detectar regressões
+
+**Métricas Mínimas:**
+
+```python
+# tests/test_query_decomposer.py
+
+def test_decompose_complex_bsc_query():
+    """Query multi-perspectiva deve gerar 2-4 sub-queries."""
+    decomposer = QueryDecomposer(llm=get_llm())
+    query = "Como implementar BSC considerando perspectivas financeira, clientes e processos?"
+    
+    sub_queries = decomposer.decompose(query)
+    
+    assert len(sub_queries) >= 2
+    assert len(sub_queries) <= 4
+    assert "financeira" in " ".join(sub_queries).lower()
+    assert "clientes" in " ".join(sub_queries).lower()
+
+def test_should_not_decompose_simple_query():
+    """Query simples NÃO deve ser decomposta."""
+    decomposer = QueryDecomposer(llm=get_llm())
+    query = "O que é BSC?"
+    
+    assert decomposer.should_decompose(query) == False
+
+# ... 13+ testes adicionais
+```
+
+**Benchmark Dataset:**
+
+- Criar `tests/benchmark_queries.json` com 50 queries BSC
+- Ground truth: documentos relevantes esperados
+- Manual evaluation por 2 avaliadores independentes
+- Validar melhoria vs baseline em métricas objetivas
+
+---
+
+### **Step 7: 📊 Documentação**
+
+**Objetivo:** Registrar implementação e lições aprendidas.
+
+**Ações Obrigatórias:**
+
+- Criar/Atualizar `docs/techniques/[TECHNIQUE].md` (300+ linhas)
+- Adicionar entry em `.cursor/rules/rag-techniques-catalog.mdc` ← TIER 2
+- Criar Recipe em `.cursor/rules/rag-recipes.mdc` se aplicável ← TIER 2
+- Registrar lição aprendida em `docs/lessons/lesson-[technique]-[date].md` ← TIER 3
+- Comparar ROI observado vs estimado
+
+**Template de Documentação:**
+
+```markdown
+# [TECHNIQUE NAME] - Documentação Técnica
+
+## 📋 Visão Geral
+[Descrição de 1 parágrafo]
+
+## 🎯 Casos de Uso BSC
+[3-5 exemplos práticos]
+
+## 🔧 Implementação
+[Código completo com comentários]
+
+## 📊 Métricas
+| Métrica | Target | Real | Status |
+|---------|--------|------|--------|
+| Recall@10 | 90% | 92% | ✅ |
+| Latência | <7s | 6.2s | ✅ |
+
+## 🎓 Lições Aprendidas
+[O que funcionou, o que não funcionou, aprendizados-chave]
+
+## 🔗 Referências
+[Papers, artigos, código]
+```
+
+---
+
+## 🎓 LIÇÕES DE PRODUÇÃO MVP
+
+**Descobertas validadas que economizam 60+ segundos por query. Usar como base para Fase 2.**
+
+---
+
+### **Lição 1: ⚡ AsyncIO para Retrieval Paralelo (3.34x speedup)**
+
+**Descoberta:** 4 agentes especialistas executando em paralelo com `asyncio.gather()`
+
+**Impacto Medido:**
+
+- **P50**: 70s → 21s (**3.34x mais rápido**)
+- **P95**: 122s → 37s (3.30x mais rápido)
+- **Mean**: 79.85s → 23.92s (3.34x mais rápido)
+
+**Código Validado:**
+
+```python
+import asyncio
+
+async def parallel_retrieval(query: str):
+    """Retrieval paralelo nas 4 perspectivas BSC."""
+    tasks = [
+        financial_agent.retrieve_async(query),
+        customer_agent.retrieve_async(query),
+        process_agent.retrieve_async(query),
+        learning_agent.retrieve_async(query)
+    ]
+    results = await asyncio.gather(*tasks)
+    return results
+
+# Usage
+results = asyncio.run(parallel_retrieval("Como implementar BSC?"))
+```
+
+**ROI:** 49 segundos economizados por query
+
+**Fonte:** `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md`
+
+**Aplicar em:** Query Decomposition (retrieval paralelo de sub-queries), Self-RAG (múltiplas iterações)
+
+---
+
+### **Lição 2: ⚡ Cache de Embeddings (949x speedup)**
+
+**Descoberta:** Reutilizar embeddings já computados em cache local
+
+**Impacto Medido:**
+
+- **Sem cache**: 1.17s por embedding
+- **Com cache**: 0.00123s por embedding
+- **Speedup**: **949x mais rápido**
+- **Dataset**: 7.965 chunks indexados
+
+**Implementação:**
+
+```python
+# src/rag/embeddings.py
+from functools import lru_cache
+import hashlib
+
+class CachedEmbeddings:
+    def __init__(self, base_embeddings, cache_dir="data/contextual_cache"):
+        self.base_embeddings = base_embeddings
+        self.cache_dir = cache_dir
+        
+    def embed_query(self, text: str) -> List[float]:
+        """Embed query com cache."""
+        cache_key = hashlib.md5(text.encode()).hexdigest()
+        cache_file = f"{self.cache_dir}/{cache_key}.npy"
+        
+        if os.path.exists(cache_file):
+            return np.load(cache_file).tolist()  # 949x mais rápido!
+        
+        embedding = self.base_embeddings.embed_query(text)
+        np.save(cache_file, np.array(embedding))
+        return embedding
+```
+
+**ROI:** 1.17s economizados por embedding (dataset completo: ~9.300s economizados)
+
+**Fonte:** `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md`
+
+**Aplicar em:** Todas técnicas RAG que usam embeddings
+
+---
+
+### **Lição 3: ⚡ Busca Multilíngue com RRF (+106% recall)**
+
+**Descoberta:** Hybrid search PT + EN com Reciprocal Rank Fusion (RRF)
+
+**Impacto Medido:**
+
+- **Recall em queries PT**: +106% vs busca PT-only
+- **Cobertura**: 100% da literatura BSC (originalmente em inglês)
+- **Precision**: Mantida (re-ranking Cohere elimina falsos positivos)
+
+**Código Validado:**
+
+```python
+def reciprocal_rank_fusion(
+    results_list: List[List[Document]], 
+    k: int = 60
+) -> List[Document]:
+    """Combina múltiplas listas de resultados usando RRF.
+    
+    Formula: score(doc) = Σ 1 / (k + rank(doc))
+    """
+    doc_scores = defaultdict(float)
+    
+    for results in results_list:
+        for rank, doc in enumerate(results):
+            doc_id = doc.metadata.get("id", doc.page_content[:50])
+            doc_scores[doc_id] += 1.0 / (k + rank + 1)
+    
+    # Sort by score (highest first)
+    sorted_docs = sorted(doc_scores.items(), key=lambda x: x[1], reverse=True)
+    return [doc for doc_id, score in sorted_docs]
+
+# Usage
+query_pt = "Como implementar BSC?"
+query_en = "How to implement BSC?"
+
+results_pt = retriever.retrieve(query_pt, k=50)
+results_en = retriever.retrieve(query_en, k=50)
+
+fused_results = reciprocal_rank_fusion([results_pt, results_en])
+```
+
+**ROI:** Cobertura completa da literatura BSC (sem tradução do dataset)
+
+**Fonte:** `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md`
+
+**Aplicar em:** Query Decomposition (RRF de sub-queries), CRAG (combinar retrieval original + corrigido)
+
+---
+
+### **Lição 4: ⚡ Contextual Retrieval (Anthropic 2024) - +35% recall**
+
+**Descoberta:** Adicionar contexto do documento/capítulo nos chunks antes de gerar embeddings
+
+**Impacto Medido:**
+
+- **Recall**: +35% em benchmarks Anthropic
+- **Qualidade dos chunks**: Chunks auto-explicativos (não precisam do documento pai para fazer sentido)
+
+**Exemplo:**
+
+```
+CHUNK ORIGINAL (sem contexto):
+"As quatro perspectivas são balanceadas para criar uma visão holística."
+
+CHUNK COM CONTEXTO (contextual):
+"Este trecho do livro 'The Balanced Scorecard' de Kaplan & Norton (1996), 
+Capítulo 2 sobre Framework BSC, explica: As quatro perspectivas são 
+balanceadas para criar uma visão holística."
+```
+
+**Implementação:**
+
+```python
+# src/prompts/contextual_chunk_prompt.py
+
+CONTEXTUAL_CHUNK_PROMPT = """Você receberá um chunk de texto e o contexto do documento completo.
+
+Adicione contexto breve (1-2 sentenças) ANTES do chunk para torná-lo auto-explicativo.
+
+Documento: {document_metadata}
+Chunk original: {chunk_content}
+
+Chunk contextualizado:"""
+```
+
+**ROI:** Chunks 35% mais informativos (melhor retrieval)
+
+**Fonte:** `docs/GPT5_CONTEXTUAL_RETRIEVAL.md`, `docs/history/IMPLEMENTATION_GPT5_CONTEXTUAL.md`
+
+**Aplicar em:** Todas técnicas RAG (base para qualidade do retrieval)
+
+---
+
+### **Lição 5: ⚡ Cohere Re-ranking (75% precision @ top-5)**
+
+**Descoberta:** Re-rank top-50 hybrid search para top-10 com Cohere Rerank API
+
+**Impacto Medido:**
+
+- **Precision@5**: 75% (3 em 4 docs são altamente relevantes)
+- **Precision@10**: ~70%
+- **Estratégia**: Retrieve 50 (recall alto) → Re-rank to 10 (precision alta)
+
+**Código Validado:**
+
+```python
+# src/rag/reranker.py
+
+from cohere import Client
+
+class CohereReranker:
+    def __init__(self, model="rerank-multilingual-v3.0", top_n=10):
+        self.client = Client(api_key=settings.COHERE_API_KEY)
+        self.model = model
+        self.top_n = top_n
+        
+    def rerank(
+        self, 
+        query: str, 
+        documents: List[Document], 
+        top_n: int = None
+    ) -> List[Document]:
+        """Re-rank documentos por relevância usando Cohere."""
+        top_n = top_n or self.top_n
+        
+        # Cohere API call
+        results = self.client.rerank(
+            model=self.model,
+            query=query,
+            documents=[doc.page_content for doc in documents],
+            top_n=top_n
+        )
+        
+        # Sort by relevance score
+        reranked_docs = [
+            documents[result.index] 
+            for result in results.results
+        ]
+        
+        return reranked_docs
+
+# Usage
+retriever = BSCRetriever(search_type="hybrid", k=50)
+reranker = CohereReranker(top_n=10)
+
+query = "Como implementar BSC?"
+docs = retriever.retrieve(query, k=50)  # Recall alto
+reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
+```
+
+**ROI:** Documentos 75% mais relevantes no top-5
+
+**Fonte:** MVP implementation, `docs/TUTORIAL.md`
+
+**Aplicar em:** Adaptive Re-ranking (diversity + metadata boost), CRAG (avaliar qualidade do retrieval)
+
+---
+
+**TOTAL ECONOMIA MVP:** ~60 segundos por query + cache hits ilimitados
+
+---
+
+## 🗺️ MAPA DE TÉCNICAS RAG
+
+**Guia de decisão rápida: Qual técnica implementar baseado em necessidade?**
+
+| Necessidade | Técnica RAG | Quando Usar | Complexidade | ROI | Prioridade |
+|-------------|-------------|-------------|--------------|-----|------------|
+| **Queries complexas multi-parte** | Query Decomposition | 2+ perguntas, palavras ligação ("e", "também") | ⭐⭐ Baixa | ⭐⭐⭐⭐⭐ | 🔥 **ALTA** |
+| **Melhorar diversidade docs** | Adaptive Re-ranking | Evitar docs repetidos, múltiplas fontes | ⭐⭐ Baixa | ⭐⭐⭐⭐ | **ALTA** |
+| **Otimizar latência por tipo** | Router Inteligente | Workflows complexos, queries variadas | ⭐⭐⭐⭐ Média-Alta | ⭐⭐⭐⭐⭐ | **ALTA** |
+| **Reduzir alucinações** | Self-RAG | Alta acurácia factual crítica | ⭐⭐⭐⭐ Média-Alta | ⭐⭐⭐⭐ | **MÉDIA** |
+| **Retrieval frequentemente falha** | CRAG | Queries ambíguas, dataset incompleto | ⭐⭐⭐ Média | ⭐⭐⭐⭐ | **MÉDIA** |
+| **Baixo recall (<70%)** | HyDE / Multi-HyDE | Queries abstratas, gap semântico | ⭐⭐⭐ Baixa-Média | ⭐⭐⭐ | **BAIXA** |
+| **Relações complexas multi-hop** | Graph RAG | Dataset com entidades e relações | ⭐⭐⭐⭐⭐ Muito Alta | ⭐⭐⭐⭐⭐* | **BAIXA*** |
+| **Respostas precisam mais contexto** | Iterative Retrieval | Refinamento progressivo | ⭐⭐⭐ Média | ⭐⭐⭐ | **BAIXA** |
+
+**Notas:**
+
+- **ROI**: Return on Investment (benefício esperado vs esforço)
+- **Prioridade**: Específica para nosso use case (literatura conceitual BSC)
+- ***Graph RAG**: Baixa prioridade AGORA (dataset atual inadequado), ALTA se conseguirmos BSCs operacionais empresariais
+
+**Recomendação de Implementação (Fase 2):**
+
+1. **Fase 2A - Quick Wins** (2-3 semanas): Query Decomposition → Adaptive Re-ranking → Router Inteligente
+2. **Fase 2B - Advanced** (3-4 semanas): Self-RAG → CRAG
+3. **Fase 2C - Condicional**: Avaliar HyDE (SE recall < 70%) → Avaliar Graph RAG (SE dataset mudar)
+
+---
+
+## 🎯 GUIA POR CENÁRIO RAG
+
+**4 cenários práticos mais comuns com solução mapeada:**
+
+---
+
+### **Cenário 1: Query BSC complexa multi-perspectiva** 🔥 **MAIS COMUM**
+
+**Problema:**
+
+```
+Query: "Como implementar BSC considerando as 4 perspectivas e suas interconexões?"
+Resultado atual: Resposta parcial, foca em 1-2 perspectivas, não aborda interconexões
+```
+
+**Causa:** Query complexa tem múltiplas partes que retrieval simples não captura bem.
+
+**Solução:** Query Decomposition (TECH-001)
+
+**Workflow:**
+
+1. 🧠 **Sequential Thinking** → Identificar sub-queries implícitas
+2. 🎯 **Discovery** → Consultar Mapa de Técnicas → Query Decomposition (ROI ⭐⭐⭐⭐⭐)
+3. 🗺️ **Navigation** → Ler `docs/techniques/QUERY_DECOMPOSITION.md` ← Criar na Fase 2A.1
+4. 📚 **Knowledge Base** → Estudar papers (Galileo AI, Epsilla, Microsoft BenchmarkQED)
+5. 📘 **Implementação** → Criar `src/rag/query_decomposer.py`
+6. 🧪 **Validação** → Testar com 15+ queries complexas BSC
+7. 📊 **Documentação** → Registrar lição aprendida
+
+**Métricas Esperadas:**
+
+- Recall@10: +30-40%
+- Answer quality: +30-50%
+- Latência adicional: ~2s (aceitável)
+
+---
+
+### **Cenário 2: Alucinações detectadas (>10% taxa)**
+
+**Problema:**
+
+```
+Query: "Quais são os KPIs financeiros recomendados por Kaplan & Norton?"
+Resultado: Resposta menciona KPIs que NÃO estão nos livros (inventados pelo LLM)
+```
+
+**Causa:** LLM gera informação sem validar se está nos documentos recuperados.
+
+**Solução:** Self-RAG (TECH-004)
+
+**Workflow:**
+
+1. 🧠 **Sequential Thinking** → Avaliar necessidade (taxa alucinação > 10%? → SIM)
+2. 🎯 **Discovery** → Consultar Mapa de Técnicas → Self-RAG (ROI ⭐⭐⭐⭐, -40-50% alucinações)
+3. 🗺️ **Navigation** → Ler `docs/techniques/SELF_RAG.md` ← Criar na Fase 2B.1
+4. 📚 **Knowledge Base** → Estudar paper original "Self-RAG: Learning to Retrieve, Generate, and Critique" (2023), tutorial DataCamp (Sep 2025)
+5. 📘 **Implementação** → Criar `src/rag/self_rag.py` com reflection tokens
+6. 🧪 **Validação** → Fact-checking manual em 50 queries, medir hallucination rate
+7. 📊 **Documentação** → Comparar taxa antes/depois, documentar trade-offs (latência +20-30%)
+
+**Métricas Esperadas:**
+
+- Hallucination rate: 15% → <5% (-66%)
+- Factual accuracy: +95%
+- Trade-off: Latência +20-30%, Custo +30-40%
+
+---
+
+### **Cenário 3: Latência alta (>60s P50)** ⚡
+
+**Problema:**
+
+```
+Query: "O que é BSC?"
+Resultado: Resposta simples mas demora 70s (retrieval de 4 agentes + LLM generation)
+```
+
+**Causa:** Query simples não precisa de retrieval complexo multi-agente.
+
+**Solução:** Router Inteligente (TECH-003) + AsyncIO (Lição MVP #1)
+
+**Workflow:**
+
+1. 🧠 **Sequential Thinking** → Identificar gargalos (retrieval desnecessário em queries simples)
+2. 🎯 **Discovery** → Consultar Mapa de Técnicas → Router Inteligente (ROI ⭐⭐⭐⭐⭐)
+3. 🗺️ **Navigation** → Consultar `.cursor/rules/rag-recipes.mdc` → RECIPE-002 (AsyncIO) ← Criar TIER 2
+4. 📚 **Knowledge Base** → Ler `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md` (AsyncIO 3.34x)
+5. 📘 **Implementação** → Criar `src/rag/query_router.py` + strategies
+6. 🧪 **Validação** → Benchmark latência antes/depois em 50 queries variadas
+7. 📊 **Documentação** → Medir latência P50/P95/Mean, comparar com baseline
+
+**Métricas Esperadas:**
+
+- Queries simples: 70s → <10s (-85%)
+- Latência média: -20% (routing compensado por estratégias otimizadas)
+- Classifier accuracy: >85%
+
+---
+
+### **Cenário 4: Retrieval de baixa qualidade (<70% precision)**
+
+**Problema:**
+
+```
+Query: "diferenças BSC manufatura vs serviços"
+Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
+```
+
+**Causa:** Query ambígua ou vocabulário diferente entre query e documentos.
+
+**Solução:** CRAG - Corrective RAG (TECH-005)
+
+**Workflow:**
+
+1. 🧠 **Sequential Thinking** → Avaliar necessidade (precision < 70%? → SIM)
+2. 🎯 **Discovery** → Consultar Mapa de Técnicas → CRAG (ROI ⭐⭐⭐⭐)
+3. 🗺️ **Navigation** → Ler `docs/techniques/CRAG.md` ← Criar na Fase 2B.2
+4. 📚 **Knowledge Base** → Estudar tutorial Meilisearch (Sep 2025), Thoughtworks (Apr 2025)
+5. 📘 **Implementação** → Criar `src/rag/corrective_rag.py` com query reformulation
+6. 🧪 **Validação** → Medir precision@5 antes/depois, contar correções trigadas
+7. 📊 **Documentação** → Documentar quando correção é útil vs overhead desnecessário
+
+**Métricas Esperadas:**
+
+- Retrieval quality: 0.65 → 0.80 (+23%)
+- Correction triggered: 10-15% queries
+- Accuracy em queries corrigidas: +15%
+
+---
+
+## 📚 LOCALIZAÇÃO DA DOCUMENTAÇÃO
+
+**Navegação rápida para toda documentação do projeto BSC RAG:**
+
+```
+agente-bsc-rag/
+├── .cursor/rules/
+│   ├── rag-bsc-core.mdc              ← ✅ VOCÊ ESTÁ AQUI (router central)
+│   ├── rag-techniques-catalog.mdc    ← 🔜 TIER 2 (catálogo de técnicas detalhado)
+│   ├── rag-recipes.mdc               ← 🔜 TIER 2 (padrões rápidos 1-página)
+│   └── rag-lessons-learned.mdc       ← 🔜 TIER 3 (lições + antipadrões)
+│
+├── docs/
+│   ├── DOCS_INDEX.md                 ← 🔜 TIER 3 (índice navegável completo)
+│   │
+│   ├── techniques/                   ← ✅ Técnicas RAG detalhadas (criado TIER 1)
+│   │   ├── QUERY_DECOMPOSITION.md   ← 🔜 Fase 2A.1 (Query Decomposition)
+│   │   ├── ADAPTIVE_RERANKING.md    ← 🔜 Fase 2A.2 (Adaptive Re-ranking)
+│   │   ├── ROUTER.md                ← 🔜 Fase 2A.3 (Router Inteligente)
+│   │   ├── SELF_RAG.md              ← 🔜 Fase 2B.1 (Self-RAG)
+│   │   └── CRAG.md                  ← 🔜 Fase 2B.2 (CRAG)
+│   │
+│   ├── patterns/                     ← ✅ Configurações validadas (criado TIER 1)
+│   │   ├── HYBRID_SEARCH.md         ← 🔜 TIER 2 (Pattern do MVP)
+│   │   ├── COHERE_RERANK.md         ← 🔜 TIER 2 (Pattern do MVP)
+│   │   ├── ASYNCIO_PARALLEL.md      ← 🔜 TIER 2 (Pattern do MVP)
+│   │   └── EMBEDDING_CACHE.md       ← 🔜 TIER 2 (Pattern do MVP)
+│   │
+│   ├── lessons/                      ← ✅ Lições aprendidas (criado TIER 1)
+│   │   ├── lesson-query-decomposition-2025-10-XX.md  ← 🔜 Pós Fase 2A.1
+│   │   ├── lesson-adaptive-reranking-2025-10-XX.md   ← 🔜 Pós Fase 2A.2
+│   │   └── lesson-router-2025-10-XX.md               ← 🔜 Pós Fase 2A.3
+│   │
+│   ├── history/                      ← ✅ Progresso histórico (já existe)
+│   │   ├── MVP_100_COMPLETO.md      ← ✅ MVP completo (14/10/2025)
+│   │   ├── MULTILINGUAL_OPTIMIZATION_SUMMARY.md  ← ✅ Otimizações massivas
+│   │   └── E2E_TESTS_IMPLEMENTATION_SUMMARY.md   ← ✅ E2E validado
+│   │
+│   └── [outros docs existentes]     ← ✅ TUTORIAL.md, ARCHITECTURE.md, etc
+│
+└── src/rag/                          ← ✅ Implementação (já existe)
+    ├── retriever.py                 ← ✅ BSCRetriever (MVP)
+    ├── reranker.py                  ← ✅ CohereReranker (MVP)
+    ├── hybrid_search.py             ← ✅ Hybrid search (MVP)
+    ├── embeddings.py                ← ✅ Cached embeddings (MVP)
+    │
+    ├── query_decomposer.py          ← 🔜 Fase 2A.1 (a criar)
+    ├── query_router.py              ← 🔜 Fase 2A.3 (a criar)
+    ├── strategies.py                ← 🔜 Fase 2A.3 (a criar)
+    ├── self_rag.py                  ← 🔜 Fase 2B.1 (a criar)
+    └── corrective_rag.py            ← 🔜 Fase 2B.2 (a criar)
+```
+
+**Legenda:**
+
+- ✅ **Criado/Existe** - Disponível agora
+- 🔜 **Futuro** - Será criado em fase específica
+
+---
+
+## 📝 CHANGELOG
+
+### v1.0 - 2025-10-14 (Versão Inicial - TIER 1 Completo)
+
+**Criado:**
+
+- ✅ Router central always-applied
+- ✅ Workflow obrigatório de 7 steps
+- ✅ Top 5 lições MVP com código e métricas
+- ✅ Mapa de 8 técnicas RAG comparativas
+- ✅ 4 cenários práticos mapeados
+- ✅ Estrutura de documentação organizada
+- ✅ Pastas `docs/techniques/`, `docs/patterns/`, `docs/lessons/` criadas
+
+**ROI Esperado TIER 1:**
+
+- 5-10 min economizados por decisão técnica (qual técnica usar, qual doc consultar)
+- Contexto preservado entre sessões (6-8 semanas Fase 2)
+- Processo consistente para todas as 8 técnicas RAG
+
+**Próximo:**
+
+- 🔜 **Fase 2A.1** - Implementar Query Decomposition (3-4 dias)
+- 🔜 **TIER 2** - Criar RAG Techniques Catalog + Recipes (durante Fase 2A)
+
+---
+
+**Última Atualização:** 2025-10-14
+**Status:** ✅ TIER 1 COMPLETO - Pronto para Fase 2A
