@@ -84,9 +84,12 @@ psutil==5.9.6
 openai>=1.58.1,<2.0.0
 anthropic>=0.18.1
 
+# Memory (Mem0 Platform) - FASE 1.6
+mem0ai>=0.1.118
+
 # Development
 black==23.12.1
 flake8==6.1.0
-ruff==0.1.13
+ruff>=0.7.0,<1.0.0
 mypy==1.7.1
 pre-commit==3.6.0

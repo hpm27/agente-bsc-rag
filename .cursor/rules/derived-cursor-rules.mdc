@@ -179,9 +179,15 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
     en_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
     ```
 
+### Dependency Management
+
+*   When updating dependencies, especially `ruff`, ensure the version specified in `requirements.txt` is compatible with the project's other dependencies. Aim to use the latest stable version, but specify a version range to allow for minor updates without breaking changes. For example: `ruff>=0.7.0,<1.0.0`.
+*   After updating dependencies in `requirements.txt`, run `pip install --upgrade -r requirements.txt` to update the environment.
+*   When adding `mem0ai` ensure it is added in the Utilities section
+
 ## PROJECT DOCUMENTATION & CONTEXT SYSTEM
 
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
 
 ### Architectural Considerations for the BSC Consulting Agent (v2.0)
 
@@ -443,11 +449,105 @@ When running pytest in parallel, use the following flags:
 *   `--tb=short`: Uses a short traceback format.
 *   `--tb=short`: Uses a short traceback format.
 *   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
+*   `--dist=loadfile`: Distributes tests by file (safer than `loadscope`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
 
 When the test `test_parallel_agent_execution` fails, the problem may be the threshold.
 *   Check the tests and see if the threshold is too restrictive.
 *   Consider the fact that the workflow includes routing, agents, synthesis and judge, and the threshold must account for those steps.
+
+### Diagnosing Windows Clipboard Issues
+
+If `Ctrl+C` and `Ctrl+V` are not working correctly on a Windows machine, follow these steps to diagnose and resolve the problem:
+
+1.  **Test Globally:**
+    *   Check if the issue is specific to Cursor IDE or a system-wide problem. Test in Notepad and a web browser.
+
+2.  **Cursor-Specific Solutions:**
+    *   **Verify Keyboard Shortcuts:**
+        *   In Cursor, press `Ctrl + Shift + P` to open the Command Palette.
+        *   Type "Preferences: Open Keyboard Shortcuts".
+        *   Search for "copy" and "paste" to ensure they are mapped to `Ctrl+C` and `Ctrl+V`.
+        *   Confirm that:
+            * Copy → Ctrl+C with when: editorTextFocus && !editorReadonly
+            * Paste → Ctrl+V with when: editorTextFocus && !editorReadonly
+        *   If there is another entry with the same shortcut and a more specific "when", remove/Reset Keybinding.
+    *   **Force Keyboard Dispatch Mode:**
+        *   Open User Settings (JSON): `Ctrl + Shift + P` then type "Preferences: Open User Settings (JSON)".
+        *   Add/adjust the following line:
+            ```json
+            "keyboard.dispatch": "code"
+            ```
+            Note: “code” resolves keycode conflicts in some layouts on Windows.
+    *   **Reset Custom Keybindings:**
+        *   Open User Settings (JSON): `Ctrl + Shift + P` then type "Preferences: Open User Settings (JSON)".
+        *   Look for any custom keybinding configurations that might override `Ctrl+C` and `Ctrl+V`. Remove any conflicting settings.
+
+3.  **Windows-Wide Solutions:**
+    *   **Restart Clipboard Service:**
+        *   Run the following command in PowerShell:
+            ```powershell
+            Stop-Process -Name "rdpclip" -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2; echo "[CHECK] Processo clipboard reiniciado (se existia)"
+            ```
+    *   **Verify Windows Accessibility Settings:**
+        *   Press `Win + I` (Settings).
+        *   Go to: **Accessibility** → **Keyboard**.
+        *   Ensure that **"Sticky Keys"** is **DISABLED**.
+        *   Ensure that **"Filter Keys"** is **DISABLED**.
+    *   **Check for Intercepting Programs:**
+        *   Some programs may intercept `Ctrl+C`/`Ctrl+V`. Check for the following processes: AutoHotkey, PowerToys, Ditto, ClipX, TeamViewer, AnyDesk, Discord, Slack, Skype, Zoom.
+    *   **Test with Another Windows User:**
+        *   Create a temporary Windows user account.
+        *   Log in with that user.
+        *   Test `Ctrl+C`/`Ctrl+V`. If it works, the issue is in your current user's settings.
+
+4.  **If you use the Vim/Neovim extension:**
+    *   In Settings (JSON), let VS Code/Cursor handle Ctrl+C/V:
+        ```json
+        "vim.useCtrlKeys": true,
+        "vim.handleKeys": {
+          "<C-c>": false,
+          "<C-v>": false
+        }
+        ```
+    *   Restart the window: Ctrl+Shift+P → “Developer: Reload Window”.
+
+5.  **If the problem is only in the Integrated Terminal:**
+    *   Adjust these parameters to avoid Ctrl+C becoming "SIGINT" and standardize pasting:
+        ```json
+        "terminal.integrated.copyOnSelection": false,
+        "terminal.integrated.commandsToSkipShell": [
+          "workbench.action.terminal.copySelection",
+          "workbench.action.terminal.paste",
+          "editor.action.clipboardCopyAction",
+          "editor.action.clipboardPasteAction"
+        ]
+        ```
+    *   In Keybindings, check:
+        *   workbench.action.terminal.copySelection → Ctrl+C (when: terminalFocus && terminalHasSelection)
+        *   workbench.action.terminal.paste → Ctrl+V (when: terminalFocus)
+
+6.  **Other Useful Flags:**
+    *   Copy line when no selection exists (optional):
+        ```json
+        "editor.emptySelectionClipboard": true
+        ```
+
+7.  **Safe Mode (Disable Extensions Temporarily):**
+    *   Close Cursor.
+    *   Open PowerShell.
+    *   Execute:
+        ```powershell
+        cursor --disable-extensions
+        ```
+    *   Test if `Ctrl+C`/`Ctrl+V` works without extensions. If it works, re-enable extensions one by one to identify the culprit.
+
+8.  **Last Resort (Extreme):**
+    *   If nothing works, the issue might be:
+        *   Corrupted keyboard driver.
+        *   Third-party software intercepting shortcuts (AutoHotkey, etc.).
+        *   Hardware issue with the keyboard.
+    *   **Test with another keyboard** (USB or Bluetooth) to rule out hardware issues.
 
 ## WORKFLOW & RELEASE RULES
 
@@ -474,3 +574,204 @@ If Chocolatey fails due to permission issues, try installing with Winget:
 ```bash
 winget install Rclone.Rclone
 ```
+
+### Configuring rclone for OneDrive
+
+Use this simplified step-by-step guide to configure and use rclone with OneDrive, based on the [official rclone documentation](https://rclone.org/onedrive/):
+
+#### Step 1: Configure OneDrive
+
+Execute this command and follow the instructions:
+
+```powershell
+rclone config
+```
+
+**During the configuration:**
+
+1.  **Type `n`** to create a new remote
+2.  **Name**: Enter `onedrive` (or any name you prefer)
+3.  **Type of storage**: Enter `onedrive` or the corresponding number
+4.  **Client ID**: Press Enter (leave blank to use the default)
+5.  **Client Secret**: Press Enter (leave blank to use the default)
+6.  **Advanced config**: Enter `n` (no)
+7.  **Auto authenticate**: Enter `y` (yes)
+    *   Your browser will open automatically
+    *   Log in to your Microsoft/OneDrive account
+    *   Authorize rclone
+8.  **Type of OneDrive**: Enter `1` for OneDrive Personal or Business
+9.  **Choose the drive**: Enter `0` (or the number of your drive)
+10. **Confirmation**: Enter `y` to confirm
+
+#### Step 2: Test the Connection
+
+```powershell
+# List directories in OneDrive
+rclone lsd onedrive:
+
+# List all files
+rclone ls onedrive:
+```
+
+#### Step 3: Synchronize OneDrive → D:\
+
+**Option A: Sync (mirroring - deletes files that do not exist in the source)**
+
+```powershell
+rclone sync onedrive: D:\OneDrive-Backup -P -v
+```
+
+**Option B: Copy (copies without deleting destination files)**
+
+```powershell
+rclone copy onedrive: D:\OneDrive-Backup -P -v
+```
+
+**Useful flags:**
+
+*   `-P` or `--progress`: Shows real-time progress
+*   `-v` or `--verbose`: Shows more details
+*   `--dry-run`: Simulates without making changes (recommended first!)
+*   `--exclude "*.tmp"`: Excludes temporary files
+
+#### Step 4: Bidirectional Synchronization (D:\ ↔ OneDrive)
+
+For synchronization in both directions, use `bisync`:
+
+```powershell
+# First time (creates baseline)
+rclone bisync onedrive: D:\OneDrive-Backup --resync -P -v
+
+# Subsequent synchronizations
+rclone bisync onedrive: D:\OneDrive-Backup -P -v
+```
+
+#### Step 5: Automation (Optional)
+
+Create a file `sync-onedrive.ps1`:
+
+```powershell
+# sync-onedrive.ps1
+Write-Host "[INICIO] Sincronizando OneDrive..." -ForegroundColor Cyan
+
+rclone sync onedrive: D:\OneDrive-Backup `
+    --progress `
+    --verbose `
+    --log-file="D:\rclone-sync.log" `
+    --exclude "*.tmp" `
+    --exclude ".git/**"
+
+Write-Host "[FIM] Sincronização concluída!" -ForegroundColor Green
+```
+
+Execute with:
+
+```powershell
+.\sync-onedrive.ps1
+```
+
+#### Useful Commands
+
+```powershell
+# View current configuration
+rclone config show
+
+# Total size of OneDrive
+rclone size onedrive:
+
+# Compare source and destination
+rclone check onedrive: D:\OneDrive-Backup
+
+# Mount OneDrive as a virtual drive (Z:)
+rclone mount onedrive: Z: --vfs-cache-mode writes
+```
+
+### Troubleshooting rclone OneDrive Configuration
+
+**Problem:** 404 Page Not Found or "No code returned by remote server" during OneDrive configuration.
+
+**Causes:**
+
+*   Incorrect Client ID/Secret.
+*   Firewall blocking localhost.
+*   Incorrect Redirect URL.
+
+**Solutions:**
+
+1.  **Verify Client ID/Secret:**
+
+    *   Double-check the Client ID and Client Secret in the Azure portal and in the rclone configuration.
+
+2.  **Check Redirect URL:**
+
+    *   Ensure the Redirect URL in the Azure portal is set to `http://localhost:53682/`.
+3.  **Run Command Prompt as Admin**
+4.  **Disable Firewall Temporarily:**
+
+    *   Temporarily disable the Windows Firewall or create an exception for rclone to allow connections to localhost.
+
+5.  **Alternative Authentication Method:**
+
+    *   If the above steps don't work, try using an alternative authentication method, such as generating your own token (more complex).
+
+6. **Manual Configuration (If Browser Authentication Fails):**
+
+   *If browser authentication fails, you can try manual configuration:*
+
+   1.  Run `rclone config`
+   2.  Choose `n` for New remote.
+   3.  Enter a name (e.g., `onedrive`).
+   4.  Choose `onedrive` as the type.
+   5.  When prompted for `client_id` and `client_secret`, leave them blank (press Enter).
+   6.  When asked "Use web browser to automatically authenticate rclone with remote?", choose `n` (No).
+   7.  Follow the instructions to generate a verification code manually.
+
+### Resolving rclone Processes Stuck in Background
+
+**Problem:** rclone processes are stuck in the background, consuming resources.
+
+**Solution:**
+
+1.  **Identify Running Processes:**
+
+    *   Use the following PowerShell command to list rclone processes:
+        ```powershell
+        Get-Process | Where-Object {$_.ProcessName -like "*rclone*"} | Format-Table ProcessName, Id, CPU, PM -AutoSize
+        ```
+
+2.  **Terminate Processes:**
+
+    *   Use the following PowerShell command to terminate all rclone processes:
+        ```powershell
+        Get-Process rclone | Stop-Process -Force
+        ```
+
+### Verifying rclone Configuration
+
+**Problem:** Need to check or verify the current rclone OneDrive configuration.
+
+**Solution:**
+
+1.  **Show Configuration:**
+
+    *   Use the following command to display the current rclone configuration for OneDrive:
+        ```bash
+        rclone config show onedrive
+        ```
+
+### Recommendations for OneDrive Synchronization
+
+Given the challenges encountered with rclone and OneDrive, the following recommendations are made for efficiently synchronizing OneDrive data:
+
+1.  **Prioritize the Native OneDrive Client:**
+    *   Utilize the native OneDrive client provided by Microsoft for primary synchronization tasks. It is designed to handle OneDrive's specific requirements and limitations effectively.
+    *   Configure the OneDrive client to download all files to ensure local availability.
+
+2.  **Avoid rclone for Large-Scale OneDrive Synchronization:**
+    *   Do not use rclone for synchronizing large OneDrive accounts, especially those with very large files, due to API limitations and throttling issues.
+
+3.  **Sequential Thinking and Brightdata for Task Planning:**
+    *   When planning complex tasks, especially those involving external APIs or unfamiliar libraries, use sequential thinking to break down the task into smaller, manageable steps.
+    *   Utilize Brightdata to research solutions and best practices on the internet, when necessary.
+
+4.  **Task

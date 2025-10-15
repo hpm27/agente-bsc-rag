@@ -17,6 +17,7 @@ from qdrant_client.models import (
     Filter,
     FieldCondition,
     MatchValue,
+    MatchAny,
     ScoredPoint
 )
 
@@ -435,8 +436,12 @@ class QdrantVectorStore(BaseVectorStore):
         """
         Constrói filtro Qdrant a partir de dict.
         
+        Suporta:
+        - Filtros simples: {'source': 'doc1.pdf'} -> MatchValue
+        - Filtros $in (OR): {'perspectives': {'$in': ['financial', 'all']}} -> MatchAny
+        
         Args:
-            filter_dict: Dict com filtros (ex: {'source': 'doc1.pdf'})
+            filter_dict: Dict com filtros
             
         Returns:
             Filter do Qdrant
@@ -444,12 +449,23 @@ class QdrantVectorStore(BaseVectorStore):
         conditions = []
         
         for key, value in filter_dict.items():
-            conditions.append(
-                FieldCondition(
-                    key=key,
-                    match=MatchValue(value=value)
+            # Se value é dict com operador $in, usar MatchAny (OR logic)
+            if isinstance(value, dict) and "$in" in value:
+                values_list = value["$in"]
+                conditions.append(
+                    FieldCondition(
+                        key=key,
+                        match=MatchAny(any=values_list)
+                    )
                 )
-            )
+            else:
+                # Filtro simples: valor único
+                conditions.append(
+                    FieldCondition(
+                        key=key,
+                        match=MatchValue(value=value)
+                    )
+                )
         
         return Filter(must=conditions) if conditions else None
     
