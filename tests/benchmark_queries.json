@@ -1,15 +1,23 @@
 {
   "metadata": {
-    "version": "1.0",
+    "version": "2.0",
     "created": "2025-10-14",
-    "total_queries": 20,
+    "updated": "2025-10-14",
+    "total_queries": 50,
     "categories": {
+      "simples_factual": 15,
       "multi_perspectiva": 5,
       "relacional": 5,
       "comparativa": 5,
-      "conceitual_complexa": 5
+      "conceitual_complexa": 5,
+      "avancada_multihop": 15
     },
-    "description": "Benchmark dataset para Query Decomposition - 20 queries BSC diversas com ground truth"
+    "complexity_distribution": {
+      "low": 15,
+      "medium": 20,
+      "high": 15
+    },
+    "description": "Benchmark dataset Fase 2A - 50 queries BSC variadas (simples, moderadas, complexas) com ground truth"
   },
   "queries": [
     {
@@ -286,6 +294,321 @@
         "The Execution Premium",
         "The Strategy-Focused Organization"
       ],
+      "difficulty": "hard"
+    },
+    {
+      "id": "simples_001",
+      "category": "simples_factual",
+      "query": "Quem criou o Balanced Scorecard?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["Kaplan", "Norton", "autores"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_002",
+      "category": "simples_factual",
+      "query": "Quais são as quatro perspectivas do BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["financeira", "clientes", "processos", "aprendizado"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_003",
+      "category": "simples_factual",
+      "query": "O que é a perspectiva financeira do BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["perspectiva financeira", "métricas financeiras", "resultados"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_004",
+      "category": "simples_factual",
+      "query": "O que é a perspectiva de clientes no Balanced Scorecard?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["perspectiva clientes", "satisfação", "proposta de valor"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_005",
+      "category": "simples_factual",
+      "query": "Quando o BSC foi criado?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["1992", "origem", "Harvard Business Review"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_006",
+      "category": "simples_factual",
+      "query": "O que são KPIs no contexto do BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["KPI", "indicadores", "medição de desempenho"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_007",
+      "category": "simples_factual",
+      "query": "O que é a perspectiva de processos internos?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["processos internos", "operações", "eficiência"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_008",
+      "category": "simples_factual",
+      "query": "O que é a perspectiva de aprendizado e crescimento?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["aprendizado", "crescimento", "capacitação", "infraestrutura"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_009",
+      "category": "simples_factual",
+      "query": "O que são objetivos estratégicos no BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["objetivos estratégicos", "metas", "estratégia"],
+      "ground_truth_docs": ["The_balanced_scorecard", "Strategy Maps"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_010",
+      "category": "simples_factual",
+      "query": "O que é mapa estratégico?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["strategy map", "visualização", "relações causais"],
+      "ground_truth_docs": ["Strategy Maps"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_011",
+      "category": "simples_factual",
+      "query": "Qual a definição de tema estratégico no BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["tema estratégico", "agrupamento", "objetivos"],
+      "ground_truth_docs": ["Strategy Maps"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_012",
+      "category": "simples_factual",
+      "query": "O que são indicadores de resultado (lagging)?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["lagging indicators", "resultado", "métricas retrospectivas"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_013",
+      "category": "simples_factual",
+      "query": "O que são indicadores de tendência (leading)?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["leading indicators", "direcionadores", "métricas preditivas"],
+      "ground_truth_docs": ["The_balanced_scorecard"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_014",
+      "category": "simples_factual",
+      "query": "O que é alinhamento estratégico no contexto do BSC?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["alinhamento", "cascateamento", "integração"],
+      "ground_truth_docs": ["Alignment", "The Strategy-Focused Organization"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "simples_015",
+      "category": "simples_factual",
+      "query": "Quais os 5 princípios da Strategy-Focused Organization?",
+      "complexity": "low",
+      "should_decompose": false,
+      "expected_topics": ["5 princípios", "mobilização", "alinhamento", "estratégia como processo"],
+      "ground_truth_docs": ["The Strategy-Focused Organization"],
+      "difficulty": "easy"
+    },
+    {
+      "id": "avancada_001",
+      "category": "avancada_multihop",
+      "query": "Como implementar um BSC completo desde o mapeamento da estratégia até o sistema de gestão do desempenho, considerando os 5 princípios da Strategy-Focused Organization e as melhores práticas de Execution Premium?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["implementação completa", "strategy maps", "5 princípios", "execution premium", "gestão desempenho"],
+      "ground_truth_docs": ["Strategy Maps", "The Strategy-Focused Organization", "The Execution Premium"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_002",
+      "category": "avancada_multihop",
+      "query": "Analise como ativos intangíveis nas perspectivas de aprendizado impactam processos de inovação, que por sua vez influenciam proposta de valor ao cliente e culminam em resultados financeiros sustentáveis",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["ativos intangíveis", "inovação", "proposta de valor", "resultados financeiros", "cadeia causal"],
+      "ground_truth_docs": ["Strategy Maps", "The_balanced_scorecard"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_003",
+      "category": "avancada_multihop",
+      "query": "Como desenhar um sistema de alinhamento corporativo multi-nível que cascade estratégia desde o BSC corporativo até BSCs de unidades, departamentos e equipes, garantindo coerência vertical e horizontal segundo Alignment de Kaplan e Norton?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["alinhamento multi-nível", "cascateamento", "BSC corporativo", "BSC unidades", "coerência"],
+      "ground_truth_docs": ["Alignment", "The Strategy-Focused Organization"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_004",
+      "category": "avancada_multihop",
+      "query": "Explique a integração entre planejamento estratégico, orçamento operacional e sistema de revisão gerencial no modelo Execution Premium, evidenciando pontos de conexão com BSC e Strategy Maps",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["Execution Premium", "planejamento", "orçamento", "revisão gerencial", "integração"],
+      "ground_truth_docs": ["The Execution Premium", "Strategy Maps"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_005",
+      "category": "avancada_multihop",
+      "query": "Como transformar uma organização tradicional em Strategy-Focused Organization aplicando mobilização executiva, tradução da estratégia, alinhamento organizacional, motivação de pessoas e estratégia como processo contínuo?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 5,
+      "expected_topics": ["transformação organizacional", "5 princípios", "mobilização", "alinhamento", "processo contínuo"],
+      "ground_truth_docs": ["The Strategy-Focused Organization", "The Execution Premium"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_006",
+      "category": "avancada_multihop",
+      "query": "Analise as diferenças de implementação de BSC em contextos de estratégia de crescimento versus estratégia de produtividade, considerando trade-offs entre investimento de longo prazo e retorno de curto prazo",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["estratégia crescimento", "estratégia produtividade", "trade-offs", "prazo"],
+      "ground_truth_docs": ["Strategy Maps", "The_balanced_scorecard"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_007",
+      "category": "avancada_multihop",
+      "query": "Como vincular programas de remuneração variável e incentivos ao BSC garantindo que compensação reflita desempenho multi-dimensional e balanceamento entre perspectivas?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["remuneração variável", "incentivos", "BSC", "desempenho multi-dimensional"],
+      "ground_truth_docs": ["The Strategy-Focused Organization", "Alignment"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_008",
+      "category": "avancada_multihop",
+      "query": "Explique o processo de revisão estratégica (Strategy Review) no Execution Premium, diferenciando-o de revisões operacionais e mostrando como BSC suporta ambos ciclos de gestão",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["strategy review", "revisão operacional", "Execution Premium", "ciclos de gestão"],
+      "ground_truth_docs": ["The Execution Premium", "The Strategy-Focused Organization"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_009",
+      "category": "avancada_multihop",
+      "query": "Como aplicar BSC em contextos de transformação digital, considerando novos modelos de negócio, capacidades digitais e métricas de agilidade organizacional?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["transformação digital", "modelos de negócio", "capacidades digitais", "agilidade"],
+      "ground_truth_docs": ["Strategy Maps", "The Strategy-Focused Organization"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_010",
+      "category": "avancada_multihop",
+      "query": "Analise como desenhar mapas estratégicos para estratégias de diferenciação versus liderança de custo, evidenciando diferenças em objetivos, indicadores e iniciativas em cada perspectiva",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["diferenciação", "liderança de custo", "strategy maps", "objetivos por perspectiva"],
+      "ground_truth_docs": ["Strategy Maps", "The_balanced_scorecard"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_011",
+      "category": "avancada_multihop",
+      "query": "Como garantir que iniciativas estratégicas selecionadas no BSC estejam alinhadas com fechamento de gaps de desempenho, considerando restrições orçamentárias e capacidade de execução?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["iniciativas estratégicas", "gaps de desempenho", "priorização", "restrições"],
+      "ground_truth_docs": ["The Execution Premium", "Strategy Maps"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_012",
+      "category": "avancada_multihop",
+      "query": "Explique o papel de Office of Strategy Management (OSM) na gestão de BSC, incluindo responsabilidades de alinhamento, comunicação, revisão e evolução do sistema de gestão estratégica",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["Office Strategy Management", "gestão BSC", "alinhamento", "comunicação", "evolução"],
+      "ground_truth_docs": ["The Strategy-Focused Organization", "The Execution Premium"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_013",
+      "category": "avancada_multihop",
+      "query": "Como adaptar BSC para organizações do setor público, considerando múltiplos stakeholders, missão social e ausência de objetivo primário de lucratividade?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["setor público", "múltiplos stakeholders", "missão social", "adaptação BSC"],
+      "ground_truth_docs": ["Strategy Maps", "Alignment"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_014",
+      "category": "avancada_multihop",
+      "query": "Analise como medir e gerenciar capital intelectual (humano, informacional e organizacional) nas perspectivas de aprendizado e crescimento, incluindo indicadores específicos e relações causais com outras perspectivas",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 4,
+      "expected_topics": ["capital intelectual", "capital humano", "capital informacional", "capital organizacional", "medição"],
+      "ground_truth_docs": ["Strategy Maps", "The_balanced_scorecard"],
+      "difficulty": "hard"
+    },
+    {
+      "id": "avancada_015",
+      "category": "avancada_multihop",
+      "query": "Como integrar gestão de riscos ao BSC no framework Execution Premium, identificando riscos estratégicos por perspectiva e vinculando-os a objetivos e iniciativas?",
+      "complexity": "high",
+      "should_decompose": true,
+      "expected_subqueries_count": 3,
+      "expected_topics": ["gestão de riscos", "Execution Premium", "riscos estratégicos", "integração BSC"],
+      "ground_truth_docs": ["The Execution Premium", "Strategy Maps"],
       "difficulty": "hard"
     }
   ]

@@ -11,8 +11,6 @@ globs: *
 
 ## WORKFLOW & RELEASE RULES
 
-## DEBUGGING
-
 When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
@@ -147,7 +145,7 @@ Brightdata's research revealed important community discussions:
 **/.git/**
 **/dist/**
 **/build/**
-**/__pycache__/**
+**/__pycache/**
 **/.pytest_cache/**
 **/.venv/**
 **/venv/**
@@ -184,3 +182,21 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
     pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
     en_count = sum(1 for kw in en_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
     ```
+
+## TEST CONFIGURATION
+
+*   The test `test_parallel_agent_execution` now has a threshold of 200 seconds.
+*   The test `test_latency_percentiles` now has a P95 threshold of 240 seconds (4 minutes).
+*   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
+*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy, answer relevancy, and faithfulness.
+*   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+
+When running pytest in parallel, use the following flags:
+
+*   `-n <num_workers>`: Specifies the number of workers for parallel execution.
+*   `-v`: Enables verbose output.
+*   `--tb=short`: Uses a short traceback format.
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).

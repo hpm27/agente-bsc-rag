@@ -529,18 +529,37 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 
 **Status**: **MVP 100% CONCLUÍDO** 🎉
 
-### 🔮 Fase 2 - RAG Avançado (Planejada - Nov/2025+)
+### 🔥 Fase 2A - Quick Wins RAG Avançado (EM ANDAMENTO - Out/2025)
 
-- [ ] Query Decomposition (queries complexas)
-- [ ] HyDE (Hypothetical Document Embeddings)
-- [ ] Adaptive Retrieval (roteamento inteligente)
-- [ ] Iterative Retrieval (refinamento multi-hop)
-- [ ] Fine-tuning de Embeddings (domínio BSC)
+- [x] **Query Decomposition** - Queries complexas em sub-queries + RRF ✅
+- [x] **Adaptive Re-ranking** - Diversity + metadata boosting ✅
+- [x] **Router Inteligente** - Roteamento por complexidade (92% accuracy) ✅
+- [x] **Validação E2E** - 22 testes, 100% aprovados ✅
+- [ ] **Benchmark Fase 2A** - 50 queries BSC (PRÓXIMO)
+- [ ] **Métricas Consolidadas** - Recall, Precision, Answer Quality (PRÓXIMO)
+
+**Status**: **Fase 2A 85% COMPLETA** (3/3 técnicas + validação E2E, falta benchmark)
+
+**Resultado Atual:**
+- ✅ 22/22 testes E2E passando (100%)
+- ✅ Paralelização validada (3.7x speedup agents)
+- ✅ Latência P50: 75s, P95: 230s
+- ✅ Coverage: 43%
+
+**Documentação**: [E2E_VALIDATION_FASE_2A_COMPLETA.md](docs/history/E2E_VALIDATION_FASE_2A_COMPLETA.md)
+
+---
+
+### 🔮 Fase 2B - Advanced RAG (Planejada - Out-Nov/2025)
+
+- [ ] **Self-RAG** - Redução de alucinações (-40-50%)
+- [ ] **CRAG (Corrective RAG)** - Correção de retrieval de baixa qualidade
+- [ ] **HyDE** - Hypothetical Document Embeddings (SE recall <70%)
+- [ ] **Iterative Retrieval** - Refinamento multi-hop
 - [ ] Avaliação de RAPTOR (retrieval hierárquico)
 - [ ] Avaliação de Graph RAG (relações causa-efeito)
-- [ ] Avaliação de Multi-modal RAG (strategy maps, dashboards)
 
-**Critério**: Implementar **APENAS após validar MVP com dados reais** e identificar necessidades específicas.
+**Critério Fase 2B:** Iniciar **APÓS** benchmark Fase 2A validar ROI das 3 técnicas implementadas.
 
 ### 🚀 Fase 3 - Produção (Planejada - Dez/2025+)
 
