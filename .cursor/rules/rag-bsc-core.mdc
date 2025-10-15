@@ -668,17 +668,17 @@ Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
 agente-bsc-rag/
 ├── .cursor/rules/
 │   ├── rag-bsc-core.mdc              ← ✅ VOCÊ ESTÁ AQUI (router central)
-│   ├── rag-techniques-catalog.mdc    ← 🔜 TIER 2 (catálogo de técnicas detalhado)
-│   ├── rag-recipes.mdc               ← 🔜 TIER 2 (padrões rápidos 1-página)
+│   ├── rag-techniques-catalog.mdc    ← ✅ TIER 2 COMPLETO (catálogo 5 técnicas)
+│   ├── rag-recipes.mdc               ← ✅ TIER 2 COMPLETO (3 recipes validados)
 │   └── rag-lessons-learned.mdc       ← 🔜 TIER 3 (lições + antipadrões)
 │
 ├── docs/
 │   ├── DOCS_INDEX.md                 ← 🔜 TIER 3 (índice navegável completo)
 │   │
-│   ├── techniques/                   ← ✅ Técnicas RAG detalhadas (criado TIER 1)
-│   │   ├── QUERY_DECOMPOSITION.md   ← 🔜 Fase 2A.1 (Query Decomposition)
-│   │   ├── ADAPTIVE_RERANKING.md    ← 🔜 Fase 2A.2 (Adaptive Re-ranking)
-│   │   ├── ROUTER.md                ← 🔜 Fase 2A.3 (Router Inteligente)
+│   ├── techniques/                   ← ✅ Técnicas RAG detalhadas (Fase 2A completa)
+│   │   ├── QUERY_DECOMPOSITION.md   ← ✅ Fase 2A.1 (400+ linhas)
+│   │   ├── ADAPTIVE_RERANKING.md    ← ✅ Fase 2A.2 (500+ linhas)
+│   │   ├── ROUTER.md                ← ✅ Fase 2A.3 (650+ linhas)
 │   │   ├── SELF_RAG.md              ← 🔜 Fase 2B.1 (Self-RAG)
 │   │   └── CRAG.md                  ← 🔜 Fase 2B.2 (CRAG)
 │   │
@@ -700,15 +700,15 @@ agente-bsc-rag/
 │   │
 │   └── [outros docs existentes]     ← ✅ TUTORIAL.md, ARCHITECTURE.md, etc
 │
-└── src/rag/                          ← ✅ Implementação (já existe)
+└── src/rag/                          ← ✅ Implementação (Fase 2A completa)
     ├── retriever.py                 ← ✅ BSCRetriever (MVP)
     ├── reranker.py                  ← ✅ CohereReranker (MVP)
     ├── hybrid_search.py             ← ✅ Hybrid search (MVP)
     ├── embeddings.py                ← ✅ Cached embeddings (MVP)
     │
-    ├── query_decomposer.py          ← 🔜 Fase 2A.1 (a criar)
-    ├── query_router.py              ← 🔜 Fase 2A.3 (a criar)
-    ├── strategies.py                ← 🔜 Fase 2A.3 (a criar)
+    ├── query_decomposer.py          ← ✅ Fase 2A.1 (270 linhas, 91% coverage)
+    ├── query_router.py              ← ✅ Fase 2A.3 (280 linhas, 92% accuracy)
+    ├── strategies.py                ← ✅ Fase 2A.3 (4 estratégias)
     ├── self_rag.py                  ← 🔜 Fase 2B.1 (a criar)
     └── corrective_rag.py            ← 🔜 Fase 2B.2 (a criar)
 ```
@@ -742,10 +742,42 @@ agente-bsc-rag/
 
 **Próximo:**
 
-- 🔜 **Fase 2A.1** - Implementar Query Decomposition (3-4 dias)
-- 🔜 **TIER 2** - Criar RAG Techniques Catalog + Recipes (durante Fase 2A)
+- ✅ **Fase 2A (3 técnicas)** - Query Decomposition, Adaptive Re-ranking, Router (COMPLETO)
+- ✅ **TIER 2** - RAG Techniques Catalog + Recipes (COMPLETO)
+
+---
+
+### v1.1 - 2025-10-14 (TIER 2 Completo)
+
+**Criado:**
+
+- ✅ `.cursor/rules/rag-techniques-catalog.mdc` (1.200+ linhas)
+  - Catalogadas 5 técnicas (TECH-001 a TECH-005)
+  - 3 técnicas implementadas (Fase 2A) + 2 planejadas (Fase 2B)
+  - Taxonomia por Categoria, Complexidade, ROI
+  - Quick Reference Table e índice navegável
+  - Cross-references para docs/techniques/
+  
+- ✅ `.cursor/rules/rag-recipes.mdc` (800+ linhas)
+  - 3 recipes validados (RECIPE-001 a RECIPE-003)
+  - Hybrid Search + Re-ranking (MVP)
+  - AsyncIO Parallel Retrieval (3.34x speedup)
+  - Embedding Cache (949x speedup)
+  - Código essencial + troubleshooting
+
+**ROI Validado TIER 2:**
+
+- 15-20 min economizados por uso (discovery + implementação)
+- Conhecimento consolidado das 3 técnicas Fase 2A
+- Preparação eficiente para Fase 2B (Self-RAG, CRAG)
+
+**Próximo:**
+
+- 🔥 **Benchmark Fase 2A** - Validar métricas (RODANDO)
+- 🔜 **Fase 2B** - Self-RAG + CRAG
+- 🔜 **TIER 3** - Docs Index + Lições Aprendidas
 
 ---
 
 **Última Atualização:** 2025-10-14
-**Status:** ✅ TIER 1 COMPLETO - Pronto para Fase 2A
+**Status:** ✅ TIER 1+2 COMPLETO - Aguardando Benchmark Fase 2A

@@ -309,6 +309,10 @@ class BSCRetriever:
         """
         Recupera documentos focados em uma perspectiva específica do BSC.
         
+        Usa DUPLA ESTRATÉGIA:
+        1. Filtros de metadados (perspectives field) - preciso
+        2. Enriquecimento de query com keywords - fallback
+        
         Args:
             query: Query do usuário
             perspective: Perspectiva BSC (financeira, cliente, processos, aprendizado)
@@ -316,8 +320,12 @@ class BSCRetriever:
             
         Returns:
             Documentos relevantes para a perspectiva
+            
+        Example:
+            >>> retriever.retrieve_by_perspective("Como medir ROI?", "financeira", k=10)
+            # Retorna docs com perspectives=["financial", "all"] + keywords
         """
-        # Enriquece query com perspectiva
+        # Enriquece query com keywords (estratégia complementar)
         perspective_keywords = {
             "financeira": "receita lucro ROI custos financeiro",
             "cliente": "satisfação NPS retenção valor cliente",
@@ -325,10 +333,32 @@ class BSCRetriever:
             "aprendizado": "capacitação inovação conhecimento crescimento"
         }
         
+        # Mapeamento PT-BR -> EN (metadados no Qdrant estão em inglês)
+        perspective_mapping = {
+            "financeira": "financial",
+            "cliente": "customer",
+            "processos": "process",
+            "aprendizado": "learning"
+        }
+        
         keywords = perspective_keywords.get(perspective.lower(), "")
         enriched_query = f"{query} {keywords}"
         
-        return self.retrieve(enriched_query, k=k)
+        # SE filtros habilitados, usar metadata filters
+        filters = None
+        if settings.enable_perspective_filters:
+            perspective_en = perspective_mapping.get(perspective.lower())
+            
+            if perspective_en:
+                # Filtrar por perspectiva: docs com perspectives=[perspective_en] OU perspectives=["all"]
+                # Qdrant filter: OR logic usando $in operator
+                filters = {
+                    "perspectives": {"$in": [perspective_en, "all"]}
+                }
+                
+                logger.info(f"[FILTER] Perspective '{perspective}' usando filtros: {filters}")
+        
+        return self.retrieve(enriched_query, k=k, filters=filters)
     
     def get_similar_documents(
         self,

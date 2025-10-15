@@ -128,9 +128,17 @@ class BSCBenchmark:
                 end_time = time.time()
                 latency = end_time - start_time
                 
-                # Extrair informações
-                final_answer = result.get("final_answer", "")
-                contexts = result.get("retrieved_contexts", [])
+                # Extrair informações (workflow retorna final_response, não final_answer)
+                final_answer = result.get("final_response", "")
+                
+                # Contexts: extrair de agent_responses
+                contexts = []
+                for agent_resp in result.get("agent_responses", []):
+                    # Cada agent tem contexts em seu response
+                    if isinstance(agent_resp, dict):
+                        agent_content = agent_resp.get("content", "")
+                        if agent_content:
+                            contexts.append(agent_content)
                 
                 # Converter contexts para strings
                 context_strs = []

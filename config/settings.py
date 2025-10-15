@@ -113,6 +113,15 @@ class Settings(BaseSettings):
     enable_direct_answer_cache: bool = True  # Cache para DirectAnswerStrategy
     direct_answer_cache_ttl: int = 3600  # TTL do cache (1 hora)
     
+    # Auto-Geração de Metadados (Fase 2 - Organização)
+    enable_auto_metadata_generation: bool = True  # Gerar metadados com LLM para docs novos
+    save_auto_metadata: bool = True  # Salvar metadados gerados no index.json
+    auto_metadata_model: str = "gpt-4o-mini"  # Modelo para extração (barato e rápido)
+    auto_metadata_content_limit: int = 3000  # Palavras do documento para análise LLM
+    
+    # Filtros por Perspectiva (Fase 2 - Integração)
+    enable_perspective_filters: bool = True  # Filtrar retrieval por perspectiva BSC do agent
+    
     # Human-in-the-loop
     require_approval_for_critical: bool = True
     

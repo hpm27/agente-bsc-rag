@@ -169,20 +169,38 @@ def format_confidence_score(score: float) -> str:
 def format_document_source(doc: Dict[str, Any]) -> str:
     """
     Formata informacao de fonte do documento.
+    
+    Usa document_title (titulo legivel) quando disponivel,
+    com fallback para source (filename).
 
     Args:
         doc: Dicionario com metadados do documento
 
     Returns:
-        str: Fonte formatada
+        str: Fonte formatada com titulo legivel
+        
+    Example:
+        >>> # Com document_title:
+        >>> format_document_source({"metadata": {"document_title": "The Balanced Scorecard", "page": 5}})
+        "The Balanced Scorecard (pag. 5)"
+        
+        >>> # Sem document_title (fallback):
+        >>> format_document_source({"metadata": {"source": "doc.pdf", "page": 3}})
+        "doc.pdf (pag. 3)"
     """
     metadata = doc.get("metadata", {})
+    
+    # Tentar usar document_title primeiro (mais legivel)
+    title = metadata.get("document_title", "")
     source = metadata.get("source", "Desconhecido")
     page = metadata.get("page", None)
+    
+    # Usar titulo se disponivel, senao filename
+    display_name = title if title else source
 
     if page is not None:
-        return f"{source} (pag. {page})"
-    return source
+        return f"{display_name} (pag. {page})"
+    return display_name
 
 
 def truncate_text(text: str, max_length: int = 200) -> str:

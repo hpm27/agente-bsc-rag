@@ -7,10 +7,6 @@ globs: *
 
 ## TECH STACK
 
-## PROJECT DOCUMENTATION & CONTEXT SYSTEM
-
-## WORKFLOW & RELEASE RULES
-
 When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
@@ -180,15 +176,101 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
 
     ```python
     pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
-    en_count = sum(1 for kw in en_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
+    en_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
     ```
+
+## PROJECT DOCUMENTATION & CONTEXT SYSTEM
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+
+### Architectural Considerations for the BSC Consulting Agent (v2.0)
+
+The following architectural considerations should guide the development of the BSC Consulting Agent v2.0:
+
+#### 1. Technology Stack Consolidation:
+
+*   Prioritize integration with Mem0 for persistent memory, leveraging its LangGraph compatibility and validated performance metrics.
+*   Incorporate MCPs for productivity, initially focusing on Google Calendar and Asana.
+
+#### 2. Memory Implementation:
+
+*   Utilize Mem0's platform API or consider a self-hosted alternative (PostgreSQL + pgvector) for storing client profiles and engagement progress.
+
+#### 3. Workflow Orchestration:
+
+*   Expand the LangGraph state machine to include a ConsultingEngagementState, with new states for onboarding, discovery, diagnostic, solution design, (optional) implementation, and monitoring.
+
+#### 4. Agent Layer:
+
+*   Augment existing BSC knowledge agents with new consulting agents: ClientProfileAgent, WorkshopFacilitatorAgent, and DiagnosticAnalystAgent.
+
+#### 5. Tool/MCP Layer:
+
+*   Integrate the Brightdata MCP (for external context), interactive tools (SWOT builder, strategy map designer, KPI definer, issue tree analyzer), and productivity MCPs (Google Calendar, Asana).
+
+#### 6. Roadmap and Prioritization:
+
+*   Follow a phased implementation, starting with a foundational MVP (Mem0 integration, onboarding, workflow, basic tools) and expanding to enterprise features (Brightdata, additional tools, productivity MCPs).
+
+#### 7. Data Structuring for Mem0:
+
+*   Adopt a well-defined schema for the ClientProfile in Mem0:
+
+```json
+{
+  "user_id": "cliente_123",
+  "company": {
+    "name": "Empresa X",
+    "industry": "Healthcare",
+    "size": "200-500 employees",
+    "maturity": "Growth stage"
+  },
+  "strategic_context": {
+    "main_challenge": "Crescimento orgânico sem perder qualidade",
+    "objectives": ["Aumentar EBITDA 20%", "Melhorar NPS 30pts"],
+    "stakeholders": ["CEO Maria", "CFO João", "COO Ana"]
+  },
+  "engagement": {
+    "mode": "Advisor",  // ou "Full Consultant"
+    "current_phase": "DISCOVERY",
+    "completed_activities": ["onboarding", "swot_analysis"],
+    "pending_deliverables": ["diagnostic_report", "strategy_map"]
+  },
+  "preferences": {
+    "communication_style": "Direto, dados-driven",
+    "meeting_frequency": "Semanal",
+    "tools": ["Google Calendar", "Asana"]
+  },
+  "history": [
+    {"date": "2025-10-15", "activity": "Onboarding", "key_insights": "..."},
+    {"date": "2025-10-18", "activity": "SWOT Workshop", "outputs": "..."}
+  ]
+}
+```
+
+#### 8. Memory Solution Evaluation
+
+*   Mem0 (mem0.ai) is the preferred choice, offering native LangGraph integration, a validated research track record, and an available MCP.
+
+#### 9. Productivity MCP Prioritization
+
+*   Integrate Google Calendar and Asana MCPs to facilitate scheduling and project tracking.
+
+#### 10. Implementation Roadmap
+
+*   Prioritize a phased rollout, beginning with Mem0 integration and a basic workflow, followed by the addition of productivity MCPs.
+
+### To Consider:
+*   [https://github.com/humanlayer/12-factor-agents](https://github.com/humanlayer/12-factor-agents)
+*   [https://www.anthropic.com/engineering/building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents)
+*   [https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
 
 ## TEST CONFIGURATION
 
 *   The test `test_parallel_agent_execution` now has a threshold of 200 seconds.
 *   The test `test_latency_percentiles` now has a P95 threshold of 240 seconds (4 minutes).
 *   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
-*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy, answer relevancy, and faithfulness.
+*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy (now context precision), answer relevancy, and faithfulness.
 *   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
 
 When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
@@ -198,17 +280,23 @@ When running pytest in parallel, use the following flags:
 *   `-n <num_workers>`: Specifies the number of workers for parallel execution.
 *   `-v`: Enables verbose output.
 *   `--tb=short`: Uses a short traceback format.
-*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
 
 ## BENCHMARKING
 
 *   To run a full Fase 2A benchmark, use the command: `python tests/benchmark_fase2a/run_benchmark.py`.
+*   To run a pilot benchmark with 5 queries, use the command: `python tests/benchmark_fase2a/run_benchmark.py --pilot`.
 *   The benchmark compares BASELINE (without optimizations) against FASE 2A (with Query Decomposition, Adaptive Re-ranking, Router).
 *   The benchmark should be executed in the background and its progress monitored.
 *   Upon completion, a comparative report with all RAGAS metrics should be generated.
 *   Estimated runtime: 2.5-3 hours.
 *   Estimated cost: ~$1.60 USD.
+*   The test `test_parallel_agent_execution` now has a threshold of 200 seconds.
+*   The test `test_latency_percentiles` now has a P95 threshold of 240 seconds (4 minutes).
+*   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
+*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy (now context precision), answer relevancy, and faithfulness.
+*   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
 
 ## GIT WORKFLOW & SECURITY
 
@@ -254,7 +342,7 @@ When working with Git, especially on projects involving API keys or sensitive in
     git rm --cached .env
     git commit -m "Remove .env file"
     ```
-3.  **Rewrite Git history (Advanced):** Use `git filter-branch` or `BFG Repo Cleaner` to remove the file from all past commits. This is the most secure option but requires caution.
+3.  **Rewrite Git history (Advanced):** Use `git filter-branch` or BFG Repo Cleaner` to remove the file from all past commits. This is the most secure option but requires caution.
 4.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
 
 ### Handling Accidental Commits of Secrets
@@ -263,6 +351,7 @@ If you accidentally commit secrets (like API keys) to a Git repository, especial
 
 1.  **Immediately add the secrets file (e.g., `.env`) to `.gitignore`**. This prevents future accidental commits.
 2.  **Remove the secrets file from the repository's history.** This is crucial to prevent unauthorized access to the secrets. Use tools like `git filter-branch` or `BFG Repo Cleaner` for this purpose.
+
     ```bash
     # Example using git filter-branch (use with caution!)
     git filter-branch --force --index-filter \
@@ -271,6 +360,7 @@ If you accidentally commit secrets (like API keys) to a Git repository, especial
     git push origin --force --all
     git push origin --force --tags
     ```
+
     *   **Important:** Rewriting Git history can be complex and affect collaborators. Communicate with your team before performing these steps.
 3.  **Reset the compromised secrets.** Generate new API keys, passwords, or tokens to invalidate the old ones.
 4.  **Inform collaborators.** If others have pulled the commit, they need to rebase their work after the history is rewritten.
@@ -284,3 +374,88 @@ If you accidentally commit secrets (like API keys) to a Git repository, especial
 **Disabling Push Protection (Not Recommended):**
 
 *   It is possible to disable Push Protection in your repository settings (`Code security > Secret scanning > Push protection`). However, this is generally **not recommended** as it reduces the security of your repository. Only disable it if you fully understand the risks.
+
+**Recovering from Committing Secrets (Comprehensive Guide):**
+
+If secrets are accidentally committed, the following steps must be taken to fully resolve the problem:
+
+1.  **Add the secrets file to `.gitignore`**: Ensure that `.env`, `.env.local`, and similar files are included in `.gitignore` to prevent future commits.
+2.  **Remove the secrets file from the repository:**
+
+    ```bash
+    git rm --cached .env
+    git commit -m "Remove .env file"
+    ```
+3.  **Rewrite Git history (Crucial):** Use `git filter-branch` or, preferably, `git filter-repo` (if available) to remove the file from all past commits. This is the most secure option:
+
+    ```bash
+    git filter-branch --force --index-filter "git rm --cached --ignore-unmatch .env" --prune-empty --tag-name-filter cat -- --all
+    ```
+
+    Or, using `git filter-repo` (requires installation):
+
+   First, install git-filter-repo:
+
+    ```bash
+    pip install git-filter-repo
+    ```
+
+   Then, run the filter:
+
+    ```bash
+    git filter-repo --invert-blob-contents --path .env
+    ```
+
+    *   **Important:** Rewriting Git history can be complex and may affect collaborators. Communicate with your team before performing these steps.
+4.  **Force Push:** After rewriting history, force push the changes:
+
+    ```bash
+    git push origin master --force
+    ```
+5.  **Stash Changes (If Necessary):** If there are unstaged changes, stash them before rebasing or filtering:
+
+    ```bash
+    git stash
+    ```
+
+    And pop them after the history rewrite:
+
+    ```bash
+    git stash pop
+    ```
+6.  **Verify `.env` is ignored:**
+
+    ```bash
+    git check-ignore -v .env
+    ```
+
+    This command should confirm that `.env` is now ignored by Git.
+7.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
+
+## DEBUGGING
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+
+When running pytest in parallel, use the following flags:
+
+*   `-n <num_workers>`: Specifies the number of workers for parallel execution.
+*   `-v`: Enables verbose output.
+*   `--tb=short`: Uses a short traceback format.
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
+*   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
+
+When the test `test_parallel_agent_execution` fails, the problem may be the threshold.
+*   Check the tests and see if the threshold is too restrictive.
+*   Consider the fact that the workflow includes routing, agents, synthesis and judge, and the threshold must account for those steps.
+
+## WORKFLOW & RELEASE RULES
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+
+When running pytest in parallel, use the following flags:
+
+*   `-n <num_workers>`: Specifies the number of workers for parallel execution.
+*   `-v`: Enables verbose output.
+*   `--tb=short`: Uses a short traceback format.
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).

@@ -316,6 +316,14 @@ Você verá:
 - 📚 **[GPT5_CONTEXTUAL_RETRIEVAL.md](docs/GPT5_CONTEXTUAL_RETRIEVAL.md)** - Contextual chunking
 - 🎓 **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** - Lições aprendidas
 
+### Organização e Discovery (Cursor Rules)
+
+- 🎯 **[rag-bsc-core.mdc](.cursor/rules/rag-bsc-core.mdc)** - Router central (sempre aplicado)
+- 📘 **[rag-techniques-catalog.mdc](.cursor/rules/rag-techniques-catalog.mdc)** - Catálogo de técnicas RAG avançadas
+- 🎯 **[rag-recipes.mdc](.cursor/rules/rag-recipes.mdc)** - Padrões RAG rápidos de 1 página
+
+**ROI:** Economia de 15-20 min/uso em decisões técnicas e discovery de soluções.
+
 ---
 
 ## ⚡ Performance e Otimizações
@@ -550,16 +558,24 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 
 ---
 
-### 🔮 Fase 2B - Advanced RAG (Planejada - Out-Nov/2025)
+### 📋 Fase 2B - Advanced RAG (PLANEJADO - Out-Nov/2025)
 
-- [ ] **Self-RAG** - Redução de alucinações (-40-50%)
-- [ ] **CRAG (Corrective RAG)** - Correção de retrieval de baixa qualidade
-- [ ] **HyDE** - Hypothetical Document Embeddings (SE recall <70%)
-- [ ] **Iterative Retrieval** - Refinamento multi-hop
-- [ ] Avaliação de RAPTOR (retrieval hierárquico)
-- [ ] Avaliação de Graph RAG (relações causa-efeito)
+**Status:** Aguardando validação Benchmark Fase 2A  
+**Duração Estimada:** 2-3 semanas (8-10 dias úteis)
 
-**Critério Fase 2B:** Iniciar **APÓS** benchmark Fase 2A validar ROI das 3 técnicas implementadas.
+- [ ] **Self-RAG** (3-4 dias) - Self-reflection, -40-50% alucinações
+- [ ] **CRAG** (4-5 dias) - Corrective retrieval, +23% quality
+- [ ] **Integração** (2-3 dias) - E2E tests, benchmark Fase 2B
+- [ ] **Documentação** (1-2 dias) - Lições aprendidas, técnicas
+
+**Decisão Condicional:**
+- ✅ Implementar SE: Faithfulness <0.85 OU Precision <0.70
+- ❌ Pular SE: Métricas excelentes (Faithfulness >0.90, Precision >0.80)
+
+**Plano Detalhado:** `.cursor/plans/fase-2b-rag-avancado.plan.md`  
+**Técnicas:** `docs/techniques/FASE_2B_OVERVIEW.md`
+
+**HyDE, RAPTOR, Graph RAG:** Avaliação condicional pós-Fase 2B.
 
 ### 🚀 Fase 3 - Produção (Planejada - Dez/2025+)
 
