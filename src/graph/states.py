@@ -5,6 +5,9 @@ from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 from enum import Enum
 
+# Import ClientProfile para integração com memória
+from src.memory.schemas import ClientProfile
+
 
 class PerspectiveType(str, Enum):
     """Perspectivas do BSC."""
@@ -42,6 +45,10 @@ class BSCState(BaseModel):
     # Input
     query: str
     session_id: Optional[str] = None
+    user_id: Optional[str] = None
+    
+    # Memória persistente do cliente (integração Mem0)
+    client_profile: Optional[ClientProfile] = None
     
     # Análise da query
     relevant_perspectives: List[PerspectiveType] = Field(default_factory=list)

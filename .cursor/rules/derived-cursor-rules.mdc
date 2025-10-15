@@ -278,8 +278,17 @@ The following architectural considerations should guide the development of the B
 *   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
 *   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy (now context precision), answer relevancy, and faithfulness.
 *   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
+*   To ensure pytest discovers tests and handles imports correctly, add the following to `pyproject.toml` under `[tool.pytest.ini_options]`:
 
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+```toml
+pythonpath = ["."]
+# Usar importlib para resolver conflitos com __init__.py (Issue #11960 pytest-dev)
+addopts = [
+    "--import-mode=importlib",
+]
+```
+
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
 
@@ -551,7 +560,7 @@ If `Ctrl+C` and `Ctrl+V` are not working correctly on a Windows machine, follow 
 
 ## WORKFLOW & RELEASE RULES
 
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
 
@@ -770,8 +779,4 @@ Given the challenges encountered with rclone and OneDrive, the following recomme
 2.  **Avoid rclone for Large-Scale OneDrive Synchronization:**
     *   Do not use rclone for synchronizing large OneDrive accounts, especially those with very large files, due to API limitations and throttling issues.
 
-3.  **Sequential Thinking and Brightdata for Task Planning:**
-    *   When planning complex tasks, especially those involving external APIs or unfamiliar libraries, use sequential thinking to break down the task into smaller, manageable steps.
-    *   Utilize Brightdata to research solutions and best practices on the internet, when necessary.
-
-4.  **Task
+3.  Sequential Thinking and Brightdata for Task Planning:

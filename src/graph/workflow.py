@@ -9,19 +9,17 @@ Orquestra o fluxo completo:
 5. Refinamento iterativo (se necessário)
 6. Resposta final
 """
-from typing import Dict, Any, List, Literal
 import time
-from langgraph.graph import StateGraph, END
+from typing import Any, Literal
+
+from langgraph.graph import END, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 from loguru import logger
 
-from src.graph.states import (
-    BSCState,
-    PerspectiveType,
-    AgentResponse,
-    JudgeEvaluation
-)
-from src.agents.orchestrator import Orchestrator
 from src.agents.judge_agent import JudgeAgent
+from src.agents.orchestrator import Orchestrator
+from src.graph.memory_nodes import load_client_memory, save_client_memory
+from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
 
 
 def extract_text_from_response(response: Any) -> str:
@@ -66,29 +64,32 @@ class BSCWorkflow:
         
         logger.info("[OK] BSCWorkflow inicializado com grafo LangGraph")
     
-    def _build_graph(self) -> StateGraph:
+    def _build_graph(self) -> CompiledStateGraph:
         """
         Constrói o grafo de execução LangGraph.
         
         Fluxo:
-        START → analyze_query → execute_agents → synthesize_response 
-        → judge_validation → decide_next → [finalize OR execute_agents (refinement)]
-        → END
+        START → load_client_memory → analyze_query → execute_agents 
+        → synthesize_response → judge_validation → decide_next 
+        → [finalize OR execute_agents (refinement)] → save_client_memory → END
         """
         # Criar grafo com schema BSCState
         workflow = StateGraph(BSCState)
         
-        # Adicionar nós
+        # Adicionar nós (incluindo memória)
+        workflow.add_node("load_client_memory", load_client_memory)
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
         workflow.add_node("judge_validation", self.judge_evaluation)  # Renomeado para evitar conflito com state key
         workflow.add_node("finalize", self.finalize)
+        workflow.add_node("save_client_memory", save_client_memory)
         
-        # Definir entry point
-        workflow.set_entry_point("analyze_query")
+        # Definir entry point (começa com load de memória)
+        workflow.set_entry_point("load_client_memory")
         
         # Definir edges (transições)
+        workflow.add_edge("load_client_memory", "analyze_query")  # Memória → Query
         workflow.add_edge("analyze_query", "execute_agents")
         workflow.add_edge("execute_agents", "synthesize_response")
         workflow.add_edge("synthesize_response", "judge_validation")
@@ -104,14 +105,15 @@ class BSCWorkflow:
             }
         )
         
-        # Edge final: finalize → END
-        workflow.add_edge("finalize", END)
+        # Edge final: finalize → save_client_memory → END
+        workflow.add_edge("finalize", "save_client_memory")
+        workflow.add_edge("save_client_memory", END)
         
-        logger.info("[OK] Grafo LangGraph construído com 5 nós + 1 edge condicional")
+        logger.info("[OK] Grafo LangGraph construído com 7 nós (2 memória + 5 core) + 1 edge condicional")
         
         return workflow.compile()
     
-    def analyze_query(self, state: BSCState) -> Dict[str, Any]:
+    def analyze_query(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 1: Analisa a query e determina roteamento.
         
@@ -172,7 +174,7 @@ class BSCWorkflow:
                 "metadata": {"error": str(e)}
             }
     
-    def execute_agents(self, state: BSCState) -> Dict[str, Any]:
+    def execute_agents(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 2: Executa agentes especialistas em paralelo.
         
@@ -269,7 +271,7 @@ class BSCWorkflow:
                 }
             }
     
-    def synthesize_response(self, state: BSCState) -> Dict[str, Any]:
+    def synthesize_response(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 3: Sintetiza respostas dos agentes em uma resposta unificada.
         
@@ -297,7 +299,7 @@ class BSCWorkflow:
                 }
             
             # Converter AgentResponse para formato esperado pelo Orchestrator
-            agent_responses_dict = []
+            agent_responses_dict: list[dict[str, Any]] = []
             for agent_resp in state.agent_responses:
                 perspective_to_name = {
                     PerspectiveType.FINANCIAL: "Financial Agent",
@@ -353,7 +355,7 @@ class BSCWorkflow:
                 }
             }
     
-    def judge_evaluation(self, state: BSCState) -> Dict[str, Any]:
+    def judge_evaluation(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 4: Avalia qualidade da resposta com Judge Agent.
         
@@ -487,7 +489,7 @@ class BSCWorkflow:
             logger.error(f"[ERRO] decide_next_step: {e}. Finalizando por segurança.")
             return "finalize"
     
-    def finalize(self, state: BSCState) -> Dict[str, Any]:
+    def finalize(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 5: Finaliza o workflow e prepara resposta final.
         
@@ -544,14 +546,16 @@ class BSCWorkflow:
         self,
         query: str,
         session_id: str = None,
-        chat_history: List[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        user_id: str = None,
+        chat_history: list[dict[str, str]] = None
+    ) -> dict[str, Any]:
         """
         Executa o workflow completo para uma query.
         
         Args:
             query: Pergunta do usuário
             session_id: ID da sessão (opcional)
+            user_id: ID do usuário/cliente para persistência de memória (opcional)
             chat_history: Histórico de conversa (opcional)
             
         Returns:
@@ -563,10 +567,11 @@ class BSCWorkflow:
             logger.info(f"[TIMING] [WORKFLOW] INICIADO para query: '{query[:60]}...'")
             logger.info(f"{'='*80}\n")
             
-            # Criar estado inicial
+            # Criar estado inicial (com user_id para memória)
             initial_state = BSCState(
                 query=query,
                 session_id=session_id,
+                user_id=user_id,
                 metadata={"chat_history": chat_history} if chat_history else {}
             )
             
@@ -630,9 +635,12 @@ class BSCWorkflow:
             String com estrutura do grafo
         """
         viz = """
-BSC LangGraph Workflow:
+BSC LangGraph Workflow (com Memória Persistente):
 
 START
+  |
+  v
+load_client_memory (Carrega perfil do cliente do Mem0)
   |
   v
 analyze_query (Analisa query e determina perspectivas relevantes)
@@ -653,9 +661,13 @@ decide_next_step (Decisao condicional)
   |-- [default] --> finalize
        |
        v
+save_client_memory (Salva atualizações do perfil no Mem0)
+       |
+       v
      END
 
 Caracteristicas:
+- Memoria persistente com Mem0 Platform (ClientProfile)
 - Refinamento iterativo (max 2 iteracoes)
 - Execucao paralela de agentes
 - Validacao rigorosa com Judge

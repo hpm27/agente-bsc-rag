@@ -129,6 +129,9 @@ ignore_errors = true
 # ============================================================================
 [tool.pytest.ini_options]
 minversion = "7.0"
+# Adicionar diretorio raiz ao PYTHONPATH (soluciona ModuleNotFoundError)
+pythonpath = ["."]
+# Usar importlib para resolver conflitos com __init__.py (Issue #11960 pytest-dev)
 addopts = [
     "-ra",
     "--strict-markers",
@@ -136,6 +139,7 @@ addopts = [
     "--cov=src",
     "--cov-report=term-missing",
     "--cov-report=html",
+    "--import-mode=importlib",
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]

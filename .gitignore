@@ -85,3 +85,6 @@ venv/
 
 .specstory/
 .mypy_cache/
+
+# Cursor Progress (arquivos temporários)
+.cursor/progress/

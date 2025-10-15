@@ -1,9 +1,9 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-15 (Sessão 4)  
-**Fase Atual**: FASE 1 - Foundation (Mem0) ⚙️ EM PROGRESSO  
-**Sessão**: 4 de 15-19  
-**Progresso Geral**: 12.5% (6/48 tarefas completas)
+**Última Atualização**: 2025-10-15 (Sessão 5)  
+**Fase Atual**: FASE 1 - Foundation (Mem0) ⚙️ EM PROGRESSO (QUASE COMPLETA!)  
+**Sessão**: 5 de 15-19  
+**Progresso Geral**: 14.5% (7/48 tarefas completas)
 
 ---
 
@@ -12,7 +12,7 @@
 ### FASE 1: Foundation (Mem0) ⚙️ EM PROGRESSO
 **Objetivo**: Infraestrutura memória persistente  
 **Duração Estimada**: 5-7h (3-4 sessões)  
-**Progresso**: 6/8 tarefas (75%) ⚡
+**Progresso**: 7/8 tarefas (87.5%) 🔥 QUASE LÁ!
 
 - [x] **1.1** Research Mem0 Platform (30-45 min) ✅ ACELERADO (usuário já configurou)
 - [x] **1.2** Setup Mem0 Platform (30 min) ✅ ACELERADO (usuário já configurou)
@@ -20,8 +20,8 @@
 - [x] **1.4** Mem0 Client Wrapper (1-1.5h) ✅ **COMPLETO** (mem0_client.py + 18 testes)
 - [x] **1.5** Factory Pattern Memory (30 min) ✅ **COMPLETO** (factory.py + 22 testes)
 - [x] **1.6** Config Management (30 min) ✅ **COMPLETO** (settings.py + 8 testes)
-- [ ] **1.7** LangGraph Integration (1-1.5h) - **PRÓXIMO**
-- [ ] **1.8** Testes Integração (1h) - PENDENTE
+- [x] **1.7** LangGraph Integration (1-1.5h) ✅ **COMPLETO** (memory_nodes.py + 14 testes)
+- [ ] **1.8** Testes Integração (1h) - **PRÓXIMO** 🎯
 
 **Entregável**: Config Mem0 validada ✅  
 **Status**: settings.py com validações Field, validate_memory_config(), 8 testes, mem0ai instalado
@@ -83,6 +83,21 @@
 
 ## 📝 DESCOBERTAS E AJUSTES
 
+**2025-10-15 (Sessão 5)**: FASE 1.7 LangGraph Integration COMPLETO
+- ✅ **Integração memory nodes**: `load_client_memory` e `save_client_memory` criados
+- ✅ **BSCState expandido**: Adicionados campos `user_id` e `client_profile`
+- ✅ **Workflow atualizado**: Memory nodes integrados no grafo (entry + final edge)
+- ✅ **14 testes unitários**: 100% passando (89% coverage em memory_nodes.py)
+- 🔧 **PROBLEMA CRÍTICO RESOLVIDO**: `ModuleNotFoundError: config.settings`
+  - **Causa**: Arquivos `__init__.py` em `src/agents/` causavam conflitos de namespace no pytest
+  - **Tentativas falhas**: pythonpath, conftest.py, PYTHONPATH env var
+  - **Solução definitiva**: `--import-mode=importlib` no pyproject.toml
+  - **Referência**: [pytest-dev/pytest#11960](https://github.com/pytest-dev/pytest/issues/11960)
+  - **Pesquisa**: Brightdata + Stack Overflow + GitHub issues (solução validada comunidade)
+- 🐛 **Schema fix**: Removido `total_interactions` (campo inexistente em EngagementState)
+- ⚡ **Tempo real**: ~1.5h (alinhado com estimativa 1-1.5h)
+- 📊 **Progresso**: 7/48 tarefas (14.5%), ~6h investidas, 94 testes passando
+
 **2025-10-15 23:00**: Plano v2.0 criado
 - Decisão: Mem0 ao invés de Supabase (self-improving, LLM-optimized)
 - Decisão: BSC-only no MVP (multi-domain Fase 6 futura)
@@ -117,24 +132,29 @@
 
 ---
 
-## 🎬 PRÓXIMA SESSÃO (Sessão 5)
+## 🎬 PRÓXIMA SESSÃO (Sessão 6) 🎯 ÚLTIMA DA FASE 1!
 
 ### Objetivos
-- [ ] **FASE 1.7**: LangGraph Integration (1-1.5h)
-  - Adicionar `client_profile: Optional[ClientProfile]` ao ConsultingState
-  - Integrar `MemoryFactory.get_provider()` no workflow
-  - Criar node `load_client_memory` (recupera perfil existente)
-  - Criar node `save_client_memory` (persiste atualizações)
-  - Testar persistência entre sessões
-- [ ] **FASE 1.8**: Testes Integração (1h)
-  - E2E test completo: onboarding → save → load → update
-  - Validar persistência Mem0 real (não mock)
-  - Checkpoint 1 completo
+- [ ] **FASE 1.8**: Testes Integração E2E (1h) - **CHECKPOINT 1** 🏁
+  - E2E test completo: Workflow → save profile → load profile → update
+  - Validar persistência Mem0 real (não apenas mocks)
+  - Testar cenários:
+    - Cliente novo (cria profile)
+    - Cliente existente (carrega profile)
+    - Atualização de engagement state
+  - Verificar timestamps e metadata
+  - **Meta**: 100% cobertura nos fluxos de memória
 
 ### Preparação
-- Revisar `src/graph/states.py` para adicionar client_profile
-- Estudar `src/graph/workflow.py` para identificar pontos de integração
-- Validar que MemoryFactory.get_provider("mem0") funciona corretamente
+- ✅ memory_nodes.py completo e testado
+- ✅ BSCState com client_profile integrado
+- ✅ Workflow com load/save configurado
+- 🔜 Criar teste E2E em `tests/integration/test_memory_integration.py`
+
+### Resultado Esperado
+- 🎉 **FASE 1 COMPLETA** (100%)
+- 🏁 **CHECKPOINT 1 VALIDADO**
+- 🚀 **Pronto para FASE 2**: Consulting Workflow
 
 ---
 
@@ -142,15 +162,30 @@
 
 | Métrica | Target | Atual | Status |
 |---------|--------|-------|--------|
-| Tarefas Completas | 48 | 6 | ⚙️ (12.5%) |
-| Horas Investidas | 59-75h | ~4.5h | ⚙️ (7.6%) |
-| Checkpoints Passados | 5 | 0 | ⏳ (Checkpoint 1 em FASE 1.8) |
-| Testes Passando | 89 | 80 | ⚙️ (22 RAG + 25 schemas + 18 mem0_client + 22 factory + 8 config) |
-| Coverage | 85%+ | ~92% | ✅ (mantido) |
+| Tarefas Completas | 48 | 7 | ⚙️ (14.5%) |
+| Horas Investidas | 59-75h | ~6h | ⚙️ (10.1%) |
+| Checkpoints Passados | 5 | 0 | ⏳ (Checkpoint 1 PRÓXIMO!) |
+| Testes Passando | 89 | 94 | ⚙️ (22 RAG + 25 schemas + 18 mem0 + 22 factory + 8 config + 14 memory_nodes) |
+| Coverage | 85%+ | ~92% | ✅ (mantido, 89% em memory_nodes) |
 
 ---
 
 ## 🔄 CHANGELOG
+
+### 2025-10-15 (Sessão 5) ✅
+- ✅ **FASE 1.7 COMPLETA**: LangGraph Integration
+  - Criados nodes `load_client_memory` e `save_client_memory` (270 linhas)
+  - BSCState expandido: campos `user_id` e `client_profile` adicionados
+  - Workflow atualizado: memory nodes como entry point e final edge
+  - 14 testes unitários criados (89% coverage em memory_nodes.py)
+  - **PROBLEMA CRÍTICO RESOLVIDO**: ModuleNotFoundError config.settings
+    - Solução: `--import-mode=importlib` no pyproject.toml
+    - Referência: pytest-dev/pytest#11960
+    - Pesquisa: Brightdata + Stack Overflow + GitHub
+  - Schema fix: Removido campo `total_interactions` (inexistente)
+  - Correções em 9 arquivos (src/graph/, tests/, pyproject.toml)
+- 📊 **Progresso**: 7/48 tarefas (14.5%), ~6h investidas, 94 testes passando
+- 🎯 **Próxima**: FASE 1.8 (Testes E2E) - **ÚLTIMO CHECKPOINT FASE 1!**
 
 ### 2025-10-15 (Sessão 4) ✅
 - ✅ **FASE 1.6 COMPLETA**: Config Management
