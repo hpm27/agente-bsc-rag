@@ -82,3 +82,5 @@ Thumbs.db
 
 data/contextual_cache/
 venv/
+
+.specstory/

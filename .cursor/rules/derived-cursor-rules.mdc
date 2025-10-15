@@ -256,3 +256,31 @@ When working with Git, especially on projects involving API keys or sensitive in
     ```
 3.  **Rewrite Git history (Advanced):** Use `git filter-branch` or `BFG Repo Cleaner` to remove the file from all past commits. This is the most secure option but requires caution.
 4.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
+
+### Handling Accidental Commits of Secrets
+
+If you accidentally commit secrets (like API keys) to a Git repository, especially a public one, follow these steps immediately to mitigate the risk:
+
+1.  **Immediately add the secrets file (e.g., `.env`) to `.gitignore`**. This prevents future accidental commits.
+2.  **Remove the secrets file from the repository's history.** This is crucial to prevent unauthorized access to the secrets. Use tools like `git filter-branch` or `BFG Repo Cleaner` for this purpose.
+    ```bash
+    # Example using git filter-branch (use with caution!)
+    git filter-branch --force --index-filter \
+    'git rm --cached --ignore-unmatch path/to/your/secrets_file' \
+    --prune-empty --tag-name-filter cat -- --all
+    git push origin --force --all
+    git push origin --force --tags
+    ```
+    *   **Important:** Rewriting Git history can be complex and affect collaborators. Communicate with your team before performing these steps.
+3.  **Reset the compromised secrets.** Generate new API keys, passwords, or tokens to invalidate the old ones.
+4.  **Inform collaborators.** If others have pulled the commit, they need to rebase their work after the history is rewritten.
+5.  **Enable GitHub Push Protection.** This feature helps prevent accidental commits of known secrets. Find it in your repository settings under `Code security > Secret scanning > Push protection`.
+6.  **Consider using `.env.example` or `.env.template`:** Include these files with placeholder values instead of committing the actual `.env` file.
+
+**GitHub Push Protection Bypass (Use with Caution):**
+
+*   If you accidentally commit secrets and GitHub blocks the push, it provides URLs to "Allow secret." This option should be used with extreme caution and only in private repositories where you trust all collaborators.
+
+**Disabling Push Protection (Not Recommended):**
+
+*   It is possible to disable Push Protection in your repository settings (`Code security > Secret scanning > Push protection`). However, this is generally **not recommended** as it reduces the security of your repository. Only disable it if you fully understand the risks.
