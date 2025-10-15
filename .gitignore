@@ -84,3 +84,4 @@ data/contextual_cache/
 venv/
 
 .specstory/
+.mypy_cache/

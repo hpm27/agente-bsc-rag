@@ -135,6 +135,13 @@ class Settings(BaseSettings):
     models_dir: str = "./models"
     logs_dir: str = "./logs"
     
+    # mem0.ai (opcional - para memória de longo prazo)
+    mem0_api_key: Optional[str] = None
+    mem0_org_name: Optional[str] = None
+    mem0_org_id: Optional[str] = None
+    mem0_project_id: Optional[str] = None
+    mem0_project_name: Optional[str] = None
+    
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

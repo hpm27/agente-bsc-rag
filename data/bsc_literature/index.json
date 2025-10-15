@@ -8,53 +8,96 @@
     {
       "filename": "The_balanced_scorecard_A_translating_strategy_into_action_1996_safe.md",
       "title": "The Balanced Scorecard: Translating Strategy into Action",
-      "authors": ["Robert S. Kaplan", "David P. Norton"],
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton"
+      ],
       "year": 1996,
       "type": "book",
-      "perspectives": ["all"],
+      "perspectives": [
+        "all"
+      ],
       "language": "en",
       "description": "Livro fundacional do Balanced Scorecard, introduz as 4 perspectivas"
     },
     {
       "filename": "The Strategy-Focused Organization _ How Balanced Scorecard -- Robert S_ Kaplan, David P_ Norton -- 1, US, 2000 -- Harvard Business Review Press_safe.md",
       "title": "The Strategy-Focused Organization: How Balanced Scorecard Companies Thrive in the New Business Environment",
-      "authors": ["Robert S. Kaplan", "David P. Norton"],
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton"
+      ],
       "year": 2000,
       "type": "book",
-      "perspectives": ["all"],
+      "perspectives": [
+        "all"
+      ],
       "language": "en",
       "description": "Como organizações usam BSC para se tornarem focadas em estratégia"
     },
     {
       "filename": "Strategy Maps _ Converting Intangible Assets Into Tangible -- Robert S_ Kaplan, David P_ Norton -- Lightning Source Inc_ (Tier 2), Boston, 2004_safe.md",
       "title": "Strategy Maps: Converting Intangible Assets into Tangible Outcomes",
-      "authors": ["Robert S. Kaplan", "David P. Norton"],
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton"
+      ],
       "year": 2004,
       "type": "book",
-      "perspectives": ["all"],
+      "perspectives": [
+        "all"
+      ],
       "language": "en",
       "description": "Mapas estratégicos para visualizar e comunicar estratégia"
     },
     {
       "filename": "The Execution Premium _ Linking Strategy to Operations for -- Robert S_ Kaplan, David P_ Norton -- 1st, First Edition, PS, 2008 -- Harvard Business_safe.md",
       "title": "The Execution Premium: Linking Strategy to Operations for Competitive Advantage",
-      "authors": ["Robert S. Kaplan", "David P. Norton"],
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton"
+      ],
       "year": 2008,
       "type": "book",
-      "perspectives": ["all"],
+      "perspectives": [
+        "all"
+      ],
       "language": "en",
       "description": "Sistema integrado de gestão que liga estratégia à execução operacional"
     },
     {
       "filename": "Alignment _ Using the Balanced Scorecard to Create Corporate -- Robert S Kaplan; David P Norton; Marwān Ḥamawī -- Lightning Source Inc_ (Tier 2)_safe.md",
       "title": "Alignment: Using the Balanced Scorecard to Create Corporate Synergies",
-      "authors": ["Robert S. Kaplan", "David P. Norton", "Marwān Ḥamawī"],
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton",
+        "Marwān Ḥamawī"
+      ],
       "year": 2006,
       "type": "book",
-      "perspectives": ["all"],
+      "perspectives": [
+        "all"
+      ],
       "language": "en",
       "description": "Alinhamento organizacional usando BSC para criar sinergias corporativas"
+    },
+    {
+      "filename": "Alignment _ Using the Balanced Scorecard to Create Corporate -- Robert S Kaplan; David P Norton; Marwān Ḥamawī -- Lightning Source Inc_ (Tier 2)_safe.md",
+      "title": "Alignment: Using the Balanced Scorecard to Create Corporate Synergies",
+      "authors": [
+        "Robert S. Kaplan",
+        "David P. Norton"
+      ],
+      "year": 2006,
+      "type": "book",
+      "perspectives": [
+        "financial",
+        "customer",
+        "process",
+        "learning"
+      ],
+      "language": "en",
+      "description": "Auto-generated metadata for Alignment _ Using the Balanced Scorecard to Create Corporate -- Robert S Kaplan; David P Norton; Marwān Ḥamawī -- Lightning Source Inc_ (Tier 2)_safe.md"
     }
   ]
 }
-

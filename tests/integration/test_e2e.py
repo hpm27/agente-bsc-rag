@@ -303,17 +303,18 @@ class TestPerformanceOptimizations:
         capacitação organizacional segundo framework Kaplan Norton BSC."""
         
         # Primeira execução - sem cache (cache miss garantido por UUID)
-        start = time.time()
+        start = time.perf_counter()
         embeddings_manager.embed_text(unique_text)
-        time_without_cache = time.time() - start
+        time_without_cache = time.perf_counter() - start
         
         # Segunda execução - com cache (cache hit)
-        start = time.time()
+        start = time.perf_counter()
         embeddings_manager.embed_text(unique_text)
-        time_with_cache = time.time() - start
+        time_with_cache = time.perf_counter() - start
         
         # Cache deve ser significativamente mais rápido (pelo menos 10x)
-        speedup = time_without_cache / time_with_cache if time_with_cache > 0 else 0
+        # Usa max(time_with_cache, 1e-9) para evitar divisão por zero
+        speedup = time_without_cache / max(time_with_cache, 1e-9)
         
         logger.info(
             f"[TEST CACHE SPEEDUP] "

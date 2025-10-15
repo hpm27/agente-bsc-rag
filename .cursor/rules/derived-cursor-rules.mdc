@@ -14,7 +14,7 @@ When running pytest in parallel, use the following flags:
 *   `-n <num_workers>`: Specifies the number of workers for parallel execution.
 *   `-v`: Enables verbose output.
 *   `--tb=short`: Uses a short traceback format.
-*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
 
 Regarding `.cursorignore` files:
@@ -441,6 +441,7 @@ When running pytest in parallel, use the following flags:
 *   `-n <num_workers>`: Specifies the number of workers for parallel execution.
 *   `-v`: Enables verbose output.
 *   `--tb=short`: Uses a short traceback format.
+*   `--tb=short`: Uses a short traceback format.
 *   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
 
@@ -457,5 +458,19 @@ When running pytest in parallel, use the following flags:
 *   `-n <num_workers>`: Specifies the number of workers for parallel execution.
 *   `-v`: Enables verbose output.
 *   `--tb=short`: Uses a short traceback format.
-*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
+*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
+
+### Installing rclone on Windows
+
+To install rclone on Windows, Chocolatey is the recommended method. Ensure Chocolatey is installed, then run the following command in the terminal:
+
+```bash
+choco install rclone -y
+```
+
+If Chocolatey fails due to permission issues, try installing with Winget:
+
+```bash
+winget install Rclone.Rclone
+```

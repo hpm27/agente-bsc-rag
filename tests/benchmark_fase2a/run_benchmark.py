@@ -32,10 +32,8 @@ sys.path.insert(0, str(project_root))
 from loguru import logger
 from ragas import evaluate
 from ragas.metrics import (
-    context_precision,
     answer_relevancy,
-    faithfulness,
-    context_recall
+    faithfulness
 )
 from datasets import Dataset
 
@@ -225,22 +223,20 @@ class BSCBenchmark:
         dataset = Dataset.from_dict(data_dict)
         
         # Avaliar com RAGAS
+        # NOTA: Usando apenas métricas que NÃO exigem ground truth (reference)
+        # context_precision e context_recall foram removidos pois exigem 'reference'
         ragas_result = evaluate(
             dataset,
             metrics=[
-                context_precision,  # Precisão dos contextos recuperados
                 answer_relevancy,   # Relevância da resposta para query
                 faithfulness,       # Fidelidade da resposta aos contextos
-                context_recall      # Recall dos contextos (requer ground truth)
             ]
         )
         
-        # Extrair métricas
+        # Extrair métricas (apenas as que não exigem ground truth)
         metrics = {
-            "context_precision": ragas_result["context_precision"],
             "answer_relevancy": ragas_result["answer_relevancy"],
-            "faithfulness": ragas_result["faithfulness"],
-            "context_recall": ragas_result.get("context_recall", None)
+            "faithfulness": ragas_result["faithfulness"]
         }
         
         logger.info(f"[RAGAS] {system_name} métricas:")
