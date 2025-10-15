@@ -209,3 +209,50 @@ When running pytest in parallel, use the following flags:
 *   Upon completion, a comparative report with all RAGAS metrics should be generated.
 *   Estimated runtime: 2.5-3 hours.
 *   Estimated cost: ~$1.60 USD.
+
+## GIT WORKFLOW & SECURITY
+
+### Handling Secrets and GitHub Push Protection
+
+When working with Git, especially on projects involving API keys or sensitive information, it's crucial to follow secure practices to prevent accidental exposure of secrets. GitHub provides a feature called Push Protection that scans commits for known secrets and blocks the push if any are found. Here's how to handle such situations:
+
+**1. Ensure `.env` and similar files are in `.gitignore`:**
+
+*   Always include `.env`, `.env.local`, and similar environment configuration files in your `.gitignore` to prevent them from being accidentally committed to the repository.
+
+**2. GitHub Push Protection Bypass (Use with Caution):**
+
+*   If you accidentally commit secrets and GitHub blocks the push, it provides URLs to "Allow secret." This option should be used with extreme caution and only in private repositories where you trust all collaborators.
+
+**3. Disabling Push Protection (Not Recommended):**
+
+*   It is possible to disable Push Protection in your repository settings (`Code security > Secret scanning > Push protection`). However, this is generally **not recommended** as it reduces the security of your repository. Only disable it if you fully understand the risks.
+
+**4. Best Practice: Removing Secrets from Git History**
+
+*   The most secure approach is to remove the secrets from the Git history. This can be done using tools like `git filter-branch` or `BFG Repo Cleaner`. This process rewrites the commit history, so it should be done carefully and coordinated with all collaborators.
+
+**5. .env Templates**
+
+*   Use `.env.example` or `.env.template` files with placeholder values instead of committing the actual `.env` file.
+
+**Example .gitignore:**
+
+```
+# Environment variables
+.env
+.env.local
+.env.*.local
+```
+
+**Steps to recover from accidentally committing secrets:**
+
+1.  **Immediately add `.env` to `.gitignore`**.
+2.  **Remove the `.env` file from the repository:**
+
+    ```bash
+    git rm --cached .env
+    git commit -m "Remove .env file"
+    ```
+3.  **Rewrite Git history (Advanced):** Use `git filter-branch` or `BFG Repo Cleaner` to remove the file from all past commits. This is the most secure option but requires caution.
+4.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
