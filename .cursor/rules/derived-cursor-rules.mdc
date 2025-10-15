@@ -200,3 +200,12 @@ When running pytest in parallel, use the following flags:
 *   `--tb=short`: Uses a short traceback format.
 *   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadfile`).
 *   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
+
+## BENCHMARKING
+
+*   To run a full Fase 2A benchmark, use the command: `python tests/benchmark_fase2a/run_benchmark.py`.
+*   The benchmark compares BASELINE (without optimizations) against FASE 2A (with Query Decomposition, Adaptive Re-ranking, Router).
+*   The benchmark should be executed in the background and its progress monitored.
+*   Upon completion, a comparative report with all RAGAS metrics should be generated.
+*   Estimated runtime: 2.5-3 hours.
+*   Estimated cost: ~$1.60 USD.

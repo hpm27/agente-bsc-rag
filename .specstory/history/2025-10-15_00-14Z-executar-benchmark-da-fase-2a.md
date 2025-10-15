@@ -6,18 +6,7 @@
 
 _**User**_
 
-Execute o benchmark completo da Fase 2A com todas as 50 queries. 
-
-Comando: python tests/benchmark_fase2a/run_benchmark.py
-
-Execute em background e monitore o progresso. O benchmark vai comparar:
-- BASELINE (sem otimizações)
-- FASE 2A (com Query Decomposition, Adaptive Re-ranking, Router)
-
-Tempo estimado: 2.5-3 horas
-Custo estimado: ~$1.60 USD
-
-Ao finalizar, gere o relatório comparativo com todas as métricas RAGAS.
+pare
 
 ---
 
