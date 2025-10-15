@@ -1,15 +1,17 @@
 {
   "metadata": {
-    "version": "1.0",
-    "created": "2025-10-14",
-    "total_queries": 20,
+    "version": "2.0",
+    "created": "2025-10-15",
+    "total_queries": 50,
     "categories": {
-      "multi_perspectiva": 5,
-      "relacional": 5,
-      "comparativa": 5,
-      "conceitual_complexa": 5
+      "multi_perspectiva": 10,
+      "relacional": 10,
+      "comparativa": 10,
+      "conceitual_complexa": 10,
+      "implementacao": 5,
+      "metricas_kpis": 5
     },
-    "description": "Benchmark dataset para Query Decomposition - 20 queries BSC diversas com ground truth"
+    "description": "Benchmark dataset completo Fase 2A - 50 queries BSC diversas com ground truth para teste abrangente"
   },
   "queries": [
     {
