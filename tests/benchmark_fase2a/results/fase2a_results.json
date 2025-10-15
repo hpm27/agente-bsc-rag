@@ -4,7 +4,7 @@
     "query": "Como implementar BSC considerando as 4 perspectivas e suas interconexões?",
     "answer": "",
     "contexts": [],
-    "latency": 161.64137291908264,
+    "latency": 1.6656193733215332,
     "category": "multi_perspectiva",
     "complexity": "high",
     "difficulty": "hard"
@@ -14,7 +14,7 @@
     "query": "Qual a relação entre perspectivas de aprendizado, processos e resultados financeiros no BSC?",
     "answer": "",
     "contexts": [],
-    "latency": 64.40760111808777,
+    "latency": 1.6897759437561035,
     "category": "multi_perspectiva",
     "complexity": "high",
     "difficulty": "hard"
@@ -24,7 +24,7 @@
     "query": "Como integrar objetivos de clientes com métricas financeiras no Balanced Scorecard?",
     "answer": "",
     "contexts": [],
-    "latency": 68.25633144378662,
+    "latency": 1.6477382183074951,
     "category": "multi_perspectiva",
     "complexity": "high",
     "difficulty": "medium"
@@ -34,7 +34,7 @@
     "query": "Explique o balanceamento entre perspectivas interna e externa do BSC e como elas se complementam",
     "answer": "",
     "contexts": [],
-    "latency": 102.44343113899231,
+    "latency": 1.496870517730713,
     "category": "multi_perspectiva",
     "complexity": "high",
     "difficulty": "medium"
@@ -44,7 +44,7 @@
     "query": "Como as quatro perspectivas do BSC se complementam na execução da estratégia organizacional?",
     "answer": "",
     "contexts": [],
-    "latency": 85.8819887638092,
+    "latency": 1.4520645141601562,
     "category": "multi_perspectiva",
     "complexity": "high",
     "difficulty": "hard"

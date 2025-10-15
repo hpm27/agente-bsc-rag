@@ -216,14 +216,14 @@ class BSCBenchmark:
         # Criar Dataset
         dataset = Dataset.from_dict(data_dict)
         
-        # Avaliar com RAGAS
+        # Avaliar com RAGAS (sem context_recall que requer ground truth)
         ragas_result = evaluate(
             dataset,
             metrics=[
                 context_precision,  # Precisão dos contextos recuperados
                 answer_relevancy,   # Relevância da resposta para query
                 faithfulness,       # Fidelidade da resposta aos contextos
-                context_recall      # Recall dos contextos (requer ground truth)
+                # context_recall    # Removido - requer ground truth
             ]
         )
         
@@ -232,7 +232,7 @@ class BSCBenchmark:
             "context_precision": ragas_result["context_precision"],
             "answer_relevancy": ragas_result["answer_relevancy"],
             "faithfulness": ragas_result["faithfulness"],
-            "context_recall": ragas_result.get("context_recall", None)
+            # "context_recall": ragas_result.get("context_recall", None)  # Removido
         }
         
         logger.info(f"[RAGAS] {system_name} métricas:")
