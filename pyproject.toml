@@ -143,6 +143,9 @@ addopts = [
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
+markers = [
+    "integration: marks tests as integration tests (may be slow, require external APIs)",
+]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 

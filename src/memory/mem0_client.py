@@ -7,6 +7,7 @@ error handling robusto e retry logic.
 
 import logging
 import os
+import time
 from typing import Any
 
 from mem0 import MemoryClient
@@ -139,24 +140,62 @@ class Mem0ClientWrapper:
             # Serializa profile
             data = self._serialize_profile(profile)
 
-            # Cria mensagem formatada para Mem0
-            # Mem0 espera "messages" format (user/assistant)
+            # [CORREÇÃO] Criar mensagens mais "memorable" para Mem0
+            # O Extraction Filter do Mem0 rejeita informações genéricas/abstratas
+            # Solução: Tornar mensagens contextuais, pessoais e específicas
+
+            # Construir contexto rico com detalhes pessoais do cliente
+            challenges_text = ", ".join(profile.context.current_challenges) if profile.context.current_challenges else "ainda não identificados"
+            objectives_text = ", ".join(profile.context.strategic_objectives) if profile.context.strategic_objectives else "em definição"
+
             messages = [
                 {
                     "role": "user",
-                    "content": f"Perfil do cliente {profile.company.name}"
+                    "content": (
+                        f"Minha empresa é {profile.company.name}, "
+                        f"atuamos no setor de {profile.company.sector} "
+                        f"na indústria {profile.company.industry}. "
+                        f"Somos uma empresa de porte {profile.company.size}. "
+                        f"Nossos principais desafios são: {challenges_text}. "
+                        f"Nossos objetivos estratégicos: {objectives_text}. "
+                        f"Estamos na fase {profile.engagement.current_phase} do processo de consultoria BSC."
+                    )
                 },
                 {
                     "role": "assistant",
                     "content": (
-                        f"Registrado perfil de {profile.company.name} "
-                        f"(setor: {profile.company.sector}, "
-                        f"tamanho: {profile.company.size})"
+                        f"Entendido! Registrei que {profile.company.name} é do setor {profile.company.sector}, "
+                        f"porte {profile.company.size}, com foco em: {challenges_text}. "
+                        f"Vou lembrar disso para nossas próximas interações na fase {profile.engagement.current_phase}."
                     )
                 }
             ]
 
-            # Salva no Mem0 usando user_id como chave
+            # [CORREÇÃO] Deletar todas as memórias antigas ANTES de adicionar
+            # Isso garante que sempre há apenas 1 memória por user_id
+            # Solução para o problema: client.add() sempre CRIA nova memória
+            try:
+                self.client.delete_all(user_id=profile.client_id)
+
+                # ⏱️ CRÍTICO: Aguardar delete_all completar (eventual consistency)
+                # Sem isso, add pode criar memória ANTES de delete processar,
+                # causando condição de corrida onde delete apaga a nova memória!
+                time.sleep(1)
+
+                logger.debug(
+                    "[CLEANUP] Memórias antigas deletadas para client_id=%r (sleep 1s)",
+                    profile.client_id
+                )
+
+            except Exception as delete_error:
+                # Se delete falhar (ex: nenhuma memória existe), continuar
+                logger.debug(
+                    "[CLEANUP] Nenhuma memória para deletar (client_id=%r): %s",
+                    profile.client_id,
+                    delete_error
+                )
+
+            # Agora salva no Mem0 usando user_id como chave
             self.client.add(
                 messages=messages,
                 user_id=profile.client_id,
@@ -220,7 +259,17 @@ class Mem0ClientWrapper:
             if not memories:
                 raise ProfileNotFoundError(user_id)
 
-            # Extrai profile_data do metadata da memória mais recente
+            # [CORREÇÃO] Verificar se há múltiplas memórias (não deveria acontecer)
+            # Com save_profile() usando delete_all + add, deve haver APENAS 1 memória
+            if isinstance(memories, list) and len(memories) > 1:
+                logger.warning(
+                    "[WARN] Múltiplas memórias encontradas para user_id=%r (total: %d). "
+                    "Usando a primeira. Considere investigar.",
+                    user_id,
+                    len(memories)
+                )
+
+            # Pegar a primeira (e única esperada) memória
             latest_memory = memories[0] if isinstance(memories, list) else memories
 
             # Tenta extrair do metadata

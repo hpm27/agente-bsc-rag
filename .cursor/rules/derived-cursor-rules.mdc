@@ -7,7 +7,7 @@ globs: *
 
 ## TECH STACK
 
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
 
@@ -447,9 +447,13 @@ If secrets are accidentally committed, the following steps must be taken to full
     This command should confirm that `.env` is now ignored by Git.
 7.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
 
+### .gitignore Rules
+Always add the following to `.gitignore`:
+*   `.cursor/progress/` to prevent accidental commits of temporary Cursor files that may contain secrets.
+
 ## DEBUGGING
 
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use 6 workers. Before implementing any changes, use sequential thinking to organize your actions.
+When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
 
 When running pytest in parallel, use the following flags:
 
@@ -549,7 +553,7 @@ If `Ctrl+C` and `Ctrl+V` are not working correctly on a Windows machine, follow 
         ```powershell
         cursor --disable-extensions
         ```
-    *   Test if `Ctrl+C`/`Ctrl+V` works without extensions. If it works, re-enable extensions one by one to identify the culprit.
+    *   Test if `Ctrl+C`/`Ctrl+Ctrl+v` works without extensions. If it works, re-enable extensions one by one to identify the culprit.
 
 8.  **Last Resort (Extreme):**
     *   If nothing works, the issue might be:
@@ -777,6 +781,8 @@ Given the challenges encountered with rclone and OneDrive, the following recomme
     *   Configure the OneDrive client to download all files to ensure local availability.
 
 2.  **Avoid rclone for Large-Scale OneDrive Synchronization:**
-    *   Do not use rclone for synchronizing large OneDrive accounts, especially those with very large files, due to API limitations and throttling issues.
+    *   Do not use rclone
 
-3.  Sequential Thinking and Brightdata for Task Planning:
+## DEBUGGING
+
+When debugging, especially for E2E tests, consider running tests
