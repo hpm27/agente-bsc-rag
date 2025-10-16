@@ -477,6 +477,9 @@ When encountering circular import errors in Python, especially when using type h
 *   When encountering "404 page not found" errors during rclone OneDrive configuration, ensure that the client ID and secret are correctly set up.
 *   When using rclone, if the browser doesn't open automatically for authentication, manually go to the provided link and authorize rclone for access.
 *   If you encounter "No code returned by remote server" errors during rclone OneDrive authentication, recreate the client ID and secret carefully.
+*   When assisting with rclone and OneDrive, it is generally **NOT RECOMMENDED** to run rclone and the native OneDrive client simultaneously due to potential conflicts, throttling issues, and unpredictable behavior. The best practice is to pause the OneDrive client while rclone is running.
+*   If the native OneDrive client is necessary, rclone can be configured to exclude large files and limit bandwidth to minimize conflicts.
+*   When using rclone for OneDrive, be aware of potential conflicts if the cloud file provider is not running. Ensure that the OneDrive service is active before using rclone.
 
 ## PROJECT DOCUMENTATION & CONTEXT SYSTEM
 
@@ -688,9 +691,4 @@ pytest tests/test_file.py::test_specific_failing_test -v --tb=long 2>&1
 ## BENCHMARKING
 
 *   To run a full Fase 2A benchmark, use the command: `python tests/benchmark_fase2a/run_benchmark.py`.
-*   To run a pilot benchmark with 5 queries, use the command: `python tests/benchmark_fase2a/run_benchmark.py --pilot`.
-*   The benchmark compares BASELINE (without optimizations) against FASE 2A (with Query Decomposition, Adaptive Re-ranking, Router).
-*   The benchmark should be executed in the background and its progress monitored.
-*   Upon completion, a comparative report with all RAGAS metrics should be generated.
-*   Estimated runtime: 2.5-3 hours.
-*   Estimated cost: ~$1.60 USD.
+*   To run a pilot benchmark with
