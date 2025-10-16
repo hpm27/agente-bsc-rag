@@ -267,6 +267,29 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
                 f"Recomendações: {len(state.diagnostic.get('recommendations', []))}"
             )
 
+        # FASE 2.8: Sincronizar approval_status e approval_feedback
+        # Persistir decisão de aprovação do cliente no Mem0
+        # TODO: Adicionar campos approval_status e approval_feedback ao ClientProfile schema
+        # Por ora, salvar em metadata do EngagementState
+        if state.approval_status or state.approval_feedback:
+            # Usar metadata para armazenar temporariamente até schema ser atualizado
+            if not hasattr(profile.engagement, 'metadata'):
+                profile.engagement.metadata = {}
+
+            if state.approval_status:
+                profile.engagement.metadata['approval_status'] = state.approval_status.value
+                logger.info(
+                    f"[INFO] [save_client_memory] Approval status sincronizado: "
+                    f"{state.approval_status.value}"
+                )
+
+            if state.approval_feedback:
+                profile.engagement.metadata['approval_feedback'] = state.approval_feedback
+                logger.debug(
+                    f"[INFO] [save_client_memory] Approval feedback sincronizado: "
+                    f"{state.approval_feedback[:50]}..."
+                )
+
         # Obter memory provider (Mem0)
         try:
             provider = MemoryFactory.get_provider("mem0")

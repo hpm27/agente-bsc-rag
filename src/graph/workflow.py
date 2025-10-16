@@ -9,8 +9,10 @@ Orquestra o fluxo completo:
 5. Refinamento iterativo (se necessário)
 6. Resposta final
 """
+from __future__ import annotations
+
 import time
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -20,6 +22,9 @@ from src.agents.judge_agent import JudgeAgent
 from src.agents.orchestrator import Orchestrator
 from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
+
+if TYPE_CHECKING:
+    from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 
 
 def extract_text_from_response(response: Any) -> str:
@@ -541,7 +546,112 @@ class BSCWorkflow:
                     "finalize_error": str(e)
                 }
             }
-    
+
+    def route_by_approval(self, state: BSCState) -> Literal["end", "discovery"]:
+        """
+        FASE 2.8: Routing condicional baseado em approval_status.
+
+        Decide próximo node baseado na decisão do cliente:
+        - APPROVED → END (ou SOLUTION_DESIGN futuro)
+        - REJECTED / MODIFIED / TIMEOUT → discovery (refazer)
+        - PENDING (fallback) → END
+
+        Args:
+            state: Estado com approval_status
+
+        Returns:
+            Nome do próximo node ("end" ou "discovery")
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ApprovalStatus
+
+        approval_status = state.approval_status
+
+        if approval_status == ApprovalStatus.APPROVED:
+            logger.info("[INFO] [ROUTING] Aprovação APPROVED → END")
+            return "end"
+        elif approval_status in (
+            ApprovalStatus.REJECTED,
+            ApprovalStatus.MODIFIED,
+            ApprovalStatus.TIMEOUT
+        ):
+            logger.info(
+                f"[INFO] [ROUTING] Aprovação {approval_status.value} → discovery (refazer)"
+            )
+            return "discovery"
+        else:
+            # Fallback: PENDING ou None → END
+            logger.warning(
+                f"[WARN] [ROUTING] Approval status desconhecido ({approval_status}) → END"
+            )
+            return "end"
+
+    def approval_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.8: Handler para aprovação humana do diagnóstico BSC.
+
+        Processa aprovação/rejeição do diagnóstico pelo cliente.
+        Single-turn: Cliente vê diagnóstico completo, aprova ou rejeita de uma vez.
+
+        Args:
+            state: Estado atual com diagnostic e approval_status mockado
+
+        Returns:
+            Estado atualizado com approval_status e approval_feedback
+
+        Routing:
+            - APPROVED → END (ou SOLUTION_DESIGN futuro)
+            - REJECTED → discovery (refazer diagnóstico)
+            - MODIFIED → discovery (refazer com feedback)
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
+
+        try:
+            logger.info("[INFO] [APPROVAL] Handler iniciado")
+
+            # Validar se diagnostic existe
+            if not state.diagnostic:
+                logger.warning(
+                    "[WARN] [APPROVAL] Diagnostic ausente. "
+                    "Fallback para approval_status REJECTED"
+                )
+                return {
+                    "approval_status": ApprovalStatus.REJECTED,
+                    "approval_feedback": "Diagnóstico ausente ou incompleto. Por favor, execute a fase DISCOVERY novamente."
+                }
+
+            # FASE 2.8 MVP: Aprovação mockada via state (testes)
+            # Produção futura: interrupt() para input humano real
+            approval_status = state.approval_status or ApprovalStatus.PENDING
+            approval_feedback = state.approval_feedback or ""
+
+            logger.info(
+                f"[INFO] [APPROVAL] Status recebido: {approval_status.value} | "
+                f"Feedback: {approval_feedback[:50] if approval_feedback else 'N/A'}..."
+            )
+
+            # Persistir decisão (save_client_memory sincroniza)
+            return {
+                "approval_status": approval_status,
+                "approval_feedback": approval_feedback,
+                "current_phase": ConsultingPhase.APPROVAL_PENDING
+            }
+
+        except Exception as e:
+            logger.error(f"[ERROR] [APPROVAL] Erro no handler: {e}")
+            # Import aqui também para except
+            from src.graph.consulting_states import ApprovalStatus
+
+            return {
+                "approval_status": ApprovalStatus.REJECTED,
+                "approval_feedback": f"Erro durante aprovação: {str(e)}",
+                "metadata": {
+                    **state.metadata,
+                    "approval_error": str(e)
+                }
+            }
+
     def run(
         self,
         query: str,

@@ -352,9 +352,7 @@ def test_generate_recommendations_success(diagnostic_agent, sample_perspective_r
         {
             "title": "Implementar Dashboard Financeiro",
             "description": "Criar dashboard executivo com top 10 KPIs financeiros conectados a processos operacionais",
-            "perspective": "Financeira",
-            "related_perspectives": ["Processos Internos"],
-            "expected_impact": "HIGH",
+            "impact": "HIGH",
             "effort": "LOW",
             "priority": "HIGH",
             "timeframe": "quick win (1-3 meses)",
@@ -363,9 +361,7 @@ def test_generate_recommendations_success(diagnostic_agent, sample_perspective_r
         {
             "title": "Criar Programa de Retenção",
             "description": "Programa estruturado de desenvolvimento e retenção de talentos com planos de carreira e mentoria",
-            "perspective": "Aprendizado e Crescimento",
-            "related_perspectives": [],
-            "expected_impact": "HIGH",
+            "impact": "HIGH",
             "effort": "MEDIUM",
             "priority": "HIGH",
             "timeframe": "médio prazo (3-6 meses)",
@@ -374,9 +370,7 @@ def test_generate_recommendations_success(diagnostic_agent, sample_perspective_r
         {
             "title": "Implementar NPS Trimestral",
             "description": "Programa Voice of Customer com surveys trimestrais para medir NPS e CSAT",
-            "perspective": "Clientes",
-            "related_perspectives": [],
-            "expected_impact": "MEDIUM",
+            "impact": "MEDIUM",
             "effort": "LOW",
             "priority": "MEDIUM",
             "timeframe": "quick win (1-3 meses)",
@@ -399,7 +393,7 @@ def test_generate_recommendations_success(diagnostic_agent, sample_perspective_r
 
     # Validar conteúdo
     assert "Dashboard Financeiro" in recommendations[0].title
-    assert recommendations[0].expected_impact == "HIGH"
+    assert recommendations[0].impact == "HIGH"
     assert recommendations[0].effort == "LOW"
 
 
@@ -449,8 +443,7 @@ def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_persp
                 Recommendation(
                     title="Recomendação Teste 1",
                     description="Descrição detalhada com mais de 50 caracteres conforme requerido",
-                    perspective="Financeira",
-                    expected_impact="HIGH",
+                    impact="HIGH",
                     effort="LOW",
                     priority="HIGH",
                     timeframe="quick win (1-3 meses)",
@@ -459,8 +452,7 @@ def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_persp
                 Recommendation(
                     title="Recomendação Teste 2",
                     description="Outra descrição detalhada com mais de 50 caracteres para validação",
-                    perspective="Clientes",
-                    expected_impact="MEDIUM",
+                    impact="MEDIUM",
                     effort="MEDIUM",
                     priority="MEDIUM",
                     timeframe="médio prazo (3-6 meses)",
@@ -469,8 +461,7 @@ def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_persp
                 Recommendation(
                     title="Recomendação Teste 3",
                     description="Terceira descrição detalhada cumprindo requisito de 50+ caracteres",
-                    perspective="Processos Internos",
-                    expected_impact="LOW",
+                    impact="LOW",
                     effort="LOW",
                     priority="LOW",
                     timeframe="longo prazo (6-12 meses)",
@@ -541,8 +532,7 @@ def test_recommendation_validation():
     rec = Recommendation(
         title="Valid Title Here",
         description="Description with more than 50 characters required by schema",
-        perspective="Financeira",
-        expected_impact="HIGH",
+        impact="HIGH",
         effort="LOW",
         priority="HIGH",
         timeframe="quick win (1-3 meses)",
@@ -563,18 +553,17 @@ def test_recommendation_validation():
             next_steps=[],
         )
 
-    # Invalid: priority logic (HIGH priority with LOW impact + HIGH effort)
-    with pytest.raises(ValidationError, match="inconsistente"):
-        Recommendation(
-            title="Invalid Priority Logic",
-            description="This should fail validation due to inconsistent priority",
-            perspective="Financeira",
-            expected_impact="LOW",
-            effort="HIGH",
-            priority="HIGH",  # Inconsistent!
-            timeframe="test",
-            next_steps=[],
-        )
+    # Priority logic auto-correction (LOW impact + HIGH effort → priority ajustado para LOW)
+    rec_auto = Recommendation(
+        title="Auto Priority Correction Test",
+        description="This tests automatic priority correction based on impact vs effort logic that we have",
+        impact="LOW",
+        effort="HIGH",
+        priority="HIGH",  # Will be auto-corrected to LOW
+        timeframe="test",
+        next_steps=["Step 1"],
+    )
+    assert rec_auto.priority == "LOW"  # Auto-corrected!
 
 
 # ============================================================================

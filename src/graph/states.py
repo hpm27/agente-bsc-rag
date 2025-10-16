@@ -1,11 +1,14 @@
 """
 Definição de estados para o grafo LangGraph.
 """
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, Field
-from enum import Enum
+from __future__ import annotations
 
-# Import ClientProfile para integração com memória
+from enum import Enum
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 from src.memory.schemas import ClientProfile
 
 
@@ -22,8 +25,8 @@ class AgentResponse(BaseModel):
     perspective: PerspectiveType
     content: str
     confidence: float = Field(ge=0.0, le=1.0)
-    sources: List[Dict[str, Any]] = Field(default_factory=list)
-    reasoning: Optional[str] = None
+    sources: list[dict[str, Any]] = Field(default_factory=list)
+    reasoning: str | None = None
 
 
 class JudgeEvaluation(BaseModel):
@@ -31,53 +34,72 @@ class JudgeEvaluation(BaseModel):
     approved: bool
     score: float = Field(ge=0.0, le=1.0)
     feedback: str
-    issues: List[str] = Field(default_factory=list)
-    suggestions: List[str] = Field(default_factory=list)
-    verdict: Optional[str] = None
-    is_complete: Optional[bool] = None
-    is_grounded: Optional[bool] = None
-    has_sources: Optional[bool] = None
+    issues: list[str] = Field(default_factory=list)
+    suggestions: list[str] = Field(default_factory=list)
+    verdict: str | None = None
+    is_complete: bool | None = None
+    is_grounded: bool | None = None
+    has_sources: bool | None = None
 
 
 class BSCState(BaseModel):
     """Estado do grafo de execução BSC."""
-    
+
     # Input
     query: str
-    session_id: Optional[str] = None
-    user_id: Optional[str] = None
-    
+    session_id: str | None = None
+    user_id: str | None = None
+
     # Memória persistente do cliente (integração Mem0)
-    client_profile: Optional[ClientProfile] = None
-    
+    client_profile: ClientProfile | None = None
+
     # Análise da query
-    relevant_perspectives: List[PerspectiveType] = Field(default_factory=list)
-    query_type: Optional[str] = None  # "factual", "conceptual", "comparative"
-    complexity: Optional[str] = None  # "simple", "moderate", "complex"
-    
+    relevant_perspectives: list[PerspectiveType] = Field(default_factory=list)
+    query_type: str | None = None  # "factual", "conceptual", "comparative"
+    complexity: str | None = None  # "simple", "moderate", "complex"
+
     # Respostas dos agentes
-    agent_responses: List[AgentResponse] = Field(default_factory=list)
-    
+    agent_responses: list[AgentResponse] = Field(default_factory=list)
+
     # Agregação
-    aggregated_response: Optional[str] = None
-    
+    aggregated_response: str | None = None
+
     # Validação
-    judge_evaluation: Optional[JudgeEvaluation] = None
-    
+    judge_evaluation: JudgeEvaluation | None = None
+
     # Refinamento (se necessário)
     refinement_iteration: int = 0
     max_refinement_iterations: int = 2
-    
+
     # Output final
-    final_response: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+    final_response: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
     # Controle de fluxo
     needs_refinement: bool = False
     is_complete: bool = False
-    
-    class Config:
-        arbitrary_types_allowed = True
+
+    # ===== CAMPOS CONSULTIVOS (FASE 2.2+) =====
+
+    # Phase tracking
+    current_phase: ConsultingPhase | None = None
+    previous_phase: ConsultingPhase | None = None
+    phase_history: list[str] = Field(default_factory=list)
+
+    # Approval workflow (FASE 2.8)
+    approval_status: ApprovalStatus | None = None
+    approval_feedback: str | None = None
+
+    # Onboarding (FASE 2.6)
+    onboarding_progress: dict[str, bool] = Field(default_factory=dict)
+
+    # Diagnostic (FASE 2.7)
+    diagnostic: dict[str, Any] | None = None
+
+    # Tool outputs (FASE 3)
+    tool_outputs: dict[str, Any] = Field(default_factory=dict)
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 

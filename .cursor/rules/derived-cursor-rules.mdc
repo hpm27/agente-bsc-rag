@@ -34,6 +34,7 @@ globs: *
 *   `-v`: Verbose output
 *   `--tb=long`: Traceback completo
 *   `--dist=loadscope`: Distribui por fixture scope (mais seguro)
+*   `--dist=loadfile`: Distribui por arquivo (mais seguro)
 *   `--dist=loadfile`: Distribui por arquivo (fixtures function-scoped)
 
 **Lições Detalhadas**:
@@ -288,7 +289,7 @@ Query: "Python circular import best practices TYPE_CHECKING lazy import solution
 
 Regarding `.cursorignore` files:
 
-*   Cursor IDE uses `.cursorignore` files to control which files Cursor can access. This is for security and performance.
+*   Cursor IDE uses `.cursorignore` files to control which files Cursor can access. This is for security and performance. This is for security and performance.
 *   `.env` files are ignored by default.
 *   To unignore a file, place an exclamation mark `!` in front of the ignore glob pattern in the `.cursorignore` file. For example: `!.env`.
 *   You can edit the global ignore list in Cursor's settings. Go to `File > Preferences > VS code settings` and search for "Global Cursor Ignore List". You can remove patterns from the list there.
@@ -460,6 +461,7 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
 *   When working with LangChain projects, be aware of Pydantic version compatibility. LangChain v0.3+ uses Pydantic V2 internally and recommends migrating imports from `langchain_core.pydantic_v1` to `pydantic` directly.
 *   Avoid using the `pydantic.v1` compatibility namespace; import directly from Pydantic V2.
 *   When using `BaseSettings` from `pydantic_settings`, use `SettingsConfigDict` instead of `ConfigDict` for configuration.
+*   **Pydantic Config Migration**: Replace `class Config:` with `model_config = ConfigDict(...)` in Pydantic models to avoid deprecation warnings.
 
 ### New Rule: Python Circular Imports Resolution
 
@@ -480,6 +482,103 @@ When encountering circular import errors in Python, especially when using type h
 *   When assisting with rclone and OneDrive, it is generally **NOT RECOMMENDED** to run rclone and the native OneDrive client simultaneously due to potential conflicts, throttling issues, and unpredictable behavior. The best practice is to pause the OneDrive client while rclone is running.
 *   If the native OneDrive client is necessary, rclone can be configured to exclude large files and limit bandwidth to minimize conflicts.
 *   When using rclone for OneDrive, be aware of potential conflicts if the cloud file provider is not running. Ensure that the OneDrive service is active before using rclone.
+
+### Diagnosing Windows Clipboard Issues
+
+When troubleshooting issues with Ctrl+C and Ctrl+V (copy/paste) functionality in Windows, especially when copying between applications like Microsoft Word and Cursor, consider the following:
+
+*   **Clipboard Service (rdpclip):**
+    *   Restart the clipboard service using PowerShell:
+    ```powershell
+    Stop-Process -Name "rdpclip" -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2; Write-Host "[CHECK] Processo clipboard reiniciado"
+    ```
+
+*   **.NET Clipboard Reset:**
+    *   Clear the clipboard using .NET:
+    ```powershell
+    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Write-Host "[OK] Clipboard limpo via .NET"
+    ```
+
+*   **Win32 API Clipboard Reset:**
+    *   Reset the clipboard at a lower level using the Win32 API:
+    ```powershell
+    $cbdll = Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern bool OpenClipboard(IntPtr hWndNewOwner); [DllImport("user32.dll")] public static extern bool EmptyClipboard(); [DllImport("user32.dll")] public static extern bool CloseClipboard();' -Name Clipboard -Namespace Win32 -PassThru; $cbdll::OpenClipboard([IntPtr]::Zero); $cbdll::EmptyClipboard(); $cbdll::CloseClipboard(); Write-Host "[OK] Clipboard resetado a nível Win32 API"
+    ```
+
+*   **Potential Conflicts with Other Processes:**
+    *   Check for processes known to intercept clipboard functions:
+    ```powershell
+    $procs = @("AutoHotkey", "Ditto", "ClipX", "PowerToys", "TeamViewer", "AnyDesk"); $found = Get-Process | Where-Object {$procs -contains $_.ProcessName}; if($found) { $found | Format-Table ProcessName, Id -AutoSize } else { Write-Host "[INFO] Nenhum processo conhecido interceptando clipboard detectado" }
+    ```
+
+*   **Cursor-Specific Keybindings:**
+    *   Verify that "copy" and "paste" are correctly mapped to `Ctrl+C` and `Ctrl+V` in Cursor's keyboard shortcuts (`Preferences: Open Keyboard Shortcuts`). Ensure the condition `editorTextFocus` is present. If conflicts exist, reset the keybindings.
+
+*   **Windows Clipboard Functionality Test:**
+    *   Test the global Windows clipboard using PowerShell:
+    ```powershell
+    echo "Teste Clipboard" | Set-Clipboard; $result = Get-Clipboard; if($result -eq "Teste Clipboard") { Write-Host "[OK] Clipboard do Windows funcionando corretamente via PowerShell" } else { Write-Host "[ERRO] Clipboard do Windows com problemas" }
+    ```
+
+*   **Application Privilege Levels:**
+    *   Differences in privilege levels between applications (e.g., Word running as administrator while Cursor does not) can cause issues.
+
+*   **Clipboard Format Incompatibility:**
+    *   Incompatibility in clipboard formats between applications may prevent copying and pasting.
+
+*   **Forcing Clipboard Synchronization:**
+    *   Attempt to force synchronization of the clipboard:
+    ```powershell
+    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Start-Sleep -Milliseconds 500; [System.Windows.Forms.Clipboard]::SetText("CURSOR_WORD_SYNC_TEST"); Start-Sleep -Milliseconds 500; $test = [System.Windows.Forms.Clipboard]::GetText(); [System.Windows.Forms.Clipboard]::Clear(); if($test -eq "CURSOR_WORD_SYNC_TEST") { Write-Host "[OK] Clipboard sincronizado entre aplicações" } else { Write-Host "[WARN] Possível problema de sincronização" }
+    ```
+
+*   **Clearing Clipboard History:**
+    *   Clear the clipboard history:
+    ```powershell
+    Add-Type -AssemblyName System.Windows.Forms; try { [System.Windows.Forms.SendKeys]::SendWait("^+{ESC}"); Start-Sleep -Milliseconds 200 } catch {}; [System.Windows.Forms.Clipboard]::Clear(); Write-Host "[OK] Histórico do clipboard limpo" }
+    ```
+
+*   **Clipboard Reset Script:**
+    *   As a last resort, create a PowerShell script to quickly reset the clipboard:
+    ```powershell
+    # Script para resetar clipboard rapidamente
+    # Uso: .\reset-clipboard.ps1
+
+    Write-Host "[INICIO] Resetando clipboard..." -ForegroundColor Cyan
+
+    # 1. Limpar clipboard via .NET
+    Add-Type -AssemblyName System.Windows.Forms
+    [System.Windows.Forms.Clipboard]::Clear()
+    Start-Sleep -Milliseconds 500
+
+    # 2. Resetar via Win32 API
+    $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+    $cbdll = Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern bool OpenClipboard(IntPtr hWndNewOwner); [DllImport("user32.dll")] public static extern bool EmptyClipboard(); [DllImport("user32.dll")] public static extern bool CloseClipboard();' -Name "Clipboard$timestamp" -Namespace "Win32API$timestamp" -PassThru
+    $cbdll::OpenClipboard([IntPtr]::Zero)
+    $cbdll::EmptyClipboard()
+    $cbdll::CloseClipboard()
+
+    # 3. Reiniciar processo rdpclip
+    Stop-Process -Name "rdpclip" -Force -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
+
+    # 4. Teste
+    [System.Windows.Forms.Clipboard]::SetText("TESTE_OK")
+    $result = [System.Windows.Forms.Clipboard]::GetText()
+    [System.Windows.Forms.Clipboard]::Clear()
+
+    if($result -eq "TESTE_OK") {
+        Write-Host "[OK] Clipboard resetado com sucesso!" -ForegroundColor Green
+    } else {
+        Write-Host "[WARN] Possível problema - tente novamente" -ForegroundColor Yellow
+    }
+
+    Write-Host "[FIM] Pronto para copiar/colar!" -ForegroundColor Cyan
+    ```
+
+*   **Workarounds:**
+    *   If persistent issues occur between Word and Cursor, use Notepad as an intermediary (Word → Notepad → Cursor).
+    *   Try closing and reopening the Word document.
 
 ## PROJECT DOCUMENTATION & CONTEXT SYSTEM
 
@@ -562,133 +661,9 @@ The following architectural considerations should guide the development of the B
 
 *   Prioritize a phased rollout, beginning with Mem0 integration and a basic workflow, followed by the addition of productivity MCPs.
 
-### Next Step: FASE 2.5 - DiagnosticAgent
+### Next Step: FASE 2.8 - Transition Logic (APPROVAL State)
 
 The following specifications, objectives, and checklist should be considered.
 
-#### Specification
-
 | Item           | Detail                               |
 | ----- | --- |
-| **ID**         | FASE 2.5                             |
-| **Task**       | DiagnosticAgent                      |
-| **Estimated Duration** | 2-3h                                 |
-| **File**       | `src/agents/diagnostic_agent.py`     |
-
-#### Objectives
-
-1.  **Implement BSC diagnostic analysis** across the 4 perspectives:
-    *   Financial
-    *   Customers
-    *   Internal Processes
-    *   Learning and Growth
-2.  **Integration with ClientProfile**:
-    *   Consume company context (CompanyInfo)
-    *   Analyze identified challenges
-    *   Consider strategic objectives
-3.  **Structured Output**:
-    *   Diagnosis by perspective
-    *   Identified gaps
-    *   Improvement opportunities
-    *   BSC-aligned recommendations
-4.  **Quality**:
-    *   15+ unit tests
-    *   Coverage > 80%
-    *   Complete type hints
-
-#### Expected Outcome
-
-*   📊 Phase 2 Progress: 50% (5/10 tasks)
-*   🎯 DiagnosticAgent ready for FASE 2.6 (ONBOARDING State integration)
-
-#### Pre-Implementation Checklist
-
-*   ✅ ClientProfileAgent available (complete extraction)
-*   ✅ OnboardingAgent available (conversational workflow)
-*   ✅ BSCState v2.0 with consulting fields
-*   ✅ 4 BSC expert agents (Financial, Customer, Process, Learning)
-*   ✅ Functional RAG retriever (BSC literature)
-*   ✅ Validated system prompts (`client_profile_prompts.py` as reference)
-
-### To Consider:
-*   [https://github.com/humanlayer/12-factor-agents](https://github.com/humanlayer/12-factor-agents)
-*   [https://www.anthropic.com/engineering/building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents)
-*   [https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf](https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf)
-
-## TEST CONFIGURATION
-
-*   The test `test_parallel_agent_execution` now has a threshold of 200 seconds.
-*   The test `test_latency_percentiles` now has a P95 threshold of 240 seconds (4 minutes).
-*   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
-*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy (now context precision), answer relevancy, and faithfulness.
-*   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
-*   To ensure pytest discovers tests and handles imports correctly, add the following to `pyproject.toml` under `[tool.pytest.ini_options]`:
-
-```toml
-pythonpath = ["."]
-# Usar importlib para resolver conflitos com __init__.py (Issue #11960 pytest-dev)
-addopts = [
-    "--import-mode=importlib",
-]
-```
-
-### Test Debugging Methodology (Validated 2025-10-15)
-
-**CRITICAL: When debugging failing tests, ALWAYS use this methodology:**
-
-#### 1. Traceback Completo (OBRIGATÓRIO)
-
-```bash
-# ✅ CORRETO: Traceback completo SEM filtro
-pytest tests/test_file.py -v --tb=long 2>&1
-
-# ❌ NUNCA fazer: oculta informações críticas
-pytest tests/test_file.py -v --tb=short 2>&1
-pytest tests/test_file.py -v --tb=long 2>&1 | Select-Object -Last 50
-pytest tests/test_file.py -v --tb=long 2>&1 | Select-String "ERROR"
-```
-
-**Por quê:** Filtros (Select-Object, Select-String, grep) ocultam linhas críticas do traceback que revelam a causa raiz do erro.
-
-**Memória:** [[memory:9969628]] - Validado: economiza 8 min/erro evitado
-
-#### 2. Sequential Thinking ANTES de Corrigir
-
-Use sequential thinking para analisar erro ANTES de implementar correção:
-
-1. **Thought 1**: Qual o erro exato? (ler traceback completo)
-2. **Thought 2**: Qual a linha que falha? (identificar no código)
-3. **Thought 3**: Qual a causa raiz? (não apenas o sintoma)
-4. **Thought 4**: Qual a correção necessária? (mínima e cirúrgica)
-5. **Thought 5**: Como validar a correção? (executar teste individual)
-
-#### 3. Resolver UM Erro por Vez
-
-```bash
-# ✅ CORRETO: Focar em um teste falhando
-pytest tests/test_file.py::test_specific_failing_test -v --tb=long 2>&1
-
-# ❌ ERRADO: Tentar corrigir múltiplos erros simultaneamente
-# (gera confusão e correções incorretas)
-```
-
-#### 4. Checklist ANTES de Escrever Testes
-
-**Memória:** [[memory:9969868]] - Previne 80% dos erros comuns
-
-- [ ] 1. **Ler assinatura completa** do método: `grep "def method_name" src/file.py -A 10`
-- [ ] 2. **Verificar tipo de retorno** exato (list vs Pydantic object)
-- [ ] 3. **Contar parâmetros** que o método aceita (não assumir)
-- [ ] 4. **Verificar validações pré-flight** (if checks no início)
-- [ ] 5. **Entender decorators** (@retry lança RetryError após N tentativas)
-- [ ] 6. **Fixtures Pydantic**: NUNCA passar None para campos com default_factory
-- [ ] 7. **Dados válidos em mocks**: Criar objetos Pydantic apenas com dados válidos
-
-**ROI:** 8 min economizados por erro evitado
-
-**Fonte:** `docs/lessons/lesson-test-debugging-methodology-2025-10-15.md` (428 linhas)
-
-## BENCHMARKING
-
-*   To run a full Fase 2A benchmark, use the command: `python tests/benchmark_fase2a/run_benchmark.py`.
-*   To run a pilot benchmark with

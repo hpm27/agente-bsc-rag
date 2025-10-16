@@ -390,3 +390,279 @@ class ClientProfile(BaseModel):
         """
         return cls.model_validate(data)
 
+
+# ============================================================================
+# DIAGNOSTIC SCHEMAS (Fase 2.5 - DiagnosticAgent)
+# ============================================================================
+
+
+class DiagnosticResult(BaseModel):
+    """Análise diagnóstica de uma perspectiva BSC individual.
+    
+    Resultado estruturado da análise de uma das 4 perspectivas do
+    Balanced Scorecard (Financeira, Clientes, Processos Internos,
+    Aprendizado e Crescimento) realizada pelo DiagnosticAgent.
+    
+    Attributes:
+        perspective: Nome da perspectiva BSC analisada
+        current_state: Descrição do estado atual da perspectiva (mínimo 20 caracteres)
+        gaps: Lista de gaps identificados (mínimo 1 item)
+        opportunities: Lista de oportunidades de melhoria (mínimo 1 item)
+        priority: Nível de prioridade da perspectiva (HIGH, MEDIUM, LOW)
+        key_insights: Lista de insights principais da análise (opcional)
+    
+    Example:
+        >>> result = DiagnosticResult(
+        ...     perspective="Financeira",
+        ...     current_state="Receita crescente mas margens comprimidas por custos operacionais altos",
+        ...     gaps=["Falta de visibilidade de custos por produto", "Orçamento anual desatualizado"],
+        ...     opportunities=["Implementar ABC Costing", "Revisar pricing strategy"],
+        ...     priority="HIGH",
+        ...     key_insights=["Margens caíram 5pp em 12 meses", "Top 3 produtos geram 80% receita"]
+        ... )
+    """
+    
+    perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"] = Field(
+        description="Perspectiva BSC analisada"
+    )
+    current_state: str = Field(
+        min_length=20,
+        description="Descrição do estado atual da perspectiva"
+    )
+    gaps: list[str] = Field(
+        min_length=1,
+        description="Gaps identificados na perspectiva"
+    )
+    opportunities: list[str] = Field(
+        min_length=1,
+        description="Oportunidades de melhoria identificadas"
+    )
+    priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Nível de prioridade da perspectiva"
+    )
+    key_insights: list[str] = Field(
+        default_factory=list,
+        description="Insights principais da análise"
+    )
+    
+    @field_validator('gaps', 'opportunities')
+    @classmethod
+    def validate_non_empty_lists(cls, v: list[str], info) -> list[str]:
+        """Valida que listas não são vazias."""
+        if not v or len(v) == 0:
+            raise ValueError(f"{info.field_name} não pode ser lista vazia")
+        return v
+
+
+class Recommendation(BaseModel):
+    """Recomendação acionável do diagnóstico BSC.
+    
+    Recomendação estratégica priorizada por impacto vs esforço, com
+    ações específicas e timeframe estimado para implementação.
+    
+    Attributes:
+        title: Título conciso da recomendação (mínimo 10 caracteres)
+        description: Descrição detalhada da recomendação (mínimo 50 caracteres)
+        impact: Impacto esperado da recomendação (HIGH, MEDIUM, LOW)
+        effort: Esforço necessário para implementação (HIGH, MEDIUM, LOW)
+        priority: Prioridade final da recomendação (HIGH, MEDIUM, LOW)
+        timeframe: Prazo estimado de implementação (ex: "3-6 meses", "Curto prazo")
+        next_steps: Lista de próximas ações específicas (mínimo 1 item)
+    
+    Example:
+        >>> rec = Recommendation(
+        ...     title="Implementar Activity-Based Costing",
+        ...     description="Substituir sistema atual de custos por ABC para aumentar visibilidade de rentabilidade por produto e cliente, permitindo decisões estratégicas baseadas em dados precisos de margem.",
+        ...     impact="HIGH",
+        ...     effort="MEDIUM",
+        ...     priority="HIGH",
+        ...     timeframe="6-9 meses",
+        ...     next_steps=[
+        ...         "Contratar consultor especializado em ABC",
+        ...         "Mapear processos e atividades atuais (2 meses)",
+        ...         "Pilotar em 1 linha de produto (3 meses)"
+        ...     ]
+        ... )
+    """
+    
+    title: str = Field(
+        min_length=10,
+        description="Título conciso da recomendação"
+    )
+    description: str = Field(
+        min_length=50,
+        description="Descrição detalhada da recomendação"
+    )
+    impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Impacto esperado da recomendação"
+    )
+    effort: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Esforço necessário para implementação"
+    )
+    priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Prioridade final (calculada por impacto vs esforço)"
+    )
+    timeframe: str = Field(
+        description="Prazo estimado de implementação"
+    )
+    next_steps: list[str] = Field(
+        min_length=1,
+        description="Próximas ações específicas"
+    )
+    
+    @field_validator('next_steps')
+    @classmethod
+    def validate_next_steps_non_empty(cls, v: list[str]) -> list[str]:
+        """Valida que next_steps não é lista vazia."""
+        if not v or len(v) == 0:
+            raise ValueError("next_steps não pode ser lista vazia")
+        return v
+    
+    @model_validator(mode='after')
+    def validate_priority_logic(self) -> 'Recommendation':
+        """Valida lógica de priorização: HIGH impact + LOW effort = HIGH priority.
+        
+        Ajusta priority automaticamente se:
+        - HIGH impact + LOW effort → priority = HIGH (quick win)
+        - LOW impact + HIGH effort → priority = LOW (evitar)
+        """
+        if self.impact == "HIGH" and self.effort == "LOW":
+            if self.priority != "HIGH":
+                self.priority = "HIGH"
+        elif self.impact == "LOW" and self.effort == "HIGH":
+            if self.priority != "LOW":
+                self.priority = "LOW"
+        return self
+
+
+class CompleteDiagnostic(BaseModel):
+    """Diagnóstico BSC completo multi-perspectiva.
+    
+    Consolida análise diagnóstica completa das 4 perspectivas do Balanced
+    Scorecard, incluindo recomendações priorizadas, synergies cross-perspective
+    identificadas e executive summary para tomada de decisão.
+    
+    Este schema é o resultado final do DiagnosticAgent.run_diagnostic() e
+    contém todos os insights necessários para a fase APPROVAL_PENDING.
+    
+    Attributes:
+        financial: Análise da perspectiva Financeira
+        customer: Análise da perspectiva Clientes
+        process: Análise da perspectiva Processos Internos
+        learning: Análise da perspectiva Aprendizado e Crescimento
+        recommendations: Lista de 3+ recomendações priorizadas por impacto vs esforço
+        cross_perspective_synergies: Lista de synergies cross-perspective identificadas (opcional)
+        executive_summary: Resumo executivo completo do diagnóstico (mínimo 100 caracteres)
+        next_phase: Próxima fase do workflow (geralmente APPROVAL_PENDING)
+    
+    Example:
+        >>> financial = DiagnosticResult(
+        ...     perspective="Financeira",
+        ...     current_state="Receita crescente mas margens comprimidas",
+        ...     gaps=["Falta visibilidade custos"],
+        ...     opportunities=["Implementar ABC Costing"],
+        ...     priority="HIGH"
+        ... )
+        >>> customer = DiagnosticResult(
+        ...     perspective="Clientes",
+        ...     current_state="NPS bom mas churn alto em clientes SMB",
+        ...     gaps=["Falta programa retenção"],
+        ...     opportunities=["Customer Success para SMB"],
+        ...     priority="HIGH"
+        ... )
+        >>> process = DiagnosticResult(
+        ...     perspective="Processos Internos",
+        ...     current_state="Processos manuais geram retrabalho",
+        ...     gaps=["Falta automação"],
+        ...     opportunities=["RPA para processos repetitivos"],
+        ...     priority="MEDIUM"
+        ... )
+        >>> learning = DiagnosticResult(
+        ...     perspective="Aprendizado e Crescimento",
+        ...     current_state="Turnover alto time comercial 25%/ano",
+        ...     gaps=["Falta treinamento estruturado"],
+        ...     opportunities=["Academia comercial interna"],
+        ...     priority="MEDIUM"
+        ... )
+        >>> rec1 = Recommendation(
+        ...     title="Implementar ABC Costing",
+        ...     description="Sistema custeio baseado em atividades para melhorar visibilidade rentabilidade por produto",
+        ...     impact="HIGH",
+        ...     effort="MEDIUM",
+        ...     priority="HIGH",
+        ...     timeframe="6-9 meses",
+        ...     next_steps=["Contratar consultor", "Mapear processos"]
+        ... )
+        >>> complete = CompleteDiagnostic(
+        ...     financial=financial,
+        ...     customer=customer,
+        ...     process=process,
+        ...     learning=learning,
+        ...     recommendations=[rec1],
+        ...     cross_perspective_synergies=["ABC Costing melhora pricing (Financial) e reduz churn SMB (Customer)"],
+        ...     executive_summary="Empresa com crescimento forte mas margens comprimidas. Prioridades: (1) Implementar ABC Costing para visibilidade custos, (2) Customer Success SMB para reduzir churn 25→15%, (3) RPA para ganhar eficiência operacional. ROI esperado: +5pp margem em 12 meses.",
+        ...     next_phase="APPROVAL_PENDING"
+        ... )
+    """
+    
+    financial: DiagnosticResult = Field(
+        description="Análise da perspectiva Financeira"
+    )
+    customer: DiagnosticResult = Field(
+        description="Análise da perspectiva Clientes"
+    )
+    process: DiagnosticResult = Field(
+        description="Análise da perspectiva Processos Internos"
+    )
+    learning: DiagnosticResult = Field(
+        description="Análise da perspectiva Aprendizado e Crescimento"
+    )
+    recommendations: list[Recommendation] = Field(
+        min_length=3,
+        description="Mínimo 3 recomendações priorizadas"
+    )
+    cross_perspective_synergies: list[str] = Field(
+        default_factory=list,
+        description="Synergies cross-perspective identificadas"
+    )
+    executive_summary: str = Field(
+        min_length=100,
+        description="Resumo executivo completo do diagnóstico"
+    )
+    next_phase: str = Field(
+        default="APPROVAL_PENDING",
+        description="Próxima fase do workflow consultivo"
+    )
+    
+    @model_validator(mode='after')
+    def validate_perspectives(self) -> 'CompleteDiagnostic':
+        """Valida que as 4 perspectivas BSC estão corretas.
+        
+        Garante que cada campo (financial, customer, process, learning) contém
+        a análise da perspectiva correta.
+        
+        Raises:
+            ValueError: Se perspectivas não correspondem aos campos
+        """
+        if self.financial.perspective != "Financeira":
+            raise ValueError(
+                f"Campo 'financial' deve conter perspectiva 'Financeira', "
+                f"recebeu '{self.financial.perspective}'"
+            )
+        if self.customer.perspective != "Clientes":
+            raise ValueError(
+                f"Campo 'customer' deve conter perspectiva 'Clientes', "
+                f"recebeu '{self.customer.perspective}'"
+            )
+        if self.process.perspective != "Processos Internos":
+            raise ValueError(
+                f"Campo 'process' deve conter perspectiva 'Processos Internos', "
+                f"recebeu '{self.process.perspective}'"
+            )
+        if self.learning.perspective != "Aprendizado e Crescimento":
+            raise ValueError(
+                f"Campo 'learning' deve conter perspectiva 'Aprendizado e Crescimento', "
+                f"recebeu '{self.learning.perspective}'"
+            )
+        
+        return self
