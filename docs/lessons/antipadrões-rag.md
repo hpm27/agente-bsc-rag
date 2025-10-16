@@ -1,8 +1,9 @@
 # ❌ ANTIPADRÕES RAG - BSC Project
 
-**Data:** 2025-10-14  
-**Fonte:** Lições aprendidas Fase 2A (Query Decomposition, Adaptive Re-ranking, Router)  
-**Objetivo:** Documentar armadilhas evitadas para acelerar Fase 2B e projetos futuros
+**Data:** 2025-10-16 (Atualizado com FASE 2.5)  
+**Fonte:** Lições aprendidas Fase 2A + 2.5 (Query Decomposition, Adaptive Re-ranking, Router, DiagnosticAgent Testing)  
+**Objetivo:** Documentar armadilhas evitadas para acelerar Fase 2B e projetos futuros  
+**Total:** 39 antipadrões catalogados (32 originais + 7 testing FASE 2.5)
 
 ---
 
@@ -460,6 +461,352 @@ if should_decompose_decision:  # Correto!
 **Economia:** 2h de debugging evitadas
 
 **Fonte:** lesson-query-decomposition (O Que Não Funcionou #5)
+
+---
+
+### ❌ ANTIPADRÃO 5.4: Não Aplicar Checklist Antes de Escrever Testes ⚠️ **CRÍTICO**
+
+**Problema:**
+- Escrever testes ANTES de aplicar [[memory:9969868]] - Checklist de 8 pontos
+
+**Por quê é ruim:**
+- ❌ **38 minutos perdidos** em debugging evitável (FASE 2.5 validado)
+- ❌ **7 problemas previsíveis** (assinatura incorreta, dados inválidos, decorators)
+- ❌ **Retrabalho constante**
+
+**Solução:**
+
+```python
+# ✅ CHECKLIST ANTES (não durante ou depois!)
+
+# 1. Ler assinatura completa
+grep "def analyze_perspective" src/agents/diagnostic_agent.py -A 10
+# Output: def analyze_perspective(self, perspective, client_profile, state) -> DiagnosticResult
+
+# 2. Verificar tipo retorno
+# DiagnosticResult (Pydantic BaseModel)
+
+# 3. Contar parâmetros (não contar self)
+# 3 params: perspective, client_profile, state
+
+# 4. Validações pré-flight
+# - perspective: Literal["Financeira", "Clientes", ...]
+# - current_state: min_length=20
+# - gaps: min 3 items
+
+# 5. Entender decorators
+# @retry(reraise=True) → relança ValidationError, NÃO RetryError!
+
+# 6-8. Fixtures, Dados Válidos, Método Correto
+# ...
+
+# AGORA escrever teste!
+def test_analyze_perspective():
+    # Teste baseado em conhecimento COMPLETO
+    pass
+```
+
+**Benefícios:**
+- ✅ **38 minutos economizados** por implementação
+- ✅ **95% problemas evitados**
+- ✅ **Testes corretos primeira tentativa**
+
+**ROI:** 10:1 (10 min checklist vs 40 min debugging)
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Custo Real vs Evitável)
+
+---
+
+### ❌ ANTIPADRÃO 5.5: Assumir Nome de Método Sem Verificar
+
+**Problema:**
+- Assumir que specialist agents têm `process_query()` sem grep
+
+**Erro Real:**
+```python
+AttributeError: 'FinancialAgent' object has no attribute 'process_query'
+```
+
+**Por quê é ruim:**
+- ❌ **8 minutos perdidos** por erro (FASE 2.5)
+- ❌ **Múltiplas ocorrências** (código + testes)
+- ❌ **100% evitável** com 30 segundos de grep
+
+**Solução:**
+
+```python
+# ✅ VERIFICAR ASSINATURA ANTES
+
+# Comando:
+grep "def " src/agents/financial_agent.py -C 2
+
+# Output:
+# def invoke(self, query: str) -> dict:  ← MÉTODO CORRETO!
+#     """Processa query e retorna resposta."""
+
+# Agora usar no código/testes:
+specialist_agent.invoke(query)  # ✅ Correto
+
+# ❌ NUNCA:
+specialist_agent.process_query(state, query)  # Método não existe!
+```
+
+**Economia:** 8 minutos por erro evitado
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Problema #3)
+
+---
+
+### ❌ ANTIPADRÃO 5.6: Dados Inválidos em Fixtures Pydantic
+
+**Problema:**
+- Criar fixtures Pydantic com dados que FALHAM validações
+
+**Erro Real:**
+```python
+ValidationError: current_state
+  String should have at least 20 characters [type=string_too_short]
+```
+
+**Por quê é ruim:**
+- ❌ **6 minutos perdidos** por fixture (FASE 2.5)
+- ❌ **Múltiplas fixtures** precisam correção
+- ❌ **Não testa código, testa Pydantic** (desnecessário)
+
+**Solução:**
+
+```python
+# ❌ EVITAR - Dados mínimos ou inválidos
+@pytest.fixture
+def sample_diagnostic_result():
+    return DiagnosticResult(
+        perspective="Financeira",
+        current_state="Financial state",  # 15 chars < 20 MIN! ❌
+        gaps=["Gap 1"],  # <3 items (field_validator requer 3+)
+        ...
+    )
+
+# ✅ USAR - Dados com MARGEM DE SEGURANÇA
+@pytest.fixture
+def sample_diagnostic_result():
+    return DiagnosticResult(
+        perspective="Financeira",
+        current_state="Estado financeiro detalhado da empresa com contexto completo",  # 66 chars ✅
+        gaps=["Gap 1", "Gap 2", "Gap 3", "Gap 4", "Gap 5"],  # 5 items (margem segurança) ✅
+        opportunities=["Opp A", "Opp B", "Opp C"],  # Múltiplos
+        priority="HIGH",
+        key_insights=["Insight X", "Insight Y"],
+    )
+```
+
+**Regra Geral:**
+- ✅ **Se min_length=20 → usar 50+ chars**
+- ✅ **Se min_items=3 → usar 5+ items**
+- ✅ **Margem de segurança > requisito mínimo**
+
+**Economia:** 6 minutos por fixture
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Problema #4)
+
+---
+
+### ❌ ANTIPADRÃO 5.7: Ignorar Campos Obrigatórios em Fixtures
+
+**Problema:**
+- Omitir campos obrigatórios (sem default) em fixtures Pydantic
+
+**Erro Real:**
+```python
+TypeError: BSCState.__init__() missing 1 required positional argument: 'query'
+```
+
+**Por quê é ruim:**
+- ❌ **4 minutos perdidos** por fixture (FASE 2.5)
+- ❌ **Erro confuso** (TypeError vs campo ausente)
+- ❌ **Múltiplos testes quebrados**
+
+**Solução:**
+
+```python
+# ✅ VERIFICAR SCHEMA ANTES
+
+# Verificar campos obrigatórios:
+grep "class BSCState" src/graph/states.py -A 15
+
+# Output:
+# query: str = Field(..., description="Query do usuário")  ← SEM DEFAULT = OBRIGATÓRIO!
+# conversation_history: list[dict] = Field(default_factory=list)  ← TEM DEFAULT = OPCIONAL
+
+# ❌ EVITAR - Omitir query
+@pytest.fixture
+def sample_bsc_state():
+    return BSCState(
+        conversation_history=[],
+        # query faltando! ← ERRO
+    )
+
+# ✅ USAR - Incluir TODOS campos obrigatórios
+@pytest.fixture
+def sample_bsc_state():
+    return BSCState(
+        query="Como implementar BSC?",  # ✅ Campo obrigatório
+        conversation_history=[],
+        client_profile=None,  # Opcional mas explícito
+    )
+```
+
+**Economia:** 4 minutos por erro evitado
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Problema #5)
+
+---
+
+### ❌ ANTIPADRÃO 5.8: Não Entender Comportamento de Decorators
+
+**Problema:**
+- Não estudar decorators (@retry, @cache) ANTES de testar
+
+**Erro Real:**
+```python
+# Esperado: RetryError
+# Real: ValidationError relançada!
+```
+
+**Por quê é ruim:**
+- ❌ **10 minutos perdidos** (FASE 2.5)
+- ❌ **Testes incorretos** (espera tipo errado de exceção)
+- ❌ **Debugging confuso** (por quê lança ValidationError?)
+
+**Solução:**
+
+```python
+# ✅ ESTUDAR DECORATOR ANTES
+
+# Decorator no código:
+@retry(
+    stop=stop_after_attempt(3),
+    reraise=True  # ← IMPORTANTE!
+)
+def analyze_perspective(...):
+    # Pode lançar ValidationError
+    pass
+
+# Comportamento:
+# - Tentativa 1: ValidationError → retry
+# - Tentativa 2: ValidationError → retry
+# - Tentativa 3: ValidationError → RELANÇA ValidationError (NÃO RetryError!)
+
+# ❌ TESTE ERRADO
+def test_retry():
+    with pytest.raises(RetryError):  # Espera tipo errado!
+        agent.analyze_perspective(...)
+
+# ✅ TESTE CORRETO
+def test_retry():
+    with pytest.raises(ValidationError):  # Exceção ORIGINAL ✅
+        agent.analyze_perspective(...)
+
+# Nota: Se reraise=False (padrão), lançaria RetryError
+```
+
+**Economia:** 10 minutos por erro evitado
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Problema #6)
+
+---
+
+### ❌ ANTIPADRÃO 5.9: Criar ValidationError Manualmente em Testes
+
+**Problema:**
+- Tentar criar `ValidationError` manualmente com sintaxe complexa
+
+**Erro Real:**
+```python
+TypeError: ValidationError.from_exception_data() missing required argument: 'input_type'
+```
+
+**Por quê é ruim:**
+- ❌ **4 minutos perdidos** por teste (FASE 2.5)
+- ❌ **Sintaxe complexa** propenso a erros
+- ❌ **Abordagem frágil** (muda entre versões Pydantic)
+
+**Solução:**
+
+```python
+# ❌ EVITAR - Criar ValidationError manualmente
+def test_validation():
+    def mock_invoke_error():
+        raise ValidationError.from_exception_data(
+            "test",
+            [{"type": "value_error", "loc": ("test",), ...}]  # Complexo!
+        )
+
+# ✅ USAR - Passar dados inválidos e deixar Pydantic lançar
+def test_validation():
+    with pytest.raises(ValidationError):
+        DiagnosticResult(
+            perspective="INVALID",  # Não está no Literal ← Pydantic lança auto!
+            current_state="Short",  # <20 chars
+            gaps=[],  # Lista vazia (<3 items)
+            ...
+        )
+    # Pydantic lança ValidationError AUTOMATICAMENTE ✅
+```
+
+**Benefícios:**
+- ✅ **Teste mais limpo** (dados inválidos vs exceção manual)
+- ✅ **Resiliente** (funciona em qualquer versão Pydantic)
+- ✅ **Testa validação REAL**
+
+**Economia:** 4 minutos por teste
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Problema #7)
+
+---
+
+### ❌ ANTIPADRÃO 5.10: Traceback Truncado em Debugging ⚠️ **CRÍTICO**
+
+**Problema:**
+- Usar `--tb=short`, `Select-Object`, `Select-String` ao debuggar testes
+
+**Por quê é ruim:**
+- ❌ **60+ minutos perdidos** por sessão (estimado FASE 2.5)
+- ❌ **Informação crítica oculta** (stack trace, valores, contexto)
+- ❌ **Causa raiz invisível**
+
+**Comandos ERRADOS:**
+```bash
+# ❌ NUNCA USAR
+pytest tests/file.py --tb=short  # Trunca traceback!
+pytest tests/file.py -v | Select-Object -First 50  # Oculta linhas!
+pytest tests/file.py 2>&1 | Select-String -Pattern "FAILED"  # Filtra output!
+```
+
+**Comando CORRETO:**
+```bash
+# ✅ SEMPRE USAR
+pytest tests/file.py -v --tb=long 2>&1
+# SEM filtros! SEM truncamento! SEM head/tail!
+```
+
+**Exemplo Real:**
+```
+# --tb=long revela:
+AttributeError: 'FinancialAgent' object has no attribute 'process_query'
+  File "src/agents/diagnostic_agent.py", line 174, in analyze_perspective
+    context_response = specialist_agent.process_query(state, query)  ← LINHA EXATA!
+
+# --tb=short ocultaria a linha 174, perderia 10+ minutos procurando erro
+```
+
+**Benefícios:**
+- ✅ **Causa raiz em 1-2 min** (vs 10-15 min com traceback truncado)
+- ✅ **Stack trace completo**
+- ✅ **Valores de variáveis visíveis**
+
+**ROI:** 60+ minutos economizados por sessão
+
+**Fonte:** lesson-diagnostic-agent-test-methodology (Metodologia #1) + [[memory:9969628]]
 
 ---
 

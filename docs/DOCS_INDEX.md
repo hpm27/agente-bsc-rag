@@ -1,8 +1,8 @@
 # 📇 ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.0  
-**Última Atualização:** 2025-10-14  
-**Total de Documentos:** 37 (33 docs/ + 4 rules/)
+**Versão:** 1.1  
+**Última Atualização:** 2025-10-16  
+**Total de Documentos:** 44 (40 docs/ + 4 rules/) - +7 lessons completas!
 
 ---
 
@@ -194,12 +194,16 @@
 - `src/graph/workflow.py` - Código
 - `src/graph/states.py` - Estados
 
-**lessons** (Docs: 1 + 4 a criar)
-- `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections
-- [TIER 3] `lesson-query-decomposition-2025-10-14.md` (a criar)
-- [TIER 3] `lesson-adaptive-reranking-2025-10-14.md` (a criar)
-- [TIER 3] `lesson-router-2025-10-14.md` (a criar)
-- [TIER 3] `antipadrões-rag.md` (a criar)
+**lessons** (Docs: 9 - Todas criadas!)
+- `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections (validado)
+- `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-4o-mini)
+- `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` - Adaptive Re-ranking (626 linhas, TDD)
+- `docs/lessons/lesson-router-2025-10-14.md` - Router Inteligente (786 linhas, 10x speedup)
+- `docs/lessons/antipadrões-rag.md` - 32 antipadrões catalogados (903 linhas)
+- `docs/lessons/lesson-memory-hierarchy-2025-10-14.md` - Hierarquia Mem0 (700+ linhas)
+- `docs/lessons/lesson-test-debugging-methodology-2025-10-15.md` - Test Debug (FASE 2.4, 5 erros)
+- `docs/lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` - Test Methodology (FASE 2.5, 7 erros, 1.100+ linhas)
+- `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` - E2E Workflow Tests (FASE 2.6, 4 problemas, 11.900+ linhas, checklist 12 pontos)
 
 ---
 
@@ -435,15 +439,19 @@
 
 ---
 
-### 📚 Lessons - Lições Aprendidas (1 + 4 a criar)
+### 📚 Lessons - Lições Aprendidas (9 completas)
 
 | Lição | Técnica | ROI Observado | Status |
 |-------|---------|---------------|--------|
 | **E2E Validation Corrections** | `lessons/lesson-e2e-validation-corrections-2025-10-14.md` | 3 correções críticas | ✅ |
-| **Query Decomposition** | [TIER 3] `lesson-query-decomposition-2025-10-14.md` | Heurística 100%, 91% coverage | 🔥 A criar |
-| **Adaptive Re-ranking** | [TIER 3] `lesson-adaptive-reranking-2025-10-14.md` | 100% coverage, MMR validado | 🔥 A criar |
-| **Router Inteligente** | [TIER 3] `lesson-router-2025-10-14.md` | 10x mais rápido, 92% accuracy | 🔥 A criar |
-| **Antipadrões RAG** | [TIER 3] `antipadrões-rag.md` | 5-10 evitados | 🔥 A criar |
+| **Query Decomposition** | `lessons/lesson-query-decomposition-2025-10-14.md` (545L) | $9.90/dia, heurística 100%, 91% coverage | ✅ |
+| **Adaptive Re-ranking** | `lessons/lesson-adaptive-reranking-2025-10-14.md` (626L) | TDD -93% bugs, 100% coverage, MMR validado | ✅ |
+| **Router Inteligente** | `lessons/lesson-router-2025-10-14.md` (786L) | 10x speedup, 92% accuracy, 70% reuso | ✅ |
+| **Antipadrões RAG** | `lessons/antipadrões-rag.md` (903L) | 32 antipadrões, 2-8h economizadas/antipadrão | ✅ |
+| **Memory Hierarchy** | `lessons/lesson-memory-hierarchy-2025-10-14.md` (700+L) | Hierarquia Mem0, persistência, factory pattern | ✅ |
+| **Test Debugging (FASE 2.4)** | `lessons/lesson-test-debugging-methodology-2025-10-15.md` | 5 erros, 40 min, ClientProfileAgent | ✅ |
+| **Test Methodology (FASE 2.5)** | `lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (1.100+L) | 7 erros, 38 min economizados, checklist 8 pontos | ✅ |
+| **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | ✅ |
 
 ---
 
@@ -534,10 +542,10 @@
 | **Rules** | 4 docs | 11% |
 | **Tests/Benchmarks** | 4 docs | 11% |
 | **Patterns** | 1 doc | 3% |
-| **Lessons** | 1 doc (+ 4 a criar) | 3% |
+| **Lessons** | 8 docs (5.600+ linhas) | 22% |
 | **Vector Stores** | 2 docs | 5% |
 
-**Total:** 37 documentos
+**Total:** 44 documentos
 
 ---
 

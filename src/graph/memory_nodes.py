@@ -17,9 +17,48 @@ from uuid import uuid4
 from loguru import logger
 
 from src.graph.states import BSCState
+from src.graph.consulting_states import ConsultingPhase
 from src.memory.exceptions import Mem0ClientError, ProfileNotFoundError
 from src.memory.factory import MemoryFactory
 from src.memory.schemas import ClientProfile, CompanyInfo, EngagementState
+
+
+def map_phase_from_engagement(engagement_phase: str) -> ConsultingPhase:
+    """Mapeia fase do EngagementState (Literal string) para ConsultingPhase (Enum).
+    
+    EngagementState.current_phase usa Literal strings ("ONBOARDING", "DISCOVERY", etc),
+    enquanto ConsultingPhase usa Enum. Esta função faz o mapeamento bidirecional seguro.
+    
+    Args:
+        engagement_phase: String da fase do engagement ("ONBOARDING", "DISCOVERY", etc)
+    
+    Returns:
+        ConsultingPhase: Enum correspondente
+        
+    Examples:
+        >>> map_phase_from_engagement("ONBOARDING")
+        ConsultingPhase.ONBOARDING
+        
+        >>> map_phase_from_engagement("DESIGN")
+        ConsultingPhase.SOLUTION_DESIGN
+        
+        >>> map_phase_from_engagement("COMPLETED")
+        ConsultingPhase.IDLE
+        
+        >>> map_phase_from_engagement("INVALID")
+        ConsultingPhase.ONBOARDING  # Default seguro
+    """
+    mapping = {
+        "ONBOARDING": ConsultingPhase.ONBOARDING,
+        "DISCOVERY": ConsultingPhase.DISCOVERY,
+        "DESIGN": ConsultingPhase.SOLUTION_DESIGN,  # Mapeamento: DESIGN → SOLUTION_DESIGN
+        "APPROVAL_PENDING": ConsultingPhase.APPROVAL_PENDING,
+        "IMPLEMENTATION": ConsultingPhase.IMPLEMENTATION,
+        "COMPLETED": ConsultingPhase.IDLE,  # Engajamento finalizado volta ao IDLE
+    }
+    
+    # Default seguro: ONBOARDING (cliente sempre precisa onboarding)
+    return mapping.get(engagement_phase, ConsultingPhase.ONBOARDING)
 
 
 def load_client_memory(state: BSCState) -> dict[str, Any]:
@@ -86,20 +125,40 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
             logger.info(
                 f"[TIMING] [load_client_memory] CONCLUÍDO em {elapsed_time:.3f}s | "
                 f"Profile carregado: {profile.company.name} | "
-                f"Fase: {profile.engagement.current_phase}"
+                f"Fase Mem0: {profile.engagement.current_phase}"
+            )
+            
+            # FASE 2.6: Sincronizar phase do profile com BSCState.current_phase
+            # Usa helper function para mapear string Literal → Enum seguro
+            # Se profile tem fase definida, usa ela (cliente returning)
+            # Se não, usa default seguro ONBOARDING (garantido por map_phase_from_engagement)
+            consulting_phase = map_phase_from_engagement(
+                profile.engagement.current_phase
+            )
+            logger.info(
+                f"[INFO] [load_client_memory] Fase consultiva mapeada: "
+                f"'{profile.engagement.current_phase}' → {consulting_phase.value}"
             )
 
-            return {"client_profile": profile}
+            return {
+                "client_profile": profile,
+                "current_phase": consulting_phase
+            }
 
         except ProfileNotFoundError:
             # Cliente novo - não é erro, é esperado
+            # FASE 2.6: Definir current_phase = ONBOARDING para iniciar onboarding
             elapsed_time = time.time() - start_time
             logger.info(
                 f"[INFO] [load_client_memory] Cliente novo (sem profile) | "
                 f"user_id: {state.user_id} | "
+                f"Iniciando current_phase = ONBOARDING | "
                 f"Tempo: {elapsed_time:.3f}s"
             )
-            return {"client_profile": None}
+            return {
+                "client_profile": None,
+                "current_phase": ConsultingPhase.ONBOARDING  # Cliente novo → onboarding
+            }
 
     except Mem0ClientError as e:
         # Erro de API Mem0 - log mas não falha workflow
@@ -170,21 +229,32 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
         logger.info(
             f"[TIMING] [save_client_memory] INICIADO | "
             f"user_id: {user_id} | "
-            f"Empresa: {state.client_profile.company.name}"
+            f"Empresa: {state.client_profile.company.name} | "
+            f"Fase Consultiva: {state.current_phase.value}"
         )
 
-        # Atualizar timestamps
+        # Atualizar timestamps e fase consultiva
         profile = state.client_profile
         profile.engagement.last_interaction = datetime.now(timezone.utc)
-
-        # Adicionar query ao histórico (últimas 10 queries)
-        if not hasattr(profile, "_query_history"):
-            profile._query_history = []
-        profile._query_history.append({
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "query": state.query[:100]  # Limita tamanho
-        })
-        profile._query_history = profile._query_history[-10:]  # Mantém só últimas 10
+        
+        # FASE 2.6: Sincronizar fase do BSCState com ClientProfile
+        # Isso garante persistência da fase consultiva no Mem0
+        # Casting explícito para satisfazer type checker (Literal vs str)
+        if state.current_phase:
+            phase_value: str = state.current_phase.value
+            # Validar se fase é válida no Literal antes de atribuir
+            valid_phases = ("ONBOARDING", "DISCOVERY", "DESIGN", "APPROVAL_PENDING", "IMPLEMENTATION", "COMPLETED")
+            if phase_value.upper() in valid_phases:
+                profile.engagement.current_phase = phase_value.upper()  # type: ignore
+                logger.debug(
+                    f"[INFO] [save_client_memory] Fase sincronizada no profile: "
+                    f"{phase_value}"
+                )
+            else:
+                logger.warning(
+                    f"[WARN] [save_client_memory] Fase inválida: {phase_value}. "
+                    f"Mantendo fase atual do profile: {profile.engagement.current_phase}"
+                )
 
         # Obter memory provider (Mem0)
         try:
@@ -233,39 +303,4 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
             f"Tempo: {elapsed_time:.3f}s"
         )
         return {"user_id": state.user_id} if state.user_id else {}
-
-
-def create_placeholder_profile(user_id: str, company_name: str = "Cliente") -> ClientProfile:
-    """Cria ClientProfile placeholder para novos clientes.
-
-    NOTA: Esta é uma função utilitária temporária para FASE 1.7.
-    Na FASE 2, o OnboardingAgent criará profiles completos via formulário.
-
-    Args:
-        user_id: ID único do cliente
-        company_name: Nome da empresa (default: "Cliente")
-
-    Returns:
-        ClientProfile: Profile básico placeholder
-
-    Examples:
-        >>> profile = create_placeholder_profile("cliente_123", "Acme Corp")
-        >>> profile.company.name
-        'Acme Corp'
-        >>> profile.engagement.current_phase
-        'ONBOARDING'
-    """
-    return ClientProfile(
-        client_id=user_id,
-        company=CompanyInfo(
-            name=company_name,
-            sector="A definir",
-            size="média"
-        ),
-        engagement=EngagementState(
-            current_phase="ONBOARDING",
-            created_at=datetime.now(timezone.utc),
-            last_interaction=datetime.now(timezone.utc)
-        )
-    )
 

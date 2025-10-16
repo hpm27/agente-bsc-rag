@@ -18,8 +18,13 @@ from loguru import logger
 
 from src.agents.judge_agent import JudgeAgent
 from src.agents.orchestrator import Orchestrator
+from src.agents.onboarding_agent import OnboardingAgent
+from src.agents.client_profile_agent import ClientProfileAgent
+from config.settings import settings
 from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
+from src.graph.consulting_states import ConsultingPhase
+from src.memory.factory import MemoryFactory
 
 
 def extract_text_from_response(response: Any) -> str:
@@ -60,9 +65,56 @@ class BSCWorkflow:
         """Inicializa o workflow."""
         self.orchestrator = Orchestrator()
         self.judge = JudgeAgent()
+        
+        # FASE 2.6: Agentes consultivos
+        # Inicializar apenas se necessário (lazy loading para não impactar RAG puro)
+        self._onboarding_agent = None
+        self._client_profile_agent = None
+        self._memory_client = None
+        
+        # FASE 2.6: In-memory sessions para onboarding progress
+        # Key: user_id, Value: {"step_1": True/False, "step_2": True/False, "step_3": True/False}
+        # Persiste estado entre múltiplas chamadas run() para mesmo user_id
+        self._onboarding_sessions: dict[str, dict[str, Any]] = {}
+        
         self.graph = self._build_graph()
         
         logger.info("[OK] BSCWorkflow inicializado com grafo LangGraph")
+    
+    @property
+    def onboarding_agent(self) -> OnboardingAgent:
+        """Lazy loading do OnboardingAgent."""
+        if self._onboarding_agent is None:
+            from langchain_openai import ChatOpenAI
+            llm = ChatOpenAI(model=settings.llm_model, temperature=0)
+            
+            # Instanciar ClientProfileAgent
+            if self._client_profile_agent is None:
+                self._client_profile_agent = ClientProfileAgent(llm=llm)
+            
+            # Instanciar memory client
+            if self._memory_client is None:
+                self._memory_client = MemoryFactory.get_provider("mem0")
+            
+            self._onboarding_agent = OnboardingAgent(
+                llm=llm,
+                client_profile_agent=self._client_profile_agent,
+                memory_client=self._memory_client
+            )
+            logger.info("[OK] OnboardingAgent inicializado (lazy)")
+        
+        return self._onboarding_agent
+    
+    @property
+    def client_profile_agent(self) -> ClientProfileAgent:
+        """Lazy loading do ClientProfileAgent."""
+        if self._client_profile_agent is None:
+            from langchain_openai import ChatOpenAI
+            llm = ChatOpenAI(model=settings.llm_model, temperature=0)
+            self._client_profile_agent = ClientProfileAgent(llm=llm)
+            logger.info("[OK] ClientProfileAgent inicializado (lazy)")
+        
+        return self._client_profile_agent
     
     def _build_graph(self) -> CompiledStateGraph:
         """
@@ -76,8 +128,9 @@ class BSCWorkflow:
         # Criar grafo com schema BSCState
         workflow = StateGraph(BSCState)
         
-        # Adicionar nós (incluindo memória)
+        # Adicionar nós (incluindo memória + consultivo)
         workflow.add_node("load_client_memory", load_client_memory)
+        workflow.add_node("onboarding_handler", self.onboarding_handler)  # FASE 2.6: Node consultivo
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
@@ -88,8 +141,21 @@ class BSCWorkflow:
         # Definir entry point (começa com load de memória)
         workflow.set_entry_point("load_client_memory")
         
-        # Definir edges (transições)
-        workflow.add_edge("load_client_memory", "analyze_query")  # Memória → Query
+        # FASE 2.6: Edge condicional após load_client_memory (routing consultivo vs RAG)
+        workflow.add_conditional_edges(
+            "load_client_memory",
+            self.route_by_phase,
+            {
+                "onboarding": "onboarding_handler",  # Cliente novo → onboarding
+                "analyze_query": "analyze_query"     # Cliente existente ou query RAG
+            }
+        )
+        
+        # Onboarding completo → Salva profile e finaliza
+        workflow.add_edge("onboarding_handler", "save_client_memory")
+        
+        # Definir edges RAG (transições)
+        # workflow.add_edge("load_client_memory", "analyze_query")  # REMOVIDO: Agora é conditional edge
         workflow.add_edge("analyze_query", "execute_agents")
         workflow.add_edge("execute_agents", "synthesize_response")
         workflow.add_edge("synthesize_response", "judge_validation")
@@ -109,7 +175,10 @@ class BSCWorkflow:
         workflow.add_edge("finalize", "save_client_memory")
         workflow.add_edge("save_client_memory", END)
         
-        logger.info("[OK] Grafo LangGraph construído com 7 nós (2 memória + 5 core) + 1 edge condicional")
+        logger.info(
+            "[OK] Grafo LangGraph construído com 8 nós "
+            "(2 memória + 1 consultivo + 5 RAG) + 2 edges condicionais"
+        )
         
         return workflow.compile()
     
@@ -489,6 +558,232 @@ class BSCWorkflow:
             logger.error(f"[ERRO] decide_next_step: {e}. Finalizando por segurança.")
             return "finalize"
     
+    def route_by_phase(self, state: BSCState) -> Literal["onboarding", "analyze_query"]:
+        """
+        Edge condicional: Roteia workflow baseado na fase consultiva.
+        
+        Decisão lógica (FASE 2.6 MVP):
+        - Se current_phase == ONBOARDING: Vai para onboarding_handler
+        - Senão: Vai para analyze_query (RAG tradicional)
+        
+        Futuro (FASE 2.7):
+        - Se current_phase == DISCOVERY: Vai para discovery_handler
+        - Se current_phase == APPROVAL_PENDING: Vai para approval_handler
+        
+        Args:
+            state: Estado atual do workflow (após load_client_memory)
+            
+        Returns:
+            Nome do próximo nó: "onboarding" ou "analyze_query"
+            
+        Examples:
+            >>> # Cliente novo sem profile
+            >>> state = BSCState(user_id="novo", current_phase=ConsultingPhase.ONBOARDING)
+            >>> route_by_phase(state)
+            'onboarding'
+            
+            >>> # Cliente existente fazendo query de conhecimento
+            >>> state = BSCState(
+            ...     user_id="existente",
+            ...     current_phase=ConsultingPhase.IDLE,
+            ...     query="O que é BSC?"
+            ... )
+            >>> route_by_phase(state)
+            'analyze_query'
+        """
+        try:
+            # Decisão principal: ONBOARDING vs RAG
+            if state.current_phase == ConsultingPhase.ONBOARDING:
+                logger.info(
+                    f"[INFO] [route_by_phase] Routing: ONBOARDING | "
+                    f"user_id: {state.user_id} | "
+                    f"profile: {'None (novo cliente)' if not state.client_profile else 'Existente'}"
+                )
+                return "onboarding"
+            
+            # Default: RAG tradicional (analyze_query)
+            logger.info(
+                f"[INFO] [route_by_phase] Routing: RAG (analyze_query) | "
+                f"current_phase: {state.current_phase.value if state.current_phase else 'None'} | "
+                f"query: '{state.query[:50]}...'"
+            )
+            return "analyze_query"
+            
+        except Exception as e:
+            # Em caso de erro, fallback seguro para RAG
+            logger.error(
+                f"[ERRO] route_by_phase: {e}. Fallback para analyze_query (RAG)."
+            )
+            return "analyze_query"
+    
+    def onboarding_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        Nó: Gerencia processo de onboarding multi-turn.
+        
+        Workflow:
+        1. Se query == "start" OU onboarding_progress vazio: Inicia onboarding
+        2. Senão: Processa resposta do usuário (turn)
+        3. Verifica se onboarding completo (3 steps done)
+        4. Se completo: Transiciona para DISCOVERY
+        5. Retorna mensagem para usuário
+        
+        Args:
+            state: Estado atual do workflow
+            
+        Returns:
+            Dict atualizado com:
+            - final_response: Mensagem para usuário
+            - onboarding_progress: Dict atualizado
+            - client_profile: ClientProfile atualizado (se extraído)
+            - current_phase: DISCOVERY (se completo) ou ONBOARDING (se não)
+            - is_complete: True (se completo)
+        """
+        start_time = time.time()
+        
+        try:
+            user_id = state.user_id
+            
+            # FASE 2.6: Carregar session existente (in-memory persistence)
+            if user_id in self._onboarding_sessions:
+                # Carregar progress existente da session
+                session_progress = self._onboarding_sessions[user_id]
+                logger.info(
+                    f"[TIMING] [onboarding_handler] INICIADO | "
+                    f"user_id: {user_id} | "
+                    f"session_progress CARREGADO: {session_progress}"
+                )
+            else:
+                # Nova session
+                session_progress = {}
+                logger.info(
+                    f"[TIMING] [onboarding_handler] INICIADO | "
+                    f"user_id: {user_id} | "
+                    f"NOVA session criada"
+                )
+            
+            # Atualizar state com session progress (para agent ter contexto)
+            # NOTA: Não podemos modificar state diretamente (imutável TypedDict)
+            # Então passamos state original e agent usa onboarding_progress da session
+            
+            # Decisão: start vs turn
+            # Se query é "start" OU session vazia: start_onboarding
+            # Caso contrário: process_turn
+            is_start = (
+                state.query.lower().strip() == "start" or
+                len(session_progress) == 0
+            )
+            
+            if is_start:
+                # Iniciar onboarding
+                logger.info("[INFO] [onboarding_handler] Iniciando onboarding (start)")
+                result = self.onboarding_agent.start_onboarding(
+                    user_id=user_id,
+                    state=state
+                )
+                
+                # Atualizar state
+                message = result["question"]
+                
+            else:
+                # Processar turn (resposta do usuário)
+                logger.info(
+                    f"[INFO] [onboarding_handler] Processando turn | "
+                    f"user_message: '{state.query[:50]}...'"
+                )
+                result = self.onboarding_agent.process_turn(
+                    user_id=user_id,
+                    user_message=state.query,
+                    state=state
+                )
+                
+                # Atualizar state
+                message = result.get("question") or result.get("message", "")
+            
+            # FASE 2.6: Salvar session atualizado (para próximo turn)
+            updated_progress = result.get("onboarding_progress", session_progress)
+            self._onboarding_sessions[user_id] = updated_progress
+            logger.debug(
+                f"[DEBUG] [onboarding_handler] Session SALVA | "
+                f"user_id: {user_id} | progress: {updated_progress}"
+            )
+            
+            # Verificar se completo
+            if result.get("is_complete", False):
+                logger.info(
+                    "[OK] [onboarding_handler] Onboarding COMPLETO! "
+                    "Criando ClientProfile..."
+                )
+                
+                # FASE 2.6: Criar ClientProfile via ClientProfileAgent
+                # TODO FUTURE: Capturar conversation_history real para context rico
+                profile = self.client_profile_agent.extract_profile(
+                    user_id=user_id,
+                    conversation_history=[]
+                )
+                
+                # Atualizar engagement state para DISCOVERY
+                profile.engagement.current_phase = "DISCOVERY"  # Literal string no schema
+                
+                logger.info(
+                    f"[OK] Profile criado: {profile.company.name} | "
+                    f"Transicionando para DISCOVERY"
+                )
+                
+                # FASE 2.6: Limpar session (onboarding completo)
+                if user_id in self._onboarding_sessions:
+                    del self._onboarding_sessions[user_id]
+                    logger.debug(f"[DEBUG] [onboarding_handler] Session LIMPA | user_id: {user_id}")
+                
+                elapsed_time = time.time() - start_time
+                logger.info(
+                    f"[TIMING] [onboarding_handler] CONCLUÍDO em {elapsed_time:.3f}s | "
+                    f"Profile: {profile.company.name} | "
+                    f"Transição: ONBOARDING → DISCOVERY"
+                )
+                
+                return {
+                    "final_response": message + "\n\n✅ Perfil completo! Agora posso ajudá-lo com diagnóstico BSC.",
+                    "current_phase": ConsultingPhase.DISCOVERY,
+                    "client_profile": profile,  # ← CRÍTICO: Retornar profile para save_client_memory
+                    "onboarding_progress": updated_progress,
+                    "is_complete": True
+                }
+            
+            # Onboarding ainda em progresso
+            elapsed_time = time.time() - start_time
+            steps_completed = sum(updated_progress.values()) if updated_progress else 0
+            logger.info(
+                f"[TIMING] [onboarding_handler] CONCLUÍDO em {elapsed_time:.3f}s | "
+                f"Progresso: {steps_completed}/3 steps | "
+                f"Próxima pergunta gerada"
+            )
+            
+            return {
+                "final_response": message,
+                "current_phase": ConsultingPhase.ONBOARDING,
+                "onboarding_progress": updated_progress,
+                "is_complete": False  # Ainda em progresso, não finalizar workflow
+            }
+            
+        except Exception as e:
+            logger.error(f"[ERRO] onboarding_handler: {e}")
+            elapsed_time = time.time() - start_time
+            
+            # Fallback: mensagem de erro amigável
+            return {
+                "final_response": (
+                    f"Desculpe, ocorreu um erro durante o onboarding: {str(e)}. "
+                    "Por favor, tente novamente mais tarde."
+                ),
+                "current_phase": ConsultingPhase.ERROR,
+                "is_complete": True,  # Finalizar workflow em erro
+                "metadata": {
+                    **state.metadata,
+                    "onboarding_error": str(e),
+                    "elapsed_time": elapsed_time
+                }
+            }
+    
     def finalize(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 5: Finaliza o workflow e prepara resposta final.
@@ -567,12 +862,14 @@ class BSCWorkflow:
             logger.info(f"[TIMING] [WORKFLOW] INICIADO para query: '{query[:60]}...'")
             logger.info(f"{'='*80}\n")
             
-            # Criar estado inicial (com user_id para memória)
+            # Criar estado inicial (com user_id para memória e fase consultiva)
             initial_state = BSCState(
                 query=query,
                 session_id=session_id,
                 user_id=user_id,
-                metadata={"chat_history": chat_history} if chat_history else {}
+                metadata={"chat_history": chat_history} if chat_history else {},
+                # Campos consultivos (FASE 2.2)
+                current_phase=ConsultingPhase.IDLE  # Inicia em IDLE, load_client_memory pode alterar
             )
             
             # Executar grafo
@@ -582,6 +879,8 @@ class BSCWorkflow:
             result = {
                 "query": final_state["query"],
                 "final_response": final_state.get("final_response", ""),
+                "current_phase": final_state.get("current_phase"),  # FASE 2.6: Retornar fase consultiva
+                "client_profile": final_state.get("client_profile"),  # FASE 2.6: Retornar profile
                 "perspectives": [
                     p.value for p in final_state.get("relevant_perspectives", [])
                 ],
