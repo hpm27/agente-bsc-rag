@@ -197,6 +197,24 @@ class BSCState(BaseModel):
     }
     """
     
+    # Diagnostic result (DISCOVERY phase)
+    diagnostic: Optional[Dict[str, Any]] = None
+    """Resultado do diagnóstico BSC completo (4 perspectivas).
+    
+    Estrutura CompleteDiagnostic serializado:
+    {
+        "financial": DiagnosticResult,
+        "customer": DiagnosticResult,
+        "process": DiagnosticResult,
+        "learning": DiagnosticResult,
+        "recommendations": [Recommendation, ...],
+        "synergies": ["...", "..."],
+        "executive_summary": "..."
+    }
+    
+    Preenchido durante DISCOVERY phase após DiagnosticAgent.run_diagnostic().
+    """
+    
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 

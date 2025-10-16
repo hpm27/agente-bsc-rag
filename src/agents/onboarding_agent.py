@@ -8,14 +8,18 @@ tracking de progresso em 3 steps.
 Autor: BSC Consulting Agent v2.0
 Data: 2025-10-15
 """
+from __future__ import annotations  # PEP 563: Postponed annotations
 
 import logging
 from enum import IntEnum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from langchain_core.language_models import BaseLLM
 
-from src.agents.client_profile_agent import ClientProfileAgent
+# TYPE_CHECKING: Imports apenas para type checkers, evitando circular imports
+if TYPE_CHECKING:
+    from src.agents.client_profile_agent import ClientProfileAgent
+
 from src.graph.consulting_states import ConsultingPhase
 from src.graph.states import BSCState
 from src.memory.mem0_client import Mem0ClientWrapper

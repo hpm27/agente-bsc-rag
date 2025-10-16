@@ -5,7 +5,7 @@ informações de clientes e engajamentos de consultoria BSC no Mem0.
 """
 
 from datetime import datetime, timezone
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator, model_validator
@@ -327,6 +327,10 @@ class ClientProfile(BaseModel):
     diagnostics: Optional[DiagnosticData] = Field(
         None,
         description="Dados de diagnóstico (preenchido em DISCOVERY)"
+    )
+    complete_diagnostic: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Diagnóstico BSC completo (4 perspectivas + recomendações). CompleteDiagnostic serializado."
     )
     metadata: dict = Field(
         default_factory=dict,

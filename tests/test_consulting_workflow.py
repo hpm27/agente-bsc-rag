@@ -295,6 +295,23 @@ def test_rag_workflow_cliente_existente_nao_quebrado(
     - onboarding_handler NÃO foi chamado
     - final_response contém conteúdo BSC
     """
+    # FASE 2.7: Ajuste pós-implementação DISCOVERY handler
+    # Cliente com phase=DISCOVERY agora vai para discovery_handler, não RAG
+    # Por isso, mudamos para phase=COMPLETED (cliente finalizado, usando RAG)
+    
+    # Setup: ClientProfile com phase=COMPLETED (cliente usando RAG tradicional)
+    profile_rag = ClientProfile(
+        client_id="test_cliente_existente_003",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="COMPLETED",  # Engajamento completo, usa RAG
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_rag
+    
     # Setup mocks
     mock_memory_factory.return_value = mock_mem0_existing
     
@@ -336,8 +353,9 @@ def test_rag_workflow_cliente_existente_nao_quebrado(
     )
     
     # Asserções CRÍTICAS
-    assert result["current_phase"] == ConsultingPhase.DISCOVERY, \
-        "Cliente existente deve manter fase atual (não voltar para ONBOARDING)"
+    # FASE 2.7: Cliente COMPLETED mantém fase (não vai para DISCOVERY handler)
+    assert result["current_phase"] == ConsultingPhase.IDLE, \
+        "Cliente COMPLETED usando RAG tradicional deve finalizar em IDLE"
     
     assert "final_response" in result
     assert len(result["final_response"]) > 50, \
@@ -583,3 +601,591 @@ CHECKLIST [[memory:9969868]] APLICADO EM TODOS OS TESTES:
 ✅ Mocks com dados válidos
 """
 
+
+# ===== FIXTURES PARA DISCOVERY (FASE 2.7) =====
+
+
+@pytest.fixture
+def mock_complete_diagnostic():
+    """Mock CompleteDiagnostic com estrutura completa.
+    
+    CHECKLIST [[memory:9969868]] - Ponto 7:
+    - Dados válidos com MARGEM DE SEGURANÇA (strings >50 chars)
+    - Estrutura completa (4 perspectivas + recomendações)
+    """
+    return {
+        "financial": {
+            "perspective": "FINANCIAL",
+            "current_state": "Receita crescendo 15% a.a., mas margens caindo devido custos operacionais não mapeados. EBITDA em 12% vs meta 18%.",  # >50 chars
+            "gaps": [
+                "Falta visibilidade de custos por projeto/cliente",
+                "Ausência de budget forecasting automatizado",
+                "Indicadores financeiros não integrados com operacional"
+            ],
+            "opportunities": [
+                "Implementar cost accounting por projeto usando Activity-Based Costing",
+                "Automatizar projeções financeiras com ML",
+                "Criar dashboard financeiro integrado (Perspectiva Financeira BSC)"
+            ],
+            "priority": "HIGH",
+            "key_insights": [
+                "Crescimento top-line forte mas bottom-line comprimido",
+                "Oportunidade de melhoria de margem através de eficiência"
+            ]
+        },
+        "customer": {
+            "perspective": "CUSTOMER",
+            "current_state": "NPS de 45 pontos (abaixo meta 75). Churn de 8% a.a. Customer Lifetime Value não medido consistentemente.",
+            "gaps": [
+                "Sistema de feedback do cliente não estruturado",
+                "Jornada do cliente não mapeada",
+                "Falta segmentação de clientes por valor"
+            ],
+            "opportunities": [
+                "Implementar Voice of Customer sistemático",
+                "Mapear customer journey com touchpoints críticos",
+                "Criar programa de fidelização baseado em valor"
+            ],
+            "priority": "HIGH",
+            "key_insights": [
+                "NPS baixo indica problemas de entrega de valor",
+                "Churn alto sugere falhas em retenção"
+            ]
+        },
+        "process": {
+            "perspective": "PROCESS",
+            "current_state": "Processos manuais consomem 40% do tempo produtivo. Lead time de projeto é 3x maior que concorrentes. Zero automação crítica.",
+            "gaps": [
+                "Processos não documentados nem padronizados",
+                "Gargalos não identificados sistematicamente",
+                "Falta métricas de eficiência operacional"
+            ],
+            "opportunities": [
+                "Mapear value stream e eliminar desperdícios (Lean)",
+                "Automatizar processos repetitivos (RPA/IA)",
+                "Implementar indicadores de eficiência (cycle time, throughput)"
+            ],
+            "priority": "MEDIUM",
+            "key_insights": [
+                "Ineficiência operacional impacta diretamente margens",
+                "Automação pode liberar 40% de capacidade"
+            ]
+        },
+        "learning": {
+            "perspective": "LEARNING",
+            "current_state": "Turnover de 25% a.a. (alto). Programa de treinamento inexistente. Conhecimento crítico concentrado em 3 pessoas-chave.",
+            "gaps": [
+                "Ausência de plano de desenvolvimento individual",
+                "Knowledge management inexistente",
+                "Cultura de inovação não estabelecida"
+            ],
+            "opportunities": [
+                "Criar programa de capacitação estruturado (70-20-10 model)",
+                "Implementar sistema de gestão do conhecimento",
+                "Estabelecer rituais de inovação (hackathons, kaizen)"
+            ],
+            "priority": "MEDIUM",
+            "key_insights": [
+                "Turnover alto = perda de conhecimento e custos de reposição",
+                "Inovação depende de cultura de aprendizado"
+            ]
+        },
+        "recommendations": [
+            {
+                "title": "Implementar Dashboard Financeiro Integrado BSC",
+                "description": "Desenvolver dashboard executivo que integre indicadores das 4 perspectivas em tempo real, com drill-down por projeto/cliente.",
+                "impact": "HIGH",
+                "effort": "MEDIUM",
+                "priority": "HIGH",
+                "timeframe": "3-6 meses",
+                "next_steps": [
+                    "Definir KPIs críticos por perspectiva (workshop 4h)",
+                    "Contratar ferramenta BI (Power BI/Tableau)",
+                    "Treinar equipe em análise de dados"
+                ]
+            },
+            {
+                "title": "Automatizar Processos Repetitivos (RPA)",
+                "description": "Identificar top 10 processos manuais e automatizar usando RPA. Foco em processos que consomem >5h/semana.",
+                "impact": "HIGH",
+                "effort": "MEDIUM",
+                "priority": "HIGH",
+                "timeframe": "6-9 meses",
+                "next_steps": [
+                    "Mapear processos candidatos à automação",
+                    "Priorizar por ROI (tempo economizado vs custo)",
+                    "Implementar piloto com 3 processos"
+                ]
+            },
+            {
+                "title": "Programa de Retenção de Clientes",
+                "description": "Criar programa estruturado de relacionamento e fidelização focado em clientes de alto valor (top 20% receita).",
+                "impact": "MEDIUM",
+                "effort": "LOW",
+                "priority": "MEDIUM",
+                "timeframe": "3-6 meses",
+                "next_steps": [
+                    "Segmentar base por valor (análise RFV)",
+                    "Desenhar jornada ideal para clientes premium",
+                    "Implementar NPS sistemático trimestral"
+                ]
+            }
+        ],
+        "synergies": [
+            "Dashboard financeiro + eficiência operacional = visibilidade completa de rentabilidade por cliente/projeto",
+            "Automação de processos + capacitação da equipe = ganho de produtividade sustentável",
+            "Melhoria NPS + redução de custos = aumento de margem com crescimento"
+        ],
+        "executive_summary": (
+            "TechCorp apresenta crescimento top-line saudável (+15% a.a.) mas desafios críticos "
+            "em margens (EBITDA 12% vs meta 18%), NPS (45 vs meta 75) e eficiência operacional "
+            "(processos manuais consomem 40% do tempo). Oportunidades principais: (1) Dashboard BSC "
+            "integrado para visibilidade, (2) Automação RPA para eficiência, (3) Programa de retenção "
+            "para clientes de alto valor. ROI estimado: +6pp EBITDA em 12 meses, NPS >70 em 18 meses."
+        )
+    }
+
+
+@pytest.fixture
+def mock_diagnostic_agent(mock_complete_diagnostic):
+    """Mock DiagnosticAgent que retorna CompleteDiagnostic válido.
+    
+    CHECKLIST [[memory:9969868]] - Ponto 8:
+    - Verificar nome correto do método (run_diagnostic)
+    - Retornar objeto Mock com .model_dump() que retorna dict
+    """
+    mock = Mock()
+    
+    # Criar mock de CompleteDiagnostic com .model_dump()
+    diagnostic_mock = Mock()
+    diagnostic_mock.model_dump.return_value = mock_complete_diagnostic
+    diagnostic_mock.recommendations = mock_complete_diagnostic["recommendations"]
+    diagnostic_mock.executive_summary = mock_complete_diagnostic["executive_summary"]
+    
+    mock.run_diagnostic.return_value = diagnostic_mock
+    
+    return mock
+
+
+# ===== TESTE 6: Discovery Start (Cliente Existente) =====
+
+
+@patch("src.graph.workflow.MemoryFactory.get_provider")
+def test_discovery_workflow_start_cliente_existente(
+    mock_memory_factory,
+    mock_mem0_existing,
+    mock_diagnostic_agent,
+    valid_client_profile
+):
+    """
+    TESTE 6: Cliente existente com phase=DISCOVERY deve executar diagnóstico BSC completo.
+    
+    Fluxo:
+    1. load_client_memory → ClientProfile com current_phase=DISCOVERY
+    2. route_by_phase → "discovery" (roteamento correto)
+    3. discovery_handler → DiagnosticAgent.run_diagnostic()
+    4. Retorna CompleteDiagnostic + transição APPROVAL_PENDING
+    
+    Asserções Críticas:
+    - current_phase == APPROVAL_PENDING (transição automática)
+    - diagnostic presente no resultado
+    - DiagnosticAgent.run_diagnostic foi chamado
+    """
+    # Setup: ClientProfile com phase=DISCOVERY (cliente que completou onboarding)
+    profile_discovery = ClientProfile(
+        client_id="test_discovery_001",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="DISCOVERY",  # Literal válido
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_discovery
+    mock_memory_factory.return_value = mock_mem0_existing
+    
+    # Criar workflow e injetar diagnostic_agent mockado
+    workflow = BSCWorkflow()
+    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # Executar workflow
+    result = workflow.run(
+        query="Executar diagnóstico BSC completo",
+        user_id="test_discovery_001"
+    )
+    
+    # Asserções CRÍTICAS
+    assert result["current_phase"] == ConsultingPhase.APPROVAL_PENDING, \
+        "Após diagnóstico, deve transicionar para APPROVAL_PENDING"
+    
+    # Diagnostic é salvo em client_profile.complete_diagnostic (persistência Mem0)
+    assert "client_profile" in result, \
+        "Resultado deve conter client_profile"
+    
+    assert result["client_profile"].complete_diagnostic is not None, \
+        "ClientProfile.complete_diagnostic não pode ser None"
+    
+    assert "final_response" in result, \
+        "Resultado deve conter final_response"
+    
+    assert "diagnóstico" in result["final_response"].lower(), \
+        "Mensagem deve confirmar diagnóstico completo"
+    
+    # Verificar que diagnostic_agent.run_diagnostic foi chamado
+    mock_diagnostic_agent.run_diagnostic.assert_called_once()
+    
+    print("✅ TESTE 6 PASSOU: Cliente DISCOVERY executou diagnóstico BSC completo")
+
+
+# ===== TESTE 7: Diagnostic Completo (4 Perspectivas) =====
+
+
+@patch("src.graph.workflow.MemoryFactory.get_provider")
+def test_discovery_workflow_diagnostic_completo(
+    mock_memory_factory,
+    mock_mem0_existing,
+    mock_diagnostic_agent,
+    mock_complete_diagnostic,
+    valid_client_profile
+):
+    """
+    TESTE 7: Diagnostic completo deve conter 4 perspectivas BSC + recomendações.
+    
+    Validações:
+    - diagnostic.financial presente
+    - diagnostic.customer presente
+    - diagnostic.process presente
+    - diagnostic.learning presente
+    - diagnostic.recommendations (lista com 3+ itens)
+    - diagnostic.executive_summary (texto >100 chars)
+    
+    Asserções Críticas:
+    - Estrutura CompleteDiagnostic válida
+    - 4 perspectivas com keys obrigatórias
+    - Recommendations priorizadas
+    """
+    # Setup
+    profile_discovery = ClientProfile(
+        client_id="test_discovery_002",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="DISCOVERY",
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_discovery
+    mock_memory_factory.return_value = mock_mem0_existing
+    
+    # Criar workflow
+    workflow = BSCWorkflow()
+    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # Executar
+    result = workflow.run(
+        query="Executar diagnóstico BSC",
+        user_id="test_discovery_002"
+    )
+    
+    # Asserções CRÍTICAS - Estrutura CompleteDiagnostic
+    # Diagnostic está em client_profile.complete_diagnostic (persistência Mem0)
+    assert result["client_profile"].complete_diagnostic is not None, \
+        "ClientProfile deve ter complete_diagnostic"
+    
+    diagnostic = result["client_profile"].complete_diagnostic
+    
+    assert "financial" in diagnostic, "Deve conter perspectiva FINANCIAL"
+    assert "customer" in diagnostic, "Deve conter perspectiva CUSTOMER"
+    assert "process" in diagnostic, "Deve conter perspectiva PROCESS"
+    assert "learning" in diagnostic, "Deve conter perspectiva LEARNING"
+    
+    # Validar estrutura de cada perspectiva
+    for perspective in ["financial", "customer", "process", "learning"]:
+        assert "current_state" in diagnostic[perspective], \
+            f"{perspective} deve ter current_state"
+        assert "gaps" in diagnostic[perspective], \
+            f"{perspective} deve ter gaps"
+        assert "opportunities" in diagnostic[perspective], \
+            f"{perspective} deve ter opportunities"
+        assert len(diagnostic[perspective]["current_state"]) > 50, \
+            f"{perspective} current_state deve ter >50 chars (margem segurança)"
+    
+    # Validar recomendações
+    assert "recommendations" in diagnostic, "Deve conter recommendations"
+    assert len(diagnostic["recommendations"]) >= 3, \
+        "Deve ter pelo menos 3 recomendações"
+    
+    # Validar executive_summary
+    assert "executive_summary" in diagnostic, "Deve conter executive_summary"
+    assert len(diagnostic["executive_summary"]) > 100, \
+        "Executive summary deve ter >100 chars"
+    
+    print("✅ TESTE 7 PASSOU: Diagnostic completo com 4 perspectivas validado")
+
+
+# ===== TESTE 8: Transição Automática DISCOVERY → APPROVAL_PENDING =====
+
+
+@patch("src.graph.workflow.MemoryFactory.get_provider")
+def test_discovery_transicao_automatica_para_approval(
+    mock_memory_factory,
+    mock_mem0_existing,
+    mock_diagnostic_agent,
+    valid_client_profile
+):
+    """
+    TESTE 8: Após diagnóstico completo, deve transicionar automaticamente para APPROVAL_PENDING.
+    
+    Validações:
+    - current_phase == APPROVAL_PENDING
+    - previous_phase == DISCOVERY
+    - phase_history atualizado (lista com 1+ entry)
+    - is_complete == True
+    
+    Asserções Críticas:
+    - Transição automática funciona
+    - Metadados de transição corretos
+    """
+    # Setup
+    profile_discovery = ClientProfile(
+        client_id="test_discovery_003",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="DISCOVERY",
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_discovery
+    mock_memory_factory.return_value = mock_mem0_existing
+    
+    # Criar workflow
+    workflow = BSCWorkflow()
+    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # Executar
+    result = workflow.run(
+        query="Executar diagnóstico BSC",
+        user_id="test_discovery_003"
+    )
+    
+    # Asserções CRÍTICAS - Transição de fase
+    assert result["current_phase"] == ConsultingPhase.APPROVAL_PENDING, \
+        "Deve transicionar para APPROVAL_PENDING após diagnóstico"
+    
+    assert result["previous_phase"] == ConsultingPhase.DISCOVERY, \
+        "previous_phase deve ser DISCOVERY"
+    
+    assert "phase_history" in result, \
+        "Deve conter phase_history"
+    
+    assert len(result["phase_history"]) >= 1, \
+        "phase_history deve ter pelo menos 1 transição registrada"
+    
+    # Validar estrutura da transição
+    last_transition = result["phase_history"][-1]
+    assert "from_phase" in last_transition, "Transição deve ter from_phase"
+    assert "to_phase" in last_transition, "Transição deve ter to_phase"
+    assert "timestamp" in last_transition, "Transição deve ter timestamp"
+    assert last_transition["from_phase"] == "DISCOVERY", "from_phase deve ser DISCOVERY"
+    assert last_transition["to_phase"] == "APPROVAL_PENDING", "to_phase deve ser APPROVAL_PENDING"
+    
+    # Validar is_complete
+    assert result["is_complete"] == True, \
+        "Diagnóstico completo deve marcar is_complete=True"
+    
+    print("✅ TESTE 8 PASSOU: Transição automática DISCOVERY → APPROVAL_PENDING validada")
+
+
+# ===== TESTE 9: Persistência Mem0 (complete_diagnostic) =====
+
+
+@patch("src.graph.workflow.MemoryFactory.get_provider")
+def test_discovery_persistencia_mem0(
+    mock_memory_factory,
+    mock_mem0_existing,
+    mock_diagnostic_agent,
+    mock_complete_diagnostic,
+    valid_client_profile
+):
+    """
+    TESTE 9: CompleteDiagnostic deve ser persistido no ClientProfile.complete_diagnostic.
+    
+    Validações:
+    - save_profile() foi chamado
+    - Profile salvo contém complete_diagnostic
+    - complete_diagnostic == diagnostic do state
+    
+    Asserções Críticas:
+    - Persistência Mem0 funcional
+    - Diagnostic não perdido após workflow
+    """
+    # Setup
+    profile_discovery = ClientProfile(
+        client_id="test_discovery_004",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="DISCOVERY",
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_discovery
+    mock_memory_factory.return_value = mock_mem0_existing
+    
+    # Criar workflow
+    workflow = BSCWorkflow()
+    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # Executar
+    result = workflow.run(
+        query="Executar diagnóstico BSC",
+        user_id="test_discovery_004"
+    )
+    
+    # Asserções CRÍTICAS - Persistência
+    assert mock_mem0_existing.save_profile.called, \
+        "save_profile() deve ter sido chamado"
+    
+    # Verificar que o profile salvo contém complete_diagnostic
+    saved_profile = mock_mem0_existing.save_profile.call_args[0][0]
+    
+    assert hasattr(saved_profile, "complete_diagnostic"), \
+        "Profile salvo deve ter complete_diagnostic"
+    
+    assert saved_profile.complete_diagnostic is not None, \
+        "complete_diagnostic não pode ser None no profile salvo"
+    
+    # Verificar que o diagnostic retornado no result também está presente
+    assert result["client_profile"].complete_diagnostic is not None, \
+        "ClientProfile no resultado deve ter complete_diagnostic"
+    
+    assert saved_profile.complete_diagnostic == mock_complete_diagnostic, \
+        "complete_diagnostic salvo deve ser igual ao diagnostic mockado"
+    
+    print("✅ TESTE 9 PASSOU: Diagnostic persistido no Mem0 com sucesso")
+
+
+# ===== TESTE 10: REGRESSÃO CRÍTICA - ONBOARDING + RAG Não Quebraram =====
+
+
+@patch("src.graph.workflow.MemoryFactory.get_provider")
+def test_onboarding_rag_nao_quebrados_com_discovery(
+    mock_memory_factory,
+    mock_mem0_existing,
+    valid_client_profile
+):
+    """
+    TESTE 10 (REGRESSÃO CRÍTICA): ONBOARDING e RAG não quebraram com implementação de DISCOVERY.
+    
+    CHECKLIST [[memory:9969868]] - Ponto 12 OBRIGATÓRIO:
+    "SEMPRE incluir 1 teste validando que funcionalidade existente NÃO quebrou."
+    
+    Validações:
+    - Cliente ONBOARDING ainda funciona (roteamento correto)
+    - Cliente RAG (phase != ONBOARDING/DISCOVERY) ainda funciona
+    - discovery_handler NÃO é chamado indevidamente
+    
+    Asserções Críticas:
+    - Zero breaking changes
+    - Workflows existentes mantidos
+    """
+    # Setup 1: Cliente com phase != DISCOVERY (deve usar RAG tradicional)
+    profile_rag = ClientProfile(
+        client_id="test_regression_rag",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="COMPLETED",  # RAG tradicional (engajamento completo)
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_rag
+    mock_memory_factory.return_value = mock_mem0_existing
+    
+    # Criar workflow
+    workflow = BSCWorkflow()
+    
+    # Mock discovery_handler para verificar que NÃO é chamado
+    mock_discovery = Mock()
+    workflow.discovery_handler = mock_discovery
+    
+    # Executar workflow RAG
+    result_rag = workflow.run(
+        query="O que é BSC?",  # Query RAG tradicional
+        user_id="test_regression_rag"
+    )
+    
+    # Asserção CRÍTICA 1: RAG tradicional NÃO deve chamar discovery_handler
+    assert not mock_discovery.called, \
+        "REGRESSÃO: discovery_handler NÃO deve ser chamado para cliente RAG (phase=COMPLETED)"
+    
+    assert "final_response" in result_rag, \
+        "REGRESSÃO: RAG tradicional deve retornar final_response"
+    
+    # Setup 2: Cliente ONBOARDING (não deve ser afetado por DISCOVERY)
+    profile_onboarding = ClientProfile(
+        client_id="test_regression_onboarding",
+        company=valid_client_profile.company,
+        context=valid_client_profile.context,
+        engagement=EngagementState(
+            current_phase="ONBOARDING",
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
+    
+    mock_mem0_existing.load_profile.return_value = profile_onboarding
+    
+    # Executar workflow ONBOARDING
+    # (Não precisa verificar completamente, apenas que routing funciona)
+    result_onboarding = workflow.run(
+        query="start",
+        user_id="test_regression_onboarding"
+    )
+    
+    # Asserção CRÍTICA 2: ONBOARDING routing ainda funciona
+    assert result_onboarding["current_phase"] in [
+        ConsultingPhase.ONBOARDING,
+        ConsultingPhase.DISCOVERY  # Se completou onboarding
+    ], "REGRESSÃO: ONBOARDING routing não deve quebrar"
+    
+    print("✅ TESTE 10 PASSOU: ONBOARDING + RAG não quebraram com DISCOVERY (zero regressão)")
+
+
+# ===== RESUMO TESTES DISCOVERY (FASE 2.7) =====
+
+"""
+NOVOS TESTES E2E ADICIONADOS (FASE 2.7):
+
+✅ Teste 6: test_discovery_workflow_start_cliente_existente
+   - Valida routing para DISCOVERY
+   - Confirma DiagnosticAgent invocado
+   
+✅ Teste 7: test_discovery_workflow_diagnostic_completo
+   - Valida estrutura CompleteDiagnostic (4 perspectivas)
+   - Confirma recomendações + executive_summary
+   
+✅ Teste 8: test_discovery_transicao_automatica_para_approval
+   - Valida transição DISCOVERY → APPROVAL_PENDING
+   - Confirma phase_history atualizado
+   
+✅ Teste 9: test_discovery_persistencia_mem0
+   - Valida save_profile() com complete_diagnostic
+   - Confirma persistência no Mem0
+   
+✅ Teste 10: test_onboarding_rag_nao_quebrados_com_discovery (CRÍTICO)
+   - Previne REGRESSÃO com nova feature DISCOVERY
+   - Confirma ONBOARDING + RAG funcionando
+
+TOTAL TESTES E2E: 10 (5 ONBOARDING + 5 DISCOVERY)
+
+EXECUÇÃO:
+pytest tests/test_consulting_workflow.py -v --tb=long
+
+COBERTURA ESPERADA: >85% (workflow.py, memory_nodes.py, discovery_handler)
+"""

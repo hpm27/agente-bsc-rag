@@ -255,6 +255,17 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
                     f"[WARN] [save_client_memory] Fase inválida: {phase_value}. "
                     f"Mantendo fase atual do profile: {profile.engagement.current_phase}"
                 )
+        
+        # FASE 2.7: Sincronizar diagnostic do BSCState com ClientProfile
+        # Se state.diagnostic existe (preenchido pelo discovery_handler),
+        # persistir no ClientProfile.complete_diagnostic
+        if state.diagnostic:
+            profile.complete_diagnostic = state.diagnostic
+            logger.info(
+                f"[INFO] [save_client_memory] Diagnostic sincronizado | "
+                f"Perspectivas: 4 | "
+                f"Recomendações: {len(state.diagnostic.get('recommendations', []))}"
+            )
 
         # Obter memory provider (Mem0)
         try:
@@ -303,4 +314,47 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
             f"Tempo: {elapsed_time:.3f}s"
         )
         return {"user_id": state.user_id} if state.user_id else {}
+
+
+# ============================================================================
+# HELPER FUNCTIONS (Utilitários para testes)
+# ============================================================================
+
+
+def create_placeholder_profile(
+    user_id: str,
+    company_name: str = "Cliente"
+) -> ClientProfile:
+    """
+    Cria ClientProfile placeholder com valores padrão.
+    
+    Função utilitária para testes rapidamente criarem profiles sem
+    precisar preencher todos os campos manualmente.
+    
+    Args:
+        user_id: ID único do cliente
+        company_name: Nome da empresa (default: "Cliente")
+    
+    Returns:
+        ClientProfile com campos básicos preenchidos e demais em default
+    
+    Example:
+        >>> profile = create_placeholder_profile("test_123", "Acme Corp")
+        >>> assert profile.client_id == "test_123"
+        >>> assert profile.company.name == "Acme Corp"
+        >>> assert profile.engagement.current_phase == "ONBOARDING"
+    """
+    return ClientProfile(
+        client_id=user_id,
+        company=CompanyContext(
+            name=company_name,
+            sector="A definir",
+            size="média"
+        ),
+        context=BusinessContext(),  # Valores default
+        engagement=EngagementState(
+            current_phase="ONBOARDING",
+            last_interaction=datetime.now(timezone.utc)
+        )
+    )
 

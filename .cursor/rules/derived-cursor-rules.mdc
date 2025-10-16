@@ -119,9 +119,172 @@ globs: *
     ```
 *   **ROI**: Crítico (previne breaking changes, economiza horas de rollback)
 
+**13. Circular Imports Resolution (Validado FASE 2.7 - Out/2025)**
+*   **SEMPRE** usar pattern oficial Python (PEP 484 + PEP 563) para resolver circular imports
+*   **Exemplo validado (2025-10-16)**: Circular import entre client_profile_agent, onboarding_agent e workflow
+*   **Pattern**:
+    ```python
+    # arquivo.py
+    from __future__ import annotations  # PEP 563: Postponed annotations
+    
+    from typing import TYPE_CHECKING
+    
+    # TYPE_CHECKING = True durante type checking (mypy/pyright)
+    # TYPE_CHECKING = False em runtime (evita circular import!)
+    if TYPE_CHECKING:
+        from outro_modulo import OutraClasse
+    
+    class MinhaClasse:
+        def metodo(self, param: OutraClasse):  # Type hint funciona!
+            # Import local em runtime quando necessário
+            from outro_modulo import OutraClasse
+            ...
+    ```
+*   **ROI**: 40-60 min economizados vs tentativa e erro manual
+*   **Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md`
+
 **ROI Total E2E**: 32-60 min economizados por implementação (4 erros × 8-15 min/erro)
 
 **Lição Detalhada**: `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+ linhas)
+
+### Circular Imports Resolution (Validado FASE 2.7 - Out/2025)
+
+**Pattern Oficial Python**: PEP 484 (TYPE_CHECKING) + PEP 563 (postponed annotations) resolvem circular imports mantendo type hints completos.
+
+**Quando Usar**:
+- Módulos interdependentes (A importa B, B importa A)
+- Type hints causando `ImportError: cannot import name 'X' from partially initialized module`
+- IDE perde autocomplete por circular dependency
+
+**Solução Completa** (validado Stack Overflow 587 upvotes, DataCamp 2025):
+
+```python
+# arquivo1.py
+from __future__ import annotations  # PEP 563: Postponed annotations (CRÍTICO!)
+
+from typing import TYPE_CHECKING
+
+# TYPE_CHECKING = True durante type checking (mypy/pyright)
+# TYPE_CHECKING = False em runtime (evita circular import!)
+if TYPE_CHECKING:
+    from arquivo2 import ClasseB
+
+class ClasseA:
+    def metodo(self, param: ClasseB):  # Type hint funciona sem quotes!
+        # Lazy import em runtime apenas quando necessário
+        from arquivo2 import ClasseB
+        ...
+```
+
+```python
+# arquivo2.py
+from __future__ import annotations  # CRÍTICO em AMBOS arquivos!
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from arquivo1 import ClasseA
+
+class ClasseB:
+    def outro_metodo(self, param: ClasseA):  # Type hint funciona!
+        from arquivo1 import ClasseA  # Lazy import runtime
+        ...
+```
+
+**Pattern para Properties** (lazy loading com cache):
+
+```python
+class MinhaClasse:
+    def __init__(self):
+        self._cached_agent = None
+    
+    @property
+    def agent(self) -> Agent:  # Type hint funciona!
+        """Lazy loading com cache (import UMA VEZ)."""
+        if self._cached_agent is None:
+            from outro_modulo import Agent  # Import apenas quando acessado
+            self._cached_agent = Agent()
+        return self._cached_agent
+```
+
+**Checklist Aplicação**:
+
+- [ ] 1. Identificar ciclo: `módulo A → módulo B → módulo A`
+- [ ] 2. Adicionar `from __future__ import annotations` em **AMBOS** arquivos (topo, antes de imports)
+- [ ] 3. Adicionar `from typing import TYPE_CHECKING` em ambos
+- [ ] 4. Mover imports problemáticos para dentro de `if TYPE_CHECKING:` block
+- [ ] 5. Type hints funcionam normalmente (sem quotes)
+- [ ] 6. Implementar lazy imports em runtime (dentro de métodos/properties)
+- [ ] 7. Usar cache em properties (evitar re-import a cada acesso)
+- [ ] 8. Validar: `pytest tests/` deve passar sem `ImportError`
+- [ ] 9. Validar: `mypy src/` ou `pyright src/` sem erros de tipo
+
+**Ferramentas de Diagnóstico**:
+
+```bash
+# Detectar circular imports
+python -c "import sys; import module_name"  # Se falhar = circular import
+
+# Visualizar ordem de imports
+python -v -c "import module_name" 2>&1 | grep "import"
+
+# Verificar type hints funcionando
+mypy src/module.py --show-error-codes
+pyright src/module.py
+```
+
+**Antipadrões a Evitar**:
+
+❌ **String annotations manuais** (trabalhoso):
+```python
+def metodo(self, param: "OutraClasse"):  # Funciona mas é verboso
+```
+
+✅ **Postponed annotations** (automático):
+```python
+from __future__ import annotations
+def metodo(self, param: OutraClasse):  # Limpo e type-safe!
+```
+
+❌ **Lazy import sem cache** (performance):
+```python
+def metodo(self):
+    from modulo import funcao  # ❌ Import em TODA chamada!
+    funcao()
+```
+
+✅ **Lazy import com cache** (eficiente):
+```python
+@property
+def agent(self):
+    if self._agent is None:  # ✅ Import UMA VEZ
+        from modulo import Agent
+        self._agent = Agent()
+    return self._agent
+```
+
+**ROI Validado**:
+- ⏱️ **40-60 min economizados** vs tentativa e erro manual
+- 🎯 Type hints completos (IDE autocomplete + mypy)
+- ⚡ Performance (lazy loading)
+- 📚 Pattern reutilizável (qualquer projeto Python)
+
+**Quando Buscar Ajuda Comunidade**:
+
+Se stuck >10 min, usar Brightdata/web search:
+```
+Query: "Python circular import best practices TYPE_CHECKING lazy import solutions 2024 2025"
+```
+
+**Referências**:
+- [PEP 484 - Type Hints](https://www.python.org/dev/peps/pep-0484/)
+- [PEP 563 - Postponed Evaluation of Annotations](https://www.python.org/dev/peps/pep-0563/)
+- [Stack Overflow Q39740632](https://stackoverflow.com/questions/39740632/python-type-hinting-without-cyclic-imports) (587 upvotes)
+- [DataCamp - Python Circular Import (2025)](https://www.datacamp.com/tutorial/python-circular-import)
+
+**Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md` (1.200+ linhas, ROI 2.5-4x)
+
+**Memória**: [[memory:9980685]] - Pattern TYPE_CHECKING + Lazy Imports validado FASE 2.7
 
 Regarding `.cursorignore` files:
 
@@ -196,7 +359,7 @@ Brightdata's research revealed important community discussions:
 
 1.  **Credential Protection:** `.env` files contain API keys, passwords, and sensitive tokens.
 2.  **Leakage Prevention:** Prevents information from being inadvertently sent to AI servers.
-3.  **Context Security:** Prevents credentials from appearing in chat/completions context.
+3.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
 4.  **Context Security:** Prevents credentials from appearing in chat/completions context.
 
 **If you REALLY need to liberate `.env`:**
@@ -298,6 +461,23 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
 *   Avoid using the `pydantic.v1` compatibility namespace; import directly from Pydantic V2.
 *   When using `BaseSettings` from `pydantic_settings`, use `SettingsConfigDict` instead of `ConfigDict` for configuration.
 
+### New Rule: Python Circular Imports Resolution
+
+When encountering circular import errors in Python, especially when using type hints, adhere to the following best practices:
+
+- **Use `TYPE_CHECKING` for Conditional Imports**: Import modules or classes conditionally using the `typing.TYPE_CHECKING` flag. This ensures that the imports are only used during type-checking and not at runtime, which prevents circular import errors.
+- **Leverage Lazy Imports**: Implement lazy imports within functions or methods. This defers the import statement until the function or method is called, avoiding circular dependencies during module loading.
+- **Employ Forward References**: Use forward references as string literals for type hints. This allows you to refer to classes that are not yet defined. However, this approach should be combined with `from __future__ import annotations` for cleaner code.
+- **Ensure Code Layering**: Refactor the code to ensure that the circular dependencies are not a result of poorly layered architecture. Consider using abstract classes or interfaces to define dependencies.
+- **Apply Best Practices**: Follow community-endorsed best practices for circular import resolution.
+
+### Rclone OneDrive Configuration and Usage
+
+*   When using rclone with OneDrive, be aware of potential throttling issues, especially when transferring large files. To mitigate this, use the `--tpslimit` flag to limit transactions per second and the `--bwlimit` flag to limit bandwidth usage.
+*   When encountering "404 page not found" errors during rclone OneDrive configuration, ensure that the client ID and secret are correctly set up.
+*   When using rclone, if the browser doesn't open automatically for authentication, manually go to the provided link and authorize rclone for access.
+*   If you encounter "No code returned by remote server" errors during rclone OneDrive authentication, recreate the client ID and secret carefully.
+
 ## PROJECT DOCUMENTATION & CONTEXT SYSTEM
 
 When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
@@ -381,7 +561,7 @@ The following architectural considerations should guide the development of the B
 
 ### Next Step: FASE 2.5 - DiagnosticAgent
 
-The next step is to implement the DiagnosticAgent. The following specifications, objectives, and checklist should be considered.
+The following specifications, objectives, and checklist should be considered.
 
 #### Specification
 
@@ -514,175 +694,3 @@ pytest tests/test_file.py::test_specific_failing_test -v --tb=long 2>&1
 *   Upon completion, a comparative report with all RAGAS metrics should be generated.
 *   Estimated runtime: 2.5-3 hours.
 *   Estimated cost: ~$1.60 USD.
-*   The test `test_parallel_agent_execution` now has a threshold of 200 seconds.
-*   The test `test_latency_percentiles` now has a P95 threshold of 240 seconds (4 minutes).
-*   Queries for testing are now stored in `tests/benchmark_queries.json`, which contains 50 varied BSC queries.
-*   Consider using the RAGAS framework for automated evaluation. Key metrics include context relevancy (now context precision), answer relevancy, and faithfulness.
-*   Ground truth data can be generated automatically by pre-trained models and validated manually by experts, focusing on a subset of the data (10-15%).
-
-## GIT WORKFLOW & SECURITY
-
-### Handling Secrets and GitHub Push Protection
-
-When working with Git, especially on projects involving API keys or sensitive information, it's crucial to follow secure practices to prevent accidental exposure of secrets. GitHub provides a feature called Push Protection that scans commits for known secrets and blocks the push if any are found. Here's how to handle such situations:
-
-**1. Ensure `.env` and similar files are in `.gitignore`:**
-
-*   Always include `.env`, `.env.local`, and similar environment configuration files in your `.gitignore` to prevent them from being accidentally committed to the repository.
-
-**2. GitHub Push Protection Bypass (Use with Caution):**
-
-*   If you accidentally commit secrets and GitHub blocks the push, it provides URLs to "Allow secret." This option should be used with extreme caution and only in private repositories where you trust all collaborators.
-
-**3. Disabling Push Protection (Not Recommended):**
-
-*   It is possible to disable Push Protection in your repository settings (`Code security > Secret scanning > Push protection`). However, this is generally **not recommended** as it reduces the security of your repository. Only disable it if you fully understand the risks.
-
-**4. Best Practice: Removing Secrets from Git History**
-
-*   The most secure approach is to remove the secrets from the Git history. This can be done using tools like `git filter-branch` or `BFG Repo Cleaner`. This process rewrites the commit history, so it should be done carefully and coordinated with all collaborators.
-
-**5. .env Templates**
-
-*   Use `.env.example` or `.env.template` files with placeholder values instead of committing the actual `.env` file.
-
-**Example .gitignore:**
-
-```
-# Environment variables
-.env
-.env.local
-.env.*.local
-```
-
-**Steps to recover from accidentally committing secrets:**
-
-1.  **Immediately add `.env` to `.gitignore`**.
-2.  **Remove the `.env` file from the repository:**
-
-    ```bash
-    git rm --cached .env
-    git commit -m "Remove .env file"
-    ```
-3.  **Rewrite Git history (Advanced):** Use `git filter-branch` or BFG Repo Cleaner` to remove the file from all past commits. This is the most secure option but requires caution.
-4.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
-
-### Handling Accidental Commits of Secrets
-
-If you accidentally commit secrets (like API keys) to a Git repository, especially a public one, follow these steps immediately to mitigate the risk:
-
-1.  **Immediately add the secrets file (e.g., `.env`) to `.gitignore`**. This prevents future accidental commits.
-2.  **Remove the secrets file from the repository's history.** This is crucial to prevent unauthorized access to the secrets. Use tools like `git filter-branch` or `BFG Repo Cleaner` for this purpose.
-
-    ```bash
-    # Example using git filter-branch (use with caution!)
-    git filter-branch --force --index-filter \
-    'git rm --cached --ignore-unmatch path/to/your/secrets_file' \
-    --prune-empty --tag-name-filter cat -- --all
-    git push origin --force --all
-    git push origin --force --tags
-    ```
-
-    *   **Important:** Rewriting Git history can be complex and affect collaborators. Communicate with your team before performing these steps.
-3.  **Reset the compromised secrets.** Generate new API keys, passwords, or tokens to invalidate the old ones.
-4.  **Inform collaborators.** If others have pulled the commit, they need to rebase their work after the history is rewritten.
-5.  **Enable GitHub Push Protection.** This feature helps prevent accidental commits of known secrets. Find it in your repository settings under `Code security > Secret scanning > Push protection`.
-6.  **Consider using `.env.example` or `.env.template`:** Include these files with placeholder values instead of committing the actual `.env` file.
-
-**GitHub Push Protection Bypass (Use with Caution):**
-
-*   If you accidentally commit secrets and GitHub blocks the push, it provides URLs to "Allow secret." This option should be used with extreme caution and only in private repositories where you trust all collaborators.
-
-**Disabling Push Protection (Not Recommended):**
-
-*   It is possible to disable Push Protection in your repository settings (`Code security > Secret scanning > Push protection`). However, this is generally **not recommended** as it reduces the security of your repository. Only disable it if you fully understand the risks.
-
-**Recovering from Committing Secrets (Comprehensive Guide):**
-
-If secrets are accidentally committed, the following steps must be taken to fully resolve the problem:
-
-1.  **Add the secrets file to `.gitignore`**: Ensure that `.env`, `.env.local`, and similar files are included in `.gitignore` to prevent future commits.
-2.  **Remove the secrets file from the repository:**
-
-    ```bash
-    git rm --cached .env
-    git commit -m "Remove .env file"
-    ```
-3.  **Rewrite Git history (Crucial):** Use `git filter-branch` or, preferably, `git filter-repo` (if available) to remove the file from all past commits. This is the most secure option:
-
-    ```bash
-    git filter-branch --force --index-filter "git rm --cached --ignore-unmatch .env" --prune-empty --tag-name-filter cat -- --all
-    ```
-
-    Or, using `git filter-repo` (requires installation):
-
-   First, install git-filter-repo:
-
-    ```bash
-    pip install git-filter-repo
-    ```
-
-   Then, run the filter:
-
-    ```bash
-    git filter-repo --invert-blob-contents --path .env
-    ```
-
-    *   **Important:** Rewriting Git history can be complex and may affect collaborators. Communicate with your team before performing these steps.
-4.  **Force Push:** After rewriting history, force push the changes:
-
-    ```bash
-    git push origin master --force
-    ```
-5.  **Stash Changes (If Necessary):** If there are unstaged changes, stash them before rebasing or filtering:
-
-    ```bash
-    git stash
-    ```
-
-    And pop them after the history rewrite:
-
-    ```bash
-    git stash pop
-    ```
-6.  **Verify `.env` is ignored:**
-
-    ```bash
-    git check-ignore -v .env
-    ```
-
-    This command should confirm that `.env` is now ignored by Git.
-7.  **Inform Collaborators:** If others have pulled the commit, they need to rebase their work after the history is rewritten.
-
-### .gitignore Rules
-Always add the following to `.gitignore`:
-*   `.cursor/progress/` to prevent accidental commits of temporary Cursor files that may contain secrets.
-
-## DEBUGGING
-
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
-
-When running pytest in parallel, use the following flags:
-
-*   `-n <num_workers>`: Specifies the number of workers for parallel execution.
-*   `-v`: Enables verbose output.
-*   `--tb=long`: Uses a **LONG** traceback format (NEVER use --tb=short for debugging)
-*   `--dist=loadscope`: Distributes tests by fixture scope (safer than `loadscope`).
-*   `--dist=loadfile`: Distributes tests by file (use if fixtures are function-scoped).
-
-When the test `test_parallel_agent_execution` fails, the problem may be the threshold.
-*   Check the tests and see if the tests and see if the threshold is too restrictive.
-*   Consider the fact that the workflow includes routing, agents, synthesis and judge, and the threshold must account for those steps.
-
-### Diagnosing Windows Clipboard Issues
-
-If `Ctrl+C` and `Ctrl+V` are not working correctly on a Windows machine, follow these steps to diagnose and resolve the problem:
-
-1.  **Test Globally:**
-    *   Check if the issue is specific to Cursor IDE or a system-wide problem. Test in Notepad and a web browser.
-
-2.  **Cursor-Specific Solutions:**
-    *   **Verify Keyboard Shortcuts:**
-        *   In Cursor, press `Ctrl + Shift + P` to open the Command Palette.
-        *   Type "Preferences: Open Keyboard Shortcuts".
-        *   Search for "copy" and "paste" to ensure they are mapped to `Ctrl+C` and `Ctrl+

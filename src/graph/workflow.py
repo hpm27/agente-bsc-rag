@@ -9,8 +9,11 @@ Orquestra o fluxo completo:
 5. Refinamento iterativo (se necessário)
 6. Resposta final
 """
+from __future__ import annotations  # PEP 563: Postponed annotations
+
 import time
-from typing import Any, Literal
+from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Literal
 
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -18,8 +21,14 @@ from loguru import logger
 
 from src.agents.judge_agent import JudgeAgent
 from src.agents.orchestrator import Orchestrator
-from src.agents.onboarding_agent import OnboardingAgent
-from src.agents.client_profile_agent import ClientProfileAgent
+
+# TYPE_CHECKING: Imports apenas para type checkers (mypy, pyright)
+# Não são executados em runtime, evitando circular imports
+if TYPE_CHECKING:
+    from src.agents.client_profile_agent import ClientProfileAgent
+    from src.agents.diagnostic_agent import DiagnosticAgent
+    from src.agents.onboarding_agent import OnboardingAgent
+
 from config.settings import settings
 from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
@@ -70,6 +79,7 @@ class BSCWorkflow:
         # Inicializar apenas se necessário (lazy loading para não impactar RAG puro)
         self._onboarding_agent = None
         self._client_profile_agent = None
+        self._diagnostic_agent = None
         self._memory_client = None
         
         # FASE 2.6: In-memory sessions para onboarding progress
@@ -85,8 +95,12 @@ class BSCWorkflow:
     def onboarding_agent(self) -> OnboardingAgent:
         """Lazy loading do OnboardingAgent."""
         if self._onboarding_agent is None:
+            # Import local para evitar circular dependency em runtime
             from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model=settings.llm_model, temperature=0)
+            from src.agents.onboarding_agent import OnboardingAgent
+            from src.agents.client_profile_agent import ClientProfileAgent
+            
+            llm = ChatOpenAI(model=settings.default_llm_model, temperature=0)
             
             # Instanciar ClientProfileAgent
             if self._client_profile_agent is None:
@@ -109,12 +123,38 @@ class BSCWorkflow:
     def client_profile_agent(self) -> ClientProfileAgent:
         """Lazy loading do ClientProfileAgent."""
         if self._client_profile_agent is None:
+            # Import local para evitar circular dependency em runtime
             from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model=settings.llm_model, temperature=0)
+            from src.agents.client_profile_agent import ClientProfileAgent
+            
+            llm = ChatOpenAI(model=settings.default_llm_model, temperature=0)
             self._client_profile_agent = ClientProfileAgent(llm=llm)
             logger.info("[OK] ClientProfileAgent inicializado (lazy)")
         
         return self._client_profile_agent
+    
+    @property
+    def diagnostic_agent(self) -> DiagnosticAgent:
+        """Lazy loading do DiagnosticAgent."""
+        if self._diagnostic_agent is None:
+            from langchain_openai import ChatOpenAI
+            from src.agents.diagnostic_agent import DiagnosticAgent
+            
+            llm = ChatOpenAI(model=settings.default_llm_model, temperature=0)
+            
+            # DiagnosticAgent precisa dos 4 specialist agents
+            self._diagnostic_agent = DiagnosticAgent(
+                llm=llm,
+                specialist_agents={
+                    "financial": self.orchestrator.financial_agent,
+                    "customer": self.orchestrator.customer_agent,
+                    "process": self.orchestrator.process_agent,
+                    "learning": self.orchestrator.learning_agent
+                }
+            )
+            logger.info("[OK] DiagnosticAgent inicializado (lazy)")
+        
+        return self._diagnostic_agent
     
     def _build_graph(self) -> CompiledStateGraph:
         """
@@ -130,7 +170,8 @@ class BSCWorkflow:
         
         # Adicionar nós (incluindo memória + consultivo)
         workflow.add_node("load_client_memory", load_client_memory)
-        workflow.add_node("onboarding_handler", self.onboarding_handler)  # FASE 2.6: Node consultivo
+        workflow.add_node("onboarding_handler", self.onboarding_handler)  # FASE 2.6: Node consultivo ONBOARDING
+        workflow.add_node("discovery_handler", self.discovery_handler)    # FASE 2.7: Node consultivo DISCOVERY
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
@@ -141,18 +182,20 @@ class BSCWorkflow:
         # Definir entry point (começa com load de memória)
         workflow.set_entry_point("load_client_memory")
         
-        # FASE 2.6: Edge condicional após load_client_memory (routing consultivo vs RAG)
+        # FASE 2.7: Edge condicional após load_client_memory (routing consultivo vs RAG)
         workflow.add_conditional_edges(
             "load_client_memory",
             self.route_by_phase,
             {
                 "onboarding": "onboarding_handler",  # Cliente novo → onboarding
+                "discovery": "discovery_handler",    # Cliente DISCOVERY → diagnóstico BSC
                 "analyze_query": "analyze_query"     # Cliente existente ou query RAG
             }
         )
         
-        # Onboarding completo → Salva profile e finaliza
+        # Handlers consultivos → Salva profile e finaliza
         workflow.add_edge("onboarding_handler", "save_client_memory")
+        workflow.add_edge("discovery_handler", "save_client_memory")
         
         # Definir edges RAG (transições)
         # workflow.add_edge("load_client_memory", "analyze_query")  # REMOVIDO: Agora é conditional edge
@@ -176,8 +219,8 @@ class BSCWorkflow:
         workflow.add_edge("save_client_memory", END)
         
         logger.info(
-            "[OK] Grafo LangGraph construído com 8 nós "
-            "(2 memória + 1 consultivo + 5 RAG) + 2 edges condicionais"
+            "[OK] Grafo LangGraph construído com 9 nós "
+            "(2 memória + 2 consultivos + 5 RAG) + 2 edges condicionais"
         )
         
         return workflow.compile()
@@ -558,23 +601,24 @@ class BSCWorkflow:
             logger.error(f"[ERRO] decide_next_step: {e}. Finalizando por segurança.")
             return "finalize"
     
-    def route_by_phase(self, state: BSCState) -> Literal["onboarding", "analyze_query"]:
+    def route_by_phase(self, state: BSCState) -> Literal["onboarding", "discovery", "analyze_query"]:
         """
         Edge condicional: Roteia workflow baseado na fase consultiva.
         
-        Decisão lógica (FASE 2.6 MVP):
+        Decisão lógica (FASE 2.7):
         - Se current_phase == ONBOARDING: Vai para onboarding_handler
+        - Se current_phase == DISCOVERY: Vai para discovery_handler
         - Senão: Vai para analyze_query (RAG tradicional)
         
-        Futuro (FASE 2.7):
-        - Se current_phase == DISCOVERY: Vai para discovery_handler
+        Futuro (FASE 2.8+):
         - Se current_phase == APPROVAL_PENDING: Vai para approval_handler
+        - Se current_phase == SOLUTION_DESIGN: Vai para solution_handler
         
         Args:
             state: Estado atual do workflow (após load_client_memory)
             
         Returns:
-            Nome do próximo nó: "onboarding" ou "analyze_query"
+            Nome do próximo nó: "onboarding", "discovery" ou "analyze_query"
             
         Examples:
             >>> # Cliente novo sem profile
@@ -592,7 +636,7 @@ class BSCWorkflow:
             'analyze_query'
         """
         try:
-            # Decisão principal: ONBOARDING vs RAG
+            # Decisão principal: ONBOARDING vs DISCOVERY vs RAG
             if state.current_phase == ConsultingPhase.ONBOARDING:
                 logger.info(
                     f"[INFO] [route_by_phase] Routing: ONBOARDING | "
@@ -600,6 +644,14 @@ class BSCWorkflow:
                     f"profile: {'None (novo cliente)' if not state.client_profile else 'Existente'}"
                 )
                 return "onboarding"
+            
+            elif state.current_phase == ConsultingPhase.DISCOVERY:
+                logger.info(
+                    f"[INFO] [route_by_phase] Routing: DISCOVERY | "
+                    f"user_id: {state.user_id} | "
+                    f"profile: {state.client_profile is not None}"
+                )
+                return "discovery"
             
             # Default: RAG tradicional (analyze_query)
             logger.info(
@@ -784,6 +836,131 @@ class BSCWorkflow:
                 }
             }
     
+    def discovery_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        Nó: Gerencia fase DISCOVERY - Diagnóstico BSC completo.
+        
+        Workflow:
+        1. Valida que client_profile existe (fallback → ONBOARDING se não)
+        2. Invoca DiagnosticAgent.run_diagnostic(state)
+        3. Captura CompleteDiagnostic e serializa para dict
+        4. Atualiza current_phase → APPROVAL_PENDING
+        5. Retorna diagnostic + transição automática
+        
+        Diferente do onboarding_handler, este é single-turn (não multi-turn),
+        portanto NÃO precisa de in-memory sessions.
+        
+        Args:
+            state: Estado atual do workflow com client_profile carregado
+            
+        Returns:
+            Dict atualizado com:
+            - diagnostic: Dict (CompleteDiagnostic serializado)
+            - current_phase: APPROVAL_PENDING (transição automática)
+            - previous_phase: DISCOVERY
+            - phase_history: Lista atualizada
+            - final_response: Mensagem para usuário
+            - is_complete: True (diagnóstico completo)
+        """
+        start_time = time.time()
+        
+        try:
+            user_id = state.user_id
+            logger.info(
+                f"[TIMING] [discovery_handler] INICIADO | "
+                f"user_id: {user_id} | "
+                f"client_profile: {state.client_profile is not None}"
+            )
+            
+            # Validação: client_profile obrigatório
+            if not state.client_profile:
+                logger.warning(
+                    "[WARN] [discovery_handler] ClientProfile não encontrado. "
+                    "Redirecionando para ONBOARDING."
+                )
+                return {
+                    "final_response": (
+                        "⚠️ Antes de realizar o diagnóstico, preciso conhecer sua empresa. "
+                        "Vamos começar pelo onboarding?"
+                    ),
+                    "current_phase": ConsultingPhase.ONBOARDING,
+                    "previous_phase": ConsultingPhase.DISCOVERY,
+                    "is_complete": False
+                }
+            
+            # Executar diagnóstico BSC completo (4 perspectivas + recomendações)
+            logger.info("[INFO] [discovery_handler] Executando diagnóstico BSC completo...")
+            diagnostic_result = self.diagnostic_agent.run_diagnostic(state)
+            
+            # Serializar CompleteDiagnostic para dict (Pydantic → dict)
+            diagnostic_dict = diagnostic_result.model_dump()
+            
+            elapsed_time = time.time() - start_time
+            logger.info(
+                f"[OK] [discovery_handler] Diagnóstico COMPLETO em {elapsed_time:.3f}s | "
+                f"Perspectivas analisadas: 4 | "
+                f"Recomendações: {len(diagnostic_result.recommendations)} | "
+                f"Executive summary: {len(diagnostic_result.executive_summary)} chars"
+            )
+            
+            # Transição automática DISCOVERY → APPROVAL_PENDING
+            now = datetime.now(timezone.utc)
+            
+            # Mensagem para usuário
+            message = (
+                f"✅ Diagnóstico BSC completo!\n\n"
+                f"📊 **Análise Realizada:**\n"
+                f"- Perspectiva Financeira\n"
+                f"- Perspectiva Clientes\n"
+                f"- Perspectiva Processos Internos\n"
+                f"- Perspectiva Aprendizado e Crescimento\n\n"
+                f"🎯 **Recomendações:** {len(diagnostic_result.recommendations)} ações priorizadas\n\n"
+                f"📄 O relatório completo está sendo preparado para sua aprovação."
+            )
+            
+            return {
+                "diagnostic": diagnostic_dict,
+                "final_response": message,
+                "current_phase": ConsultingPhase.APPROVAL_PENDING,
+                "previous_phase": ConsultingPhase.DISCOVERY,
+                "phase_history": state.phase_history + [
+                    {
+                        "from_phase": "DISCOVERY",
+                        "to_phase": "APPROVAL_PENDING",
+                        "timestamp": now.isoformat(),
+                        "duration_seconds": int(elapsed_time),
+                        "trigger": "diagnostic_completed"
+                    }
+                ],
+                "is_complete": True
+            }
+            
+        except Exception as e:
+            logger.error(f"[ERRO] discovery_handler: {e}")
+            elapsed_time = time.time() - start_time
+            
+            # Fallback: mensagem de erro amigável
+            return {
+                "final_response": (
+                    f"❌ Erro ao executar diagnóstico: {str(e)}\n\n"
+                    f"Por favor, tente novamente ou contate o suporte."
+                ),
+                "current_phase": ConsultingPhase.ERROR,
+                "error_info": {
+                    "severity": "HIGH",
+                    "error_type": type(e).__name__,
+                    "error_message": str(e),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "recovery_suggestion": "retry_discovery"
+                },
+                "metadata": {
+                    **state.metadata,
+                    "discovery_error": str(e),
+                    "elapsed_time": elapsed_time
+                },
+                "is_complete": False
+            }
+    
     def finalize(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 5: Finaliza o workflow e prepara resposta final.
@@ -880,7 +1057,10 @@ class BSCWorkflow:
                 "query": final_state["query"],
                 "final_response": final_state.get("final_response", ""),
                 "current_phase": final_state.get("current_phase"),  # FASE 2.6: Retornar fase consultiva
+                "previous_phase": final_state.get("previous_phase"),  # FASE 2.7: Retornar fase anterior
+                "phase_history": final_state.get("phase_history", []),  # FASE 2.7: Retornar histórico de transições
                 "client_profile": final_state.get("client_profile"),  # FASE 2.6: Retornar profile
+                "is_complete": final_state.get("is_complete", False),  # FASE 2.7: Status de conclusão
                 "perspectives": [
                     p.value for p in final_state.get("relevant_perspectives", [])
                 ],
