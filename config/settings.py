@@ -8,6 +8,7 @@ from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from src.memory.factory import MemoryFactory  # Exposto no módulo para facilitar patch em testes
 
 
 class Settings(BaseSettings):
@@ -169,6 +170,8 @@ class Settings(BaseSettings):
         description="Memory provider type (default: mem0, future: supabase, redis)"
     )
 
+    # (sem validadores de nível de modelo; validações específicas ficam por campo)
+
     @field_validator("mem0_api_key")
     @classmethod
     def validate_mem0_api_key(cls, v: str) -> str:
@@ -209,15 +212,15 @@ class Settings(BaseSettings):
         return v_lower
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=None,
         env_file_encoding="utf-8",
         case_sensitive=False,
         populate_by_name=True,  # Permite usar aliases (MEM0_API_KEY no .env)
     )
 
 
-# Singleton instance
-settings = Settings()
+# Singleton instance (lê do .env explicitamente)
+settings = Settings(_env_file=".env")
 
 
 def get_llm(
@@ -293,20 +296,22 @@ def validate_memory_config() -> None:
     import logging
     logger = logging.getLogger(__name__)
 
+    # Usa singleton settings global (respeita monkeypatch em testes)
+    current_settings = settings
+
     # 1. Validar que provider escolhido é suportado
     try:
-        from src.memory.factory import MemoryFactory
-
+        # Usa MemoryFactory importado no escopo do módulo (facilita patching nos testes)
         available_providers = MemoryFactory.list_providers()
-        if settings.memory_provider not in available_providers:
+        if current_settings.memory_provider not in available_providers:
             raise ValueError(
-                f"MEMORY_PROVIDER '{settings.memory_provider}' não está registrado. "
+                f"MEMORY_PROVIDER '{current_settings.memory_provider}' não está registrado. "
                 f"Provedores disponíveis: {available_providers}"
             )
 
         logger.info(
             "[OK] MEMORY_PROVIDER validado: %r (disponíveis: %s)",
-            settings.memory_provider,
+            current_settings.memory_provider,
             available_providers
         )
 
@@ -317,15 +322,15 @@ def validate_memory_config() -> None:
         ) from e
 
     # 2. Validação específica para Mem0
-    if settings.memory_provider == "mem0":
-        if not settings.mem0_api_key:
+    if current_settings.memory_provider == "mem0":
+        if not current_settings.mem0_api_key:
             raise ValueError(
                 "MEM0_API_KEY é obrigatória quando MEMORY_PROVIDER='mem0'. "
                 "Adicione MEM0_API_KEY=your-key no arquivo .env"
             )
 
         # API key já foi validada pelo field_validator, mas vamos garantir
-        if not settings.mem0_api_key.startswith("m0-"):
+        if not current_settings.mem0_api_key.startswith("m0-"):
             raise ValueError(
                 "MEM0_API_KEY parece inválida (deve começar com 'm0-'). "
                 "Verifique suas credenciais em https://app.mem0.ai/dashboard/api-keys"
@@ -333,18 +338,18 @@ def validate_memory_config() -> None:
 
         logger.info(
             "[OK] Mem0 configurado: API key válida (%d chars), org=%r, project=%r",
-            len(settings.mem0_api_key),
-            settings.mem0_org_name,
-            settings.mem0_project_name
+            len(current_settings.mem0_api_key),
+            current_settings.mem0_org_name,
+            current_settings.mem0_project_name
         )
 
     # 3. Validação futura para outros providers
-    elif settings.memory_provider == "supabase":
+    elif current_settings.memory_provider == "supabase":
         logger.warning(
             "[WARN] MEMORY_PROVIDER='supabase' ainda não implementado. "
             "Use 'mem0' por enquanto."
         )
-    elif settings.memory_provider == "redis":
+    elif current_settings.memory_provider == "redis":
         logger.warning(
             "[WARN] MEMORY_PROVIDER='redis' ainda não implementado. "
             "Use 'mem0' por enquanto."

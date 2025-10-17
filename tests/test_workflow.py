@@ -113,7 +113,8 @@ class TestBSCWorkflow:
         assert "analyze_query" in viz
         assert "execute_agents" in viz
         assert "synthesize_response" in viz
-        assert "judge_evaluation" in viz
+        # Aceitar nomenclatura atualizada do nó de validação do Judge
+        assert ("judge_evaluation" in viz) or ("judge_validation" in viz)
         assert "finalize" in viz
     
     def test_execute_agents_node(self, workflow):

@@ -24,17 +24,16 @@ globs: *
 
 **PONTOS 9-12: E2E Workflow Tests** (validado FASE 2.6) - Ver seção "E2E Workflow Tests" below for details
 
-**Debugging pytest (Validado [[memory:9969628]])**:
+**Debugging pytest (Validado [[memory:9969628]] e [[memory:10012853]])**:
 *   **SEMPRE** usar `--tb=long` (traceback completo, NUNCA --tb=short)
 *   **NUNCA** usar filtros (`Select-Object`, `Select-String`) - oculta informação crítica
-*   Comando correto: `pytest tests/file.py -v --tb=long 2>&1`
+*   Comando correto: `pytest tests/test_file.py -v --tb=long 2>&1`
 
 **pytest em paralelo** (performance):
 *   `-n <num_workers>`: Workers paralelos
 *   `-v`: Verbose output
 *   `--tb=long`: Traceback completo
 *   `--dist=loadscope`: Distribui por fixture scope (mais seguro)
-*   `--dist=loadfile`: Distribui por arquivo (mais seguro)
 *   `--dist=loadfile`: Distribui por arquivo (fixtures function-scoped)
 
 **Lições Detalhadas**:
@@ -147,6 +146,138 @@ globs: *
 **ROI Total E2E**: 32-60 min economizados por implementação (4 erros × 8-15 min/erro)
 
 **Lição Detalhada**: `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+ linhas)
+
+### Regression Prevention Strategy (Validado FASE 2.10 - Out/2025)
+
+**Context**: Durante FASE 2 (10 tarefas), validamos incrementalmente apenas testes NOVOS de cada etapa. Resultado: 10 regressões silenciosas detectadas apenas na regression suite final (60% causadas por schema changes). Aplicamos SFL + 5 Whys para corrigir (1.5h vs 4-6h estimado, ROI 2.5-4x).
+
+**3 Estratégias Obrigatórias**:
+
+#### 1. Smoke Tests (5-10 min por etapa)
+
+**Quando**: Após completar CADA etapa (ex: FASE 3.2 SWOT Tool → smoke test)
+
+**Comando**:
+```bash
+pytest -k "smoke" -v --tb=short
+# Executa ~5 testes representativos (1 por módulo core)
+# Tempo: 10-15s
+```
+
+**Se falha**: PARAR e investigar imediatamente (não acumular dívida técnica)
+
+**ROI**: 5-10 min investidos, 1-2h debugging evitado por regressão detectada cedo
+
+#### 2. Regression Suite Semanal (1h por semana)
+
+**Quando**: Fim de semana (sexta-feira) ou antes de Checkpoint formal
+
+**Comando**:
+```bash
+pytest -n 8 --dist=loadfile -v --tb=long
+# Executa TODOS 350+ testes em paralelo
+# Tempo: 45-60 min
+```
+
+**Análise**:
+- 0-2 fails: OK (corrigir pontualmente)
+- 3-10 fails: ALERTA (dedicar sessão correções)
+- 10+ fails: CRÍTICO (pausar features, estabilizar)
+
+**Checkpoint formal** (antes desbloquear próxima fase):
+- FASE N 100% → Regression suite → 0 fails → FASE N+1 desbloqueada
+
+**ROI**: 1h investida/semana, 4-6h debugging evitado (correções antecipadas)
+
+#### 3. Contract Testing - Schemas Pydantic (10-15 min por mudança)
+
+**Quando**: Ao modificar schema Pydantic core (CompanyInfo, ClientProfile, BSCState, SearchResult, DiagnosticResult, etc)
+
+**Processo**:
+
+1. **Identificar dependentes** (ANTES de mudar):
+   ```bash
+   grep -r "SchemaName" src/ tests/
+   # Contar arquivos/testes impactados
+   ```
+
+2. **Baseline** (testes passando antes):
+   ```bash
+   pytest -k "schema_name" -v > before.txt
+   ```
+
+3. **Fazer mudança** (incremental, 1 campo por vez)
+
+4. **Validar impactados** (após mudança):
+   ```bash
+   pytest -k "schema_name" -v > after.txt
+   diff before.txt after.txt
+   ```
+
+5. **Se regressões**: Corrigir fixtures, validators, dependentes
+
+6. **Se OK**: Commit
+
+**ROI**: 20-25 min economizados vs full suite (10-15 min targeted vs 45-60 min full)
+
+**Checklist 8 Pontos ANTES de Mudar Schema** [[memory:10020812]]:
+
+- [ ] 1. Identificar dependentes: `grep -r "SchemaName" src/ tests/`
+- [ ] 2. Executar baseline: `pytest -k "schema_name" -v > before.txt`
+- [ ] 3. Mudança incremental (1 campo por vez)
+- [ ] 4. Atualizar fixtures (min_length, Literal, defaults)
+- [ ] 5. Validar impactados: `pytest -k "schema_name" -v > after.txt`
+- [ ] 6. Smoke test: `pytest -k "smoke" --tb=short`
+- [ ] 7. Read lints (warnings Pydantic V2)
+- [ ] 8. Documentar breaking change (CHANGELOG ou migration guide)
+
+**Schemas Core** (alto impacto, validação obrigatória):
+- `CompanyInfo`: ~32 testes dependentes
+- `ClientProfile`: ~45 testes dependentes
+- `BSCState`: ~60 testes dependentes
+- `SearchResult`: ~25 testes dependentes
+- `DiagnosticResult`: ~16 testes dependentes
+- `CompleteDiagnostic`: ~20 testes dependentes
+
+**Impact Analysis Rápida**:
+
+| Mudança Schema | Risco | Validação Mínima |
+|---|---|---|
+| Adicionar campo opcional | BAIXO | pytest -k "schema_name" (10-15 testes) |
+| Mudar tipo campo (Literal → str) | MÉDIO | pytest -k "SchemaName" (30+ testes) |
+| Adicionar validator | MÉDIO | pytest -k "schema_name or validate" (20-25 testes) |
+| Remover campo obrigatório | ALTO | pytest -k "SchemaName" + manual review (50+ testes) |
+| Mudar nome campo | CRÍTICO | grep -r "old_name" + pytest completo (100+ testes) |
+
+**Antipadrão Evitar** [[memory:10020812]]:
+❌ Mudar schema → commit direto sem pytest targeted
+✅ Mudar schema → grep dependentes → pytest -k → validar → commit
+
+**Lição Detalhada**: `docs/lessons/lesson-regression-prevention-methodology-2025-10-17.md` (1.550 linhas)
+
+**ROI Comprovado**: Sessão 14 FASE 2: 10 regressões (60% schema changes), corrigidas em 1.5h com SFL + Contract Testing vs 4-6h tentativa-erro
+
+#### Settings Singleton Pattern [[memory:10020824]]
+
+**Regra Crítica**: `config.settings.Settings` é singleton; NUNCA recriar durante execução.
+
+❌ **ANTI-PATTERN**:
+```python
+def validate_config():
+    settings = Settings(_env_file=".env")  # Nova instância, ignora monkeypatch!
+```
+
+✅ **PATTERN CORRETO**:
+```python
+from config.settings import settings  # Import singleton global
+
+def validate_config():
+    current_settings = settings  # Usa global, respeita env vars
+```
+
+**Por quê**: Pydantic precedência quando `_env_file` explícito: .env > env vars. Testes monkeypatch quebram.
+
+**ROI**: Previne falhas testes config validação (2 testes corrigidos Sessão 14)
 
 ### Circular Imports Resolution (Validado FASE 2.7 - Out/2025)
 
@@ -286,6 +417,7 @@ Query: "Python circular import best practices TYPE_CHECKING lazy import solution
 **Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md` (1.200+ linhas, ROI 2.5-4x)
 
 **Memória**: [[memory:9980685]] - Pattern TYPE_CHECKING + Lazy Imports validado FASE 2.7
+[[memory:10012853]] - Pytest SEMPRE --tb=long SEM filtros (economia 50% tempo debugging)
 
 Regarding `.cursorignore` files:
 
@@ -423,7 +555,7 @@ Brightdata's research revealed important community discussions:
 *   [Cursor Docs - Ignore Files](https://cursor.com/docs/context/ignore/files)
 *   [Cursor Forum - You can unignore files in .cursorignore](https://forum.cursor.com/t/you-can-unignore-files-in-cursorignore/38074)
 *   [GitHub Issue #3101 - .env files ignored by default](https://github.com/cursor/cursor/issues/3101)
-*   [Reddit r/cursor - How to disable .env from .cursorignore](https://www.reddit.com/r/cursor/comments/1ki08ww/)
+*   [Reddit r/cursor - How to disable .cursorignore from .cursorignore](https://www.reddit.com/r/cursor/comments/1ki08ww/)
 
 ### Language Detection Improvements
 
@@ -529,141 +661,4 @@ When troubleshooting issues with Ctrl+C and Ctrl+V (copy/paste) functionality in
 *   **Forcing Clipboard Synchronization:**
     *   Attempt to force synchronization of the clipboard:
     ```powershell
-    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Start-Sleep -Milliseconds 500; [System.Windows.Forms.Clipboard]::SetText("CURSOR_WORD_SYNC_TEST"); Start-Sleep -Milliseconds 500; $test = [System.Windows.Forms.Clipboard]::GetText(); [System.Windows.Forms.Clipboard]::Clear(); if($test -eq "CURSOR_WORD_SYNC_TEST") { Write-Host "[OK] Clipboard sincronizado entre aplicações" } else { Write-Host "[WARN] Possível problema de sincronização" }
-    ```
-
-*   **Clearing Clipboard History:**
-    *   Clear the clipboard history:
-    ```powershell
-    Add-Type -AssemblyName System.Windows.Forms; try { [System.Windows.Forms.SendKeys]::SendWait("^+{ESC}"); Start-Sleep -Milliseconds 200 } catch {}; [System.Windows.Forms.Clipboard]::Clear(); Write-Host "[OK] Histórico do clipboard limpo" }
-    ```
-
-*   **Clipboard Reset Script:**
-    *   As a last resort, create a PowerShell script to quickly reset the clipboard:
-    ```powershell
-    # Script para resetar clipboard rapidamente
-    # Uso: .\reset-clipboard.ps1
-
-    Write-Host "[INICIO] Resetando clipboard..." -ForegroundColor Cyan
-
-    # 1. Limpar clipboard via .NET
-    Add-Type -AssemblyName System.Windows.Forms
-    [System.Windows.Forms.Clipboard]::Clear()
-    Start-Sleep -Milliseconds 500
-
-    # 2. Resetar via Win32 API
-    $timestamp = Get-Date -Format "yyyyMMddHHmmss"
-    $cbdll = Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern bool OpenClipboard(IntPtr hWndNewOwner); [DllImport("user32.dll")] public static extern bool EmptyClipboard(); [DllImport("user32.dll")] public static extern bool CloseClipboard();' -Name "Clipboard$timestamp" -Namespace "Win32API$timestamp" -PassThru
-    $cbdll::OpenClipboard([IntPtr]::Zero)
-    $cbdll::EmptyClipboard()
-    $cbdll::CloseClipboard()
-
-    # 3. Reiniciar processo rdpclip
-    Stop-Process -Name "rdpclip" -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 1
-
-    # 4. Teste
-    [System.Windows.Forms.Clipboard]::SetText("TESTE_OK")
-    $result = [System.Windows.Forms.Clipboard]::GetText()
-    [System.Windows.Forms.Clipboard]::Clear()
-
-    if($result -eq "TESTE_OK") {
-        Write-Host "[OK] Clipboard resetado com sucesso!" -ForegroundColor Green
-    } else {
-        Write-Host "[WARN] Possível problema - tente novamente" -ForegroundColor Yellow
-    }
-
-    Write-Host "[FIM] Pronto para copiar/colar!" -ForegroundColor Cyan
-    ```
-
-*   **Workarounds:**
-    *   If persistent issues occur between Word and Cursor, use Notepad as an intermediary (Word → Notepad → Cursor).
-    *   Try closing and reopening the Word document.
-
-## PROJECT DOCUMENTATION & CONTEXT SYSTEM
-
-When debugging, especially for E2E tests, consider running tests in parallel to speed up the process. For example, use sequential thinking to organize your actions.
-
-### Architectural Considerations for the BSC Consulting Agent (v2.0)
-
-The following architectural considerations should guide the development of the BSC Consulting Agent v2.0:
-
-#### 1. Technology Stack Consolidation:
-
-*   Prioritize integration with Mem0 for persistent memory, leveraging its LangGraph compatibility and validated performance metrics.
-*   Incorporate MCPs for productivity, initially focusing on Google Calendar and Asana.
-
-#### 2. Memory Implementation:
-
-*   Utilize Mem0's platform API or consider a self-hosted alternative (PostgreSQL + pgvector) for storing client profiles and engagement progress.
-
-#### 3. Workflow Orchestration:
-
-*   Expand the LangGraph state machine to include a ConsultingEngagementState, with new states for onboarding, discovery, diagnostic, solution design, (optional) implementation, and monitoring.
-
-#### 4. Agent Layer:
-
-*   Augment existing BSC knowledge agents with new consulting agents: ClientProfileAgent, WorkshopFacilitatorAgent, and DiagnosticAnalystAgent.
-
-#### 5. Tool/MCP Layer:
-
-*   Integrate the Brightdata MCP (for external context), interactive tools (SWOT builder, strategy map designer, KPI definer, issue tree analyzer), and productivity MCPs (Google Calendar, Asana).
-
-#### 6. Roadmap and Prioritization:
-
-*   Follow a phased implementation, starting with a foundational MVP (Mem0 integration, onboarding, workflow, basic tools) and expanding to enterprise features (Brightdata, additional tools, productivity MCPs).
-
-#### 7. Data Structuring for Mem0:
-
-*   Adopt a well-defined schema for the ClientProfile in Mem0:
-
-```json
-{
-  "user_id": "cliente_123",
-  "company": {
-    "name": "Empresa X",
-    "industry": "Healthcare",
-    "size": "200-500 employees",
-    "maturity": "Growth stage"
-  },
-  "strategic_context": {
-    "main_challenge": "Crescimento orgânico sem perder qualidade",
-    "objectives": ["Aumentar EBITDA 20%", "Melhorar NPS 30pts"],
-    "stakeholders": ["CEO Maria", "CFO João", "COO Ana"]
-  },
-  "engagement": {
-    "mode": "Advisor",  // ou "Full Consultant"
-    "current_phase": "DISCOVERY",
-    "completed_activities": ["onboarding", "swot_analysis"],
-    "pending_deliverables": ["diagnostic_report", "strategy_map"]
-  },
-  "preferences": {
-    "communication_style": "Direto, dados-driven",
-    "meeting_frequency": "Semanal",
-    "tools": ["Google Calendar", "Asana"]
-  },
-  "history": [
-    {"date": "2025-10-15", "activity": "Onboarding", "key_insights": "..."},
-    {"date": "2025-10-18", "activity": "SWOT Workshop", "outputs": "..."}
-  ]
-}
-```
-
-#### 8. Memory Solution Evaluation
-
-*   Mem0 (mem0.ai) is the preferred choice, offering native LangGraph integration, a validated research track record, and an available MCP.
-
-#### 9. Productivity MCP Prioritization
-
-*   Integrate Google Calendar and Asana MCPs to facilitate scheduling and project tracking.
-
-#### 10. Implementation Roadmap
-
-*   Prioritize a phased rollout, beginning with Mem0 integration and a basic workflow, followed by the addition of productivity MCPs.
-
-### Next Step: FASE 2.8 - Transition Logic (APPROVAL State)
-
-The following specifications, objectives, and checklist should be considered.
-
-| Item           | Detail                               |
-| ----- | --- |
+    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Start-Sleep -Milliseconds 500; [System.Windows.Forms.Clipboard]::SetText("CURSOR_WORD_SYNC_

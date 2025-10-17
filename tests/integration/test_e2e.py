@@ -276,7 +276,11 @@ class TestPerformanceOptimizations:
         assert embeddings_manager.cache_hits == 1
         
         # Embeddings devem ser idênticos
-        assert embedding1 == embedding2
+        import numpy as np
+        if isinstance(embedding1, np.ndarray):
+            np.testing.assert_array_equal(embedding1, embedding2)
+        else:
+            assert embedding1 == embedding2
         
         logger.info(
             f"[TEST OK] Cache funcionando: "

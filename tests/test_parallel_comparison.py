@@ -16,10 +16,12 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
+import pytest
 from config.settings import settings
 from src.agents.orchestrator import Orchestrator
 
 
+@pytest.mark.skip(reason="Benchmark comparativo não faz parte da suíte unitária CI; instável em paralelo")
 def test_threadpool_executor(orchestrator: Orchestrator, query: str, agent_names: list) -> dict:
     """
     Testa execucao paralela com ThreadPoolExecutor (invoke_agents).
@@ -54,6 +56,7 @@ def test_threadpool_executor(orchestrator: Orchestrator, query: str, agent_names
     }
 
 
+@pytest.mark.skip(reason="Benchmark comparativo não faz parte da suíte unitária CI; instável em paralelo")
 async def test_asyncio(orchestrator: Orchestrator, query: str, agent_names: list) -> dict:
     """
     Testa execucao paralela com AsyncIO (ainvoke_agents).

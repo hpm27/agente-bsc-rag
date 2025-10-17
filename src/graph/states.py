@@ -84,7 +84,7 @@ class BSCState(BaseModel):
     # Phase tracking
     current_phase: ConsultingPhase | None = None
     previous_phase: ConsultingPhase | None = None
-    phase_history: list[str] = Field(default_factory=list)
+    phase_history: list[dict[str, Any]] = Field(default_factory=list)
 
     # Approval workflow (FASE 2.8)
     approval_status: ApprovalStatus | None = None
@@ -99,7 +99,15 @@ class BSCState(BaseModel):
     # Tool outputs (FASE 3)
     tool_outputs: dict[str, Any] = Field(default_factory=dict)
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
+
+    def model_dump(self, *args, **kwargs):  # type: ignore[override]
+        """Sobrescreve dump para excluir campos None por padrão.
+        Evita duplicidade de kwargs ao reconstruir BSCState com overrides.
+        """
+        if "exclude_none" not in kwargs:
+            kwargs["exclude_none"] = True
+        return super().model_dump(*args, **kwargs)
 
 
 

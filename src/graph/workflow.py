@@ -65,6 +65,10 @@ class BSCWorkflow:
         """Inicializa o workflow."""
         self.orchestrator = Orchestrator()
         self.judge = JudgeAgent()
+        
+        # FASE 2.10: Consulting orchestrator lazy loading (previne circular imports)
+        self._consulting_orchestrator_cached = None
+        
         self.graph = self._build_graph()
         
         logger.info("[OK] BSCWorkflow inicializado com grafo LangGraph")
@@ -83,18 +87,52 @@ class BSCWorkflow:
         
         # Adicionar nós (incluindo memória)
         workflow.add_node("load_client_memory", load_client_memory)
+        
+        # FASE 2.10: Consulting nodes
+        workflow.add_node("onboarding", self.onboarding_handler)
+        workflow.add_node("discovery", self.discovery_handler)
+        workflow.add_node("approval", self.approval_handler)
+        
+        # RAG traditional nodes
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
-        workflow.add_node("judge_validation", self.judge_evaluation)  # Renomeado para evitar conflito com state key
+        workflow.add_node("judge_validation", self.judge_evaluation)
         workflow.add_node("finalize", self.finalize)
+        
         workflow.add_node("save_client_memory", save_client_memory)
         
         # Definir entry point (começa com load de memória)
         workflow.set_entry_point("load_client_memory")
         
-        # Definir edges (transições)
-        workflow.add_edge("load_client_memory", "analyze_query")  # Memória → Query
+        # FASE 2.10: Routing condicional por fase consultiva
+        # load_client_memory → route_by_phase → {onboarding, discovery, analyze_query}
+        workflow.add_conditional_edges(
+            "load_client_memory",
+            self.route_by_phase,
+            {
+                "onboarding": "onboarding",
+                "discovery": "discovery",
+                "analyze_query": "analyze_query"
+            }
+        )
+        
+        # Consulting flows
+        # onboarding → save_client_memory → END (multi-turn stateless)
+        workflow.add_edge("onboarding", "save_client_memory")
+        
+        # discovery → approval → route_by_approval → {end, discovery}
+        workflow.add_edge("discovery", "approval")
+        workflow.add_conditional_edges(
+            "approval",
+            self.route_by_approval,
+            {
+                "end": "save_client_memory",
+                "discovery": "discovery"  # Refazer diagnóstico
+            }
+        )
+        
+        # RAG traditional flow (mantido intacto)
         workflow.add_edge("analyze_query", "execute_agents")
         workflow.add_edge("execute_agents", "synthesize_response")
         workflow.add_edge("synthesize_response", "judge_validation")
@@ -114,7 +152,11 @@ class BSCWorkflow:
         workflow.add_edge("finalize", "save_client_memory")
         workflow.add_edge("save_client_memory", END)
         
-        logger.info("[OK] Grafo LangGraph construído com 7 nós (2 memória + 5 core) + 1 edge condicional")
+        logger.info(
+            "[OK] Grafo LangGraph construído: "
+            "10 nodes (2 memória + 3 consulting + 5 RAG) + "
+            "3 conditional edges (route_by_phase, route_by_approval, decide_next_step)"
+        )
         
         return workflow.compile()
     
@@ -652,6 +694,134 @@ class BSCWorkflow:
                 }
             }
 
+    # ============ FASE 2.10: PROPERTIES LAZY LOADING ============
+    
+    @property
+    def consulting_orchestrator(self):
+        """
+        Lazy loading do ConsultingOrchestrator (previne circular imports).
+        
+        Returns:
+            Instância cached do ConsultingOrchestrator
+        """
+        if self._consulting_orchestrator_cached is None:
+            # Import local evita circular (workflow → orchestrator → agentes → workflow)
+            from src.graph.consulting_orchestrator import ConsultingOrchestrator
+            self._consulting_orchestrator_cached = ConsultingOrchestrator()
+            logger.info("[OK] ConsultingOrchestrator lazy loaded")
+        return self._consulting_orchestrator_cached
+
+    # ============ FASE 2.10: CONSULTING HANDLERS ============
+    
+    def onboarding_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.10: Handler de onboarding multi-turn.
+        
+        Integra ConsultingOrchestrator.coordinate_onboarding() no LangGraph.
+        Gerencia sessões in-memory para workflow stateless.
+        
+        Args:
+            state: Estado atual com user_id, query (mensagem usuário)
+        
+        Returns:
+            Estado atualizado com onboarding_progress, client_profile (se completo)
+        
+        Routing:
+            - is_complete=True → Transição ONBOARDING → DISCOVERY
+            - is_complete=False → Aguarda próxima mensagem usuário
+        """
+        try:
+            logger.info(
+                f"[INFO] [ONBOARDING] Handler iniciado | "
+                f"user_id={state.user_id} | query={state.query[:50]}..."
+            )
+            
+            # Delegar para ConsultingOrchestrator
+            result = self.consulting_orchestrator.coordinate_onboarding(state)
+            
+            logger.info(
+                f"[INFO] [ONBOARDING] Result: is_complete={result.get('is_complete', False)} | "
+                f"next_action={result.get('next_action', 'N/A')}"
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"[ERROR] [ONBOARDING] Erro no handler: {e}")
+            return self.consulting_orchestrator.handle_error(state, e, "ONBOARDING")
+
+    def discovery_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.10: Handler de discovery (diagnóstico BSC).
+        
+        Integra ConsultingOrchestrator.coordinate_discovery() no LangGraph.
+        Executa DiagnosticAgent.run_diagnostic() single-turn.
+        
+        Args:
+            state: Estado atual com client_profile (obrigatório)
+        
+        Returns:
+            Estado atualizado com diagnostic (CompleteDiagnostic serializado)
+        
+        Routing:
+            - diagnostic completo → Transição DISCOVERY → APPROVAL_PENDING
+            - erro/profile ausente → Fallback para ONBOARDING
+        """
+        try:
+            logger.info(
+                f"[INFO] [DISCOVERY] Handler iniciado | "
+                f"user_id={state.user_id} | has_profile={state.client_profile is not None}"
+            )
+            
+            # Delegar para ConsultingOrchestrator
+            result = self.consulting_orchestrator.coordinate_discovery(state)
+            
+            logger.info(
+                f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "
+                f"next_phase={result.get('current_phase', 'N/A')}"
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"[ERROR] [DISCOVERY] Erro no handler: {e}")
+            return self.consulting_orchestrator.handle_error(state, e, "DISCOVERY")
+
+    def route_by_phase(self, state: BSCState) -> Literal["onboarding", "discovery", "analyze_query"]:
+        """
+        FASE 2.10: Routing function por fase consultiva.
+        
+        Decide próximo node baseado em current_phase:
+        - ONBOARDING → node 'onboarding' (processo multi-turn)
+        - DISCOVERY → node 'discovery' (diagnóstico BSC)
+        - Outros (COMPLETED, ERROR, etc) → node 'analyze_query' (RAG tradicional)
+        
+        Args:
+            state: Estado atual com current_phase
+        
+        Returns:
+            Nome do próximo node (string literal)
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ConsultingPhase
+        
+        phase = state.current_phase
+        
+        if phase == ConsultingPhase.ONBOARDING:
+            logger.info("[INFO] [ROUTING] current_phase=ONBOARDING → node='onboarding'")
+            return "onboarding"
+        
+        if phase == ConsultingPhase.DISCOVERY:
+            logger.info("[INFO] [ROUTING] current_phase=DISCOVERY → node='discovery'")
+            return "discovery"
+        
+        # Fallback: RAG tradicional (COMPLETED, ERROR, None, etc)
+        logger.info(
+            f"[INFO] [ROUTING] current_phase={phase.value if phase else 'None'} → "
+            f"node='analyze_query' (RAG tradicional)"
+        )
+        return "analyze_query"
+
     def run(
         self,
         query: str,
@@ -692,6 +862,7 @@ class BSCWorkflow:
             result = {
                 "query": final_state["query"],
                 "final_response": final_state.get("final_response", ""),
+                "client_profile": final_state.get("client_profile"),
                 "perspectives": [
                     p.value for p in final_state.get("relevant_perspectives", [])
                 ],
@@ -714,6 +885,13 @@ class BSCWorkflow:
             # Adicionar judge_approved ao metadata top-level para E2E tests
             if final_state.get("judge_evaluation"):
                 result["metadata"]["judge_approved"] = final_state["judge_evaluation"].approved
+            
+            # FASE 2.10: Adicionar current_phase, diagnostic e metadados consultivos
+            result["current_phase"] = final_state.get("current_phase")
+            result["diagnostic"] = final_state.get("diagnostic")
+            result["previous_phase"] = final_state.get("previous_phase")
+            result["phase_history"] = final_state.get("phase_history", [])
+            result["is_complete"] = final_state.get("is_complete")
             
             workflow_elapsed_time = time.time() - workflow_start_time
             logger.info(f"\n{'='*80}")

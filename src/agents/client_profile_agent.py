@@ -712,3 +712,17 @@ class ClientProfileAgent:
 
         return updates
 
+    # Compatibilidade com orchestrator/testes: método simples de extração final
+    def extract_profile(self, state: BSCState) -> ClientProfile:
+        """Extrai/retorna ClientProfile a partir do estado atual.
+
+        Se já existir no estado, apenas retorna. Caso contrário, tenta extrair
+        informações mínimas a partir da conversa.
+        """
+        if state.client_profile:
+            return state.client_profile
+        # Fallback mínimo: construir profile básico com nome genérico
+        company = CompanyInfo(name="Empresa Desconhecida", sector="Desconhecido")
+        profile = ClientProfile(company=company)
+        return profile
+

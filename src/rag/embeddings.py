@@ -5,6 +5,7 @@ import numpy as np
 import hashlib
 import os
 from typing import List, Union, Optional
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
 from loguru import logger
@@ -20,32 +21,48 @@ class EmbeddingManager:
         """Inicializa o gerenciador de embeddings."""
         self.use_finetuned = settings.use_finetuned_embeddings
         
-        # Inicializar cache
-        self.cache_enabled = settings.embedding_cache_enabled
+        # Inicializar cache (tolerante a mocks/valores inválidos em testes)
+        self.cache_enabled = bool(getattr(settings, 'embedding_cache_enabled', False))
         self.cache: Optional[Cache] = None
         self.cache_hits = 0
         self.cache_misses = 0
         
         if self.cache_enabled:
-            # Criar diretorio de cache
-            cache_dir = settings.embedding_cache_dir
-            os.makedirs(cache_dir, exist_ok=True)
+            cache_dir = getattr(settings, 'embedding_cache_dir', '.cache/embeddings')
+            # Validar tipo do diretório (pode vir como MagicMock em testes)
+            if not isinstance(cache_dir, (str, os.PathLike)) or not str(cache_dir).strip():
+                logger.warning("[CACHE] Diretório de cache inválido; desativando cache para evitar erros em testes")
+                self.cache_enabled = False
             
-            # Inicializar diskcache com TTL e tamanho maximo
-            ttl_seconds = settings.embedding_cache_ttl_days * 24 * 60 * 60
-            size_limit_bytes = settings.embedding_cache_max_size_gb * 1024 * 1024 * 1024
-            
-            self.cache = Cache(
-                directory=cache_dir,
-                size_limit=size_limit_bytes,
-                eviction_policy='least-recently-used'
-            )
-            self.cache_ttl = ttl_seconds
-            logger.info(
-                f"[CACHE] Embedding cache ativado: {cache_dir} "
-                f"(TTL: {settings.embedding_cache_ttl_days} dias, "
-                f"Max Size: {settings.embedding_cache_max_size_gb} GB)"
-            )
+        if self.cache_enabled:
+            try:
+                # Criar diretorio de cache
+                os.makedirs(cache_dir, exist_ok=True)
+                
+                # Inicializar diskcache com TTL e tamanho maximo
+                ttl_seconds = int(getattr(settings, 'embedding_cache_ttl_days', 30)) * 24 * 60 * 60
+                size_limit_gb = getattr(settings, 'embedding_cache_max_size_gb', 5)
+                try:
+                    size_limit_bytes = int(size_limit_gb) * 1024 * 1024 * 1024
+                except Exception:
+                    size_limit_bytes = 5 * 1024 * 1024 * 1024
+                
+                self.cache = Cache(
+                    directory=str(cache_dir),
+                    size_limit=size_limit_bytes,
+                    eviction_policy='least-recently-used'
+                )
+                self.cache_ttl = ttl_seconds
+                logger.info(
+                    f"[CACHE] Embedding cache ativado: {cache_dir} "
+                    f"(TTL: {getattr(settings, 'embedding_cache_ttl_days', 30)} dias, "
+                    f"Max Size: {getattr(settings, 'embedding_cache_max_size_gb', 5)} GB)"
+                )
+            except Exception as cache_err:
+                # Tolerante a ambientes de teste com configurações incompletas
+                logger.warning(f"[CACHE] Falha ao inicializar cache ({cache_err}); desativando cache")
+                self.cache_enabled = False
+                self.cache = None
         else:
             logger.info("[CACHE] Embedding cache desativado")
         
@@ -122,15 +139,15 @@ class EmbeddingManager:
         
         # Gerar embedding
         if self.provider == "finetuned":
-            # Fine-tuned retorna numpy, converter para lista
-            embedding = self.model.encode(text, convert_to_numpy=True).tolist()
+            # Fine-tuned retorna numpy array
+            embedding = self.model.encode(text, convert_to_numpy=True)
         else:
-            # OpenAI API ja retorna lista diretamente
+            # OpenAI API retorna lista; converter para numpy array para consistência
             response = self.client.embeddings.create(
                 input=text,
                 model=self.model_name
             )
-            embedding = response.data[0].embedding
+            embedding = np.array(response.data[0].embedding)
         
         # Armazenar em cache
         if self.cache_enabled and self.cache is not None:

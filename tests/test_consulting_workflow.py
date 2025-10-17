@@ -27,7 +27,14 @@ import pytest
 
 from src.graph.consulting_states import ConsultingPhase
 from src.graph.workflow import BSCWorkflow
-from src.memory.schemas import ClientProfile, CompanyInfo, EngagementState
+from src.memory.schemas import (
+    ClientProfile, 
+    CompanyInfo, 
+    EngagementState,
+    Recommendation,
+    DiagnosticResult,
+    CompleteDiagnostic
+)
 from src.memory.exceptions import ProfileNotFoundError
 
 
@@ -117,7 +124,7 @@ def mock_onboarding_agent():
         },
         # Turn 2 → Step 3 (completo)
         {
-            "message": "Perfeito! Perfil completo.",
+            "question": "Perfeito! Perfil completo.",  # Chave consistente
             "step": 3,
             "is_complete": True,
             "onboarding_progress": {"step_1": True, "step_2": True, "step_3": True}
@@ -138,7 +145,7 @@ def mock_client_profile_agent(valid_client_profile):
 # ===== TESTE 1: Start Onboarding (Cliente Novo) =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_onboarding_workflow_start_cliente_novo(
     mock_memory_factory,
     mock_mem0_empty,
@@ -164,8 +171,10 @@ def test_onboarding_workflow_start_cliente_novo(
     
     # Criar workflow e injetar agentes mockados
     workflow = BSCWorkflow()
-    workflow._onboarding_agent = mock_onboarding_agent
-    workflow._client_profile_agent = mock_client_profile_agent
+    
+    # FASE 2.10: Injetar mocks no ConsultingOrchestrator (não mais diretamente no workflow)
+    workflow.consulting_orchestrator._onboarding_agent = mock_onboarding_agent
+    workflow.consulting_orchestrator._client_profile_agent = mock_client_profile_agent
     
     # Executar workflow
     result = workflow.run(
@@ -195,7 +204,7 @@ def test_onboarding_workflow_start_cliente_novo(
 # ===== TESTE 2: Multi-Turn Completo =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_onboarding_workflow_multi_turn_completo(
     mock_memory_factory,
     mock_mem0_empty,
@@ -220,8 +229,10 @@ def test_onboarding_workflow_multi_turn_completo(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._onboarding_agent = mock_onboarding_agent
-    workflow._client_profile_agent = mock_client_profile_agent
+    
+    # FASE 2.10: Injetar mocks no ConsultingOrchestrator
+    workflow.consulting_orchestrator._onboarding_agent = mock_onboarding_agent
+    workflow.consulting_orchestrator._client_profile_agent = mock_client_profile_agent
     
     # Turn 1: Start
     result_turn1 = workflow.run(
@@ -265,7 +276,7 @@ def test_onboarding_workflow_multi_turn_completo(
 # ===== TESTE 3: RAG Não Quebrado (CRÍTICO - Prevenção Regressão) =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 @patch("src.graph.workflow.BSCWorkflow.execute_agents")
 @patch("src.graph.workflow.BSCWorkflow.synthesize_response")
 @patch("src.graph.workflow.JudgeAgent")
@@ -371,7 +382,7 @@ def test_rag_workflow_cliente_existente_nao_quebrado(
 # ===== TESTE 4: Transição Automática ONBOARDING → DISCOVERY =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_onboarding_transicao_automatica_para_discovery(
     mock_memory_factory,
     mock_mem0_empty,
@@ -409,7 +420,7 @@ def test_onboarding_transicao_automatica_para_discovery(
     
     # Mock process_turn para completar (último step)
     mock_onboarding.process_turn.return_value = {
-        "message": "✅ Perfil completo! Agora posso ajudá-lo com diagnóstico BSC.",
+        "question": "[OK] Perfil completo! Agora posso ajudá-lo com diagnóstico BSC.",  # Chave consistente
         "step": 3,
         "is_complete": True,  # ← COMPLETO!
         "onboarding_progress": {"step_1": True, "step_2": True, "step_3": True}  # ← Progresso completo
@@ -421,15 +432,23 @@ def test_onboarding_transicao_automatica_para_discovery(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._onboarding_agent = mock_onboarding
-    workflow._client_profile_agent = mock_profile_agent
+    
+    # FASE 2.10: Injetar mocks no ConsultingOrchestrator
+    workflow.consulting_orchestrator._onboarding_agent = mock_onboarding
+    workflow.consulting_orchestrator._client_profile_agent = mock_profile_agent
     
     # CRÍTICO: Inicializar session com progresso parcial (2/3 steps completos)
     # Simula cliente que já passou por 2 turns e vai completar no 3º
-    workflow._onboarding_sessions["test_cliente_transicao_004"] = {
-        "step_1": True,
-        "step_2": True,
-        "step_3": False  # Último step ainda pendente
+    # Sessions agora em ConsultingOrchestrator (FASE 2.10)
+    workflow.consulting_orchestrator._onboarding_sessions["test_cliente_transicao_004"] = {
+        "started": True,
+        "progress": {"step_1": True, "step_2": True, "step_3": False},
+        "messages": [  # Histórico de mensagens anteriores
+            {"question": "Olá! Qual o nome da sua empresa?", "step": 1},
+            "TechCorp, tecnologia, 250 funcionários",
+            {"question": "Quais seus desafios?", "step": 2},
+            "Escalar sem perder qualidade"
+        ]
     }
     
     # Executar último turn (completo)
@@ -457,7 +476,7 @@ def test_onboarding_transicao_automatica_para_discovery(
 # ===== TESTE 5: Persistência em Mem0 =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 @patch("time.sleep")  # Mock sleep para acelerar teste
 def test_onboarding_persistencia_mem0(
     mock_sleep,
@@ -516,8 +535,10 @@ def test_onboarding_persistencia_mem0(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._onboarding_agent = mock_onboarding
-    workflow._client_profile_agent = mock_profile_agent
+    
+    # FASE 2.10: Injetar mocks no ConsultingOrchestrator
+    workflow.consulting_orchestrator._onboarding_agent = mock_onboarding
+    workflow.consulting_orchestrator._client_profile_agent = mock_profile_agent
     
     # Executar onboarding
     result = workflow.run(
@@ -753,13 +774,20 @@ def mock_diagnostic_agent(mock_complete_diagnostic):
     CHECKLIST [[memory:9969868]] - Ponto 8:
     - Verificar nome correto do método (run_diagnostic)
     - Retornar objeto Mock com .model_dump() que retorna dict
+    - FASE 2.10: Converter dicts em objetos Pydantic (recommendations)
     """
     mock = Mock()
     
     # Criar mock de CompleteDiagnostic com .model_dump()
     diagnostic_mock = Mock()
     diagnostic_mock.model_dump.return_value = mock_complete_diagnostic
-    diagnostic_mock.recommendations = mock_complete_diagnostic["recommendations"]
+    
+    # FASE 2.10: Converter recommendations de dicts para objetos Pydantic
+    # consulting_orchestrator linha 414 acessa rec.title (espera objeto Recommendation)
+    diagnostic_mock.recommendations = [
+        Recommendation(**rec) 
+        for rec in mock_complete_diagnostic["recommendations"]
+    ]
     diagnostic_mock.executive_summary = mock_complete_diagnostic["executive_summary"]
     
     mock.run_diagnostic.return_value = diagnostic_mock
@@ -770,7 +798,7 @@ def mock_diagnostic_agent(mock_complete_diagnostic):
 # ===== TESTE 6: Discovery Start (Cliente Existente) =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_discovery_workflow_start_cliente_existente(
     mock_memory_factory,
     mock_mem0_existing,
@@ -807,7 +835,9 @@ def test_discovery_workflow_start_cliente_existente(
     
     # Criar workflow e injetar diagnostic_agent mockado
     workflow = BSCWorkflow()
-    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # FASE 2.10: Injetar mock no ConsultingOrchestrator
+    workflow.consulting_orchestrator._diagnostic_agent = mock_diagnostic_agent
     
     # Executar workflow
     result = workflow.run(
@@ -819,12 +849,21 @@ def test_discovery_workflow_start_cliente_existente(
     assert result["current_phase"] == ConsultingPhase.APPROVAL_PENDING, \
         "Após diagnóstico, deve transicionar para APPROVAL_PENDING"
     
-    # Diagnostic é salvo em client_profile.complete_diagnostic (persistência Mem0)
-    assert "client_profile" in result, \
-        "Resultado deve conter client_profile"
+    # FASE 2.10: Diagnostic retornado no result (não mais em client_profile)
+    assert "diagnostic" in result, \
+        "Resultado deve conter diagnostic"
     
-    assert result["client_profile"].complete_diagnostic is not None, \
-        "ClientProfile.complete_diagnostic não pode ser None"
+    assert result["diagnostic"] is not None, \
+        "Diagnostic não pode ser None"
+    
+    # Verificar estrutura do diagnostic (CompleteDiagnostic serializado)
+    diagnostic = result["diagnostic"]
+    assert "financial" in diagnostic, "Diagnostic deve ter perspectiva financial"
+    assert "customer" in diagnostic, "Diagnostic deve ter perspectiva customer"
+    assert "process" in diagnostic, "Diagnostic deve ter perspectiva process"
+    assert "learning" in diagnostic, "Diagnostic deve ter perspectiva learning"
+    assert "recommendations" in diagnostic, "Diagnostic deve ter recommendations"
+    assert len(diagnostic["recommendations"]) >= 3, "Deve ter pelo menos 3 recomendações"
     
     assert "final_response" in result, \
         "Resultado deve conter final_response"
@@ -835,13 +874,13 @@ def test_discovery_workflow_start_cliente_existente(
     # Verificar que diagnostic_agent.run_diagnostic foi chamado
     mock_diagnostic_agent.run_diagnostic.assert_called_once()
     
-    print("✅ TESTE 6 PASSOU: Cliente DISCOVERY executou diagnóstico BSC completo")
+    print("[OK] TESTE 6 PASSOU: Cliente DISCOVERY executou diagnóstico BSC completo")
 
 
 # ===== TESTE 7: Diagnostic Completo (4 Perspectivas) =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_discovery_workflow_diagnostic_completo(
     mock_memory_factory,
     mock_mem0_existing,
@@ -881,7 +920,9 @@ def test_discovery_workflow_diagnostic_completo(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # FASE 2.10: Injetar mock no ConsultingOrchestrator
+    workflow.consulting_orchestrator._diagnostic_agent = mock_diagnostic_agent
     
     # Executar
     result = workflow.run(
@@ -889,12 +930,10 @@ def test_discovery_workflow_diagnostic_completo(
         user_id="test_discovery_002"
     )
     
-    # Asserções CRÍTICAS - Estrutura CompleteDiagnostic
-    # Diagnostic está em client_profile.complete_diagnostic (persistência Mem0)
-    assert result["client_profile"].complete_diagnostic is not None, \
-        "ClientProfile deve ter complete_diagnostic"
-    
-    diagnostic = result["client_profile"].complete_diagnostic
+    # Asserções CRÍTICAS - Estrutura CompleteDiagnostic (FASE 2.10)
+    assert "diagnostic" in result, "Resultado deve conter diagnostic"
+    diagnostic = result["diagnostic"]
+    assert diagnostic is not None, "Diagnostic não pode ser None"
     
     assert "financial" in diagnostic, "Deve conter perspectiva FINANCIAL"
     assert "customer" in diagnostic, "Deve conter perspectiva CUSTOMER"
@@ -916,6 +955,10 @@ def test_discovery_workflow_diagnostic_completo(
     assert "recommendations" in diagnostic, "Deve conter recommendations"
     assert len(diagnostic["recommendations"]) >= 3, \
         "Deve ter pelo menos 3 recomendações"
+
+    # Executive summary
+    assert "executive_summary" in diagnostic, "Diagnostic deve conter executive_summary"
+    assert len(diagnostic["executive_summary"]) > 100, "Executive summary deve ter >100 chars"
     
     # Validar executive_summary
     assert "executive_summary" in diagnostic, "Deve conter executive_summary"
@@ -928,7 +971,7 @@ def test_discovery_workflow_diagnostic_completo(
 # ===== TESTE 8: Transição Automática DISCOVERY → APPROVAL_PENDING =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_discovery_transicao_automatica_para_approval(
     mock_memory_factory,
     mock_mem0_existing,
@@ -964,7 +1007,9 @@ def test_discovery_transicao_automatica_para_approval(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # FASE 2.10: Injetar mock no ConsultingOrchestrator
+    workflow.consulting_orchestrator._diagnostic_agent = mock_diagnostic_agent
     
     # Executar
     result = workflow.run(
@@ -1003,7 +1048,7 @@ def test_discovery_transicao_automatica_para_approval(
 # ===== TESTE 9: Persistência Mem0 (complete_diagnostic) =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_discovery_persistencia_mem0(
     mock_memory_factory,
     mock_mem0_existing,
@@ -1039,7 +1084,9 @@ def test_discovery_persistencia_mem0(
     
     # Criar workflow
     workflow = BSCWorkflow()
-    workflow._diagnostic_agent = mock_diagnostic_agent
+    
+    # FASE 2.10: Injetar mock no ConsultingOrchestrator
+    workflow.consulting_orchestrator._diagnostic_agent = mock_diagnostic_agent
     
     # Executar
     result = workflow.run(
@@ -1073,7 +1120,7 @@ def test_discovery_persistencia_mem0(
 # ===== TESTE 10: REGRESSÃO CRÍTICA - ONBOARDING + RAG Não Quebraram =====
 
 
-@patch("src.graph.workflow.MemoryFactory.get_provider")
+@patch("src.graph.memory_nodes.MemoryFactory.get_provider")
 def test_onboarding_rag_nao_quebrados_com_discovery(
     mock_memory_factory,
     mock_mem0_existing,

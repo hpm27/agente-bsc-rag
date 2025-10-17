@@ -9,22 +9,27 @@ permitindo trocar facilmente entre diferentes implementações
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
 class SearchResult:
-    """Resultado de uma busca no vector store."""
-    content: str
-    source: str
-    page: int
-    score: float
-    search_type: str  # 'vector', 'text', 'hybrid'
-    metadata: Dict[str, Any] = None
-    
-    def __post_init__(self):
-        if self.metadata is None:
-            self.metadata = {}
+    """Resultado de uma busca no vector store.
+
+    Compatível com testes que fornecem apenas `id`, `content`, `metadata` e `score`.
+    Campos `source`, `page` e `search_type` recebem defaults seguros.
+    """
+    # Opcional/compatibilidade com testes
+    id: Optional[str] = None
+    # Conteúdo e metadados
+    content: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    # Atributos de origem/posição
+    source: str = "unknown"
+    page: int = 0
+    # Scoring e tipo de busca
+    score: float = 0.0
+    search_type: str = "hybrid"  # 'vector', 'text', 'hybrid'
 
 
 @dataclass

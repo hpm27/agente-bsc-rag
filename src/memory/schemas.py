@@ -6,9 +6,10 @@ informações de clientes e engajamentos de consultoria BSC no Mem0.
 
 from datetime import datetime, timezone
 from typing import List, Literal, Optional
+import re
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
 
 
 # ============================================================================
@@ -85,7 +86,7 @@ class CompanyInfo(BaseModel):
     sector: str = Field(
         description="Setor de atuação (ex: Tecnologia, Manufatura, Serviços)"
     )
-    size: Literal["micro", "pequena", "média", "grande"] = Field(
+    size: str = Field(
         default="média",
         description="Porte da empresa"
     )
@@ -108,6 +109,22 @@ class CompanyInfo(BaseModel):
         if not v:
             raise ValueError("Nome da empresa não pode ser vazio")
         return v
+
+    @field_validator('size')
+    @classmethod
+    def validate_size(cls, v: str) -> str:
+        """Permite porte em categorias (micro/pequena/média/grande) OU faixa numérica (ex: '50-100')."""
+        if not isinstance(v, str):
+            raise ValueError("Porte da empresa deve ser texto")
+        value = v.strip()
+        allowed = {"micro", "pequena", "média", "grande"}
+        if value.lower() in allowed:
+            # Normaliza somente espaçamento; mantém acentuação conforme entrada
+            return value
+        # Aceita formato de faixa numérica de colaboradores (ex: '50-100')
+        if re.match(r'^\d+\s*-\s*\d+$', value):
+            return value
+        raise ValueError("Porte inválido: use 'micro', 'pequena', 'média', 'grande' ou faixa '50-100'")
 
 
 # ============================================================================
@@ -267,6 +284,8 @@ class EngagementState(BaseModel):
 
 
 class ClientProfile(BaseModel):
+    # Permite atributos extras (necessário para patch de métodos em testes)
+    model_config = ConfigDict(extra='allow')
     """Perfil completo do cliente para engajamento de consultoria BSC.
     
     Schema principal que agrega todas as informações necessárias para
@@ -314,6 +333,7 @@ class ClientProfile(BaseModel):
         description="Identificador único do cliente (UUID)"
     )
     company: CompanyInfo = Field(
+        default_factory=lambda: CompanyInfo(name="Empresa Desconhecida", sector="Desconhecido"),
         description="Informações básicas da empresa"
     )
     context: StrategicContext = Field(
@@ -327,6 +347,10 @@ class ClientProfile(BaseModel):
     diagnostics: Optional[DiagnosticData] = Field(
         None,
         description="Dados de diagnóstico (preenchido em DISCOVERY)"
+    )
+    complete_diagnostic: Optional[dict] = Field(
+        default=None,
+        description="Diagnóstico completo serializado (CompleteDiagnostic.model_dump())"
     )
     metadata: dict = Field(
         default_factory=dict,

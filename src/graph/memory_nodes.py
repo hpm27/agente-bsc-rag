@@ -20,7 +20,7 @@ from src.graph.states import BSCState
 from src.graph.consulting_states import ConsultingPhase
 from src.memory.exceptions import Mem0ClientError, ProfileNotFoundError
 from src.memory.factory import MemoryFactory
-from src.memory.schemas import ClientProfile, CompanyInfo, EngagementState
+from src.memory.schemas import ClientProfile, CompanyInfo, EngagementState, StrategicContext
 
 
 def map_phase_from_engagement(engagement_phase: str) -> ConsultingPhase:
@@ -226,21 +226,22 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
         # Gera user_id se não existir
         user_id = state.user_id or str(uuid4())
 
+        phase_for_log = (
+            state.current_phase.value if getattr(state, "current_phase", None) else "UNKNOWN"
+        )
         logger.info(
             f"[TIMING] [save_client_memory] INICIADO | "
             f"user_id: {user_id} | "
             f"Empresa: {state.client_profile.company.name} | "
-            f"Fase Consultiva: {state.current_phase.value}"
+            f"Fase Consultiva: {phase_for_log}"
         )
 
         # Atualizar timestamps e fase consultiva
         profile = state.client_profile
         profile.engagement.last_interaction = datetime.now(timezone.utc)
         
-        # FASE 2.6: Sincronizar fase do BSCState com ClientProfile
-        # Isso garante persistência da fase consultiva no Mem0
-        # Casting explícito para satisfazer type checker (Literal vs str)
-        if state.current_phase:
+        # FASE 2.6: Sincronizar fase do BSCState com ClientProfile (se disponível)
+        if getattr(state, "current_phase", None):
             phase_value: str = state.current_phase.value
             # Validar se fase é válida no Literal antes de atribuir
             valid_phases = ("ONBOARDING", "DISCOVERY", "DESIGN", "APPROVAL_PENDING", "IMPLEMENTATION", "COMPLETED")
@@ -268,23 +269,20 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
             )
 
         # FASE 2.8: Sincronizar approval_status e approval_feedback
-        # Persistir decisão de aprovação do cliente no Mem0
-        # TODO: Adicionar campos approval_status e approval_feedback ao ClientProfile schema
-        # Por ora, salvar em metadata do EngagementState
+        # Persistir decisão de aprovação no metadata do ClientProfile (schema existente)
         if state.approval_status or state.approval_feedback:
-            # Usar metadata para armazenar temporariamente até schema ser atualizado
-            if not hasattr(profile.engagement, 'metadata'):
-                profile.engagement.metadata = {}
+            if not isinstance(profile.metadata, dict):
+                profile.metadata = {}
 
             if state.approval_status:
-                profile.engagement.metadata['approval_status'] = state.approval_status.value
+                profile.metadata['approval_status'] = state.approval_status.value
                 logger.info(
                     f"[INFO] [save_client_memory] Approval status sincronizado: "
                     f"{state.approval_status.value}"
                 )
 
             if state.approval_feedback:
-                profile.engagement.metadata['approval_feedback'] = state.approval_feedback
+                profile.metadata['approval_feedback'] = state.approval_feedback
                 logger.debug(
                     f"[INFO] [save_client_memory] Approval feedback sincronizado: "
                     f"{state.approval_feedback[:50]}..."
@@ -369,15 +367,18 @@ def create_placeholder_profile(
     """
     return ClientProfile(
         client_id=user_id,
-        company=CompanyContext(
+        company=CompanyInfo(
             name=company_name,
             sector="A definir",
-            size="média"
+            size="média",
+            industry=None,
+            founded_year=None
         ),
-        context=BusinessContext(),  # Valores default
+        context=StrategicContext(),  # Valores default
         engagement=EngagementState(
             current_phase="ONBOARDING",
             last_interaction=datetime.now(timezone.utc)
-        )
+        ),
+        diagnostics=None
     )
 

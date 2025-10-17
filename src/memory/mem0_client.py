@@ -102,9 +102,20 @@ class Mem0ClientWrapper:
             ProfileValidationError: Se dados não forem válidos
         """
         try:
+            # Pré-validações mínimas para evitar aceitar dados corrompidos
+            if not isinstance(data, dict):
+                raise ProfileValidationError(user_id, ValueError("profile_data inválido: esperado dict"))
+            company = data.get('company')
+            if not isinstance(company, dict):
+                raise ProfileValidationError(user_id, ValueError("profile_data.company ausente ou inválido"))
+            if not company.get('name'):
+                raise ProfileValidationError(user_id, ValueError("company.name ausente ou vazio"))
+
             profile = ClientProfile.from_mem0(data)
             logger.debug("[OK] Profile %r deserializado com sucesso", user_id)
             return profile
+        except ProfileValidationError:
+            raise
         except ValidationError as e:
             raise ProfileValidationError(user_id, e) from e
 
@@ -218,6 +229,9 @@ class Mem0ClientWrapper:
         except (ConnectionError, TimeoutError) as e:
             logger.warning("[RETRY] Falha de rede ao salvar profile: %s", e)
             raise  # Retry automático via decorator
+        except ProfileValidationError:
+            # Propaga erro de validação de perfil conforme esperado pelos testes
+            raise
         except ValidationError as e:
             raise ProfileValidationError(profile.client_id, e) from e
         except Exception as e:
