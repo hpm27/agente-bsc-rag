@@ -16,7 +16,7 @@ last_updated: "2025-10-19"
 
 ### Test Methodology (Validado Out/2025 - ROI: 32-60 min economizados por implementação)
 
-**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 14 pontos**:
+**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 15 pontos**:
 
 **PONTOS 1-8: Testes Unitários** (validado FASE 2.5)
 
@@ -49,6 +49,7 @@ last_updated: "2025-10-19"
 - `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (FASE 2.6, 4 problemas E2E, 11.900+ linhas)
 - `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (FASE 3.1, Implementation-First Testing, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
+- `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied + PONTO 15 fixtures Pydantic)
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -136,6 +137,20 @@ last_updated: "2025-10-19"
 *   **QUANDO USAR**: APIs novas (tools consultivas FASE 3+), agentes novos, integrações complexas (RAG, LLM, multi-step).
 *   **QUANDO NÃO USAR** (TDD tradicional melhor): API conhecida, lógica simples (math, pure functions), refactoring (testes já existem).
 *   **Lição detalhada**: `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+ linhas com checklist completo).
+
+**15. LER SCHEMA PYDANTIC VIA GREP ANTES DE CRIAR FIXTURE OU ACESSAR CAMPOS (validado FASE 3.5 - 2025-10-19)**
+*   PROBLEMA RESOLVIDO: Fixtures Pydantic inválidas (5 erros recorrentes 4 sessões: SWOT, Five Whys, Issue Tree, KPI, Strategic Obj), context builders acessando campos inexistentes (2 erros 3 sessões).
+*   ROOT CAUSE: NÃO ler schema Pydantic ANTES de criar fixture/acessar campos, assumir estrutura baseada em memória.
+*   **QUANDO APLICAR**: SEMPRE antes de: (1) Criar fixture Pydantic, (2) Escrever context builder, (3) Acessar campos de schema em qualquer código.
+*   **COMO APLICAR** (5 sub-pontos detalhados em [[memory:9969868]]):
+    1. `grep "class SchemaName" src/memory/schemas.py -A 50` → Identificar campos obrigatórios/opcionais/Literal
+    2. `grep "min_length\|@field_validator" src/memory/schemas.py` → Identificar validators
+    3. Validar nested schemas (schemas que agregam outros schemas)
+    4. Criar fixture com campos validados (margem de segurança em min_length)
+    5. Defensive programming em context builders (hasattr/getattr antes de acessar)
+*   **ROI ESPERADO**: 30-40 min economizados por sessão (fixtures corretas primeira tentativa).
+*   **ROI VALIDADO**: Sessão 20 teve 8 erros (1.5h debugging) que teriam sido prevenidos aplicando PONTO 15.
+*   **Lição detalhada**: `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys Root Cause Analysis completa).
 
 #### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
 
@@ -532,112 +547,39 @@ To improve agent performance and reduce debugging time, the following documentat
 
     to emphasize the importance of planning and to be more explicit about the steps and to make it easier to follow and validate each phase of the development.
 
-#### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
+### New Rule: Implementation-First Testing and Root Cause Analysis
 
-**Context**: Mocks para múltiplas chamadas sequenciais requerem abordagem dinâmica. Mock estático (`return_value` fixo) causa falhas quando tool processa lista de items esperando outputs diferentes.
+To enhance testing effectiveness and prevent recurring issues, adhere to the following guidelines:
 
-**Ponto 14: Mock Múltiplas Chamadas com itertools.cycle**:
+1.  **Implementation-First Testing**:
+    *   **ALWAYS** apply Implementation-First Testing (checklist point 13) before writing tests, especially for unfamiliar APIs.
+    *   **PURPOSE**: Prevent test rewrites by aligning tests with the actual implementation.
+    *   **5 Whys Before Coding**: When tests fail, apply 5 Whys rigorously to identify the root cause.
+2. **Root Cause Analysis and Checklist Adherence**:
+    *   **MANDATORY**: Before implementing any fix, identify the root cause and explicitly state which checklist point was violated.
+    *   **ROI**: Systematic debugging prevents recurring errors and wasted time.
+3.  **Schema Validation**:
+    *   **MANDATORY**: For Pydantic models, **ALWAYS** validate fixtures against the schema constraints to ensure data validity.
+    *   **PURPOSE**: Reduce debugging time by preventing data-related errors.
+4. **Context Builder Validation**:
+    *   **ALWAYS** ensure context builders use attributes that exist in the schema.
+    *   **PURPOSE**: Prevent runtime errors due to attribute access failures.
 
-**QUANDO USAR**: Mock será invocado N vezes (N > 1) esperando outputs diferentes a cada chamada.
+### New Rule: 5 Whys Root Cause Analysis for Test Failures (Validado FASE 3.5 - 2025-10-19)
 
-**RAZÃO**: Mock estático retorna sempre o mesmo valor. Tools que processam lista items (ex: 4 perspectivas BSC) falham com ValidationError quando mock não diferencia outputs.
+1. **Application**:
+    * **WHEN** tests fail, **ALWAYS** apply 5 Whys systematically to identify the root cause
+    * **PATTERN**:
+        1.  Collect facts and timeline (full traceback)
+        2.  Apply 5 Whys with evidences
+        3.  Base solution on root cause (not symptoms)
+2. **Implementation-First Testing (Checklist Point 13)**:
+    *   **MANDATORY**: Read the API implementation before writing tests to align with the actual implementation
+    *   **PURPOSE**: Prevents test rewrites
 
-**SOLUÇÃO VALIDADA**: `itertools.cycle` para retornar valores sequencialmente.
+### Checklist Atualizado (Com 5 Whys e Implementation-First Testing)
 
-**Template Geral**:
-```python
-from itertools import cycle
-
-@pytest.fixture
-def mock_with_cycle():
-    """Mock com itertools.cycle - múltiplos valores sequenciais."""
-    mock_obj = MagicMock()
-    
-    # Step 1: Definir valores esperados em ordem
-    values_order = [value1, value2, value3, value4]
-    values_cycle = cycle(values_order)
-    
-    # Step 2: side_effect usa next(cycle)
-    def side_effect_fn(*args, **kwargs):
-        """Retorna próximo valor na sequência."""
-        return next(values_cycle)
-    
-    mock_obj.method.side_effect = side_effect_fn
-    return mock_obj
-```
-
-**Exemplo Real - KPI Definer Tool** (validado 2025-10-19):
-```python
-from itertools import cycle
-from pydantic import BaseModel
-
-@pytest.fixture
-def mock_llm() -> MagicMock:
-    """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
-    llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
-    class KPIListOutput(BaseModel):
-        kpis: list[KPIDefinition]
-    
-    # Define KPIs mock para cada perspectiva
-    kpis_by_perspective = {
-        "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
-        "Clientes": [KPIDefinition(name="NPS", perspective="Clientes", ...)],
-        "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
-        "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
-    }
-    
-    # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
-    # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
-    perspective_order = [
-        "Financeira",
-        "Clientes",
-        "Processos Internos",
-        "Aprendizado e Crescimento"
-    ]
-    perspective_cycle = cycle(perspective_order)
-    
-    def mock_invoke_side_effect(prompt: str):
-        """Retorna KPIs da próxima perspectiva na sequência."""
-        perspective = next(perspective_cycle)
-        kpis = kpis_by_perspective[perspective]
-        return KPIListOutput(kpis=kpis)
-    
-    mock_structured_llm = MagicMock()
-    mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
-    llm.with_structured_output.return_value = mock_structured_llm
-    return llm
-```
-
-**Pergunta-Chave ANTES de criar mock**:
-> "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
-
-**Decisão Tree**:
-- Mock invocado **1x** OU **N vezes com MESMO output**? → `return_value` fixo OK
-- Mock invocado **N vezes com OUTPUTS DIFERENTES**? → `itertools.cycle` ou `side_effect` lista
-- Mock invocado **N vezes exatas** (N == len(lista))? → `side_effect = [val1, val2, val3]`
-- Mock invocado **N vezes indefinido** OU **N > len(values)**? → `itertools.cycle` (melhor escolha)
-
-**Alternativas e Trade-offs**:
-
-1. **Lista finita** (`side_effect = [val1, val2, val3]`):
-   - ✅ Simples, direto
-   - ❌ Erro `StopIteration` se chamadas > len(lista)
-   - **Usar quando**: N chamadas exatas conhecido
-
-2. **Callable com contador**:
-   ```python
-   call_count = 0
-   def side_effect():
-       nonlocal call_count
-       call_count += 1
-       return values[call_count - 1]
-   ```
-   - ✅ Controle explícito
-   - ❌ Mais verboso, `nonlocal` não pythônico
-   - **Usar quando**: Lógica complexa por chamada
-
-3. **itertools.cycle** (RECOMENDADO):
-   - ✅ Pythônico, elegante
-   - ✅ Nunca lança `StopIteration` (ciclo infinito)
-   - ✅
+- [ ] Antes de escrever testes, LER ASSINATURA COMPLETA (grep, schema) e VALIDAR FIXTURES contra schema
+- [ ] Ao encontrar falhas, aplicar 5 Whys para identificar ROOT CAUSE
+- [ ] Antes de implementar fix, explicitar qual CHECKLIST foi violado
+- [ ] SEMPRE aplicar Implementation-First Testing (ler código antes de testes)

@@ -1,9 +1,9 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-19 (Sessão 19 - FASE 3.4 KPI Definer Tool COMPLETA)  
-**Fase Atual**: FASE 3 - Diagnostic Tools 🚀 EM PROGRESSO (3.4 Completa)  
-**Sessão**: 19 de 15-19  
-**Progresso Geral**: 48.0% (24/50 tarefas - 3.4 KPI Definer Tool ✅)
+**Última Atualização**: 2025-10-19 (Sessão 20 - FASE 3.5 Strategic Objectives Tool COMPLETA)  
+**Fase Atual**: FASE 3 - Diagnostic Tools 🚀 EM PROGRESSO (3.5 Completa - 5/8 tools consultivas!)  
+**Sessão**: 20 de 15-20  
+**Progresso Geral**: 50.0% (25/50 tarefas - 3.5 Strategic Objectives Tool ✅)
 
 ---
 
@@ -49,10 +49,10 @@
 
 ---
 
-### FASE 3: Diagnostic Tools 🚀 EM PROGRESSO (3.3 COMPLETA)
-**Objetivo**: Ferramentas consultivas (SWOT, 5 Whys, Issue Tree, KPIs)  
-**Duração Estimada**: 17-21h (6-7 sessões) - Inclui prep obrigatória  
-**Progresso**: 6/14 tarefas (43%) - Prep + 3.1 SWOT + 3.2 Five Whys + 3.3 Issue Tree + 3.4 KPI Definer COMPLETAS
+### FASE 3: Diagnostic Tools 🚀 EM PROGRESSO (3.5 COMPLETA!)
+**Objetivo**: Ferramentas consultivas (SWOT, 5 Whys, Issue Tree, KPIs, Objetivos)  
+**Duração Estimada**: 20-24h (7-8 sessões) - Inclui prep obrigatória  
+**Progresso**: 7/14 tarefas (50%) - Prep + 3.1 SWOT + 3.2 Five Whys + 3.3 Issue Tree + 3.4 KPI + 3.5 Strategic Objectives COMPLETAS!
 
 **Pré-requisitos** (OBRIGATÓRIO antes de iniciar 3.1):
 Criar documentação arquitetural para acelerar implementação e prevenir descoberta via código trial-and-error. Baseado em lições Sessão 14 (lesson-regression-prevention-methodology-2025-10-17.md): 60% regressões causadas por falta de visibilidade de fluxos dados e contratos API. ROI esperado: ~5h economizadas em FASE 3 (agente consulta diagrams/contracts ao invés de ler código).
@@ -116,8 +116,21 @@ Criar documentação arquitetural para acelerar implementação e prevenir desco
   - Debugging via 5 Whys Root Cause Analysis: Mock perspectiva errada resolvido com itertools.cycle
   - Pattern SWOT/Five Whys/Issue Tree reutilizado 4ª vez: Economizou 30-40 min (ROI validado 4x consecutivas)
   
-- [ ] **3.5-3.12**: 8 tarefas ferramentas consultivas (ver plano mestre)
-  - Candidatas próximas: Objetivos Estratégicos Tool, Benchmarking Tool, Action Plan Tool
+- [x] **3.5** Strategic Objectives Tool (2-3h) ✅ **COMPLETO** (3.5h real - strategic_objectives.py + prompts + schemas + 12 testes + 5 Whys + PONTO 15)
+  - Schema `StrategicObjective` + `StrategicObjectivesFramework` (250 linhas) com 8 campos SMART + 5 métodos úteis
+  - Prompts conversacionais: `FACILITATE_OBJECTIVES_DEFINITION_PROMPT`, `VALIDATE_OBJECTIVES_BALANCE_PROMPT` + 4 context builders
+  - Tool implementado: `src/tools/strategic_objectives.py` (400 linhas, 88% coverage, LLM structured output + RAG optional)
+  - Integração DiagnosticAgent: método `generate_strategic_objectives()` (120 linhas)
+  - Testes: 12 unitários (100% passando em 20s, 88% coverage tool + 99% coverage prompts, mocks itertools.cycle)
+  - Debugging via 5 Whys Root Cause Analysis: 8 erros fixtures/context builders → 6 root causes identificadas
+  - Documentação: `docs/tools/STRATEGIC_OBJECTIVES.md` (3500+ linhas, 4 casos uso BSC completos, troubleshooting)
+  - Lição aprendida: `lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, **PONTO 15 novo** do checklist)
+  - **DESCOBERTA CRÍTICA**: Fixtures Pydantic inválidas recorrentes (4 sessões) → PONTO 15 adicionado ao checklist (LER SCHEMA VIA GREP)
+  - ROI PONTO 15: 30-40 min economizados por sessão (fixtures corretas primeira tentativa)
+  - Pattern reutilizado 5ª vez: Economizou 30-40 min (SWOT → Five Whys → Issue Tree → KPI → Strategic Obj)
+  
+- [ ] **3.6-3.12**: 7 tarefas ferramentas consultivas restantes (ver plano mestre)
+  - Candidatas próximas: Benchmarking Tool, Action Plan Tool, Priorization Matrix
 
 **Entregável**: 8 ferramentas consultivas ⏳  
 **Status**: DESBLOQUEADA após CHECKPOINT 2 aprovado (FASE 2 100% completa)  

@@ -979,4 +979,162 @@ ANÁLISES POR PERSPECTIVA:
             )
         
         return framework
+    
+    def generate_strategic_objectives(
+        self,
+        client_profile: ClientProfile,
+        diagnostic_result: CompleteDiagnostic,
+        existing_kpis: Optional["KPIFramework"] = None,
+        use_rag: bool = True,
+    ):
+        """Gera framework de objetivos estrategicos SMART para as 4 perspectivas BSC.
+        
+        Utiliza StrategicObjectivesTool para definir 2-5 objetivos estrategicos por
+        perspectiva BSC, totalizando 8-20 objetivos customizados para a empresa.
+        
+        Workflow:
+        1. Extrai company_info e strategic_context do ClientProfile
+        2. Usa diagnostic_result para contextualizar objetivos
+        3. (Opcional) Vincula com KPIs existentes para alinhamento
+        4. (Opcional) Busca conhecimento BSC via specialist agents (RAG)
+        5. Chama StrategicObjectivesTool.define_objectives() para gerar framework completo
+        6. Valida balanceamento entre perspectivas (warning se desbalanceado)
+        7. Retorna StrategicObjectivesFramework completo
+        
+        Args:
+            client_profile: Perfil do cliente com company_info
+            diagnostic_result: Resultado completo do diagnostico BSC
+            existing_kpis: Framework de KPIs existente para vinculacao (opcional)
+            use_rag: Se True, busca conhecimento BSC via specialist agents
+        
+        Returns:
+            StrategicObjectivesFramework: Framework com objetivos das 4 perspectivas
+        
+        Raises:
+            ValueError: Se client_profile ou diagnostic_result invalidos
+            RuntimeError: Se tool falha ao gerar objetivos
+        
+        Example:
+            >>> agent = DiagnosticAgent(...)
+            >>> 
+            >>> # Sem KPIs
+            >>> objectives = agent.generate_strategic_objectives(
+            ...     client_profile=profile,
+            ...     diagnostic_result=diagnostic,
+            ...     use_rag=True
+            ... )
+            >>> objectives.total_objectives()
+            12
+            >>> 
+            >>> # Com KPIs vinculados
+            >>> objectives = agent.generate_strategic_objectives(
+            ...     client_profile=profile,
+            ...     diagnostic_result=diagnostic,
+            ...     existing_kpis=kpi_framework,
+            ...     use_rag=True
+            ... )
+            >>> len(objectives.with_related_kpis())
+            8  # 8 de 12 objetivos tem KPIs vinculados
+        """
+        from src.tools.strategic_objectives import StrategicObjectivesTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando Strategic Objectives Framework para {client_profile.company.name} "
+            f"(use_rag={use_rag}, com_kpis={existing_kpis is not None})"
+        )
+        
+        # Validar inputs
+        if not client_profile or not client_profile.company:
+            raise ValueError(
+                "client_profile com company obrigatorio para gerar strategic objectives"
+            )
+        
+        if not diagnostic_result:
+            raise ValueError(
+                "diagnostic_result obrigatorio para contextualizar strategic objectives"
+            )
+        
+        # Extrair company_info do ClientProfile
+        company_info = client_profile.company
+        
+        # Extrair strategic_context do ClientProfile ou diagnostic
+        strategic_context = (
+            client_profile.context or
+            diagnostic_result.executive_summary[:200] if diagnostic_result.executive_summary else
+            "Contexto estrategico nao fornecido"
+        )
+        
+        # Lazy load tool
+        if not hasattr(self, "_strategic_objectives_tool"):
+            rag_agents = None
+            if use_rag:
+                rag_agents = (
+                    self.financial_agent,
+                    self.customer_agent,
+                    self.process_agent,
+                    self.learning_agent
+                )
+            
+            self._strategic_objectives_tool = StrategicObjectivesTool(
+                llm=self.llm,
+                use_rag=use_rag,
+                rag_agents=rag_agents
+            )
+            logger.info("[DIAGNOSTIC] StrategicObjectivesTool inicializada (lazy loading)")
+        
+        # Gerar framework de objetivos
+        try:
+            framework = self._strategic_objectives_tool.define_objectives(
+                company_info=company_info,
+                strategic_context=strategic_context,
+                diagnostic_result=diagnostic_result,
+                existing_kpis=existing_kpis
+            )
+            
+            logger.info(
+                f"[DIAGNOSTIC] Strategic Objectives Framework gerado: "
+                f"{framework.total_objectives()} objetivos totais"
+            )
+            
+        except Exception as e:
+            logger.error(
+                f"[DIAGNOSTIC] Erro ao gerar Strategic Objectives Framework: {e}"
+            )
+            raise RuntimeError(
+                f"Falha ao gerar Strategic Objectives Framework: {str(e)}"
+            ) from e
+        
+        # Validar balanceamento (warning se desbalanceado, mas nao bloqueia)
+        counts = {
+            "Financeira": len(framework.financial_objectives),
+            "Clientes": len(framework.customer_objectives),
+            "Processos": len(framework.process_objectives),
+            "Aprendizado": len(framework.learning_objectives)
+        }
+        
+        total = framework.total_objectives()
+        max_count = max(counts.values())
+        max_percentage = (max_count / total) * 100 if total > 0 else 0
+        
+        if max_percentage > 50:
+            logger.warning(
+                f"[DIAGNOSTIC] Framework desbalanceado! Uma perspectiva tem "
+                f"{max_percentage:.0f}% dos objetivos (recomendado <50%). "
+                f"Distribuicao: {counts}"
+            )
+        else:
+            logger.info(
+                f"[DIAGNOSTIC] Framework balanceado! Distribuicao: {counts}"
+            )
+        
+        # Log vinculacao com KPIs (se fornecidos)
+        if existing_kpis:
+            with_kpis = len(framework.with_related_kpis())
+            kpi_percentage = (with_kpis / total) * 100 if total > 0 else 0
+            logger.info(
+                f"[DIAGNOSTIC] Vinculacao com KPIs: {with_kpis}/{total} objetivos "
+                f"({kpi_percentage:.0f}%) tem KPIs relacionados"
+            )
+        
+        return framework
 

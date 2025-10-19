@@ -1597,3 +1597,389 @@ class KPIFramework(BaseModel):
         lines.append(f"- Processos Internos: {len(self.process_kpis)} KPIs")
         lines.append(f"- Aprendizado e Crescimento: {len(self.learning_kpis)} KPIs")
         return "\n".join(lines)
+
+
+# ============================================================================
+# STRATEGIC OBJECTIVES SCHEMAS (Fase 3.5 - Sessao 20)
+# ============================================================================
+
+
+class StrategicObjective(BaseModel):
+    """Objetivo estrategico SMART para uma perspectiva BSC.
+    
+    Define um objetivo estrategico de longo prazo alinhado com uma das 4 perspectivas
+    do Balanced Scorecard. Objetivos estrategicos fornecem direcao (onde queremos chegar)
+    enquanto KPIs fornecem medicao (como saberemos que chegamos).
+    
+    Attributes:
+        name: Nome conciso do objetivo (ex: "Aumentar rentabilidade sustentavel")
+        description: Detalhamento completo SMART do objetivo
+        perspective: Perspectiva BSC a qual o objetivo pertence
+        timeframe: Prazo para alcance do objetivo (ex: "12 meses", "Q1 2026")
+        success_criteria: Lista de criterios mensu
+
+raveis que indicam sucesso
+        related_kpis: Lista de nomes de KPIs que medem progresso deste objetivo
+        priority: Prioridade do objetivo (Alta, Media, Baixa)
+        dependencies: Lista de nomes de objetivos prerequisitos (opcional)
+    
+    Validacoes:
+        - name e description nao podem ser vazios (field_validator)
+        - perspective deve ser uma das 4 perspectivas BSC (Literal)
+        - success_criteria deve ter pelo menos 2 criterios com min_length=20
+        - priority deve ser Alta, Media ou Baixa (Literal)
+    
+    Example:
+        >>> objetivo = StrategicObjective(
+        ...     name="Aumentar rentabilidade sustentavel",
+        ...     description="Aumentar margem EBITDA de 15% para 20% em 12 meses atraves de otimizacao de custos e crescimento de receita",
+        ...     perspective="Financeira",
+        ...     timeframe="12 meses",
+        ...     success_criteria=[
+        ...         "Margem EBITDA >= 20%",
+        ...         "Crescimento receita >= 15% YoY"
+        ...     ],
+        ...     related_kpis=["Margem EBITDA", "Crescimento Receita"],
+        ...     priority="Alta"
+        ... )
+    """
+    
+    name: str = Field(
+        min_length=10,
+        description="Nome conciso do objetivo estrategico"
+    )
+    description: str = Field(
+        min_length=50,
+        description="Detalhamento completo SMART do objetivo"
+    )
+    perspective: Literal[
+        "Financeira",
+        "Clientes",
+        "Processos Internos",
+        "Aprendizado e Crescimento"
+    ] = Field(
+        description="Perspectiva BSC do objetivo"
+    )
+    timeframe: str = Field(
+        min_length=5,
+        description="Prazo para alcance do objetivo (ex: 12 meses, Q1 2026)"
+    )
+    success_criteria: List[str] = Field(
+        min_length=2,
+        description="Lista de criterios mensuraveis de sucesso (minimo 2)"
+    )
+    related_kpis: List[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de KPIs que medem progresso (opcional)"
+    )
+    priority: Literal["Alta", "Media", "Baixa"] = Field(
+        default="Media",
+        description="Prioridade do objetivo"
+    )
+    dependencies: List[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de objetivos prerequisitos (opcional)"
+    )
+    
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True
+    )
+    
+    @field_validator("name")
+    @classmethod
+    def validate_name_not_empty(cls, v: str) -> str:
+        """Valida que name nao esta vazio apos strip."""
+        if not v or not v.strip():
+            raise ValueError("name nao pode ser vazio")
+        return v
+    
+    @field_validator("description")
+    @classmethod
+    def validate_description_not_empty(cls, v: str) -> str:
+        """Valida que description nao esta vazio apos strip."""
+        if not v or not v.strip():
+            raise ValueError("description nao pode ser vazio")
+        return v
+    
+    @field_validator("success_criteria")
+    @classmethod
+    def validate_success_criteria_quality(cls, v: List[str]) -> List[str]:
+        """Valida que cada criterio tem comprimento minimo e nao esta vazio."""
+        if len(v) < 2:
+            raise ValueError("success_criteria deve ter pelo menos 2 criterios")
+        
+        for i, criterion in enumerate(v):
+            if not criterion or not criterion.strip():
+                raise ValueError(f"success_criteria[{i}] nao pode ser vazio")
+            if len(criterion.strip()) < 20:
+                raise ValueError(
+                    f"success_criteria[{i}] muito curto (minimo 20 caracteres, "
+                    f"recebido {len(criterion.strip())})"
+                )
+        
+        return v
+
+
+class StrategicObjectivesFramework(BaseModel):
+    """Framework completo de objetivos estrategicos BSC.
+    
+    Agrupa objetivos estrategicos das 4 perspectivas BSC em um unico
+    framework estruturado. Prove metodos uteis para analise e filtragem.
+    
+    Attributes:
+        financial_objectives: Objetivos da perspectiva Financeira
+        customer_objectives: Objetivos da perspectiva Clientes
+        process_objectives: Objetivos da perspectiva Processos Internos
+        learning_objectives: Objetivos da perspectiva Aprendizado e Crescimento
+        company_context: Contexto opcional da empresa (ex: resumo diagnostico)
+    
+    Metodos Uteis:
+        - total_objectives() -> int: Total de objetivos em todas perspectivas
+        - by_perspective(perspective) -> List[StrategicObjective]: Filtra por perspectiva
+        - by_priority(priority) -> List[StrategicObjective]: Filtra por prioridade
+        - with_related_kpis() -> List[StrategicObjective]: Apenas objetivos com KPIs vinculados
+        - summary() -> str: Resumo textual distribuicao objetivos
+    
+    Validacoes:
+        - model_validator verifica que cada lista contem APENAS objetivos da perspectiva correta
+        - Similar a KPIFramework validator (validado Sessao 19)
+    
+    Example:
+        >>> framework = StrategicObjectivesFramework(
+        ...     financial_objectives=[obj1_financeira, obj2_financeira],
+        ...     customer_objectives=[obj1_clientes],
+        ...     process_objectives=[obj1_processos, obj2_processos],
+        ...     learning_objectives=[obj1_aprendizado]
+        ... )
+        >>> print(framework.total_objectives())  # 6
+        >>> high_priority = framework.by_priority("Alta")  # 3 objetivos
+    """
+    
+    financial_objectives: List[StrategicObjective] = Field(
+        default_factory=list,
+        description="Objetivos da perspectiva Financeira"
+    )
+    customer_objectives: List[StrategicObjective] = Field(
+        default_factory=list,
+        description="Objetivos da perspectiva Clientes"
+    )
+    process_objectives: List[StrategicObjective] = Field(
+        default_factory=list,
+        description="Objetivos da perspectiva Processos Internos"
+    )
+    learning_objectives: List[StrategicObjective] = Field(
+        default_factory=list,
+        description="Objetivos da perspectiva Aprendizado e Crescimento"
+    )
+    company_context: Optional[str] = Field(
+        default=None,
+        description="Contexto opcional da empresa (ex: resumo diagnostico)"
+    )
+    
+    model_config = ConfigDict(
+        validate_assignment=True
+    )
+    
+    @model_validator(mode="after")
+    def validate_cross_perspective_consistency(self):
+        """Valida que cada lista contem APENAS objetivos da perspectiva correta.
+        
+        Previne bugs silenciosos onde objetivo da perspectiva errada e adicionado
+        a lista incorreta (ex: objetivo Financeira em customer_objectives).
+        
+        Raises:
+            ValueError: Se encontrar objetivo com perspectiva inconsistente
+        """
+        # Validar financial_objectives
+        for obj in self.financial_objectives:
+            if obj.perspective != "Financeira":
+                raise ValueError(
+                    f"financial_objectives deve conter apenas objetivos da perspectiva 'Financeira', "
+                    f"encontrado '{obj.perspective}' em objetivo '{obj.name}'"
+                )
+        
+        # Validar customer_objectives
+        for obj in self.customer_objectives:
+            if obj.perspective != "Clientes":
+                raise ValueError(
+                    f"customer_objectives deve conter apenas objetivos da perspectiva 'Clientes', "
+                    f"encontrado '{obj.perspective}' em objetivo '{obj.name}'"
+                )
+        
+        # Validar process_objectives
+        for obj in self.process_objectives:
+            if obj.perspective != "Processos Internos":
+                raise ValueError(
+                    f"process_objectives deve conter apenas objetivos da perspectiva 'Processos Internos', "
+                    f"encontrado '{obj.perspective}' em objetivo '{obj.name}'"
+                )
+        
+        # Validar learning_objectives
+        for obj in self.learning_objectives:
+            if obj.perspective != "Aprendizado e Crescimento":
+                raise ValueError(
+                    f"learning_objectives deve conter apenas objetivos da perspectiva 'Aprendizado e Crescimento', "
+                    f"encontrado '{obj.perspective}' em objetivo '{obj.name}'"
+                )
+        
+        return self
+    
+    def total_objectives(self) -> int:
+        """Retorna numero total de objetivos no framework.
+        
+        Returns:
+            int: Soma de objetivos de todas as 4 perspectivas
+        
+        Example:
+            >>> framework = StrategicObjectivesFramework(...)
+            >>> framework.total_objectives()
+            12  # 3 + 2 + 4 + 3
+        """
+        return (
+            len(self.financial_objectives) +
+            len(self.customer_objectives) +
+            len(self.process_objectives) +
+            len(self.learning_objectives)
+        )
+    
+    def by_perspective(self, perspective: str) -> List[StrategicObjective]:
+        """Retorna objetivos de uma perspectiva especifica.
+        
+        Args:
+            perspective: Nome da perspectiva BSC
+        
+        Returns:
+            List[StrategicObjective]: Lista de objetivos da perspectiva solicitada
+        
+        Raises:
+            ValueError: Se perspectiva invalida
+        
+        Example:
+            >>> framework = StrategicObjectivesFramework(...)
+            >>> financial = framework.by_perspective("Financeira")
+            >>> print(len(financial))  # 3
+        """
+        perspective_map = {
+            "Financeira": self.financial_objectives,
+            "Clientes": self.customer_objectives,
+            "Processos Internos": self.process_objectives,
+            "Aprendizado e Crescimento": self.learning_objectives
+        }
+        
+        if perspective not in perspective_map:
+            raise ValueError(
+                f"Perspectiva '{perspective}' invalida. "
+                f"Opcoes: {list(perspective_map.keys())}"
+            )
+        
+        return perspective_map[perspective]
+    
+    def by_priority(self, priority: str) -> List[StrategicObjective]:
+        """Retorna objetivos de uma prioridade especifica em todas perspectivas.
+        
+        Args:
+            priority: Prioridade (Alta, Media, Baixa)
+        
+        Returns:
+            List[StrategicObjective]: Lista de objetivos com prioridade solicitada
+        
+        Raises:
+            ValueError: Se prioridade invalida
+        
+        Example:
+            >>> framework = StrategicObjectivesFramework(...)
+            >>> high_priority = framework.by_priority("Alta")
+            >>> print(len(high_priority))  # 5
+        """
+        valid_priorities = ["Alta", "Media", "Baixa"]
+        if priority not in valid_priorities:
+            raise ValueError(
+                f"Prioridade '{priority}' invalida. "
+                f"Opcoes: {valid_priorities}"
+            )
+        
+        all_objectives = (
+            self.financial_objectives +
+            self.customer_objectives +
+            self.process_objectives +
+            self.learning_objectives
+        )
+        
+        return [obj for obj in all_objectives if obj.priority == priority]
+    
+    def with_related_kpis(self) -> List[StrategicObjective]:
+        """Retorna apenas objetivos que possuem KPIs vinculados (related_kpis nao vazio).
+        
+        Util para verificar alinhamento estrategico entre objetivos e KPIs.
+        
+        Returns:
+            List[StrategicObjective]: Lista de objetivos com pelo menos 1 KPI vinculado
+        
+        Example:
+            >>> framework = StrategicObjectivesFramework(...)
+            >>> with_kpis = framework.with_related_kpis()
+            >>> print(len(with_kpis))  # 8 de 12 objetivos tem KPIs
+        """
+        all_objectives = (
+            self.financial_objectives +
+            self.customer_objectives +
+            self.process_objectives +
+            self.learning_objectives
+        )
+        
+        return [obj for obj in all_objectives if obj.related_kpis]
+    
+    def summary(self) -> str:
+        """Retorna resumo textual do framework com contagem por perspectiva e prioridade.
+        
+        Returns:
+            str: Resumo formatado multi-linha
+        
+        Example:
+            >>> framework = StrategicObjectivesFramework(...)
+            >>> print(framework.summary())
+            Framework BSC com 12 objetivos estrategicos distribuidos:
+            
+            Por Perspectiva:
+            - Financeira: 3 objetivos
+            - Clientes: 2 objetivos
+            - Processos Internos: 4 objetivos
+            - Aprendizado e Crescimento: 3 objetivos
+            
+            Por Prioridade:
+            - Alta: 5 objetivos
+            - Media: 4 objetivos
+            - Baixa: 3 objetivos
+            
+            Objetivos com KPIs vinculados: 8 de 12 (67%)
+        """
+        lines = []
+        total = self.total_objectives()
+        lines.append(f"Framework BSC com {total} objetivos estrategicos distribuidos:")
+        lines.append("")
+        
+        # Por perspectiva
+        lines.append("Por Perspectiva:")
+        lines.append(f"- Financeira: {len(self.financial_objectives)} objetivos")
+        lines.append(f"- Clientes: {len(self.customer_objectives)} objetivos")
+        lines.append(f"- Processos Internos: {len(self.process_objectives)} objetivos")
+        lines.append(f"- Aprendizado e Crescimento: {len(self.learning_objectives)} objetivos")
+        lines.append("")
+        
+        # Por prioridade
+        lines.append("Por Prioridade:")
+        high = len(self.by_priority("Alta"))
+        medium = len(self.by_priority("Media"))
+        low = len(self.by_priority("Baixa"))
+        lines.append(f"- Alta: {high} objetivos")
+        lines.append(f"- Media: {medium} objetivos")
+        lines.append(f"- Baixa: {low} objetivos")
+        lines.append("")
+        
+        # Vinculacao com KPIs
+        with_kpis = len(self.with_related_kpis())
+        percentage = int((with_kpis / total * 100)) if total > 0 else 0
+        lines.append(f"Objetivos com KPIs vinculados: {with_kpis} de {total} ({percentage}%)")
+        
+        return "\n".join(lines)
