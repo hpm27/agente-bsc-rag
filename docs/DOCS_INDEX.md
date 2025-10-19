@@ -1,8 +1,8 @@
 # 📇 ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.1  
-**Última Atualização:** 2025-10-16  
-**Total de Documentos:** 44 (40 docs/ + 4 rules/) - +7 lessons completas!
+**Versão:** 1.3  
+**Última Atualização:** 2025-10-19  
+**Total de Documentos:** 46 (42 docs/ + 4 rules/) - +2 architecture docs!
 
 ---
 
@@ -41,9 +41,14 @@
 - `docs/API_REFERENCE.md` - Referência completa da API
 - `src/rag/*.py` - 16 módulos RAG
 
-**architecture** (Docs: 2)
+**api-contracts** (Docs: 1)
+- `docs/architecture/API_CONTRACTS.md` - Contratos API completos (8 agentes, 23 métodos, 7 schemas Pydantic)
+
+**architecture** (Docs: 4)
 - `docs/ARCHITECTURE.md` - Visão geral arquitetural
 - `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (fluxos dados)
+- `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
 
 **asyncio** (Docs: 3)
 - `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md` - AsyncIO 3.34x speedup
@@ -99,6 +104,9 @@
 **deployment** (Docs: 2)
 - `docs/DEPLOYMENT.md` - Guia de deploy
 - `docker-compose.yml` - Configuração Docker
+
+**diagrams** (Docs: 1)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (ClientProfile Lifecycle, Diagnostic Workflow, Schema Dependencies, Agent Interactions, State Transitions)
 
 **diversity** (Docs: 2)
 - `docs/techniques/ADAPTIVE_RERANKING.md` - MMR algorithm
@@ -208,6 +216,9 @@
 ---
 
 ### M
+
+**mermaid** (Docs: 1)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid v11.1.0+ (sequenceDiagram, flowchart TD, classDiagram, stateDiagram-v2)
 
 **metadata** (Docs: 3)
 - `data/README.md` - Metadados index.json + auto-geração
@@ -518,6 +529,8 @@
 | **Melhorar diversidade docs** | adaptive-reranking, diversity | `techniques/ADAPTIVE_RERANKING.md` | `src/rag/reranker.py` |
 | **Otimizar estratégia por query** | query-router, strategies | `techniques/ROUTER.md` | `src/rag/query_router.py` |
 | **Entender workflow LangGraph** | langgraph, workflow, agents | `LANGGRAPH_WORKFLOW.md` | `src/graph/workflow.py` |
+| **Entender fluxos de dados** | diagrams, mermaid, architecture | `architecture/DATA_FLOW_DIAGRAMS.md` | - |
+| **Chamar métodos de agentes** | api-contracts, agents, architecture | `architecture/API_CONTRACTS.md` | `src/agents/*.py` |
 | **Setup inicial do projeto** | quickstart, setup | `QUICKSTART.md` | `setup.ps1` |
 | **Configurar vector store** | qdrant, vector-store | `VECTOR_STORE_MIGRATION_GUIDE.md` | `src/rag/qdrant_vector_store.py` |
 | **Criar testes E2E** | e2e-tests, testing | `TESTING_GUIDE.md`, `E2E_TESTS_IMPLEMENTATION_SUMMARY.md` | `tests/integration/test_e2e.py` |
@@ -545,7 +558,7 @@
 | **Lessons** | 8 docs (5.600+ linhas) | 22% |
 | **Vector Stores** | 2 docs | 5% |
 
-**Total:** 44 documentos
+**Total:** 46 documentos
 
 ---
 
@@ -621,7 +634,29 @@
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Próximo:** Criar lições aprendidas (docs/lessons/)
+### v1.2 - 2025-10-16 (Lições Aprendidas)
+
+**Adicionado:**
+- ✅ 9 lições completas em docs/lessons/
+- ✅ Antipadrões RAG catalogados
+
+---
+
+### v1.3 - 2025-10-19 (Architecture Docs)
+
+**Adicionado:**
+- ✅ `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
+- ✅ `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes
+- ✅ 3 novas tags: diagrams, api-contracts, mermaid
+- ✅ 2 novos cenários Quick Search Matrix
+- ✅ Estatísticas atualizadas: 44→46 docs
+
+**ROI:**
+- ~1h economizada por task (consulta diagrams/contracts vs leitura código)
+
+---
+
+**Última Atualização:** 2025-10-19  
+**Próximo:** FASE 3.1 SWOT Analysis Tool
 
 

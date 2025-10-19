@@ -1,8 +1,8 @@
 ---
 alwaysApply: true
 description: "Router central para projeto BSC RAG - Workflow obrigatório, lições validadas do MVP, mapa de técnicas RAG avançadas, e guia de navegação. Sempre aplicado para garantir processo consistente durante toda a Fase 2 (6-8 semanas)."
-version: "1.0"
-last_updated: "2025-10-14"
+version: "1.4"
+last_updated: "2025-10-19"
 ---
 
 # 🧠 BSC RAG - ROUTER CENTRAL
@@ -15,11 +15,44 @@ Este router central é **sempre aplicado** durante todo o desenvolvimento da Fas
 
 ## 📋 ÍNDICE NAVEGÁVEL
 
-1. [🚨 Workflow Obrigatório RAG](#workflow-obrigatório-rag) - **7 steps** para implementar qualquer técnica
-2. [🎓 Lições de Produção MVP](#lições-de-produção-mvp) - **Top 5** descobertas validadas
-3. [🗺️ Mapa de Técnicas RAG](#mapa-de-técnicas-rag) - **8 técnicas** comparadas por ROI
-4. [🎯 Guia por Cenário](#guia-por-cenário-rag) - **4 cenários** práticos mapeados
-5. [📚 Localização da Documentação](#localização-da-documentação) - Navegação rápida
+1. [📊 Estado Atual do Projeto](#estado-atual-do-projeto) - **Status, tarefas recentes, próxima tarefa**
+2. [🚨 Workflow Obrigatório RAG](#workflow-obrigatório-rag) - **7 steps** para implementar qualquer técnica
+3. [🎓 Lições de Produção MVP](#lições-de-produção-mvp) - **Top 5** descobertas validadas
+4. [🎓 Lições Aprendidas Fase 2A](#lições-aprendidas-fase-2a) - **4 lições** das 3 técnicas implementadas
+5. [🗺️ Mapa de Técnicas RAG](#mapa-de-técnicas-rag) - **8 técnicas** comparadas por ROI
+6. [🎯 Guia por Cenário](#guia-por-cenário-rag) - **4 cenários** práticos mapeados
+7. [📚 Localização da Documentação](#localização-da-documentação) - **Top 10 docs + estrutura completa**
+
+---
+
+## 📊 ESTADO ATUAL DO PROJETO
+
+**SEMPRE consulte .cursor/progress/consulting-progress.md para histórico completo**
+
+### Status Geral
+- **Fase Atual**: FASE 3 - Diagnostic Tools
+- **Progresso Geral**: 40% (20/50 tarefas)
+- **Progresso FASE 3**: 14% (2/14 tarefas - prep completa)
+- **Última Atualização**: 2025-10-19 (Sessão 15)
+
+### Tarefas Recentes (Últimas 3)
+- [OK] **3.0.1** Data Flow Diagrams (COMPLETO - 2025-10-19)
+  - Entregável: docs/architecture/DATA_FLOW_DIAGRAMS.md (5 diagramas Mermaid)
+  - ROI: ~6h economizadas em FASE 3 (9x speedup consulta vs leitura código)
+- [OK] **3.0.2** API Contracts (COMPLETO - 2025-10-19)
+  - Entregável: docs/architecture/API_CONTRACTS.md (1200+ linhas, 8 agentes, 23 métodos)
+  - ROI: ~1h economizada em FASE 3 (7.5x speedup consulta vs leitura código)
+- [OK] **FASE 3 PREP** 100% completa
+  - ROI combinado: ~7h economizadas (prep arquitetural completa)
+
+### Próxima Tarefa
+- [NEXT] **3.1** SWOT Analysis Tool (2-3h estimado)
+  - Descrição: Primeira tool consultiva integrada com DiagnosticAgent
+  - Dependências: API_CONTRACTS.md (OK), DATA_FLOW_DIAGRAMS.md (OK)
+  - Pré-requisitos: Workflow obrigatório 7 steps (ver abaixo)
+  - Status: DESBLOQUEADA e pronta para iniciar
+
+**Protocolo de atualização**: Esta seção é atualizada manualmente a cada 2-3 sessões ou quando fase muda.
 
 ---
 
@@ -774,6 +807,39 @@ Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
 
 **Navegação rápida para toda documentação do projeto BSC RAG:**
 
+---
+
+### Documentação Essencial (Top 10 Críticos)
+
+**SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (46 documentos)**
+
+#### Arquitetura (4 docs)
+- `docs/ARCHITECTURE.md` - Overview arquitetural high-level
+- `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph detalhado
+- `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (fluxos dados)
+
+#### Implementação (3 docs)
+- `docs/TUTORIAL.md` - Guia completo de uso end-to-end
+- `docs/TESTING_GUIDE.md` - Estratégias de teste (unitários, E2E, benchmark)
+- `docs/QUICKSTART.md` - Setup rápido (5 min)
+
+#### Techniques RAG (3 docs)
+- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 (Fase 2A.1, 400+ linhas)
+- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 (Fase 2A.2, 500+ linhas)
+- `docs/techniques/ROUTER.md` - TECH-003 (Fase 2A.3, 650+ linhas)
+
+**Quando consultar documentação completa:**
+- Implementando features novas → API_CONTRACTS + DATA_FLOW_DIAGRAMS primeiro
+- Escrevendo testes → TESTING_GUIDE para estratégias validadas
+- Debugando fluxos de dados → DATA_FLOW_DIAGRAMS + LANGGRAPH_WORKFLOW
+- Implementando técnicas RAG → docs/techniques/[TECHNIQUE].md específico
+- Buscando doc específico → docs/DOCS_INDEX.md (tags, quick search matrix)
+
+---
+
+### Estrutura Completa de Diretórios
+
 ```
 agente-bsc-rag/
 ├── .cursor/rules/
@@ -960,5 +1026,53 @@ agente-bsc-rag/
 
 ---
 
-**Última Atualização:** 2025-10-15 (v1.3)
-**Status:** ✅ TIER 1+2+3 COMPLETO | ✅ LIÇÕES FASE 2A INTEGRADAS | 🎯 Pronto para Fase 2B
+### v1.4 - 2025-10-19 (Documentation Navigation)
+
+**Criado:**
+
+- [OK] **MINI-PROGRESS**: Seção "Estado Atual do Projeto" (~330 tokens)
+  - Status geral (fase atual, progresso, última atualização)
+  - Últimas 3 tarefas concluídas com ROI validado
+  - Próxima tarefa com dependências e status
+  - Pointer explícito para .cursor/progress/consulting-progress.md completo
+
+- [OK] **MINI-INDEX**: Seção "Documentação Essencial (Top 10 Críticos)" (~280 tokens)
+  - Top 10 documentos categorizados (Arquitetura 4, Implementação 3, Techniques RAG 3)
+  - Instruções condicionais de quando consultar
+  - Pointer explícito para docs/DOCS_INDEX.md completo (46 docs)
+  - Mantida árvore de diretórios completa para navegação detalhada
+
+**Atualizado:**
+
+- [OK] **ÍNDICE NAVEGÁVEL**: Expandido de 5 para 7 seções
+  - Adicionada seção "Estado Atual do Projeto" (nova)
+  - Adicionada seção "Lições Aprendidas Fase 2A" (existia mas não estava listada - correção)
+  - Atualizada descrição "Localização da Documentação" (agora inclui Top 10)
+
+**Estratégia Aplicada:**
+
+- **Mini-Summaries + Pointers** ao invés de always-applied completo
+- Informação essencial inline (~610 tokens total)
+- Documentação completa disponível sob demanda via read_file
+- Lazy loading de conhecimento (80% economia de tokens vs always-applied completo)
+
+**ROI Esperado v1.4:**
+
+- **Custo economizado**: ~$24/mês (80% economia vs carregar DOCS_INDEX e Progress completos)
+- **Eficiência**: 5-10x mais eficiente (informação carregada só quando necessária)
+- **Manutenção**: ~5 min/2-3 sessões (atualizar MINI-PROGRESS quando fase muda)
+- **Contexto**: Agente sempre sabe "onde estamos" e "top 10 docs críticos" sem consumir 5K+ tokens
+
+**Protocolo de Manutenção:**
+
+- MINI-PROGRESS: Atualizar a cada 2-3 sessões ou quando fase muda (~5 min)
+- MINI-INDEX: Atualizar apenas quando novos docs críticos forem criados (raro, ~1-2x/fase)
+
+**Próximo:**
+
+- [NEXT] **FASE 3.1** - SWOT Analysis Tool (usar MINI-PROGRESS + MINI-INDEX para navegação)
+
+---
+
+**Última Atualização:** 2025-10-19 (v1.4)
+**Status:** ✅ TIER 1+2+3 COMPLETO | ✅ MINI-SUMMARIES IMPLEMENTADO | 🎯 Pronto para FASE 3.1

@@ -143,281 +143,31 @@ globs: *
 *   **ROI**: 40-60 min economizados vs tentativa e erro manual
 *   **Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md`
 
-**ROI Total E2E**: 32-60 min economizados por implementação (4 erros × 8-15 min/erro)
-
-**Lição Detalhada**: `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+ linhas)
-
-### Regression Prevention Strategy (Validado FASE 2.10 - Out/2025)
-
-**Context**: Durante FASE 2 (10 tarefas), validamos incrementalmente apenas testes NOVOS de cada etapa. Resultado: 10 regressões silenciosas detectadas apenas na regression suite final (60% causadas por schema changes). Aplicamos SFL + 5 Whys para corrigir (1.5h vs 4-6h estimado, ROI 2.5-4x).
-
-**3 Estratégias Obrigatórias**:
-
-#### 1. Smoke Tests (5-10 min por etapa)
-
-**Quando**: Após completar CADA etapa (ex: FASE 3.2 SWOT Tool → smoke test)
-
-**Comando**:
-```bash
-pytest -k "smoke" -v --tb=short
-# Executa ~5 testes representativos (1 por módulo core)
-# Tempo: 10-15s
-```
-
-**Se falha**: PARAR e investigar imediatamente (não acumular dívida técnica)
-
-**ROI**: 5-10 min investidos, 1-2h debugging evitado por regressão detectada cedo
-
-#### 2. Regression Suite Semanal (1h por semana)
-
-**Quando**: Fim de semana (sexta-feira) ou antes de Checkpoint formal
-
-**Comando**:
-```bash
-pytest -n 8 --dist=loadfile -v --tb=long
-# Executa TODOS 350+ testes em paralelo
-# Tempo: 45-60 min
-```
-
-**Análise**:
-- 0-2 fails: OK (corrigir pontualmente)
-- 3-10 fails: ALERTA (dedicar sessão correções)
-- 10+ fails: CRÍTICO (pausar features, estabilizar)
-
-**Checkpoint formal** (antes desbloquear próxima fase):
-- FASE N 100% → Regression suite → 0 fails → FASE N+1 desbloqueada
-
-**ROI**: 1h investida/semana, 4-6h debugging evitado (correções antecipadas)
-
-#### 3. Contract Testing - Schemas Pydantic (10-15 min por mudança)
-
-**Quando**: Ao modificar schema Pydantic core (CompanyInfo, ClientProfile, BSCState, SearchResult, DiagnosticResult, etc)
-
-**Processo**:
-
-1. **Identificar dependentes** (ANTES de mudar):
-   ```bash
-   grep -r "SchemaName" src/ tests/
-   # Contar arquivos/testes impactados
-   ```
-
-2. **Baseline** (testes passando antes):
-   ```bash
-   pytest -k "schema_name" -v > before.txt
-   ```
-
-3. **Fazer mudança** (incremental, 1 campo por vez)
-
-4. **Validar impactados** (após mudança):
-   ```bash
-   pytest -k "schema_name" -v > after.txt
-   diff before.txt after.txt
-   ```
-
-5. **Se regressões**: Corrigir fixtures, validators, dependentes
-
-6. **Se OK**: Commit
-
-**ROI**: 20-25 min economizados vs full suite (10-15 min targeted vs 45-60 min full)
-
-**Checklist 8 Pontos ANTES de Mudar Schema** [[memory:10020812]]:
-
-- [ ] 1. Identificar dependentes: `grep -r "SchemaName" src/ tests/`
-- [ ] 2. Executar baseline: `pytest -k "schema_name" -v > before.txt`
-- [ ] 3. Mudança incremental (1 campo por vez)
-- [ ] 4. Atualizar fixtures (min_length, Literal, defaults)
-- [ ] 5. Validar impactados: `pytest -k "schema_name" -v > after.txt`
-- [ ] 6. Smoke test: `pytest -k "smoke" --tb=short`
-- [ ] 7. Read lints (warnings Pydantic V2)
-- [ ] 8. Documentar breaking change (CHANGELOG ou migration guide)
-
-**Schemas Core** (alto impacto, validação obrigatória):
-- `CompanyInfo`: ~32 testes dependentes
-- `ClientProfile`: ~45 testes dependentes
-- `BSCState`: ~60 testes dependentes
-- `SearchResult`: ~25 testes dependentes
-- `DiagnosticResult`: ~16 testes dependentes
-- `CompleteDiagnostic`: ~20 testes dependentes
-
-**Impact Analysis Rápida**:
-
-| Mudança Schema | Risco | Validação Mínima |
-|---|---|---|
-| Adicionar campo opcional | BAIXO | pytest -k "schema_name" (10-15 testes) |
-| Mudar tipo campo (Literal → str) | MÉDIO | pytest -k "SchemaName" (30+ testes) |
-| Adicionar validator | MÉDIO | pytest -k "schema_name or validate" (20-25 testes) |
-| Remover campo obrigatório | ALTO | pytest -k "SchemaName" + manual review (50+ testes) |
-| Mudar nome campo | CRÍTICO | grep -r "old_name" + pytest completo (100+ testes) |
-
-**Antipadrão Evitar** [[memory:10020812]]:
-❌ Mudar schema → commit direto sem pytest targeted
-✅ Mudar schema → grep dependentes → pytest -k → validar → commit
-
-**Lição Detalhada**: `docs/lessons/lesson-regression-prevention-methodology-2025-10-17.md` (1.550 linhas)
-
-**ROI Comprovado**: Sessão 14 FASE 2: 10 regressões (60% schema changes), corrigidas em 1.5h com SFL + Contract Testing vs 4-6h tentativa-erro
-
-#### Settings Singleton Pattern [[memory:10020824]]
-
-**Regra Crítica**: `config.settings.Settings` é singleton; NUNCA recriar durante execução.
-
-❌ **ANTI-PATTERN**:
-```python
-def validate_config():
-    settings = Settings(_env_file=".env")  # Nova instância, ignora monkeypatch!
-```
-
-✅ **PATTERN CORRETO**:
-```python
-from config.settings import settings  # Import singleton global
-
-def validate_config():
-    current_settings = settings  # Usa global, respeita env vars
-```
-
-**Por quê**: Pydantic precedência quando `_env_file` explícito: .env > env vars. Testes monkeypatch quebram.
-
-**ROI**: Previne falhas testes config validação (2 testes corrigidos Sessão 14)
-
-### Circular Imports Resolution (Validado FASE 2.7 - Out/2025)
-
-**Pattern Oficial Python**: PEP 484 (TYPE_CHECKING) + PEP 563 (postponed annotations) resolvem circular imports mantendo type hints completos.
-
-**Quando Usar**:
-- Módulos interdependentes (A importa B, B importa A)
-- Type hints causando `ImportError: cannot import name 'X' from partially initialized module`
-- IDE perde autocomplete por circular dependency
-
-**Solução Completa** (validado Stack Overflow 587 upvotes, DataCamp 2025):
-
-```python
-# arquivo1.py
-from __future__ import annotations  # PEP 563: Postponed annotations (CRÍTICO!)
-
-from typing import TYPE_CHECKING
-
-# TYPE_CHECKING = True durante type checking (mypy/pyright)
-# TYPE_CHECKING = False em runtime (evita circular import!)
-if TYPE_CHECKING:
-    from arquivo2 import ClasseB
-
-class ClasseA:
-    def metodo(self, param: ClasseB):  # Type hint funciona sem quotes!
-        # Lazy import em runtime apenas quando necessário
-        from arquivo2 import ClasseB
-        ...
-```
-
-```python
-# arquivo2.py
-from __future__ import annotations  # CRÍTICO em AMBOS arquivos!
-
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from arquivo1 import ClasseA
-
-class ClasseB:
-    def outro_metodo(self, param: ClasseA):  # Type hint funciona!
-        from arquivo1 import ClasseA  # Lazy import runtime
-        ...
-```
-
-**Pattern para Properties** (lazy loading com cache):
-
-```python
-class MinhaClasse:
-    def __init__(self):
-        self._cached_agent = None
-    
-    @property
-    def agent(self) -> Agent:  # Type hint funciona!
-        """Lazy loading com cache (import UMA VEZ)."""
-        if self._cached_agent is None:
-            from outro_modulo import Agent  # Import apenas quando acessado
-            self._cached_agent = Agent()
-        return self._cached_agent
-```
-
-**Checklist Aplicação**:
-
-- [ ] 1. Identificar ciclo: `módulo A → módulo B → módulo A`
-- [ ] 2. Adicionar `from __future__ import annotations` em **AMBOS** arquivos (topo, antes de imports)
-- [ ] 3. Adicionar `from typing import TYPE_CHECKING` em ambos
-- [ ] 4. Mover imports problemáticos para dentro de `if TYPE_CHECKING:` block
-- [ ] 5. Type hints funcionam normalmente (sem quotes)
-- [ ] 6. Implementar lazy imports em runtime (dentro de métodos/properties)
-- [ ] 7. Usar cache em properties (evitar re-import a cada acesso)
-- [ ] 8. Validar: `pytest tests/` deve passar sem `ImportError`
-- [ ] 9. Validar: `mypy src/` ou `pyright src/` sem erros de tipo
-
-**Ferramentas de Diagnóstico**:
-
-```bash
-# Detectar circular imports
-python -c "import sys; import module_name"  # Se falhar = circular import
-
-# Visualizar ordem de imports
-python -v -c "import module_name" 2>&1 | grep "import"
-
-# Verificar type hints funcionando
-mypy src/module.py --show-error-codes
-pyright src/module.py
-```
-
-**Antipadrões a Evitar**:
-
-❌ **String annotations manuais** (trabalhoso):
-```python
-def metodo(self, param: "OutraClasse"):  # Funciona mas é verboso
-```
-
-✅ **Postponed annotations** (automático):
-```python
-from __future__ import annotations
-def metodo(self, param: OutraClasse):  # Limpo e type-safe!
-```
-
-❌ **Lazy import sem cache** (performance):
-```python
-def metodo(self):
-    from modulo import funcao  # ❌ Import em TODA chamada!
-    funcao()
-```
-
-✅ **Lazy import com cache** (eficiente):
-```python
-@property
-def agent(self):
-    if self._agent is None:  # ✅ Import UMA VEZ
-        from modulo import Agent
-        self._agent = Agent()
-    return self._agent
-```
-
-**ROI Validado**:
-- ⏱️ **40-60 min economizados** vs tentativa e erro manual
-- 🎯 Type hints completos (IDE autocomplete + mypy)
-- ⚡ Performance (lazy loading)
-- 📚 Pattern reutilizável (qualquer projeto Python)
-
-**Quando Buscar Ajuda Comunidade**:
-
-Se stuck >10 min, usar Brightdata/web search:
-```
-Query: "Python circular import best practices TYPE_CHECKING lazy import solutions 2024 2025"
-```
-
-**Referências**:
-- [PEP 484 - Type Hints](https://www.python.org/dev/peps/pep-0484/)
-- [PEP 563 - Postponed Evaluation of Annotations](https://www.python.org/dev/peps/pep-0563/)
-- [Stack Overflow Q39740632](https://stackoverflow.com/questions/39740632/python-type-hinting-without-cyclic-imports) (587 upvotes)
-- [DataCamp - Python Circular Import (2025)](https://www.datacamp.com/tutorial/python-circular-import)
-
-**Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md` (1.200+ linhas, ROI 2.5-4x)
-
-**Memória**: [[memory:9980685]] - Pattern TYPE_CHECKING + Lazy Imports validado FASE 2.7
-[[memory:10012853]] - Pytest SEMPRE --tb=long SEM filtros (economia 50% tempo debugging)
+**14. Regression Prevention Strategy (Validado FASE 2.10 - Out/2025)**
+*   **SEMPRE** incluir smoke tests (5-10 min por etapa) e regression suite semanal (1h por semana) para detectar regressões em schemas core e código. Contract Testing para mudanças em schemas Pydantic.
+*   **Lição Detalhada**: `docs/lessons/lesson-regression-prevention-methodology-2025-10-17.md`
+
+**15. Pytest SEMPRE --tb=long SEM filtros (Validado FASE 2.10 - Out/2025)**
+*   **SEMPRE** rodar testes com traceback completo e SEM filtros PowerShell para diagnosticar e evitar reexecuções.
+*   **ROI**: 50% redução tempo debugging, zero reexecuções desperdiçadas.
+*   **Memória**: [[memory:10012853]] - Pytest SEMPRE --tb=long SEM filtros (economia 50% tempo debugging)
+
+**16. Settings Singleton Pattern [[memory:10020824]]**
+*   `config.settings.Settings` é singleton; NUNCA recriar durante execução.
+*   **Por quê**: Pydantic precedência quando `_env_file` explícito: .env > env vars. Testes monkeypatch quebram.
+*   **Exemplo ANTI-PATTERN**:
+    ```python
+    def validate_config():
+        settings = Settings(_env_file=".env")  # Nova instância, ignora monkeypatch!
+    ```
+*    **Exemplo CORRETO**:
+    ```python
+    from config.settings import settings  # Import singleton global
+
+    def validate_config():
+        current_settings = settings  # Usa global, respeita env vars
+    ```
+*   **ROI**: Previne falhas testes config validação (2 testes corrigidos Sessão 14)
 
 Regarding `.cursorignore` files:
 
@@ -608,57 +358,85 @@ When encountering circular import errors in Python, especially when using type h
 ### Rclone OneDrive Configuration and Usage
 
 *   When using rclone with OneDrive, be aware of potential throttling issues, especially when transferring large files. To mitigate this, use the `--tpslimit` flag to limit transactions per second and the `--bwlimit` flag to limit bandwidth usage.
-*   When encountering "404 page not found" errors during rclone OneDrive configuration, ensure that the client ID and secret are correctly set up.
-*   When using rclone, if the browser doesn't open automatically for authentication, manually go to the provided link and authorize rclone for access.
-*   If you encounter "No code returned by remote server" errors during rclone OneDrive authentication, recreate the client ID and secret carefully.
-*   When assisting with rclone and OneDrive, it is generally **NOT RECOMMENDED** to run rclone and the native OneDrive client simultaneously due to potential conflicts, throttling issues, and unpredictable behavior. The best practice is to pause the OneDrive client while rclone is running.
-*   If the native OneDrive client is necessary, rclone can be configured to exclude large files and limit bandwidth to minimize conflicts.
-*   When using rclone for OneDrive, be aware of potential conflicts if the cloud file provider is not running. Ensure that the OneDrive service is active before using rclone.
+*   When encountering throttling errors, reduce the transfer rate or use rclone's built-in retry mechanisms.
 
-### Diagnosing Windows Clipboard Issues
+### Architecture Reference Docs (FASE 3 - Out/2025)
 
-When troubleshooting issues with Ctrl+C and Ctrl+V (copy/paste) functionality in Windows, especially when copying between applications like Microsoft Word and Cursor, consider the following:
+When working on consulting code (agents, workflow, diagnostic tools):
 
-*   **Clipboard Service (rdpclip):**
-    *   Restart the clipboard service using PowerShell:
-    ```powershell
-    Stop-Process -Name "rdpclip" -Force -ErrorAction SilentlyContinue; Start-Sleep -Seconds 2; Write-Host "[CHECK] Processo clipboard reiniciado"
-    ```
+**Consult `docs/architecture/` BEFORE reading source code:**
 
-*   **.NET Clipboard Reset:**
-    *   Clear the clipboard using .NET:
-    ```powershell
-    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Write-Host "[OK] Clipboard limpo via .NET"
-    ```
+- **DATA_FLOW_DIAGRAMS.md**: Data flows (ClientProfile lifecycle, Diagnostic workflow, State transitions) - 5 Mermaid diagrams
+- **API_CONTRACTS.md**: API contracts (signatures, parameters, exceptions, schemas) - 8 agents documented
 
-*   **Win32 API Clipboard Reset:**
-    *   Reset the clipboard at a lower level using the Win32 API:
-    ```powershell
-    $cbdll = Add-Type -MemberDefinition '[DllImport("user32.dll")] public static extern bool OpenClipboard(IntPtr hWndNewOwner); [DllImport("user32.dll")] public static extern bool EmptyClipboard(); [DllImport("user32.dll")] public static extern bool CloseClipboard();' -Name Clipboard -Namespace Win32 -PassThru; $cbdll::OpenClipboard([IntPtr]::Zero); $cbdll::EmptyClipboard(); $cbdll::CloseClipboard(); Write-Host "[OK] Clipboard resetado a nível Win32 API"
-    ```
+**ROI**: ~1h saved per task (consult docs 1-2 min vs reading code 10-15 min)
 
-*   **Potential Conflicts with Other Processes:**
-    *   Check for processes known to intercept clipboard functions:
-    ```powershell
-    $procs = @("AutoHotkey", "Ditto", "ClipX", "PowerToys", "TeamViewer", "AnyDesk"); $found = Get-Process | Where-Object {$procs -contains $_.ProcessName}; if($found) { $found | Format-Table ProcessName, Id -AutoSize } else { Write-Host "[INFO] Nenhum processo conhecido interceptando clipboard detectado" }
-    ```
+**When to consult**:
+- Implementing feature that interacts with existing agents
+- Calling methods from other agents (needs exact signature)
+- Debugging data flows or state transitions
+- Creating tests (needs to know return types and exceptions)
 
-*   **Cursor-Specific Keybindings:**
-    *   Verify that "copy" and "paste" are correctly mapped to `Ctrl+C` and `Ctrl+V` in Cursor's keyboard shortcuts (`Preferences: Open Keyboard Shortcuts`). Ensure the condition `editorTextFocus` is present. If conflicts exist, reset the keybindings.
+*   When encountering "Should docs/DOCS_INDEX.md be transformed into a rule always applied, to prevent the agent from not consulting it?":
 
-*   **Windows Clipboard Functionality Test:**
-    *   Test the global Windows clipboard using PowerShell:
-    ```powershell
-    echo "Teste Clipboard" | Set-Clipboard; $result = Get-Clipboard; if($result -eq "Teste Clipboard") { Write-Host "[OK] Clipboard do Windows funcionando corretamente via PowerShell" } else { Write-Host "[ERRO] Clipboard do Windows com problemas" }
-    ```
+    *   **NO**: `docs/DOCS_INDEX.md` is a reference document for looking up documentation and is not needed for every task.
+    *   Instead of making DOCS_INDEX.md an always applied rule, create **MINI-INDEX + MINI-PROGRESS** in `rag-bsc-core.mdc`. This saves tokens and provides a better ROI.
+    *   Update rag-bsc-core.mdc with :
+        *   **MINI-INDEX (Docs Essenciais - Top 10):**
+            ```markdown
+            ## 📚 Documentação Essencial (Top 10)
 
-*   **Application Privilege Levels:**
-    *   Differences in privilege levels between applications (e.g., Word running as administrator while Cursor does not) can cause issues.
+            **SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (46 docs)**
 
-*   **Clipboard Format Incompatibility:**
-    *   Incompatibility in clipboard formats between applications may prevent copying and pasting.
+            ### Arquitetura (4 docs críticos)
+            - `docs/ARCHITECTURE.md` - Overview arquitetural
+            - `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph
+            - `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
+            - `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
 
-*   **Forcing Clipboard Synchronization:**
-    *   Attempt to force synchronization of the clipboard:
-    ```powershell
-    Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.Clipboard]::Clear(); Start-Sleep -Milliseconds 500; [System.Windows.Forms.Clipboard]::SetText("CURSOR_WORD_SYNC_
+            ### Implementação (3 docs críticos)
+            - `docs/TUTORIAL.md` - Guia completo de uso
+            - `docs/TESTING_GUIDE.md` - Estratégias de teste
+            - `docs/QUICKSTART.md` - Setup rápido
+
+            ### Techniques RAG (3 docs críticos)
+            - `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001
+            - `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002
+            - `docs/techniques/ROUTER.md` - TECH-003
+
+            **Quando usar:**
+            - Implementando features → Consulte API_CONTRACTS + DATA_FLOW_DIAGRAMS
+            - Escrevendo testes → Consulte TESTING_GUIDE
+            - Debugando fluxos → Consulte DATA_FLOW_DIAGRAMS + LANGGRAPH_WORKFLOW
+            - Implementando RAG → Consulte docs/techniques/[TECHNIQUE].md
+            ```
+        *   **MINI-PROGRESS (Estado Atual do Projeto):**
+            ```markdown
+            ## 📊 Estado Atual do Projeto
+
+            **SEMPRE consulte .cursor/progress/consulting-progress.md para histórico completo**
+
+            ### Status Geral
+            - **Fase Atual**: FASE 3 - Diagnostic Tools
+            - **Progresso Geral**: 40% (20/50 tarefas)
+            - **Progresso FASE 3**: 14% (2/14 tarefas - prep completa)
+            - **Última Atualização**: 2025-10-19 (Sessão 15)
+
+            ### Tarefas Recentes (Últimas 3)
+            - ✅ **3.0.1** Data Flow Diagrams (COMPLETO - 2025-10-19)
+              - Entregável: docs/architecture/DATA_FLOW_DIAGRAMS.md (5 diagramas)
+            - ✅ **3.0.2** API Contracts (COMPLETO - 2025-10-19)
+              - Entregável: docs/architecture/API_CONTRACTS.md (1200+ linhas)
+            - ✅ **FASE 3 PREP** 100% completa, ROI ~7h economizadas
+
+            ### Próxima Tarefa
+            - 🎯 **3.1** SWOT Analysis Tool (2-3h estimado)
+              - Dependências: API_CONTRACTS.md, DATA_FLOW_DIAGRAMS.md (✅ satisfeitas)
+              - Milestone: Primeira tool consultiva integrada com DiagnosticAgent
+              - Status: DESBLOQUEADA e pronta para iniciar
+
+            **Workflow obrigatório**: Seguir 7 steps do rag-bsc-core.mdc antes de implementar
+            ```
+*   **YES**: Add a pointer in derived-cursor-rules.mdc to the existence of architecture reference documents. High visibility, low overhead.
+
+*   **YES**: Add cross-references from `docs/ARCHITECTURE.md` to the data flow diagrams and API contracts.
