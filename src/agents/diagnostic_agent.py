@@ -1137,4 +1137,153 @@ ANÁLISES POR PERSPECTIVA:
             )
         
         return framework
+    
+    def generate_benchmarking_report(
+        self,
+        client_id: str,
+        use_rag: bool = False
+    ):
+        """Gera relatório de benchmarking BSC comparando empresa com benchmarks externos.
+        
+        Utiliza BenchmarkingTool para comparar desempenho atual da empresa com
+        benchmarks externos relevantes (setor, porte, região) nas 4 perspectivas BSC.
+        
+        Workflow:
+        1. Retrieve client_profile (company_info, context)
+        2. Retrieve diagnostic (4 perspectivas BSC)
+        3. Retrieve kpi_framework (opcional, valores atuais)
+        4. (Opcional) RAG para contexto literatura BSC
+        5. Chama BenchmarkingTool.generate_benchmarks()
+        6. Valida qualidade do report (gaps realistas, balanceamento)
+        7. Salva em memória via memory_client
+        8. Retorna BenchmarkReport completo
+        
+        Args:
+            client_id: ID do cliente no sistema de memória
+            use_rag: Se True, busca contexto da literatura BSC (default: False)
+        
+        Returns:
+            BenchmarkReport: Relatório com 6-20 comparações balanceadas, gaps, recomendações
+        
+        Raises:
+            ValueError: Se client_id não encontrado ou diagnostic incompleto
+            RuntimeError: Se tool falha ao gerar benchmarks
+        
+        Example:
+            >>> agent = DiagnosticAgent(...)
+            >>> 
+            >>> # Sem RAG (mais rápido)
+            >>> report = agent.generate_benchmarking_report(
+            ...     client_id="cliente_001",
+            ...     use_rag=False
+            ... )
+            >>> print(report.summary())
+            >>> 
+            >>> # Com RAG (contexto literatura BSC)
+            >>> report = agent.generate_benchmarking_report(
+            ...     client_id="cliente_001",
+            ...     use_rag=True
+            ... )
+            >>> report.overall_performance
+            'abaixo_mercado'
+            >>> len(report.high_priority_comparisons())
+            5
+        """
+        from src.tools.benchmarking_tool import BenchmarkingTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando Benchmark Report para client_id={client_id} "
+            f"(use_rag={use_rag})"
+        )
+        
+        # ========== RETRIEVE DEPENDENCIES ==========
+        
+        # Retrieve client_profile (company_info)
+        client_profile = self.memory_client.get_client_profile(client_id)
+        if not client_profile:
+            raise ValueError(
+                f"Cliente '{client_id}' não encontrado. "
+                f"Execute onboarding primeiro."
+            )
+        
+        # Retrieve diagnostic (4 perspectivas)
+        diagnostic_result = self.memory_client.get_diagnostic(client_id)
+        if not diagnostic_result:
+            raise ValueError(
+                f"Diagnóstico não encontrado para cliente '{client_id}'. "
+                f"Execute diagnóstico BSC primeiro."
+            )
+        
+        # Convert CompleteDiagnostic to dict[str, DiagnosticResult]
+        diagnostic_dict = {
+            "Financeira": diagnostic_result.financial,
+            "Clientes": diagnostic_result.customer,
+            "Processos Internos": diagnostic_result.process,
+            "Aprendizado e Crescimento": diagnostic_result.learning
+        }
+        
+        # Retrieve kpi_framework (opcional)
+        kpi_framework = None
+        try:
+            kpi_framework = self.memory_client.get_kpi_framework(client_id)
+            if kpi_framework:
+                logger.info(
+                    f"[DIAGNOSTIC] KPI Framework encontrado "
+                    f"({kpi_framework.total_kpis()} KPIs) - será usado no benchmarking"
+                )
+        except Exception as e:
+            logger.warning(
+                f"[DIAGNOSTIC] Erro ao recuperar KPI Framework (não crítico): {e}. "
+                f"Continuando sem KPIs."
+            )
+        
+        # ========== LAZY LOAD TOOL ==========
+        
+        if not hasattr(self, "_benchmarking_tool"):
+            retriever = self.retriever if use_rag else None
+            
+            self._benchmarking_tool = BenchmarkingTool(
+                llm=self.llm,
+                retriever=retriever
+            )
+            logger.info("[DIAGNOSTIC] BenchmarkingTool inicializada (lazy loading)")
+        
+        # ========== GENERATE BENCHMARKS ==========
+        
+        try:
+            report = self._benchmarking_tool.generate_benchmarks(
+                company_info=client_profile.company,
+                diagnostic=diagnostic_dict,
+                kpi_framework=kpi_framework,
+                use_rag=use_rag
+            )
+            
+            logger.info(
+                f"[DIAGNOSTIC] Benchmark Report gerado: "
+                f"{len(report.comparisons)} comparações, "
+                f"performance={report.overall_performance}"
+            )
+        
+        except Exception as e:
+            logger.error(
+                f"[DIAGNOSTIC] Erro ao gerar Benchmark Report: {e}"
+            )
+            raise RuntimeError(
+                f"Falha ao gerar Benchmark Report: {str(e)}"
+            ) from e
+        
+        # ========== SAVE TO MEMORY ==========
+        
+        try:
+            self.memory_client.save_benchmark_report(client_id, report)
+            logger.info(
+                f"[DIAGNOSTIC] Benchmark Report salvo em memória (client_id={client_id})"
+            )
+        except Exception as e:
+            logger.warning(
+                f"[DIAGNOSTIC] Erro ao salvar Benchmark Report em memória: {e}. "
+                f"Report gerado mas não persistido."
+            )
+        
+        return report
 

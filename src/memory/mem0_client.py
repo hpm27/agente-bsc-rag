@@ -484,3 +484,183 @@ class Mem0ClientWrapper:
             logger.error("[ERRO] Falha ao buscar profiles: %s", e)
             raise Mem0ClientError(f"Erro ao buscar profiles: {e!s}") from e
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+        reraise=True,
+    )
+    def save_benchmark_report(self, client_id: str, report: Any) -> str:
+        """Salva BenchmarkReport no Mem0.
+        
+        Persiste o relatório de benchmarking BSC no Mem0 Platform usando
+        metadata.benchmark_report_data para armazenar o report serializado.
+        
+        Args:
+            client_id: ID do cliente
+            report: BenchmarkReport a ser salvo
+        
+        Returns:
+            str: client_id do report salvo
+        
+        Raises:
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Example:
+            >>> client = Mem0ClientWrapper()
+            >>> report = BenchmarkReport(...)
+            >>> client.save_benchmark_report("cliente_123", report)
+        """
+        try:
+            # Serializa report para dict
+            report_data = report.model_dump() if hasattr(report, 'model_dump') else report.dict()
+            
+            # Cria mensagens contextuais para Mem0
+            num_comps = len(report_data.get('comparisons', []))
+            performance = report_data.get('overall_performance', 'unknown')
+            
+            messages = [
+                {
+                    "role": "user",
+                    "content": (
+                        f"Realizei análise de benchmarking BSC com {num_comps} comparações. "
+                        f"Nossa performance geral está {performance} em relação ao mercado."
+                    )
+                },
+                {
+                    "role": "assistant",
+                    "content": (
+                        f"Entendido! Registrei seu benchmark report com {num_comps} comparações "
+                        f"e performance {performance}. Vou guardar para análises futuras."
+                    )
+                }
+            ]
+            
+            # Deleta benchmarks antigos
+            try:
+                # Buscar memórias com benchmark_report_data
+                all_memories = self.client.get_all(user_id=client_id)
+                for memory in (all_memories if isinstance(all_memories, list) else [all_memories]):
+                    if isinstance(memory, dict) and 'metadata' in memory:
+                        metadata = memory['metadata']
+                    elif hasattr(memory, 'metadata'):
+                        metadata = memory.metadata
+                    else:
+                        continue
+                    
+                    if 'benchmark_report_data' in metadata:
+                        # Encontrou benchmark antigo, deletar
+                        memory_id = memory.get('id') if isinstance(memory, dict) else getattr(memory, 'id', None)
+                        if memory_id:
+                            self.client.delete(memory_id=memory_id)
+                            logger.debug(
+                                "[CLEANUP] Benchmark antigo deletado (client_id=%r)",
+                                client_id
+                            )
+            except Exception as delete_error:
+                logger.debug(
+                    "[CLEANUP] Nenhum benchmark para deletar (client_id=%r): %s",
+                    client_id,
+                    delete_error
+                )
+            
+            # Salva novo benchmark
+            self.client.add(
+                messages=messages,
+                user_id=client_id,
+                metadata={
+                    "benchmark_report_data": report_data,
+                    "report_type": "benchmark_bsc",
+                    "num_comparisons": num_comps,
+                    "performance": performance
+                }
+            )
+            
+            logger.info(
+                "[OK] Benchmark report salvo para client_id=%r (%d comparações)",
+                client_id,
+                num_comps
+            )
+            
+            return client_id
+        
+        except (ConnectionError, TimeoutError) as e:
+            logger.warning("[RETRY] Falha de rede ao salvar benchmark: %s", e)
+            raise
+        except Exception as e:
+            logger.error("[ERRO] Falha ao salvar benchmark report: %s", e)
+            raise Mem0ClientError(f"Erro ao salvar benchmark report: {e!s}") from e
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+        reraise=True,
+    )
+    def get_benchmark_report(self, client_id: str) -> Any | None:
+        """Carrega BenchmarkReport do Mem0.
+        
+        Recupera o relatório de benchmarking BSC do Mem0 Platform.
+        
+        Args:
+            client_id: ID do cliente
+        
+        Returns:
+            dict com dados do BenchmarkReport, ou None se não encontrado
+        
+        Raises:
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Example:
+            >>> client = Mem0ClientWrapper()
+            >>> report_data = client.get_benchmark_report("cliente_123")
+            >>> if report_data:
+            ...     report = BenchmarkReport(**report_data)
+        """
+        try:
+            # Busca todas memórias do client_id
+            memories = self.client.get_all(user_id=client_id)
+            
+            if not memories:
+                logger.debug("[INFO] Nenhuma memória encontrada para client_id=%r", client_id)
+                return None
+            
+            # Procura memória com benchmark_report_data
+            for memory in (memories if isinstance(memories, list) else [memories]):
+                try:
+                    if isinstance(memory, dict) and 'metadata' in memory:
+                        metadata = memory['metadata']
+                    elif hasattr(memory, 'metadata'):
+                        metadata = memory.metadata
+                    else:
+                        continue
+                    
+                    if 'benchmark_report_data' in metadata:
+                        report_data = metadata['benchmark_report_data']
+                        logger.info(
+                            "[OK] Benchmark report carregado para client_id=%r",
+                            client_id
+                        )
+                        return report_data
+                
+                except Exception as e:
+                    logger.warning(
+                        "[WARN] Erro ao processar memória (ignorando): %s",
+                        e
+                    )
+                    continue
+            
+            # Nenhum benchmark encontrado
+            logger.debug(
+                "[INFO] Nenhum benchmark report encontrado para client_id=%r",
+                client_id
+            )
+            return None
+        
+        except (ConnectionError, TimeoutError) as e:
+            logger.warning("[RETRY] Falha de rede ao carregar benchmark: %s", e)
+            raise
+        except Exception as e:
+            logger.error("[ERRO] Falha ao carregar benchmark report: %s", e)
+            raise Mem0ClientError(f"Erro ao carregar benchmark report: {e!s}") from e
+

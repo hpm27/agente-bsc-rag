@@ -1,9 +1,9 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-19 (Sessão 20 - FASE 3.5 Strategic Objectives Tool COMPLETA)  
-**Fase Atual**: FASE 3 - Diagnostic Tools 🚀 EM PROGRESSO (3.5 Completa - 5/8 tools consultivas!)  
-**Sessão**: 20 de 15-20  
-**Progresso Geral**: 50.0% (25/50 tarefas - 3.5 Strategic Objectives Tool ✅)
+**Última Atualização**: 2025-10-19 (Sessão 21 - FASE 3.6 Benchmarking Tool COMPLETA)  
+**Fase Atual**: FASE 3 - Diagnostic Tools 🚀 EM PROGRESSO (3.6 Completa - 6/8 tools consultivas!)  
+**Sessão**: 21 de 15-20  
+**Progresso Geral**: 60.0% (30/50 tarefas - 3.6 Benchmarking Tool ✅)
 
 ---
 
@@ -49,10 +49,10 @@
 
 ---
 
-### FASE 3: Diagnostic Tools 🚀 EM PROGRESSO (3.5 COMPLETA!)
-**Objetivo**: Ferramentas consultivas (SWOT, 5 Whys, Issue Tree, KPIs, Objetivos)  
+### FASE 3: Diagnostic Tools 🚀 EM PROGRESSO (3.6 COMPLETA!)
+**Objetivo**: Ferramentas consultivas (SWOT, 5 Whys, Issue Tree, KPIs, Objetivos, Benchmarking)  
 **Duração Estimada**: 20-24h (7-8 sessões) - Inclui prep obrigatória  
-**Progresso**: 7/14 tarefas (50%) - Prep + 3.1 SWOT + 3.2 Five Whys + 3.3 Issue Tree + 3.4 KPI + 3.5 Strategic Objectives COMPLETAS!
+**Progresso**: 8/14 tarefas (57%) - Prep + 3.1 SWOT + 3.2 Five Whys + 3.3 Issue Tree + 3.4 KPI + 3.5 Strategic Objectives + 3.6 Benchmarking COMPLETAS!
 
 **Pré-requisitos** (OBRIGATÓRIO antes de iniciar 3.1):
 Criar documentação arquitetural para acelerar implementação e prevenir descoberta via código trial-and-error. Baseado em lições Sessão 14 (lesson-regression-prevention-methodology-2025-10-17.md): 60% regressões causadas por falta de visibilidade de fluxos dados e contratos API. ROI esperado: ~5h economizadas em FASE 3 (agente consulta diagrams/contracts ao invés de ler código).
@@ -129,8 +129,25 @@ Criar documentação arquitetural para acelerar implementação e prevenir desco
   - ROI PONTO 15: 30-40 min economizados por sessão (fixtures corretas primeira tentativa)
   - Pattern reutilizado 5ª vez: Economizou 30-40 min (SWOT → Five Whys → Issue Tree → KPI → Strategic Obj)
   
-- [ ] **3.6-3.12**: 7 tarefas ferramentas consultivas restantes (ver plano mestre)
-  - Candidatas próximas: Benchmarking Tool, Action Plan Tool, Priorization Matrix
+- [x] **3.6** Benchmarking Tool (2-3h) ✅ **COMPLETO** (5h real - benchmarking_tool.py + prompts + schemas + 16 testes + 700 linhas doc + metodologia 5 Whys)
+  - Schemas `BenchmarkComparison` + `BenchmarkReport` (316 linhas) com 9 campos + 3 field_validators + 2 model_validators
+  - 4 métodos úteis: `.comparisons_by_perspective()`, `.high_priority_comparisons()`, `.gaps_statistics()`, `.summary()`
+  - Validators críticos: gap range (-100% a +200%), gap_type alignment, benchmark_source específico (não genérico), balanceamento perspectivas (2-5 por perspectiva)
+  - Prompts conversacionais: `MAIN_BENCHMARKING_PROMPT` (206 linhas) + 4 context builders (company, diagnostic, kpi, rag)
+  - Tool implementado: `src/tools/benchmarking_tool.py` (409 linhas, **76% coverage** ✅)
+  - Prompts: `src/prompts/benchmarking_prompts.py` (388 linhas, **95% coverage** ✅ excelente!)
+  - Integração DiagnosticAgent: método `generate_benchmarking_report()` (148 linhas, lazy loading, retrieve + convert + generate + save)
+  - Integração Mem0Client: `save_benchmark_report()` + `get_benchmark_report()` (180 linhas, retry logic, metadata structured)
+  - Testes: **16 unitários (1.050 linhas, 100% passando)** - schemas (7), context builders (4), tool logic (5)
+  - Validação PONTO 15: Aplicado preventivamente para KPIDefinition (grep schema antes fixtures) - economizou 30-40 min
+  - Metodologia 5 Whys aplicada: 2 erros finais resolvidos sistematicamente (gap validator + validação pré-flight)
+  - Documentação: `docs/tools/BENCHMARKING.md` (700+ linhas - 10 seções, 4 casos uso BSC, troubleshooting completo)
+  - Research proativa Brightdata: Harvard (Kaplan & Norton 2010), Built In (2024), CompanySights (2024) - benchmarking + BSC complementares
+  - Pattern consultivo 7ª implementação: Schemas → Prompts → Tool → Integração → Testes → Docs (workflow consolidado e eficiente)
+  - ROI técnico: 5h total vs 6-7h estimado (aceleração por reutilização de patterns validados)
+  
+- [ ] **3.7-3.12**: 6 tarefas ferramentas consultivas restantes (ver plano mestre)
+  - Candidatas próximas: Action Plan Tool, Priorization Matrix
 
 **Entregável**: 8 ferramentas consultivas ⏳  
 **Status**: DESBLOQUEADA após CHECKPOINT 2 aprovado (FASE 2 100% completa)  

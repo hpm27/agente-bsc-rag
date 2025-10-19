@@ -6,7 +6,7 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "2.0"
+version: "2.4"
 last_updated: "2025-10-19"
 ---
 
@@ -16,7 +16,7 @@ last_updated: "2025-10-19"
 
 ### Test Methodology (Validado Out/2025 - ROI: 32-60 min economizados por implementação)
 
-**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 15 pontos**:
+**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 15 pontos + SUB-PONTO 15.6**:
 
 **PONTOS 1-8: Testes Unitários** (validado FASE 2.5)
 
@@ -50,8 +50,138 @@ last_updated: "2025-10-19"
 - `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (FASE 3.1, Implementation-First Testing, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
 - `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied + PONTO 15 fixtures Pydantic)
+- `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md` (950+ linhas, 5 Whys + Hypothesis Property-Based Testing discovery, SUB-PONTO 15.6)
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
+
+---
+
+### Property-Based Testing com Hypothesis para Pydantic (Descoberta Out/2025)
+
+**Context**: Mainstream solution 2024-2025 para validação automática de fixtures Pydantic. Descoberto em research Brightdata durante Sessão 21 (Benchmarking Tool) após identificar problema recorrente de fixtures inválidas (6 sessões consecutivas).
+
+**QUANDO USAR**: Validators Pydantic complexos (min_length, ranges, field_validator customizados, Literal com múltiplos valores)
+
+**FERRAMENTA**: Hypothesis (https://hypothesis.readthedocs.io) - Property-based testing framework oficial Pydantic
+
+**Pattern Validado** (Pydantic AI Docs 2024):
+```python
+from hypothesis import given
+from hypothesis.strategies import from_type
+from pydantic import BaseModel
+
+class BenchmarkComparison(BaseModel):
+    perspective: str
+    gap: float = Field(ge=-100, le=200)
+    gap_type: Literal["positive", "negative", "neutral"]
+    benchmark_source: str = Field(min_length=20)
+    insight: str = Field(min_length=50)
+
+# Hypothesis gera 100+ fixtures válidas AUTOMATICAMENTE
+@given(comparison=from_type(BenchmarkComparison))
+def test_benchmark_comparison_properties(comparison):
+    """Property-based test: QUALQUER BenchmarkComparison válido deve satisfazer propriedades."""
+    # Testa propriedades em CENTENAS de casos gerados
+    assert len(comparison.insight) >= 50  # Hypothesis respeita min_length!
+    assert comparison.gap_type in ["positive", "negative", "neutral"]
+    assert -100 <= comparison.gap <= 200
+```
+
+**Benefícios** (validado Pydantic AI docs + CodiLime 2024):
+- ✅ **Gera centenas de fixtures válidas automaticamente** (100+ exemplos por default)
+- ✅ **Respeita validators Pydantic** (min_length, Literal, Field constraints, @field_validator)
+- ✅ **Encontra edge cases** que testes manuais não cobrem (valores extremos: gap=199.9, gap=-99.9)
+- ✅ **Reduz manutenção** - fixtures atualizam automaticamente quando schema Pydantic muda
+- ✅ **Detecta bugs em validators** - se Hypothesis gera fixture inválida que passa, validator está bugado!
+
+**Limitações**:
+- ❌ Requer aprendizado de `strategies` API (curva aprendizado ~2h)
+- ❌ Testes mais lentos (gera 100+ exemplos vs 1 fixture manual)
+- ❌ Não substitui testes de negócio específicos (complementa)
+- ❌ Fixtures geradas são aleatórias (não reproduzíveis sem seed)
+
+**Quando NÃO usar** (usar fixtures manuais):
+- ❌ Casos de negócio BSC específicos (ex: 4 perspectivas balanceadas, KPIs setoriais específicos)
+- ❌ Testes rápidos CI/CD (Hypothesis adiciona ~5-10s por teste)
+- ❌ Testes de regressão (precisa reproduzir cenário exato)
+
+**Decision Matrix**:
+
+| Cenário | Hypothesis | Fixtures Manuais | Justificativa |
+|---------|-----------|------------------|---------------|
+| **Validators complexos** | ✅ | ❌ | Testa 100+ combinações automaticamente |
+| **Casos BSC específicos** | ❌ | ✅ | Controle exato do cenário de negócio |
+| **Schemas em mudança** | ✅ | ❌ | Fixtures atualizam automaticamente |
+| **CI/CD rápido** | ❌ | ✅ | Hypothesis +5-10s por teste |
+| **Edge cases desconhecidos** | ✅ | ❌ | Descobre bugs não pensados |
+| **Testes regressão** | ❌ | ✅ | Reproduz cenário exato |
+
+**Recomendação: Abordagem Híbrida** (validada CodiLime + Semaphore 2024):
+- ✅ Hypothesis para validators Pydantic (min_length, ranges, Literal, field_validator)
+- ✅ Fixtures manuais para casos de negócio BSC (4 perspectivas, 10-15 KPIs balanceados)
+
+**Exemplo Concreto Benchmarking Tool**:
+```python
+# Hypothesis para testar VALIDATOR (gap_type alinhado com gap)
+@given(
+    gap=st.floats(min_value=-100, max_value=200),
+    gap_type=st.sampled_from(["positive", "negative", "neutral"])
+)
+def test_gap_type_validator_properties(gap, gap_type):
+    """Property: gap_type deve alinhar com gap (validator customizado)."""
+    try:
+        comparison = BenchmarkComparison(gap=gap, gap_type=gap_type, ...)
+        # Se passou, validar alinhamento
+        if gap_type == "negative":
+            assert gap >= 5  # Validator customizado threshold
+    except ValidationError:
+        # Se falhou, verificar se falha é correta
+        if gap_type == "negative" and gap < 5:
+            pass  # Falha esperada ✅
+        else:
+            pytest.fail("ValidationError inesperado!")
+
+# Fixture manual para caso BSC específico (4 perspectivas balanceadas)
+@pytest.fixture
+def valid_benchmark_report_bsc():
+    """Caso BSC específico: 2 comparações por perspectiva (balanceado)."""
+    return BenchmarkReport(
+        comparisons=[
+            # 2 Financeira (setor específico)
+            BenchmarkComparison(perspective="Financeira", metric_name="Margem EBITDA", ...),
+            BenchmarkComparison(perspective="Financeira", metric_name="ROI", ...),
+            # 2 Clientes (B2B SaaS)
+            BenchmarkComparison(perspective="Clientes", metric_name="NPS", ...),
+            BenchmarkComparison(perspective="Clientes", metric_name="Churn", ...),
+            # 2 Processos
+            BenchmarkComparison(perspective="Processos Internos", metric_name="Lead Time", ...),
+            BenchmarkComparison(perspective="Processos Internos", metric_name="Cycle Time", ...),
+            # 2 Aprendizado
+            BenchmarkComparison(perspective="Aprendizado e Crescimento", metric_name="Retenção", ...),
+            BenchmarkComparison(perspective="Aprendizado e Crescimento", metric_name="Treinamento", ...)
+        ]
+    )
+```
+
+**ROI Esperado**:
+- **Hypothesis**: Economiza 15-20 min testando validators (100+ casos vs 3-5 manuais)
+- **Fixtures manuais**: Economiza 10-15 min em casos BSC (controle exato)
+- **Híbrido**: Melhor dos dois mundos (validators automáticos + negócio controlado)
+
+**Instalação**:
+```bash
+pip install hypothesis pytest-hypothesis
+```
+
+**Fontes Validadas** (Brightdata research Out/2025):
+1. Pydantic AI Docs - Hypothesis Integration (https://ai.pydantic.dev/testing/)
+2. CodiLime - Testing APIs with Pytest (Oct 2024)
+3. Semaphore - Property-Based Testing Python Hypothesis (Jan 2023)
+4. Hypothesis Documentation (https://hypothesis.readthedocs.io/)
+
+**Lição Completa**: `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md` (950+ linhas, 5 Whys Root Cause Analysis, Hypothesis discovery, SUB-PONTO 15.6 validado)
+
+---
 
 #### E2E Workflow Tests (Validado FASE 2.6 - Out/2025)
 
@@ -151,6 +281,19 @@ last_updated: "2025-10-19"
 *   **ROI ESPERADO**: 30-40 min economizados por sessão (fixtures corretas primeira tentativa).
 *   **ROI VALIDADO**: Sessão 20 teve 8 erros (1.5h debugging) que teriam sido prevenidos aplicando PONTO 15.
 *   **Lição detalhada**: `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys Root Cause Analysis completa).
+
+**15.6 IDENTIFICAR TODOS SCHEMAS PYDANTIC USADOS NO TESTE (Validado FASE 3.6 - 2025-10-19)**
+*   PROBLEMA: PONTO 15 aplicado PARCIALMENTE (apenas em 1 de 4 schemas), fixtures inválidas passaram despercebidas.
+*   ROOT CAUSE: Checklist não especifica "identificar TODOS schemas via grep imports do teste".
+*   **QUANDO APLICAR**: SEMPRE antes de criar fixtures Pydantic OU escrever testes com múltiplos schemas
+*   **COMO APLICAR** (5 sub-passos):
+    1.  Grep imports do teste → listar todos schemas Pydantic usados
+    2.  Grep CADA schema identificado (fields + constraints)
+    3.  Grep validators de CADA schema (@field_validator, @model_validator)
+    4.  Criar fixtures com margem +20%
+    5.  Dry-run validation (try/except ValidationError em fixture)
+*   **ROI ESPERADO**: 30-60 min economizados por sessão (fixtures corretas primeira tentativa).
+*   **Lição detalhada**: `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
 
 #### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
 
@@ -364,7 +507,9 @@ Brightdata's research revealed important community discussions:
 1.  **Credential Protection:** `.env` files contain API keys, passwords, and sensitive tokens.
 2.  **Leakage Prevention:** Prevents information from being inadvertently sent to AI servers.
 3.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
-4.  **Context Security:** Prevents credentials from appearing in chat/completions context.
+4.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
+5.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
+6.  **Context Security:** Prevents credentials from appearing in chat/completions context.
 
 **If you REALLY need to liberate `.env`:**
 
@@ -455,131 +600,4 @@ When the language detector in `src/rag/query_translator.py` is unable to determi
 
 ### Dependency Management
 
-*   When updating dependencies, especially `ruff`, ensure the version specified in `requirements.txt` is compatible with the project's other dependencies. Aim to use the latest stable version, but specify a version range to allow for minor updates without breaking changes. For example: `ruff>=0.7.0,<1.0.0`.
-*   After updating dependencies in `requirements.txt`, run `pip install --upgrade -r requirements.txt` to update the environment.
-*   When adding `mem0ai` ensure it is added in the Utilities section
-
-### Pydantic Version Handling
-
-*   When working with LangChain projects, be aware of Pydantic version compatibility. LangChain v0.3+ uses Pydantic V2 internally and recommends migrating imports from `langchain_core.pydantic_v1` to `pydantic` directly.
-*   Avoid using the `pydantic.v1` compatibility namespace; import directly from Pydantic V2.
-*   When using `BaseSettings` from `pydantic_settings`, use `SettingsConfigDict` instead of `ConfigDict` for configuration.
-*   **Pydantic Config Migration**: Replace `class Config:` with `model_config = ConfigDict(...)` in Pydantic models to avoid deprecation warnings.
-
-### New Rule: Python Circular Imports Resolution
-
-When encountering circular import errors in Python, especially when using type hints, adhere to the following best practices:
-
-- **Use `TYPE_CHECKING` for Conditional Imports**: Import modules or classes conditionally using the `typing.TYPE_CHECKING` flag. This ensures that the imports are only used during type-checking and not at runtime, which prevents circular import errors.
-- **Leverage Lazy Imports**: Implement lazy imports within functions or methods. This defers the import statement until the function or method is called, avoiding circular dependencies during module loading.
-- **Employ Forward References**: Use forward references as string literals for type hints. This allows you to refer to classes that are not yet defined. However, this approach should be combined with `from __future__ import annotations` for cleaner code.
-- **Ensure Code Layering**: Refactor the code to ensure that the circular dependencies are not a result of poorly layered architecture. Consider using abstract classes or interfaces to define dependencies.
-- **Apply Best Practices**: Follow community-endorsed best practices for circular import resolution.
-
-### Rclone OneDrive Configuration and Usage
-
-*   When using rclone with OneDrive, be aware of potential throttling issues, especially when transferring large files. To mitigate this, use the `--tpslimit` flag to limit transactions per second and the `--bwlimit` flag to limit bandwidth usage.
-*   When encountering throttling errors, reduce the transfer rate or use rclone's built-in retry mechanisms.
-
-### Architecture Reference Docs (FASE 3 - Out/2025)
-
-When working on consulting code (agents, workflow, diagnostic tools):
-
-**Consult `docs/architecture/` BEFORE reading source code:**
-
-- **DATA_FLOW_DIAGRAMS.md**: Data flows (ClientProfile lifecycle, Diagnostic workflow, State transitions) - 5 Mermaid diagrams
-- **API_CONTRACTS.md**: API contracts (signatures, parameters, exceptions, schemas) - 8 agents documented
-
-**ROI**: ~1h saved per task (consult docs 1-2 min vs reading code 10-15 min)
-
-**When to consult**:
-- Implementing feature that interacts with existing agents
-- Calling methods from other agents (needs exact signature)
-- Debugging data flows or state transitions
-- Creating tests (needs to know return types and exceptions)
-
-### New Rule: Testing and Regression Prevention
-
-To maintain code quality and prevent regressions, the following testing practices are **MANDATORY**:
-
-1. **Continuous Integration (CI)**:
-   - **ALWAYS** run the entire test suite (`pytest tests/ -n 8`) after each tool implementation.
-   - **REASON**: Detect regressions immediately, preventing accumulated debugging time.
-   - **ROI**: Prevents 2-4 hours of debugging regression errors later.
-2. **Regression Tests**:
-   - **MANDATORY**: Include at least one regression test (`test_existing_functionality_not_broken`) for each new feature or tool.
-   - **PURPOSE**: Validates that existing functionality remains intact after new changes.
-
-### New Rule: Documentation of Input/Output Flows
-
-To improve agent performance and reduce debugging time, the following documentation rule is **MANDATORY**:
-
-1. **Input/Output Flow Diagrams**:
-   - Create a section "Input/Output Flow" in each `docs/tools/[TOOL].md` file.
-   - Include a Mermaid sequence diagram showing the data flow: `ClientProfile → Tool → Schemas → DiagnosticAgent → Output`
-   - **PURPOSE**: Provide a clear visual representation of the data flow for each tool.
-   - **ROI**: Saves 10-15 minutes of code reading by providing a 30-second overview.
-
-### Testing and Debugging Methodology (Improvements from Session 19 - 2025-10-19)
-
-1. **Five Whys Root Cause Analysis**:
-   - **WHEN**: Encountering test failures, **ALWAYS** apply 5 Whys to identify the root cause.
-   - **EXAMPLE**: Session 19 debugging mock LLM (perspectives corretas).
-   - **BENEFIT**: Structured debugging saves 15-20 minutes compared to trial-and-error.
-2. **itertools.cycle for Mocking**:
-   - **WHEN**: Mocking sequential calls (e.g., 4 perspectives), use `itertools.cycle` for elegant, robust mocks.
-   - **AVOID**: String parsing or ad-hoc logic to determine the mock return value.
-3. **model_validator for Cross-Perspective Validation**:
-   - **WHEN**: Working with Pydantic models that involve multiple perspectives, use `model_validator(mode='after')` to ensure consistency across perspectives.
-   - **EXAMPLE**: KPIFramework validates that KPIs belong to correct perspectives using `model_validator`.
-
-### New Rule: Updated Tool Development Workflow
-
-1. **Refactor the workflow to include explicit steps**:
-
-    *   Step 1: Sequential Thinking (plan)
-    *   Step 2: Discovery (technique/approach)
-    *   Step 3: Navigation (locate docs)
-    *   Step 4: Knowledge Base (study patterns)
-    *   Step 5: Implementation (Schema → Prompts → Tool → Integration)
-    *   Step 6: Validation (15+ tests, coverage 70%+, pytest -v --tb=long)
-    *   Step 7: Documentation (650+ lines, 4 use cases BSC)
-
-    to emphasize the importance of planning and to be more explicit about the steps and to make it easier to follow and validate each phase of the development.
-
-### New Rule: Implementation-First Testing and Root Cause Analysis
-
-To enhance testing effectiveness and prevent recurring issues, adhere to the following guidelines:
-
-1.  **Implementation-First Testing**:
-    *   **ALWAYS** apply Implementation-First Testing (checklist point 13) before writing tests, especially for unfamiliar APIs.
-    *   **PURPOSE**: Prevent test rewrites by aligning tests with the actual implementation.
-    *   **5 Whys Before Coding**: When tests fail, apply 5 Whys rigorously to identify the root cause.
-2. **Root Cause Analysis and Checklist Adherence**:
-    *   **MANDATORY**: Before implementing any fix, identify the root cause and explicitly state which checklist point was violated.
-    *   **ROI**: Systematic debugging prevents recurring errors and wasted time.
-3.  **Schema Validation**:
-    *   **MANDATORY**: For Pydantic models, **ALWAYS** validate fixtures against the schema constraints to ensure data validity.
-    *   **PURPOSE**: Reduce debugging time by preventing data-related errors.
-4. **Context Builder Validation**:
-    *   **ALWAYS** ensure context builders use attributes that exist in the schema.
-    *   **PURPOSE**: Prevent runtime errors due to attribute access failures.
-
-### New Rule: 5 Whys Root Cause Analysis for Test Failures (Validado FASE 3.5 - 2025-10-19)
-
-1. **Application**:
-    * **WHEN** tests fail, **ALWAYS** apply 5 Whys systematically to identify the root cause
-    * **PATTERN**:
-        1.  Collect facts and timeline (full traceback)
-        2.  Apply 5 Whys with evidences
-        3.  Base solution on root cause (not symptoms)
-2. **Implementation-First Testing (Checklist Point 13)**:
-    *   **MANDATORY**: Read the API implementation before writing tests to align with the actual implementation
-    *   **PURPOSE**: Prevents test rewrites
-
-### Checklist Atualizado (Com 5 Whys e Implementation-First Testing)
-
-- [ ] Antes de escrever testes, LER ASSINATURA COMPLETA (grep, schema) e VALIDAR FIXTURES contra schema
-- [ ] Ao encontrar falhas, aplicar 5 Whys para identificar ROOT CAUSE
-- [ ] Antes de implementar fix, explicitar qual CHECKLIST foi violado
-- [ ] SEMPRE aplicar Implementation-First Testing (ler código antes de testes)
+*   When updating dependencies, especially `ruff`, ensure the version specified in `requirements.txt` is compatible with the project's other dependencies. Aim to use the latest stable version, but specify a version range to allow for minor updates without breaking

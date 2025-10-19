@@ -1983,3 +1983,318 @@ class StrategicObjectivesFramework(BaseModel):
         lines.append(f"Objetivos com KPIs vinculados: {with_kpis} de {total} ({percentage}%)")
         
         return "\n".join(lines)
+
+
+# ====================================================================================
+# BENCHMARKING SCHEMAS
+# ====================================================================================
+
+
+class BenchmarkComparison(BaseModel):
+    """Comparação de uma métrica específica com benchmark externo.
+    
+    Representa uma comparação individual entre o desempenho atual da empresa
+    e benchmarks externos relevantes (setor, porte, região) para uma métrica
+    específica de uma perspectiva BSC.
+    
+    Attributes:
+        perspective: Perspectiva BSC da métrica
+        metric_name: Nome da métrica comparada (ex: "Margem EBITDA", "NPS")
+        company_value: Valor atual da empresa (pode ser numérico ou textual)
+        benchmark_value: Valor benchmark do mercado/setor
+        gap: Diferença percentual (benchmark - company). Positivo = empresa abaixo, Negativo = empresa acima
+        gap_type: Classificação do gap (positive/negative/neutral)
+        benchmark_source: Fonte específica do benchmark (ex: "Setor Tecnologia SaaS Brasil 2024")
+        insight: Interpretação qualitativa do gap (min 50 caracteres)
+        priority: Prioridade de ação para fechar o gap (HIGH/MEDIUM/LOW)
+    
+    Example:
+        >>> comparison = BenchmarkComparison(
+        ...     perspective="Financeira",
+        ...     metric_name="Margem EBITDA",
+        ...     company_value="18%",
+        ...     benchmark_value="25%",
+        ...     gap=7.0,
+        ...     gap_type="negative",
+        ...     benchmark_source="Setor Tecnologia SaaS Brasil 2024 (média empresas médio porte)",
+        ...     insight="Margem EBITDA 7pp abaixo do mercado, indicando custos operacionais elevados ou pricing subotimizado",
+        ...     priority="HIGH"
+        ... )
+    """
+    
+    perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"] = Field(
+        description="Perspectiva BSC da métrica"
+    )
+    metric_name: str = Field(
+        min_length=3,
+        max_length=80,
+        description="Nome da métrica comparada"
+    )
+    company_value: str = Field(
+        min_length=1,
+        max_length=50,
+        description="Valor atual da empresa (numérico ou textual)"
+    )
+    benchmark_value: str = Field(
+        min_length=1,
+        max_length=50,
+        description="Valor benchmark do mercado/setor"
+    )
+    gap: float = Field(
+        description="Diferença percentual (benchmark - company). Positivo = empresa abaixo"
+    )
+    gap_type: Literal["positive", "negative", "neutral"] = Field(
+        description="Classificação do gap: positive (empresa acima benchmark), negative (empresa abaixo), neutral (igual)"
+    )
+    benchmark_source: str = Field(
+        min_length=20,
+        max_length=150,
+        description="Fonte específica do benchmark (deve ser detalhada, não genérica)"
+    )
+    insight: str = Field(
+        min_length=50,
+        max_length=500,
+        description="Interpretação qualitativa do gap e suas implicações"
+    )
+    priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Prioridade de ação para fechar o gap"
+    )
+    
+    @field_validator('gap')
+    @classmethod
+    def validate_gap_realistic(cls, v: float) -> float:
+        """Valida que gap está em range realista (-100% a +200%).
+        
+        Gaps extremos (ex: -300%, +500%) são improváveis e indicam possível erro
+        ou alucinação do LLM.
+        """
+        if v < -100 or v > 200:
+            raise ValueError(
+                f"Gap {v}% parece irreal. Esperado range: -100% a +200%. "
+                f"Verifique se benchmark e company value estão corretos."
+            )
+        return v
+    
+    @field_validator('gap_type')
+    @classmethod
+    def validate_gap_type_aligns_with_gap(cls, v: str, info) -> str:
+        """Valida que gap_type alinha com valor numérico do gap.
+        
+        Regras:
+        - gap > 5: gap_type deve ser "negative" (empresa abaixo benchmark)
+        - gap < -5: gap_type deve ser "positive" (empresa acima benchmark)
+        - -5 <= gap <= 5: gap_type deve ser "neutral" (empresa no benchmark)
+        """
+        if 'gap' not in info.data:
+            return v  # Gap ainda não validado, skip
+        
+        gap = info.data['gap']
+        
+        if gap > 5 and v != "negative":
+            raise ValueError(
+                f"Gap {gap}% > 5 (empresa abaixo benchmark) mas gap_type='{v}'. Esperado: 'negative'"
+            )
+        elif gap < -5 and v != "positive":
+            raise ValueError(
+                f"Gap {gap}% < -5 (empresa acima benchmark) mas gap_type='{v}'. Esperado: 'positive'"
+            )
+        elif -5 <= gap <= 5 and v != "neutral":
+            raise ValueError(
+                f"Gap {gap}% próximo de zero mas gap_type='{v}'. Esperado: 'neutral'"
+            )
+        
+        return v
+    
+    @field_validator('benchmark_source')
+    @classmethod
+    def validate_benchmark_source_specific(cls, v: str) -> str:
+        """Valida que benchmark_source é específico (não genérico).
+        
+        Sources genéricos como "mercado", "setor", "indústria" são vagos demais.
+        Esperado: "Setor Tecnologia SaaS Brasil 2024 (média empresas médio porte)"
+        """
+        generic_terms = ["mercado", "setor", "indústria", "industry", "market", "sector"]
+        v_lower = v.lower()
+        
+        # Se source contém APENAS termo genérico (sem contexto adicional), rejeitar
+        if any(term in v_lower for term in generic_terms) and len(v) < 40:
+            raise ValueError(
+                f"benchmark_source '{v}' parece muito genérico. "
+                f"Forneça fonte específica (ex: 'Setor Tecnologia SaaS Brasil 2024 (média empresas médio porte)')"
+            )
+        
+        return v
+    
+    def __str__(self) -> str:
+        """String representation legível."""
+        return f"{self.perspective} - {self.metric_name}: {self.company_value} vs {self.benchmark_value} (gap: {self.gap:+.1f}%)"
+
+
+class BenchmarkReport(BaseModel):
+    """Relatório completo de benchmarking BSC (4 perspectivas).
+    
+    Consolida todas as comparações de benchmarking nas 4 perspectivas do
+    Balanced Scorecard, fornecendo visão holística do desempenho da empresa
+    vs mercado/setor.
+    
+    Attributes:
+        comparisons: Lista de comparações individuais (6-20 items, ~2-5 por perspectiva)
+        overall_performance: Avaliação geral do desempenho (acima/no/abaixo mercado)
+        priority_gaps: Top 3-5 gaps críticos que requerem ação imediata
+        recommendations: 3-5 recomendações estratégicas de alto nível
+    
+    Example:
+        >>> report = BenchmarkReport(
+        ...     comparisons=[
+        ...         BenchmarkComparison(perspective="Financeira", ...),
+        ...         BenchmarkComparison(perspective="Financeira", ...),
+        ...         BenchmarkComparison(perspective="Clientes", ...),
+        ...         # ... mais 5+ comparações
+        ...     ],
+        ...     overall_performance="abaixo_mercado",
+        ...     priority_gaps=[
+        ...         "Margem EBITDA 7pp abaixo (Financeira)",
+        ...         "NPS 15 pontos abaixo (Clientes)",
+        ...         "Lead Time 40% maior (Processos Internos)"
+        ...     ],
+        ...     recommendations=[
+        ...         "Priorizar redução de custos operacionais (impacto: +7pp EBITDA)",
+        ...         "Implementar programa Voice of Customer (meta: NPS +15 em 12 meses)",
+        ...         "Automatizar processos críticos (reduzir Lead Time 40%)"
+        ...     ]
+        ... )
+        >>> print(report.summary())
+    """
+    
+    comparisons: list[BenchmarkComparison] = Field(
+        min_length=6,
+        max_length=20,
+        description="Comparações de benchmarking (6-20 items, balanceadas entre perspectivas)"
+    )
+    overall_performance: Literal["acima_mercado", "no_mercado", "abaixo_mercado"] = Field(
+        description="Avaliação geral do desempenho da empresa vs benchmark"
+    )
+    priority_gaps: list[str] = Field(
+        min_length=3,
+        max_length=5,
+        description="Top 3-5 gaps críticos que requerem ação imediata (ordenados por prioridade)"
+    )
+    recommendations: list[str] = Field(
+        min_length=3,
+        max_length=5,
+        description="3-5 recomendações estratégicas de alto nível para fechar gaps"
+    )
+    
+    @model_validator(mode='after')
+    def validate_balanced_perspectives(self) -> 'BenchmarkReport':
+        """Valida que comparisons estão balanceadas entre 4 perspectivas BSC.
+        
+        Cada perspectiva deve ter pelo menos 2 e no máximo 5 comparações.
+        Garante cobertura equilibrada das 4 perspectivas.
+        """
+        perspectives = ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+        counts = {p: 0 for p in perspectives}
+        
+        # Contar comparisons por perspectiva
+        for comp in self.comparisons:
+            counts[comp.perspective] += 1
+        
+        # Validar balanceamento (2-5 por perspectiva)
+        for perspective, count in counts.items():
+            if count < 2:
+                raise ValueError(
+                    f"Perspectiva '{perspective}' tem apenas {count} comparação(ões). "
+                    f"Mínimo esperado: 2 por perspectiva para balanceamento BSC."
+                )
+            if count > 5:
+                raise ValueError(
+                    f"Perspectiva '{perspective}' tem {count} comparações. "
+                    f"Máximo recomendado: 5 por perspectiva (foco nas métricas mais críticas)."
+                )
+        
+        return self
+    
+    @model_validator(mode='after')
+    def validate_priority_gaps_specific(self) -> 'BenchmarkReport':
+        """Valida que priority_gaps mencionam métrica E perspectiva específicas.
+        
+        Gaps devem ser específicos (ex: "Margem EBITDA 7pp abaixo (Financeira)")
+        e não genéricos (ex: "Performance financeira ruim").
+        """
+        for gap in self.priority_gaps:
+            if len(gap) < 30:
+                raise ValueError(
+                    f"Priority gap '{gap}' muito vago (< 30 chars). "
+                    f"Forneça descrição específica com métrica e perspectiva (ex: 'NPS 15 pontos abaixo (Clientes)')"
+                )
+        
+        return self
+    
+    def comparisons_by_perspective(self, perspective: str) -> list[BenchmarkComparison]:
+        """Retorna comparisons de uma perspectiva específica."""
+        return [c for c in self.comparisons if c.perspective == perspective]
+    
+    def high_priority_comparisons(self) -> list[BenchmarkComparison]:
+        """Retorna apenas comparisons com prioridade HIGH."""
+        return [c for c in self.comparisons if c.priority == "HIGH"]
+    
+    def gaps_statistics(self) -> dict[str, float]:
+        """Calcula estatísticas dos gaps (média, min, max por perspectiva)."""
+        perspectives = ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+        stats = {}
+        
+        for perspective in perspectives:
+            comps = self.comparisons_by_perspective(perspective)
+            if comps:
+                gaps = [c.gap for c in comps]
+                stats[perspective] = {
+                    "mean": sum(gaps) / len(gaps),
+                    "min": min(gaps),
+                    "max": max(gaps),
+                    "count": len(gaps)
+                }
+        
+        return stats
+    
+    def summary(self) -> str:
+        """Gera sumário executivo do benchmarking report.
+        
+        Returns:
+            String formatada com sumário (perspectivas, performance geral, top gaps)
+        """
+        lines = []
+        lines.append("=" * 60)
+        lines.append("BENCHMARK REPORT - SUMÁRIO EXECUTIVO")
+        lines.append("=" * 60)
+        lines.append("")
+        
+        # Overall performance
+        performance_map = {
+            "acima_mercado": "ACIMA DO MERCADO",
+            "no_mercado": "NO MERCADO",
+            "abaixo_mercado": "ABAIXO DO MERCADO"
+        }
+        lines.append(f"Performance Geral: {performance_map[self.overall_performance]}")
+        lines.append("")
+        
+        # Comparisons por perspectiva
+        lines.append("Comparações por Perspectiva:")
+        for perspective in ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]:
+            comps = self.comparisons_by_perspective(perspective)
+            lines.append(f"  - {perspective}: {len(comps)} comparações")
+        lines.append("")
+        
+        # Top priority gaps
+        lines.append("Top Priority Gaps:")
+        for i, gap in enumerate(self.priority_gaps, 1):
+            lines.append(f"  {i}. {gap}")
+        lines.append("")
+        
+        # Recommendations
+        lines.append("Recomendações Estratégicas:")
+        for i, rec in enumerate(self.recommendations, 1):
+            lines.append(f"  {i}. {rec}")
+        lines.append("")
+        lines.append("=" * 60)
+        
+        return "\n".join(lines)
