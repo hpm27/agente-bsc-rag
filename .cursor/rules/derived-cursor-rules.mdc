@@ -3,13 +3,20 @@ description: AI rules derived by SpecStory from the project AI interaction histo
 globs: *
 ---
 
+---
+description: AI rules derived by SpecStory from the project AI interaction history
+globs: *
+version: "2.0"
+last_updated: "2025-10-19"
+---
+
 ## HEADERS
 
 ## TECH STACK
 
 ### Test Methodology (Validado Out/2025 - ROI: 32-60 min economizados por implementação)
 
-**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 12 pontos**:
+**ANTES de escrever QUALQUER teste (unitário ou E2E), aplicar [[memory:9969868]] - CHECKLIST OBRIGATÓRIO de 14 pontos**:
 
 **PONTOS 1-8: Testes Unitários** (validado FASE 2.5)
 
@@ -40,6 +47,8 @@ globs: *
 - `docs/lessons/lesson-test-debugging-methodology-2025-10-15.md` (FASE 2.4, 5 erros)
 - `docs/lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (FASE 2.5, 7 erros, 1.100+ linhas)
 - `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (FASE 2.6, 4 problemas E2E, 11.900+ linhas)
+- `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (FASE 3.1, Implementation-First Testing, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
+- `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -119,57 +128,154 @@ globs: *
     ```
 *   **ROI**: Crítico (previne breaking changes, economiza horas de rollback)
 
-**13. Circular Imports Resolution (Validado FASE 2.7 - Out/2025)**
-*   **SEMPRE** usar pattern oficial Python (PEP 484 + PEP 563) para resolver circular imports
-*   **Exemplo validado (2025-10-16)**: Circular import entre client_profile_agent, onboarding_agent e workflow
-*   **Pattern**:
-    ```python
-    # arquivo.py
-    from __future__ import annotations  # PEP 563: Postponed annotations
+**13. Implementation-First Testing para APIs desconhecidas (validado FASE 3.1 - 2025-10-19)**
+*   Quando implementar tool/agent NOVO com API desconhecida, SEMPRE ler implementação ANTES de escrever testes. 
+*   Pattern: (1) `grep "def " src/module/file.py` (descobre métodos disponíveis), (2) `grep "def method_name" src/module/file.py -A 15` (lê signature completa), (3) `grep "class SchemaName" src/memory/schemas.py -A 30` (verifica schemas Pydantic usados), (4) Escrever testes alinhados com API real.
+*   RAZÃO: TDD funciona quando você CONHECE a API. Para APIs desconhecidas, assumir estrutura causa reescrita completa de testes.
+*   **ROI**: 30-40 min economizados por implementação.
+*   **QUANDO USAR**: APIs novas (tools consultivas FASE 3+), agentes novos, integrações complexas (RAG, LLM, multi-step).
+*   **QUANDO NÃO USAR** (TDD tradicional melhor): API conhecida, lógica simples (math, pure functions), refactoring (testes já existem).
+*   **Lição detalhada**: `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+ linhas com checklist completo).
+
+#### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
+
+**Context**: Mocks para múltiplas chamadas sequenciais requerem abordagem dinâmica. Mock estático (`return_value` fixo) causa falhas quando tool processa lista de items esperando outputs diferentes.
+
+**Ponto 14: Mock Múltiplas Chamadas com itertools.cycle**:
+
+**QUANDO USAR**: Mock será invocado N vezes (N > 1) esperando outputs diferentes a cada chamada.
+
+**RAZÃO**: Mock estático retorna sempre o mesmo valor. Tools que processam lista items (ex: 4 perspectivas BSC) falham com ValidationError quando mock não diferencia outputs.
+
+**SOLUÇÃO VALIDADA**: `itertools.cycle` para retornar valores sequencialmente.
+
+**Template Geral**:
+```python
+from itertools import cycle
+
+@pytest.fixture
+def mock_with_cycle():
+    """Mock com itertools.cycle - múltiplos valores sequenciais."""
+    mock_obj = MagicMock()
     
-    from typing import TYPE_CHECKING
+    # Step 1: Definir valores esperados em ordem
+    values_order = [value1, value2, value3, value4]
+    values_cycle = cycle(values_order)
     
-    # TYPE_CHECKING = True durante type checking (mypy/pyright)
-    # TYPE_CHECKING = False em runtime (evita circular import!)
-    if TYPE_CHECKING:
-        from outro_modulo import OutraClasse
+    # Step 2: side_effect usa next(cycle)
+    def side_effect_fn(*args, **kwargs):
+        """Retorna próximo valor na sequência."""
+        return next(values_cycle)
     
-    class MinhaClasse:
-        def metodo(self, param: OutraClasse):  # Type hint funciona!
-            # Import local em runtime quando necessário
-            from outro_modulo import OutraClasse
-            ...
-    ```
-*   **ROI**: 40-60 min economizados vs tentativa e erro manual
-*   **Lição Detalhada**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md`
+    mock_obj.method.side_effect = side_effect_fn
+    return mock_obj
+```
 
-**14. Regression Prevention Strategy (Validado FASE 2.10 - Out/2025)**
-*   **SEMPRE** incluir smoke tests (5-10 min por etapa) e regression suite semanal (1h por semana) para detectar regressões em schemas core e código. Contract Testing para mudanças em schemas Pydantic.
-*   **Lição Detalhada**: `docs/lessons/lesson-regression-prevention-methodology-2025-10-17.md`
+**Exemplo Real - KPI Definer Tool** (validado 2025-10-19):
+```python
+from itertools import cycle
+from pydantic import BaseModel
 
-**15. Pytest SEMPRE --tb=long SEM filtros (Validado FASE 2.10 - Out/2025)**
-*   **SEMPRE** rodar testes com traceback completo e SEM filtros PowerShell para diagnosticar e evitar reexecuções.
-*   **ROI**: 50% redução tempo debugging, zero reexecuções desperdiçadas.
-*   **Memória**: [[memory:10012853]] - Pytest SEMPRE --tb=long SEM filtros (economia 50% tempo debugging)
+@pytest.fixture
+def mock_llm() -> MagicMock:
+    """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
+    llm = MagicMock(spec=["invoke", "with_structured_output"])
+    
+    class KPIListOutput(BaseModel):
+        kpis: list[KPIDefinition]
+    
+    # Define KPIs mock para cada perspectiva
+    kpis_by_perspective = {
+        "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
+        "Clientes": [KPIDefinition(name="NPS", perspective="Clientes", ...)],
+        "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
+        "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
+    }
+    
+    # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
+    # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
+    perspective_order = [
+        "Financeira",
+        "Clientes",
+        "Processos Internos",
+        "Aprendizado e Crescimento"
+    ]
+    perspective_cycle = cycle(perspective_order)
+    
+    def mock_invoke_side_effect(prompt: str):
+        """Retorna KPIs da próxima perspectiva na sequência."""
+        perspective = next(perspective_cycle)
+        kpis = kpis_by_perspective[perspective]
+        return KPIListOutput(kpis=kpis)
+    
+    mock_structured_llm = MagicMock()
+    mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
+    llm.with_structured_output.return_value = mock_structured_llm
+    return llm
+```
 
-**16. Settings Singleton Pattern [[memory:10020824]]**
-*   `config.settings.Settings` é singleton; NUNCA recriar durante execução.
-*   **Por quê**: Pydantic precedência quando `_env_file` explícito: .env > env vars. Testes monkeypatch quebram.
-*   **Exemplo ANTI-PATTERN**:
-    ```python
-    def validate_config():
-        settings = Settings(_env_file=".env")  # Nova instância, ignora monkeypatch!
-    ```
-*    **Exemplo CORRETO**:
-    ```python
-    from config.settings import settings  # Import singleton global
+**Pergunta-Chave ANTES de criar mock**:
+> "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
 
-    def validate_config():
-        current_settings = settings  # Usa global, respeita env vars
-    ```
-*   **ROI**: Previne falhas testes config validação (2 testes corrigidos Sessão 14)
+**Decisão Tree**:
+- Mock invocado **1x** OU **N vezes com MESMO output**? → `return_value` fixo OK
+- Mock invocado **N vezes com OUTPUTS DIFERENTES**? → `itertools.cycle` ou `side_effect` lista
+- Mock invocado **N vezes exatas** (N == len(lista))? → `side_effect = [val1, val2, val3]`
+- Mock invocado **N vezes indefinido** OU **N > len(values)**? → `itertools.cycle` (melhor escolha)
 
-Regarding `.cursorignore` files:
+**Alternativas e Trade-offs**:
+
+1. **Lista finita** (`side_effect = [val1, val2, val3]`):
+   - ✅ Simples, direto
+   - ❌ Erro `StopIteration` se chamadas > len(lista)
+   - **Usar quando**: N chamadas exatas conhecido
+
+2. **Callable com contador**:
+   ```python
+   call_count = 0
+   def side_effect():
+       nonlocal call_count
+       call_count += 1
+       return values[call_count - 1]
+   ```
+   - ✅ Controle explícito
+   - ❌ Mais verboso, `nonlocal` não pythônico
+   - **Usar quando**: Lógica complexa por chamada
+
+3. **itertools.cycle** (RECOMENDADO):
+   - ✅ Pythônico, elegante
+   - ✅ Nunca lança `StopIteration` (ciclo infinito)
+   - ✅ Alinha naturalmente com ordem de chamadas da tool
+   - ❌ Ciclo repete (pode mascarar bugs se tool chamar mais que esperado)
+   - **Usar quando**: Mock múltiplas chamadas sequenciais (99% dos casos)
+
+**Checklist Aplicação**:
+- [ ] Mock será invocado N vezes (N > 1)?
+- [ ] Outputs esperados são diferentes a cada chamada?
+- [ ] Tool processa lista de items sequencialmente?
+- [ ] Ordem do cycle alinha com ordem de chamadas da tool? (verificar código `for item in items:`)
+- [ ] `side_effect` usa `next(cycle)` corretamente?
+- [ ] Teste valida perspectiva/category/type correto em cada output?
+
+**Antipadrões Evitados**:
+- ❌ **Mock estático com return_value fixo** para múltiplas chamadas
+- ❌ **String matching no prompt** para detectar qual output retornar (frágil, dependente de formato)
+- ❌ **Parsing JSON/XML** para diferenciar chamadas (adiciona complexidade desnecessária)
+- ❌ **Criar ValidationError manualmente** em Pydantic (preferir passar dados inválidos e deixar Pydantic validar)
+
+**ROI**: 15-20 min economizados (debugging mock estático vs criação correta desde início)
+
+**Aplicabilidade Futura**:
+- ✅ Objetivos Estratégicos Tool (múltiplos objetivos por perspectiva BSC)
+- ✅ Action Plan Tool (lista de ações sequenciais)
+- ✅ Benchmarking Tool (comparações múltiplas perspectivas)
+- ✅ Qualquer tool que processa lista items com LLM/API calls sequenciais
+
+**Lições Detalhadas**:
+- `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
+- Memória [[memory:9969868]] ponto 14 (checklist obrigatório 14 pontos)
+
+ Regarding `.cursorignore` files:
 
 *   Cursor IDE uses `.cursorignore` files to control which files Cursor can access. This is for security and performance. This is for security and performance.
 *   `.env` files are ignored by default.
@@ -377,66 +483,161 @@ When working on consulting code (agents, workflow, diagnostic tools):
 - Debugging data flows or state transitions
 - Creating tests (needs to know return types and exceptions)
 
-*   When encountering "Should docs/DOCS_INDEX.md be transformed into a rule always applied, to prevent the agent from not consulting it?":
+### New Rule: Testing and Regression Prevention
 
-    *   **NO**: `docs/DOCS_INDEX.md` is a reference document for looking up documentation and is not needed for every task.
-    *   Instead of making DOCS_INDEX.md an always applied rule, create **MINI-INDEX + MINI-PROGRESS** in `rag-bsc-core.mdc`. This saves tokens and provides a better ROI.
-    *   Update rag-bsc-core.mdc with :
-        *   **MINI-INDEX (Docs Essenciais - Top 10):**
-            ```markdown
-            ## 📚 Documentação Essencial (Top 10)
+To maintain code quality and prevent regressions, the following testing practices are **MANDATORY**:
 
-            **SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (46 docs)**
+1. **Continuous Integration (CI)**:
+   - **ALWAYS** run the entire test suite (`pytest tests/ -n 8`) after each tool implementation.
+   - **REASON**: Detect regressions immediately, preventing accumulated debugging time.
+   - **ROI**: Prevents 2-4 hours of debugging regression errors later.
+2. **Regression Tests**:
+   - **MANDATORY**: Include at least one regression test (`test_existing_functionality_not_broken`) for each new feature or tool.
+   - **PURPOSE**: Validates that existing functionality remains intact after new changes.
 
-            ### Arquitetura (4 docs críticos)
-            - `docs/ARCHITECTURE.md` - Overview arquitetural
-            - `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph
-            - `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
-            - `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
+### New Rule: Documentation of Input/Output Flows
 
-            ### Implementação (3 docs críticos)
-            - `docs/TUTORIAL.md` - Guia completo de uso
-            - `docs/TESTING_GUIDE.md` - Estratégias de teste
-            - `docs/QUICKSTART.md` - Setup rápido
+To improve agent performance and reduce debugging time, the following documentation rule is **MANDATORY**:
 
-            ### Techniques RAG (3 docs críticos)
-            - `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001
-            - `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002
-            - `docs/techniques/ROUTER.md` - TECH-003
+1. **Input/Output Flow Diagrams**:
+   - Create a section "Input/Output Flow" in each `docs/tools/[TOOL].md` file.
+   - Include a Mermaid sequence diagram showing the data flow: `ClientProfile → Tool → Schemas → DiagnosticAgent → Output`
+   - **PURPOSE**: Provide a clear visual representation of the data flow for each tool.
+   - **ROI**: Saves 10-15 minutes of code reading by providing a 30-second overview.
 
-            **Quando usar:**
-            - Implementando features → Consulte API_CONTRACTS + DATA_FLOW_DIAGRAMS
-            - Escrevendo testes → Consulte TESTING_GUIDE
-            - Debugando fluxos → Consulte DATA_FLOW_DIAGRAMS + LANGGRAPH_WORKFLOW
-            - Implementando RAG → Consulte docs/techniques/[TECHNIQUE].md
-            ```
-        *   **MINI-PROGRESS (Estado Atual do Projeto):**
-            ```markdown
-            ## 📊 Estado Atual do Projeto
+### Testing and Debugging Methodology (Improvements from Session 19 - 2025-10-19)
 
-            **SEMPRE consulte .cursor/progress/consulting-progress.md para histórico completo**
+1. **Five Whys Root Cause Analysis**:
+   - **WHEN**: Encountering test failures, **ALWAYS** apply 5 Whys to identify the root cause.
+   - **EXAMPLE**: Session 19 debugging mock LLM (perspectives corretas).
+   - **BENEFIT**: Structured debugging saves 15-20 minutes compared to trial-and-error.
+2. **itertools.cycle for Mocking**:
+   - **WHEN**: Mocking sequential calls (e.g., 4 perspectives), use `itertools.cycle` for elegant, robust mocks.
+   - **AVOID**: String parsing or ad-hoc logic to determine the mock return value.
+3. **model_validator for Cross-Perspective Validation**:
+   - **WHEN**: Working with Pydantic models that involve multiple perspectives, use `model_validator(mode='after')` to ensure consistency across perspectives.
+   - **EXAMPLE**: KPIFramework validates that KPIs belong to correct perspectives using `model_validator`.
 
-            ### Status Geral
-            - **Fase Atual**: FASE 3 - Diagnostic Tools
-            - **Progresso Geral**: 40% (20/50 tarefas)
-            - **Progresso FASE 3**: 14% (2/14 tarefas - prep completa)
-            - **Última Atualização**: 2025-10-19 (Sessão 15)
+### New Rule: Updated Tool Development Workflow
 
-            ### Tarefas Recentes (Últimas 3)
-            - ✅ **3.0.1** Data Flow Diagrams (COMPLETO - 2025-10-19)
-              - Entregável: docs/architecture/DATA_FLOW_DIAGRAMS.md (5 diagramas)
-            - ✅ **3.0.2** API Contracts (COMPLETO - 2025-10-19)
-              - Entregável: docs/architecture/API_CONTRACTS.md (1200+ linhas)
-            - ✅ **FASE 3 PREP** 100% completa, ROI ~7h economizadas
+1. **Refactor the workflow to include explicit steps**:
 
-            ### Próxima Tarefa
-            - 🎯 **3.1** SWOT Analysis Tool (2-3h estimado)
-              - Dependências: API_CONTRACTS.md, DATA_FLOW_DIAGRAMS.md (✅ satisfeitas)
-              - Milestone: Primeira tool consultiva integrada com DiagnosticAgent
-              - Status: DESBLOQUEADA e pronta para iniciar
+    *   Step 1: Sequential Thinking (plan)
+    *   Step 2: Discovery (technique/approach)
+    *   Step 3: Navigation (locate docs)
+    *   Step 4: Knowledge Base (study patterns)
+    *   Step 5: Implementation (Schema → Prompts → Tool → Integration)
+    *   Step 6: Validation (15+ tests, coverage 70%+, pytest -v --tb=long)
+    *   Step 7: Documentation (650+ lines, 4 use cases BSC)
 
-            **Workflow obrigatório**: Seguir 7 steps do rag-bsc-core.mdc antes de implementar
-            ```
-*   **YES**: Add a pointer in derived-cursor-rules.mdc to the existence of architecture reference documents. High visibility, low overhead.
+    to emphasize the importance of planning and to be more explicit about the steps and to make it easier to follow and validate each phase of the development.
 
-*   **YES**: Add cross-references from `docs/ARCHITECTURE.md` to the data flow diagrams and API contracts.
+#### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
+
+**Context**: Mocks para múltiplas chamadas sequenciais requerem abordagem dinâmica. Mock estático (`return_value` fixo) causa falhas quando tool processa lista de items esperando outputs diferentes.
+
+**Ponto 14: Mock Múltiplas Chamadas com itertools.cycle**:
+
+**QUANDO USAR**: Mock será invocado N vezes (N > 1) esperando outputs diferentes a cada chamada.
+
+**RAZÃO**: Mock estático retorna sempre o mesmo valor. Tools que processam lista items (ex: 4 perspectivas BSC) falham com ValidationError quando mock não diferencia outputs.
+
+**SOLUÇÃO VALIDADA**: `itertools.cycle` para retornar valores sequencialmente.
+
+**Template Geral**:
+```python
+from itertools import cycle
+
+@pytest.fixture
+def mock_with_cycle():
+    """Mock com itertools.cycle - múltiplos valores sequenciais."""
+    mock_obj = MagicMock()
+    
+    # Step 1: Definir valores esperados em ordem
+    values_order = [value1, value2, value3, value4]
+    values_cycle = cycle(values_order)
+    
+    # Step 2: side_effect usa next(cycle)
+    def side_effect_fn(*args, **kwargs):
+        """Retorna próximo valor na sequência."""
+        return next(values_cycle)
+    
+    mock_obj.method.side_effect = side_effect_fn
+    return mock_obj
+```
+
+**Exemplo Real - KPI Definer Tool** (validado 2025-10-19):
+```python
+from itertools import cycle
+from pydantic import BaseModel
+
+@pytest.fixture
+def mock_llm() -> MagicMock:
+    """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
+    llm = MagicMock(spec=["invoke", "with_structured_output"])
+    
+    class KPIListOutput(BaseModel):
+        kpis: list[KPIDefinition]
+    
+    # Define KPIs mock para cada perspectiva
+    kpis_by_perspective = {
+        "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
+        "Clientes": [KPIDefinition(name="NPS", perspective="Clientes", ...)],
+        "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
+        "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
+    }
+    
+    # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
+    # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
+    perspective_order = [
+        "Financeira",
+        "Clientes",
+        "Processos Internos",
+        "Aprendizado e Crescimento"
+    ]
+    perspective_cycle = cycle(perspective_order)
+    
+    def mock_invoke_side_effect(prompt: str):
+        """Retorna KPIs da próxima perspectiva na sequência."""
+        perspective = next(perspective_cycle)
+        kpis = kpis_by_perspective[perspective]
+        return KPIListOutput(kpis=kpis)
+    
+    mock_structured_llm = MagicMock()
+    mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
+    llm.with_structured_output.return_value = mock_structured_llm
+    return llm
+```
+
+**Pergunta-Chave ANTES de criar mock**:
+> "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
+
+**Decisão Tree**:
+- Mock invocado **1x** OU **N vezes com MESMO output**? → `return_value` fixo OK
+- Mock invocado **N vezes com OUTPUTS DIFERENTES**? → `itertools.cycle` ou `side_effect` lista
+- Mock invocado **N vezes exatas** (N == len(lista))? → `side_effect = [val1, val2, val3]`
+- Mock invocado **N vezes indefinido** OU **N > len(values)**? → `itertools.cycle` (melhor escolha)
+
+**Alternativas e Trade-offs**:
+
+1. **Lista finita** (`side_effect = [val1, val2, val3]`):
+   - ✅ Simples, direto
+   - ❌ Erro `StopIteration` se chamadas > len(lista)
+   - **Usar quando**: N chamadas exatas conhecido
+
+2. **Callable com contador**:
+   ```python
+   call_count = 0
+   def side_effect():
+       nonlocal call_count
+       call_count += 1
+       return values[call_count - 1]
+   ```
+   - ✅ Controle explícito
+   - ❌ Mais verboso, `nonlocal` não pythônico
+   - **Usar quando**: Lógica complexa por chamada
+
+3. **itertools.cycle** (RECOMENDADO):
+   - ✅ Pythônico, elegante
+   - ✅ Nunca lança `StopIteration` (ciclo infinito)
+   - ✅

@@ -1,8 +1,8 @@
 # 📇 ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.3  
+**Versão:** 1.4  
 **Última Atualização:** 2025-10-19  
-**Total de Documentos:** 46 (42 docs/ + 4 rules/) - +2 architecture docs!
+**Total de Documentos:** 48 (43 docs/ + 4 rules/ + 1 tool doc) - +1 lesson + 1 tool!
 
 ---
 
@@ -212,6 +212,8 @@
 - `docs/lessons/lesson-test-debugging-methodology-2025-10-15.md` - Test Debug (FASE 2.4, 5 erros)
 - `docs/lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` - Test Methodology (FASE 2.5, 7 erros, 1.100+ linhas)
 - `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` - E2E Workflow Tests (FASE 2.6, 4 problemas, 11.900+ linhas, checklist 12 pontos)
+- `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` - Implementation-First Testing (FASE 3.1, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
+- `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` - 5 Whys Root Cause Debugging (FASE 3.4, mock múltiplas chamadas, itertools.cycle, 950+ linhas, 15-20 min economizados)
 
 ---
 
@@ -463,6 +465,8 @@
 | **Test Debugging (FASE 2.4)** | `lessons/lesson-test-debugging-methodology-2025-10-15.md` | 5 erros, 40 min, ClientProfileAgent | ✅ |
 | **Test Methodology (FASE 2.5)** | `lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (1.100+L) | 7 erros, 38 min economizados, checklist 8 pontos | ✅ |
 | **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | ✅ |
+| **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | ✅ |
+| **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | ✅ |
 
 ---
 

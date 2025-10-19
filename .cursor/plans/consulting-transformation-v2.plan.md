@@ -23,7 +23,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ### Esforço Estimado MVP
 
-- **Micro-tarefas**: 48 (5 fases)
+- **Micro-tarefas**: 50 (48 originais + 2 prep arquitetural FASE 3)
 - **Horas**: 59-75h (15-19 sessões de 3-4h)
 - **Timeline**: 4-5 semanas (sessões diárias)
 - **Custo Operacional**: $70-140/mês (Mem0 + Cloud + APIs)
@@ -95,7 +95,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 📊 FASES DO MVP (48 MICRO-TAREFAS)
+## 📊 FASES DO MVP (50 MICRO-TAREFAS)
 
 ### FASE 1: FOUNDATION - Memória Persistente (8 tarefas, 5-7h, 2 sessões)
 
@@ -157,37 +157,39 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-### FASE 3: DIAGNOSTIC TOOLS - Ferramentas Consultivas (12 tarefas, 16-20h, 5-6 sessões)
+### FASE 3: DIAGNOSTIC TOOLS - Ferramentas Consultivas (14 tarefas, 17-21h, 6-7 sessões)
 
 **Objetivo**: Co-criação de análises estratégicas (SWOT, 5 Whys, KPIs)
+
+**Nota Arquitetural**: Tarefas 3.0.x são prep obrigatória (Data Flow Diagrams + API Contracts) adicionada baseado em lições FASE 2. ROI: ~7h economizadas em FASE 3 via documentação arquitetural.
 
 | ID | Tarefa | Duração | Entregável |
 
 |----|--------|---------|------------|
 
-| 3.1 | FacilitatorAgent | 1.5-2h | facilitator_agent.py (guia ferramentas) |
+| 3.0.1 | Data Flow Diagrams | 20-30 min | DATA_FLOW_DIAGRAMS.md (5 diagramas Mermaid) |
 
-| 3.2 | ValidatorAgent | 1.5-2h | validator_agent.py (avalia qualidade) |
+| 3.0.2 | API Contracts | 30-40 min | API_CONTRACTS.md (contratos 8 agentes) |
 
-| 3.3 | SWOT_Builder | 2-2.5h | swot_builder.py (4 quadrantes estruturados) |
+| 3.1 | SWOTAnalysisTool | 2-3h | swot_analysis.py (4 quadrantes + RAG integration) |
 
-| 3.4 | FiveWhys_Facilitator | 1.5-2h | five_whys.py (root cause analysis) |
+| 3.2 | FiveWhysTool | 3-4h | five_whys.py (root cause analysis 3-7 iterations) |
 
-| 3.5 | IssueTree_Analyzer | 2h | issue_tree.py (problema → sub-problemas) |
+| 3.3 | IssueTree_Analyzer | 2h | issue_tree.py (problema → sub-problemas) |
 
-| 3.6 | KPI_Definer | 2h | kpi_definer.py (template SMART) |
+| 3.4 | KPI_Definer | 2h | kpi_definer.py (template SMART) |
 
-| 3.7 | Evaluator-Optimizer Loop | 1.5h | evaluator_loop.py (iteração até qualidade) |
+| 3.5 | Evaluator-Optimizer Loop | 1.5h | evaluator_loop.py (iteração até qualidade) |
 
-| 3.8 | Tools LangGraph Integration | 1.5h | consulting_workflow.py (adicionar tools) |
+| 3.6 | Tools LangGraph Integration | 1.5h | consulting_workflow.py (adicionar tools) |
 
-| 3.9 | Tool Selection Logic | 1h | orchestrator.py (sugerir tool adequado) |
+| 3.7 | Tool Selection Logic | 1h | orchestrator.py (sugerir tool adequado) |
 
-| 3.10 | Planning CoT | 1h | facilitator_cot_prompt.py |
+| 3.8 | Planning CoT | 1h | facilitator_cot_prompt.py |
 
-| 3.11 | Persist Tool Outputs | 1h | mem0_client.py (save outputs) |
+| 3.9 | Persist Tool Outputs | 1h | mem0_client.py (save outputs) |
 
-| 3.12 | Testes E2E Tools | 1.5-2h | test_diagnostic_tools.py (20+ testes) |
+| 3.10 | Testes E2E Tools | 1.5-2h | test_diagnostic_tools.py (20+ testes) |
 
 **Checkpoint 3**: Ferramentas facilitam adequadamente? Outputs estruturados melhores que brainstorming livre?
 
@@ -465,6 +467,102 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 - ✅ Evaluation-Driven (9 métricas, 5 checkpoints)
 - ✅ Human Handoff (approval workflow, feedback)
 - ✅ Planning/CoT (FacilitatorAgent raciocina antes)
+
+---
+
+## 📚 LIÇÕES ARQUITETURAIS (Atualização Contínua)
+
+**Objetivo**: Capturar decisões técnicas e patterns validados durante implementação para orientar fases futuras.
+
+### 1. Mem0 Eventual Consistency Pattern
+
+**Problema**: API Mem0 é assíncrona, operações CRUD podem não ser imediatamente visíveis.
+
+**Solução Validada**:
+- Delete-then-Add pattern: `delete_all() + sleep(1) + add()` garante 1 memória por user_id
+- Sleep 1s após write operations (add, update, delete)
+- Mensagens contextuais ricas (evitar extraction filter)
+
+**Quando Aplicar**: Todos os workflows que persistem/recuperam ClientProfile via Mem0
+
+**ROI**: 100% reliability (vs 60-70% falhas intermitentes sem sleep)
+
+**Referência**: `docs/lessons/lesson-mem0-integration-2025-10-15.md`
+
+---
+
+### 2. Pydantic V2 Migration Pattern
+
+**Problema**: LangChain v0.3+ usa Pydantic V2, imports V1 deprecated.
+
+**Solução Validada**:
+- Imports: `from pydantic import BaseModel, Field` (NÃO langchain_core.pydantic_v1)
+- Config: `model_config = ConfigDict(...)` (NÃO class Config:)
+- Settings: `model_config = SettingsConfigDict(...)` para BaseSettings
+
+**Quando Aplicar**: Todos os schemas Pydantic (agentes, tools, states)
+
+**ROI**: Zero deprecation warnings, compatibilidade LangChain v0.3+
+
+**Referência**: Memória [[memory:9969821]], LangChain oficial docs
+
+---
+
+### 3. Circular Imports Resolution Pattern
+
+**Problema**: Agentes/Workflow interdependentes causam `ImportError: cannot import from partially initialized module`
+
+**Solução Validada**:
+- `from __future__ import annotations` (PEP 563 - postponed annotations)
+- `from typing import TYPE_CHECKING` + imports dentro de `if TYPE_CHECKING:`
+- Lazy imports em properties/métodos com cache (`@property` + `if self._agent is None`)
+
+**Quando Aplicar**: Módulos interdependentes (workflow ↔ agents, agent A ↔ agent B)
+
+**ROI**: Zero circular imports, type hints completos, IDE autocomplete funciona
+
+**Referência**: Memória [[memory:9980685]], Stack Overflow Q39740632, PEP 484/563
+
+---
+
+### 4. Implementation-First Testing Methodology
+
+**Problema**: TDD tradicional falha para APIs desconhecidas (testes baseados em assunções erradas).
+
+**Solução Validada**:
+1. `grep "def " src/module/file.py` → Descobrir métodos disponíveis
+2. `grep "def method_name" src/module/file.py -A 15` → Ler signatures completas
+3. `grep "class Schema" src/memory/schemas.py -A 30` → Verificar schemas Pydantic
+4. Escrever testes alinhados com API real (não assunções)
+
+**Quando Aplicar**: APIs novas (tools consultivas FASE 3+), agentes novos, integrações complexas
+
+**Quando NÃO Aplicar**: API conhecida, lógica simples (math, pure functions), refactoring
+
+**ROI**: 30-40 min economizados por implementação (evita reescrita completa de testes)
+
+**Referência**: Memória [[memory:9969868]] ponto 13, `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md`
+
+---
+
+### 5. Sequential Thinking + Brightdata Proativo
+
+**Problema**: Debugging trial-and-error desperdiça tempo, soluções não validadas pela comunidade.
+
+**Solução Validada**:
+- Sequential Thinking: 8-15 thoughts ANTES de implementar (planejamento estruturado)
+- Brightdata proativo: Pesquisar durante thoughts 2-3 (não quando stuck >30 min)
+- Micro-etapas: Dividir em A-H steps com validação incremental (pytest/read_lints após cada)
+
+**Quando Aplicar**: Problemas complexos (circular imports, schemas P0, E2E workflows), debugging estruturado
+
+**ROI**: 2.5-4x economia tempo (40-60 min debugging → 15-20 min estruturado)
+
+**Referência**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md`
+
+---
+
+**ROI Combinado Lições**: ~10-15h economizadas em FASE 3+ (patterns reutilizáveis aplicados)
 
 ---
 

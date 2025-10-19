@@ -54,6 +54,650 @@ class SWOTAnalysis(BaseModel):
         default_factory=list,
         description="Ameaças externas"
     )
+    
+    def is_complete(self, min_items_per_quadrant: int = 2) -> bool:
+        """Verifica se análise SWOT está completa.
+        
+        Args:
+            min_items_per_quadrant: Mínimo de itens por quadrante (default: 2)
+            
+        Returns:
+            True se todos os 4 quadrantes têm >= min_items_per_quadrant, False caso contrário
+            
+        Example:
+            >>> swot = SWOTAnalysis(strengths=["A", "B"], weaknesses=["C"])
+            >>> swot.is_complete(min_items_per_quadrant=2)
+            False  # weaknesses tem apenas 1 item
+        """
+        return (
+            len(self.strengths) >= min_items_per_quadrant
+            and len(self.weaknesses) >= min_items_per_quadrant
+            and len(self.opportunities) >= min_items_per_quadrant
+            and len(self.threats) >= min_items_per_quadrant
+        )
+    
+    def quality_score(self, target_items: int = 4) -> float:
+        """Calcula score de qualidade da análise SWOT.
+        
+        Score varia de 0.0 (vazio) a 1.0 (perfeito) baseado na quantidade
+        de itens em cada quadrante em relação ao target.
+        
+        Args:
+            target_items: Número ideal de itens por quadrante (default: 4)
+            
+        Returns:
+            Float entre 0.0 e 1.0 representando qualidade da análise
+            
+        Example:
+            >>> swot = SWOTAnalysis(
+            ...     strengths=["A", "B"], 
+            ...     weaknesses=["C"],
+            ...     opportunities=["D", "E", "F"],
+            ...     threats=[]
+            ... )
+            >>> swot.quality_score(target_items=4)
+            0.375  # (2 + 1 + 3 + 0) / 16 = 6/16
+        """
+        total_items = (
+            len(self.strengths)
+            + len(self.weaknesses)
+            + len(self.opportunities)
+            + len(self.threats)
+        )
+        max_possible = target_items * 4  # 4 quadrantes
+        return min(total_items / max_possible, 1.0) if max_possible > 0 else 0.0
+    
+    def summary(self) -> str:
+        """Retorna resumo textual da análise SWOT.
+        
+        Formata os 4 quadrantes em texto legível para visualização rápida.
+        
+        Returns:
+            String formatada com os 4 quadrantes
+            
+        Example:
+            >>> swot = SWOTAnalysis(strengths=["A"], weaknesses=["B"])
+            >>> print(swot.summary())
+            Strengths (Forças): 1 items
+            - A
+            ...
+        """
+        lines = []
+        
+        lines.append(f"Strengths (Forças): {len(self.strengths)} items")
+        for item in self.strengths:
+            lines.append(f"- {item}")
+        
+        lines.append(f"\nWeaknesses (Fraquezas): {len(self.weaknesses)} items")
+        for item in self.weaknesses:
+            lines.append(f"- {item}")
+        
+        lines.append(f"\nOpportunities (Oportunidades): {len(self.opportunities)} items")
+        for item in self.opportunities:
+            lines.append(f"- {item}")
+        
+        lines.append(f"\nThreats (Ameaças): {len(self.threats)} items")
+        for item in self.threats:
+            lines.append(f"- {item}")
+        
+        return "\n".join(lines)
+    
+    def total_items(self) -> int:
+        """Retorna total de itens em todos os quadrantes.
+        
+        Returns:
+            Soma do número de itens em strengths + weaknesses + opportunities + threats
+        """
+        return (
+            len(self.strengths)
+            + len(self.weaknesses)
+            + len(self.opportunities)
+            + len(self.threats)
+        )
+    
+    def quadrant_summary(self) -> dict[str, int]:
+        """Retorna resumo de quantidades por quadrante.
+        
+        Returns:
+            Dicionário com contagem de itens por quadrante
+            
+        Example:
+            >>> swot.quadrant_summary()
+            {'strengths': 2, 'weaknesses': 1, 'opportunities': 3, 'threats': 2}
+        """
+        return {
+            "strengths": len(self.strengths),
+            "weaknesses": len(self.weaknesses),
+            "opportunities": len(self.opportunities),
+            "threats": len(self.threats),
+        }
+
+
+class WhyIteration(BaseModel):
+    """Uma iteracao individual do metodo 5 Whys.
+    
+    Representa uma pergunta "Por que?" e sua resposta correspondente
+    durante a analise de causa raiz.
+    
+    Attributes:
+        iteration_number: Numero da iteracao (1-7)
+        question: Pergunta "Por que?" formulada
+        answer: Resposta que leva a proxima iteracao
+        confidence: Confianca de que esta resposta e relevante (0.0-1.0)
+    
+    Example:
+        >>> iteration = WhyIteration(
+        ...     iteration_number=1,
+        ...     question="Por que as vendas estao baixas?",
+        ...     answer="Porque temos poucos leads qualificados",
+        ...     confidence=0.9
+        ... )
+    """
+    
+    iteration_number: int = Field(
+        ge=1,
+        le=7,
+        description="Numero da iteracao (1-7)"
+    )
+    question: str = Field(
+        min_length=10,
+        max_length=500,
+        description="Pergunta 'Por que?' formulada"
+    )
+    answer: str = Field(
+        min_length=10,
+        max_length=1000,
+        description="Resposta que leva a proxima iteracao"
+    )
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+        default=0.5,
+        description="Confianca de que esta resposta e relevante (0.0-1.0)"
+    )
+
+
+class FiveWhysAnalysis(BaseModel):
+    """Analise 5 Whys (5 Porques) para identificacao de causa raiz.
+    
+    Metodo de analise de causa raiz desenvolvido por Taiichi Ohno (Toyota)
+    que pergunta "Por que?" iterativamente (3-7 vezes) ate identificar
+    a causa fundamental de um problema.
+    
+    Attributes:
+        problem_statement: Problema inicial a ser analisado
+        iterations: Lista de iteracoes "Por que?" (min 3, max 7)
+        root_cause: Causa raiz fundamental identificada
+        confidence_score: Confianca de que root cause foi atingida (0-100)
+        recommended_actions: Acoes recomendadas para resolver causa raiz
+        context_from_rag: Contexto BSC recuperado via RAG (opcional)
+    
+    Example:
+        >>> analysis = FiveWhysAnalysis(
+        ...     problem_statement="Vendas baixas no ultimo trimestre",
+        ...     iterations=[
+        ...         WhyIteration(1, "Por que vendas baixas?", "Poucos leads", 0.9),
+        ...         WhyIteration(2, "Por que poucos leads?", "Marketing fraco", 0.85),
+        ...         # ... mais iteracoes
+        ...     ],
+        ...     root_cause="Falta de orcamento para marketing digital",
+        ...     confidence_score=85.0,
+        ...     recommended_actions=["Realocar orcamento", "Contratar especialista"]
+        ... )
+    """
+    
+    problem_statement: str = Field(
+        min_length=10,
+        max_length=500,
+        description="Problema inicial a ser analisado"
+    )
+    iterations: List[WhyIteration] = Field(
+        min_length=3,
+        max_length=7,
+        description="Lista de iteracoes 'Por que?' (min 3, max 7)"
+    )
+    root_cause: str = Field(
+        min_length=20,
+        max_length=1000,
+        description="Causa raiz fundamental identificada"
+    )
+    confidence_score: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Confianca de que root cause foi atingida (0-100%)"
+    )
+    recommended_actions: List[str] = Field(
+        min_length=2,
+        description="Acoes recomendadas para resolver causa raiz"
+    )
+    context_from_rag: List[str] = Field(
+        default_factory=list,
+        description="Contexto BSC recuperado via RAG (opcional)"
+    )
+    
+    @field_validator("iterations")
+    @classmethod
+    def validate_iterations_sequence(cls, iterations: List[WhyIteration]) -> List[WhyIteration]:
+        """Valida que iteration_number esta em sequencia (1, 2, 3, ...)."""
+        if not iterations:
+            return iterations
+        
+        expected_numbers = list(range(1, len(iterations) + 1))
+        actual_numbers = [it.iteration_number for it in iterations]
+        
+        if actual_numbers != expected_numbers:
+            raise ValueError(
+                f"Iteration numbers devem estar em sequencia (1, 2, 3, ...). "
+                f"Esperado: {expected_numbers}, Recebido: {actual_numbers}"
+            )
+        
+        return iterations
+    
+    @field_validator("recommended_actions")
+    @classmethod
+    def validate_actions_not_empty(cls, actions: List[str]) -> List[str]:
+        """Valida que cada acao tem conteudo (nao vazia)."""
+        if not actions or len(actions) < 2:
+            raise ValueError("Deve haver pelo menos 2 recommended_actions")
+        
+        for i, action in enumerate(actions):
+            if not action or len(action.strip()) < 10:
+                raise ValueError(
+                    f"Action {i+1} deve ter pelo menos 10 caracteres (recebeu: '{action}')"
+                )
+        
+        return actions
+    
+    def is_complete(self) -> bool:
+        """Verifica se analise 5 Whys esta completa.
+        
+        Returns:
+            True se tem >= 3 iteracoes, root_cause preenchida, e >= 2 acoes recomendadas
+        
+        Example:
+            >>> analysis = FiveWhysAnalysis(...)
+            >>> analysis.is_complete()
+            True
+        """
+        return (
+            len(self.iterations) >= 3
+            and len(self.root_cause) >= 20
+            and len(self.recommended_actions) >= 2
+        )
+    
+    def depth_reached(self) -> int:
+        """Retorna numero de iteracoes realizadas.
+        
+        Returns:
+            Quantidade de iteracoes "Por que?" realizadas (3-7)
+        
+        Example:
+            >>> analysis.depth_reached()
+            5  # Realizou 5 iteracoes
+        """
+        return len(self.iterations)
+    
+    def root_cause_confidence(self) -> float:
+        """Retorna score de confianca da causa raiz (0-100%).
+        
+        Returns:
+            Confidence score normalizado (0.0-100.0)
+        
+        Example:
+            >>> analysis.root_cause_confidence()
+            85.0  # 85% de confianca
+        """
+        return self.confidence_score
+    
+    def summary(self) -> str:
+        """Retorna resumo textual da analise 5 Whys.
+        
+        Formata problema, iteracoes, causa raiz e acoes em texto legivel
+        para visualizacao rapida.
+        
+        Returns:
+            String formatada com resumo executivo da analise
+        
+        Example:
+            >>> print(analysis.summary())
+            Problema: Vendas baixas no ultimo trimestre
+            
+            Iteracoes (5):
+            1. Por que vendas baixas? -> Poucos leads qualificados
+            2. Por que poucos leads? -> Marketing digital fraco
+            ...
+            
+            Causa Raiz: Falta de orcamento para marketing digital
+            Confianca: 85.0%
+            
+            Acoes Recomendadas (3):
+            1. Realocar orcamento para marketing
+            2. Contratar especialista em marketing digital
+            3. Implementar campanha de inbound marketing
+        """
+        lines = []
+        
+        lines.append(f"Problema: {self.problem_statement}")
+        lines.append("")
+        
+        lines.append(f"Iteracoes ({len(self.iterations)}):")
+        for iteration in self.iterations:
+            lines.append(
+                f"{iteration.iteration_number}. {iteration.question} -> {iteration.answer}"
+            )
+        lines.append("")
+        
+        lines.append(f"Causa Raiz: {self.root_cause}")
+        lines.append(f"Confianca: {self.confidence_score}%")
+        lines.append("")
+        
+        lines.append(f"Acoes Recomendadas ({len(self.recommended_actions)}):")
+        for i, action in enumerate(self.recommended_actions, 1):
+            lines.append(f"{i}. {action}")
+        
+        if self.context_from_rag:
+            lines.append("")
+            lines.append(f"Contexto BSC (RAG): {len(self.context_from_rag)} insights recuperados")
+        
+        return "\n".join(lines)
+    
+    def average_confidence(self) -> float:
+        """Calcula confianca media das iteracoes.
+        
+        Returns:
+            Media aritmetica das confidences de todas iteracoes (0.0-1.0)
+        
+        Example:
+            >>> analysis.average_confidence()
+            0.85  # 85% de confianca media
+        """
+        if not self.iterations:
+            return 0.0
+        
+        total_confidence = sum(it.confidence for it in self.iterations)
+        return total_confidence / len(self.iterations)
+
+
+# ============================================================================
+# ISSUE TREE SCHEMAS (Fase 3.3 - Issue Tree Analyzer)
+# ============================================================================
+
+
+class IssueNode(BaseModel):
+    """No individual de uma arvore de problemas (Issue Tree).
+    
+    Representa um problema/sub-problema na decomposicao hierarquica MECE.
+    Cada no pode ter children (sub-problemas) e um parent (problema pai).
+    
+    Attributes:
+        id: Identificador unico do no (UUID gerado automaticamente)
+        text: Descricao do problema/sub-problema
+        level: Nivel na hierarquia (0=root, 1=branch, 2+=leaf)
+        parent_id: ID do no pai (None se root)
+        children_ids: Lista de IDs dos nos filhos
+        is_leaf: True se no e folha (sem children), False se tem sub-problemas
+        category: Categoria opcional (ex: "Financeira", "Clientes")
+    
+    Example:
+        >>> root = IssueNode(
+        ...     text="Baixa lucratividade",
+        ...     level=0,
+        ...     parent_id=None
+        ... )
+        >>> branch1 = IssueNode(
+        ...     text="Receita baixa",
+        ...     level=1,
+        ...     parent_id=root.id,
+        ...     category="Financeira"
+        ... )
+    """
+    
+    id: str = Field(
+        default_factory=lambda: str(uuid4()),
+        description="Identificador unico do no (UUID)"
+    )
+    text: str = Field(
+        min_length=5,
+        max_length=300,
+        description="Descricao do problema/sub-problema"
+    )
+    level: int = Field(
+        ge=0,
+        le=5,
+        description="Nivel na hierarquia (0=root, max 5 niveis profundidade)"
+    )
+    parent_id: Optional[str] = Field(
+        default=None,
+        description="ID do no pai (None se root)"
+    )
+    children_ids: List[str] = Field(
+        default_factory=list,
+        description="Lista de IDs dos nos filhos"
+    )
+    is_leaf: bool = Field(
+        default=False,
+        description="True se no e folha (sem children)"
+    )
+    category: Optional[str] = Field(
+        default=None,
+        description="Categoria opcional BSC (Financeira, Clientes, Processos, Aprendizado)"
+    )
+    
+    @field_validator("text")
+    @classmethod
+    def validate_text_not_empty(cls, value: str) -> str:
+        """Valida que texto nao e apenas espacos."""
+        if not value.strip():
+            raise ValueError("Texto do no nao pode ser vazio ou apenas espacos")
+        return value.strip()
+
+
+class IssueTreeAnalysis(BaseModel):
+    """Analise completa de Issue Tree (arvore de problemas MECE).
+    
+    Estrutura hierarquica que decompoe um problema complexo em sub-problemas
+    seguindo principio MECE (Mutually Exclusive, Collectively Exhaustive).
+    Tecnica McKinsey/BCG para case interviews e diagnostico estrategico.
+    
+    Attributes:
+        root_problem: Problema raiz (nivel 0)
+        nodes: Lista de todos os nos da arvore (incluindo root)
+        max_depth: Profundidade maxima atingida (min 1, max 5)
+        is_mece_compliant: Validacao manual se arvore segue MECE
+        total_nodes: Numero total de nos (calculado automaticamente)
+        leaf_nodes_count: Numero de nos folha (solucoes finais)
+        solution_paths: Caminhos solucao recomendados (sintese leaf nodes)
+        context_from_rag: Contexto BSC recuperado via RAG (opcional)
+    
+    Example:
+        >>> tree = IssueTreeAnalysis(
+        ...     root_problem="Baixa lucratividade empresa manufatura",
+        ...     nodes=[
+        ...         IssueNode(text="Baixa lucratividade", level=0),
+        ...         IssueNode(text="Receita baixa", level=1),
+        ...         IssueNode(text="Custos altos", level=1),
+        ...         # ... mais nos
+        ...     ],
+        ...     max_depth=3,
+        ...     is_mece_compliant=True,
+        ...     solution_paths=[
+        ...         "Aumentar volume vendas via marketing digital",
+        ...         "Reduzir custos fixos com automacao processos"
+        ...     ]
+        ... )
+    """
+    
+    root_problem: str = Field(
+        min_length=10,
+        max_length=500,
+        description="Problema raiz a ser decomposto"
+    )
+    nodes: List[IssueNode] = Field(
+        min_length=1,
+        description="Lista de todos os nos da arvore (incluindo root)"
+    )
+    max_depth: int = Field(
+        ge=1,
+        le=5,
+        description="Profundidade maxima atingida na arvore"
+    )
+    is_mece_compliant: bool = Field(
+        default=False,
+        description="Validacao se arvore segue principio MECE"
+    )
+    solution_paths: List[str] = Field(
+        default_factory=list,
+        description="Caminhos solucao recomendados (sintese leaf nodes)"
+    )
+    context_from_rag: Optional[str] = Field(
+        default=None,
+        description="Contexto BSC recuperado via RAG (opcional)"
+    )
+    
+    @model_validator(mode="after")
+    def validate_tree_structure(self):
+        """Valida estrutura basica da arvore.
+        
+        Verifica:
+        - Root node existe (level=0)
+        - Nodes tem IDs unicos
+        - Max depth coerente com nodes
+        
+        Raises:
+            ValueError: Se estrutura invalida
+        """
+        # Verificar root node existe
+        root_nodes = [n for n in self.nodes if n.level == 0]
+        if len(root_nodes) != 1:
+            raise ValueError(f"Arvore deve ter exatamente 1 root node (level=0), encontrado {len(root_nodes)}")
+        
+        # Verificar IDs unicos
+        node_ids = [n.id for n in self.nodes]
+        if len(node_ids) != len(set(node_ids)):
+            raise ValueError("Todos os nodes devem ter IDs unicos")
+        
+        # Verificar max_depth coerente
+        actual_max_depth = max(n.level for n in self.nodes) if self.nodes else 0
+        if self.max_depth != actual_max_depth:
+            raise ValueError(f"max_depth ({self.max_depth}) inconsistente com nodes (max level {actual_max_depth})")
+        
+        return self
+    
+    def is_complete(self, min_branches: int = 2) -> bool:
+        """Verifica se arvore esta completa (minimo branches por nivel).
+        
+        Args:
+            min_branches: Minimo de branches por nivel (default: 2 para MECE)
+            
+        Returns:
+            True se todos niveis >= 1 tem >= min_branches, False caso contrario
+            
+        Example:
+            >>> tree.is_complete(min_branches=2)
+            True  # Todos niveis intermediarios tem >= 2 branches
+        """
+        # Agrupar nodes por nivel
+        levels = {}
+        for node in self.nodes:
+            if node.level not in levels:
+                levels[node.level] = []
+            levels[node.level].append(node)
+        
+        # Verificar niveis intermediarios (excluir root=0 e leaf=max)
+        for level in range(1, self.max_depth):
+            if len(levels.get(level, [])) < min_branches:
+                return False
+        
+        return True
+    
+    def validate_mece(self) -> dict:
+        """Valida se arvore segue principio MECE (heuristica basica).
+        
+        MECE = Mutually Exclusive (sem overlap) + Collectively Exhaustive (cobre tudo)
+        
+        Returns:
+            Dict com validacao: {"is_mece": bool, "issues": list[str], "confidence": float}
+            
+        Example:
+            >>> tree.validate_mece()
+            {"is_mece": True, "issues": [], "confidence": 0.85}
+        """
+        issues = []
+        
+        # Verificar se todos niveis >= 1 tem >= 2 branches (Collectively Exhaustive basico)
+        if not self.is_complete(min_branches=2):
+            issues.append("Alguns niveis tem < 2 branches (pode nao ser Collectively Exhaustive)")
+        
+        # Verificar se leaf nodes tem solucoes
+        leaf_nodes = self.get_leaf_nodes()
+        if not leaf_nodes:
+            issues.append("Arvore nao tem leaf nodes (decomposicao incompleta)")
+        
+        if len(self.solution_paths) < len(leaf_nodes) // 2:
+            issues.append(f"Poucas solution paths ({len(self.solution_paths)}) vs leaf nodes ({len(leaf_nodes)})")
+        
+        # Calcular confidence (heuristica: quanto menos issues, maior confidence)
+        confidence = max(0.0, 1.0 - (len(issues) * 0.25))
+        
+        return {
+            "is_mece": len(issues) == 0,
+            "issues": issues,
+            "confidence": confidence
+        }
+    
+    def get_leaf_nodes(self) -> List[IssueNode]:
+        """Retorna todos os nos folha (sem children).
+        
+        Returns:
+            Lista de IssueNodes que sao folhas (is_leaf=True ou children_ids vazio)
+            
+        Example:
+            >>> leaf_nodes = tree.get_leaf_nodes()
+            >>> len(leaf_nodes)
+            8  # 8 solucoes finais identificadas
+        """
+        return [n for n in self.nodes if n.is_leaf or len(n.children_ids) == 0]
+    
+    def total_nodes(self) -> int:
+        """Retorna numero total de nos na arvore.
+        
+        Returns:
+            Numero total de nodes (incluindo root)
+            
+        Example:
+            >>> tree.total_nodes()
+            15  # 1 root + 14 sub-problemas
+        """
+        return len(self.nodes)
+    
+    def summary(self) -> str:
+        """Gera resumo executivo da analise Issue Tree.
+        
+        Returns:
+            String com resumo formatado (1 paragrafo)
+            
+        Example:
+            >>> print(tree.summary())
+            Problema raiz: Baixa lucratividade
+            Decomposicao: 15 nos, 3 niveis profundidade, 8 solucoes finais
+            MECE: Compliant (confidence 85%)
+            Caminhos solucao: 6 recomendacoes acionaveis
+        """
+        lines = [
+            f"Problema raiz: {self.root_problem}",
+            f"Decomposicao: {self.total_nodes()} nos, {self.max_depth} niveis profundidade, {len(self.get_leaf_nodes())} solucoes finais"
+        ]
+        
+        mece_validation = self.validate_mece()
+        mece_status = "Compliant" if mece_validation["is_mece"] else "Non-compliant"
+        lines.append(f"MECE: {mece_status} (confidence {mece_validation['confidence']:.0%})")
+        
+        lines.append(f"Caminhos solucao: {len(self.solution_paths)} recomendacoes acionaveis")
+        
+        if self.context_from_rag:
+            lines.append(f"Contexto BSC (RAG): {len(self.context_from_rag)} insights recuperados")
+        
+        return "\n".join(lines)
 
 
 class CompanyInfo(BaseModel):
@@ -690,3 +1334,266 @@ class CompleteDiagnostic(BaseModel):
             )
         
         return self
+
+
+# ============================================================================
+# KPI FRAMEWORK SCHEMAS (FASE 3.4 - 2025-10-19)
+# ============================================================================
+
+
+class KPIDefinition(BaseModel):
+    """Definicao de um KPI individual para BSC.
+    
+    Representa um Key Performance Indicator (KPI) especifico seguindo criterios
+    SMART (Specific, Measurable, Achievable, Relevant, Time-bound).
+    
+    Attributes:
+        name: Nome do KPI (10-100 caracteres)
+        description: Descricao detalhada do que o KPI mede (minimo 50 chars)
+        perspective: Perspectiva BSC (Financeira, Clientes, Processos Internos, Aprendizado e Crescimento)
+        metric_type: Tipo da metrica (quantidade, qualidade, tempo, custo)
+        target_value: Valor alvo desejado (opcional, ex: "95%", ">10%", "< R$ 50k")
+        measurement_frequency: Frequencia de medicao (diario, semanal, mensal, trimestral, anual)
+        data_source: Origem dos dados para o KPI (ex: "ERP", "CRM", "Pesquisa NPS")
+        calculation_formula: Formula de calculo (opcional, ex: "(Receita - Custos) / Receita * 100")
+    
+    Example:
+        >>> kpi = KPIDefinition(
+        ...     name="Net Promoter Score (NPS)",
+        ...     description="Mede a lealdade dos clientes atraves da probabilidade de recomendacao",
+        ...     perspective="Clientes",
+        ...     metric_type="qualidade",
+        ...     target_value="> 50",
+        ...     measurement_frequency="trimestral",
+        ...     data_source="Pesquisa NPS automatica pos-venda",
+        ...     calculation_formula="% Promotores - % Detratores"
+        ... )
+    """
+    
+    name: str = Field(
+        min_length=10,
+        max_length=100,
+        description="Nome do KPI (10-100 caracteres)"
+    )
+    description: str = Field(
+        min_length=50,
+        description="Descricao detalhada do que o KPI mede"
+    )
+    perspective: Literal[
+        "Financeira",
+        "Clientes",
+        "Processos Internos",
+        "Aprendizado e Crescimento"
+    ] = Field(
+        description="Perspectiva BSC do KPI"
+    )
+    metric_type: Literal[
+        "quantidade",
+        "qualidade",
+        "tempo",
+        "custo"
+    ] = Field(
+        description="Tipo da metrica"
+    )
+    target_value: Optional[str] = Field(
+        default=None,
+        description="Valor alvo desejado (ex: '95%', '>10%')"
+    )
+    measurement_frequency: Literal[
+        "diario",
+        "semanal",
+        "mensal",
+        "trimestral",
+        "anual"
+    ] = Field(
+        description="Frequencia de medicao do KPI"
+    )
+    data_source: str = Field(
+        min_length=5,
+        description="Origem dos dados para o KPI"
+    )
+    calculation_formula: Optional[str] = Field(
+        default=None,
+        description="Formula de calculo do KPI (opcional)"
+    )
+    
+    @field_validator('name')
+    def validate_name_not_empty(cls, v: str) -> str:
+        """Valida que nome nao e apenas espacos."""
+        if not v.strip():
+            raise ValueError("Nome do KPI nao pode ser vazio")
+        return v.strip()
+    
+    @field_validator('description')
+    def validate_description_not_empty(cls, v: str) -> str:
+        """Valida que descricao nao e apenas espacos."""
+        if not v.strip():
+            raise ValueError("Descricao do KPI nao pode ser vazia")
+        return v.strip()
+
+
+class KPIFramework(BaseModel):
+    """Framework completo de KPIs BSC para 4 perspectivas.
+    
+    Consolida todos os KPIs definidos para as 4 perspectivas do Balanced Scorecard
+    em uma estrutura balanceada e completa.
+    
+    Attributes:
+        financial_kpis: KPIs da perspectiva Financeira (2-8 items)
+        customer_kpis: KPIs da perspectiva Clientes (2-8 items)
+        process_kpis: KPIs da perspectiva Processos Internos (2-8 items)
+        learning_kpis: KPIs da perspectiva Aprendizado e Crescimento (2-8 items)
+    
+    Example:
+        >>> framework = KPIFramework(
+        ...     financial_kpis=[
+        ...         KPIDefinition(name="ROI", ...),
+        ...         KPIDefinition(name="Margem Bruta", ...)
+        ...     ],
+        ...     customer_kpis=[
+        ...         KPIDefinition(name="NPS", ...),
+        ...         KPIDefinition(name="Churn Rate", ...)
+        ...     ],
+        ...     process_kpis=[...],
+        ...     learning_kpis=[...]
+        ... )
+        >>> print(framework.total_kpis())  # 8 (2+2+2+2)
+    """
+    
+    financial_kpis: list[KPIDefinition] = Field(
+        min_length=2,
+        max_length=8,
+        description="KPIs da perspectiva Financeira (2-8 items)"
+    )
+    customer_kpis: list[KPIDefinition] = Field(
+        min_length=2,
+        max_length=8,
+        description="KPIs da perspectiva Clientes (2-8 items)"
+    )
+    process_kpis: list[KPIDefinition] = Field(
+        min_length=2,
+        max_length=8,
+        description="KPIs da perspectiva Processos Internos (2-8 items)"
+    )
+    learning_kpis: list[KPIDefinition] = Field(
+        min_length=2,
+        max_length=8,
+        description="KPIs da perspectiva Aprendizado e Crescimento (2-8 items)"
+    )
+    
+    @model_validator(mode='after')
+    def validate_perspectives(self) -> 'KPIFramework':
+        """Valida que KPIs estao nas perspectivas corretas.
+        
+        Garante que cada lista de KPIs contem apenas KPIs da perspectiva correspondente.
+        
+        Raises:
+            ValueError: Se KPIs estao em perspectivas incorretas
+        """
+        # Validar financial_kpis
+        for kpi in self.financial_kpis:
+            if kpi.perspective != "Financeira":
+                raise ValueError(
+                    f"financial_kpis deve conter apenas KPIs da perspectiva 'Financeira', "
+                    f"encontrado '{kpi.perspective}' em KPI '{kpi.name}'"
+                )
+        
+        # Validar customer_kpis
+        for kpi in self.customer_kpis:
+            if kpi.perspective != "Clientes":
+                raise ValueError(
+                    f"customer_kpis deve conter apenas KPIs da perspectiva 'Clientes', "
+                    f"encontrado '{kpi.perspective}' em KPI '{kpi.name}'"
+                )
+        
+        # Validar process_kpis
+        for kpi in self.process_kpis:
+            if kpi.perspective != "Processos Internos":
+                raise ValueError(
+                    f"process_kpis deve conter apenas KPIs da perspectiva 'Processos Internos', "
+                    f"encontrado '{kpi.perspective}' em KPI '{kpi.name}'"
+                )
+        
+        # Validar learning_kpis
+        for kpi in self.learning_kpis:
+            if kpi.perspective != "Aprendizado e Crescimento":
+                raise ValueError(
+                    f"learning_kpis deve conter apenas KPIs da perspectiva 'Aprendizado e Crescimento', "
+                    f"encontrado '{kpi.perspective}' em KPI '{kpi.name}'"
+                )
+        
+        return self
+    
+    def total_kpis(self) -> int:
+        """Retorna numero total de KPIs no framework.
+        
+        Returns:
+            int: Soma de KPIs de todas as 4 perspectivas
+        
+        Example:
+            >>> framework = KPIFramework(...)
+            >>> framework.total_kpis()
+            16  # 4 + 3 + 5 + 4
+        """
+        return (
+            len(self.financial_kpis) +
+            len(self.customer_kpis) +
+            len(self.process_kpis) +
+            len(self.learning_kpis)
+        )
+    
+    def by_perspective(self, perspective: str) -> list[KPIDefinition]:
+        """Retorna KPIs de uma perspectiva especifica.
+        
+        Args:
+            perspective: Nome da perspectiva BSC
+        
+        Returns:
+            list[KPIDefinition]: Lista de KPIs da perspectiva solicitada
+        
+        Raises:
+            ValueError: Se perspectiva invalida
+        
+        Example:
+            >>> framework = KPIFramework(...)
+            >>> financial = framework.by_perspective("Financeira")
+            >>> print(len(financial))  # 4
+        """
+        perspective_map = {
+            "Financeira": self.financial_kpis,
+            "Clientes": self.customer_kpis,
+            "Processos Internos": self.process_kpis,
+            "Aprendizado e Crescimento": self.learning_kpis
+        }
+        
+        if perspective not in perspective_map:
+            raise ValueError(
+                f"Perspectiva '{perspective}' invalida. "
+                f"Opcoes: {list(perspective_map.keys())}"
+            )
+        
+        return perspective_map[perspective]
+    
+    def summary(self) -> str:
+        """Retorna resumo textual do framework com contagem de KPIs por perspectiva.
+        
+        Returns:
+            str: Resumo formatado multi-linha
+        
+        Example:
+            >>> framework = KPIFramework(...)
+            >>> print(framework.summary())
+            Framework BSC com 16 KPIs distribuidos:
+            - Financeira: 4 KPIs
+            - Clientes: 3 KPIs
+            - Processos Internos: 5 KPIs
+            - Aprendizado e Crescimento: 4 KPIs
+        """
+        lines = []
+        total = self.total_kpis()
+        lines.append(f"Framework BSC com {total} KPIs distribuidos:")
+        lines.append(f"- Financeira: {len(self.financial_kpis)} KPIs")
+        lines.append(f"- Clientes: {len(self.customer_kpis)} KPIs")
+        lines.append(f"- Processos Internos: {len(self.process_kpis)} KPIs")
+        lines.append(f"- Aprendizado e Crescimento: {len(self.learning_kpis)} KPIs")
+        return "\n".join(lines)

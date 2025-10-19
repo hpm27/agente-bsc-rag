@@ -74,6 +74,57 @@
 - SFL: [Survey arXiv](https://arxiv.org/pdf/1607.04347)  
 - Templates: [Google Workbook](https://sre.google/workbook/postmortem-culture/), [Templates GitHub](https://github.com/dastergon/postmortem-templates)
 
+### Case Study: 5 Whys Meta-Análise - Debugging Testes (Sessão 19 - 2025-10-19)
+
+**Context**: Durante implementação do KPI Definer Tool (FASE 3.4), 2 de 19 testes unitários falharam com erro Pydantic: `customer_kpis` continha KPIs com `perspective="Financeira"` ao invés de `"Clientes"`. Aplicamos **5 Whys Root Cause Analysis ao próprio debugging** (meta-análise metodológica).
+
+**5 Whys Aplicado**:
+
+1. **WHY 1**: Por que o teste falha?
+   - **Resposta**: `customer_kpis` contém KPIs com perspectiva errada
+   - **Evidência**: `ValidationError` linha 178 de `kpi_definer.py`
+
+2. **WHY 2**: Por que `customer_kpis` tem perspectiva errada?
+   - **Resposta**: Mock LLM retorna sempre os mesmos 3 KPIs (perspectiva Financeira)
+   - **Evidência**: Mock configurado com `return_value` estático
+
+3. **WHY 3**: Por que `side_effect` não diferencia perspectivas?
+   - **Resposta**: String matching no prompt ("Financeira" in prompt) falhou
+   - **Evidência**: Formato do prompt não foi validado antes de criar lógica
+
+4. **WHY 4**: Por que detecção de perspectiva no prompt falha?
+   - **Resposta**: Prompt tem encoding/contexto complexo, string matching simples é frágil
+   - **Evidência**: "Clientes" aparece múltiplas vezes em diferentes contextos
+
+5. **WHY 5** (ROOT CAUSE): Por que não validei o formato do prompt?
+   - **Resposta**: Assumi estrutura sem testar. **Root Cause Verdadeiro**: Mock estático não considera múltiplas chamadas sequenciais com outputs diferentes
+   - **Pergunta-chave não feita**: "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
+
+**Solução**: `itertools.cycle` para retornar valores sequencialmente
+```python
+from itertools import cycle
+
+perspective_order = ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+perspective_cycle = cycle(perspective_order)
+
+def mock_side_effect(prompt: str):
+    perspective = next(perspective_cycle)  # Retorna próxima perspectiva na ordem
+    kpis = kpis_by_perspective[perspective]
+    return KPIListOutput(kpis=kpis)
+
+mock.side_effect = mock_side_effect
+```
+
+**Resultado**: 19/19 testes passando (100%), 77% coverage, 19.10s execução
+
+**Lição-Chave**: **5 Whys funciona para debugging técnico**, não apenas problemas de negócio. Root cause identificado sistematicamente (WHY 1-5) resultou em solução elegante (`itertools.cycle`) ao invés de gambiarra (regex frágil).
+
+**ROI**: Sequential Thinking + 5 Whys economizou **15-20 minutos** vs trial-and-error (testar múltiplas tentativas sem diagnóstico).
+
+**Aplicabilidade**: Qualquer debugging complexo (não apenas testes). Performance issues, bugs produção, arquitetura bottlenecks.
+
+**Lição Detalhada**: `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas com checklist completo, código exemplos, antipadrões evitados)
+
 Resumo
 - Para programação, combine ddmin + SFL para redução/localização técnica, 5 Whys/Ishikawa para causalidade humana e FTA/KT/8D quando o problema é sistêmico/recorrente.  
 - Feche sempre com postmortem blameless e plano de ações.

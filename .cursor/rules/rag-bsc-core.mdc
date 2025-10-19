@@ -29,30 +29,6 @@ Este router central é **sempre aplicado** durante todo o desenvolvimento da Fas
 
 **SEMPRE consulte .cursor/progress/consulting-progress.md para histórico completo**
 
-### Status Geral
-- **Fase Atual**: FASE 3 - Diagnostic Tools
-- **Progresso Geral**: 40% (20/50 tarefas)
-- **Progresso FASE 3**: 14% (2/14 tarefas - prep completa)
-- **Última Atualização**: 2025-10-19 (Sessão 15)
-
-### Tarefas Recentes (Últimas 3)
-- [OK] **3.0.1** Data Flow Diagrams (COMPLETO - 2025-10-19)
-  - Entregável: docs/architecture/DATA_FLOW_DIAGRAMS.md (5 diagramas Mermaid)
-  - ROI: ~6h economizadas em FASE 3 (9x speedup consulta vs leitura código)
-- [OK] **3.0.2** API Contracts (COMPLETO - 2025-10-19)
-  - Entregável: docs/architecture/API_CONTRACTS.md (1200+ linhas, 8 agentes, 23 métodos)
-  - ROI: ~1h economizada em FASE 3 (7.5x speedup consulta vs leitura código)
-- [OK] **FASE 3 PREP** 100% completa
-  - ROI combinado: ~7h economizadas (prep arquitetural completa)
-
-### Próxima Tarefa
-- [NEXT] **3.1** SWOT Analysis Tool (2-3h estimado)
-  - Descrição: Primeira tool consultiva integrada com DiagnosticAgent
-  - Dependências: API_CONTRACTS.md (OK), DATA_FLOW_DIAGRAMS.md (OK)
-  - Pré-requisitos: Workflow obrigatório 7 steps (ver abaixo)
-  - Status: DESBLOQUEADA e pronta para iniciar
-
-**Protocolo de atualização**: Esta seção é atualizada manualmente a cada 2-3 sessões ou quando fase muda.
 
 ---
 
@@ -1030,13 +1006,6 @@ agente-bsc-rag/
 
 **Criado:**
 
-- [OK] **MINI-PROGRESS**: Seção "Estado Atual do Projeto" (~330 tokens)
-  - Status geral (fase atual, progresso, última atualização)
-  - Últimas 3 tarefas concluídas com ROI validado
-  - Próxima tarefa com dependências e status
-  - Pointer explícito para .cursor/progress/consulting-progress.md completo
-
-- [OK] **MINI-INDEX**: Seção "Documentação Essencial (Top 10 Críticos)" (~280 tokens)
   - Top 10 documentos categorizados (Arquitetura 4, Implementação 3, Techniques RAG 3)
   - Instruções condicionais de quando consultar
   - Pointer explícito para docs/DOCS_INDEX.md completo (46 docs)
@@ -1045,8 +1014,7 @@ agente-bsc-rag/
 **Atualizado:**
 
 - [OK] **ÍNDICE NAVEGÁVEL**: Expandido de 5 para 7 seções
-  - Adicionada seção "Estado Atual do Projeto" (nova)
-  - Adicionada seção "Lições Aprendidas Fase 2A" (existia mas não estava listada - correção)
+    - Adicionada seção "Lições Aprendidas Fase 2A" (existia mas não estava listada - correção)
   - Atualizada descrição "Localização da Documentação" (agora inclui Top 10)
 
 **Estratégia Aplicada:**
@@ -1065,12 +1033,11 @@ agente-bsc-rag/
 
 **Protocolo de Manutenção:**
 
-- MINI-PROGRESS: Atualizar a cada 2-3 sessões ou quando fase muda (~5 min)
 - MINI-INDEX: Atualizar apenas quando novos docs críticos forem criados (raro, ~1-2x/fase)
 
 **Próximo:**
 
-- [NEXT] **FASE 3.1** - SWOT Analysis Tool (usar MINI-PROGRESS + MINI-INDEX para navegação)
+-
 
 ---
 

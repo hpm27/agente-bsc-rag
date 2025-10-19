@@ -513,4 +513,470 @@ ANÁLISES POR PERSPECTIVA:
         )
         
         return complete_diagnostic
+    
+    def generate_swot_analysis(
+        self,
+        client_profile: ClientProfile,
+        use_rag: bool = True,
+        refine_with_diagnostic: bool = False,
+        diagnostic_result: CompleteDiagnostic | None = None,
+    ):
+        """Gera análise SWOT estruturada para a empresa.
+        
+        Utiliza SWOTAnalysisTool para facilitar análise SWOT contextualizada
+        com conhecimento BSC (via RAG) e opcionalmente refinada com diagnóstico completo.
+        
+        Workflow:
+        1. Extrai company_info e strategic_context do ClientProfile
+        2. Chama SWOTAnalysisTool.facilitate_swot() para análise inicial
+        3. (Opcional) Refina SWOT com diagnostic_result se disponível
+        
+        Args:
+            client_profile: ClientProfile com contexto da empresa
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+            refine_with_diagnostic: Se True, refina SWOT com diagnostic (default: False)
+            diagnostic_result: CompleteDiagnostic para refinamento (obrigatório se refine_with_diagnostic=True)
+            
+        Returns:
+            SWOTAnalysis: Objeto Pydantic validado com 4 quadrantes preenchidos
+            
+        Raises:
+            ValueError: Se refine_with_diagnostic=True mas diagnostic_result=None
+            ValueError: Se client_profile.company ou strategic_context ausentes
+            
+        Example:
+            >>> # SWOT básico
+            >>> swot = agent.generate_swot_analysis(profile, use_rag=True)
+            >>> swot.is_complete()
+            True
+            
+            >>> # SWOT refinado com diagnostic
+            >>> diagnostic = agent.run_diagnostic(state)
+            >>> swot = agent.generate_swot_analysis(
+            ...     profile, 
+            ...     refine_with_diagnostic=True, 
+            ...     diagnostic_result=diagnostic
+            ... )
+        """
+        from src.tools.swot_analysis import SWOTAnalysisTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando SWOT para {client_profile.company.name} "
+            f"(use_rag={use_rag}, refine={refine_with_diagnostic})"
+        )
+        
+        # Validações
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para SWOT.")
+        
+        if not client_profile.strategic_context:
+            raise ValueError(
+                "ClientProfile.strategic_context ausente. "
+                "Execute onboarding completo antes de gerar SWOT."
+            )
+        
+        if refine_with_diagnostic and not diagnostic_result:
+            raise ValueError(
+                "refine_with_diagnostic=True requer diagnostic_result. "
+                "Execute run_diagnostic() primeiro ou desabilite refinamento."
+            )
+        
+        # Instanciar SWOTAnalysisTool
+        swot_tool = SWOTAnalysisTool(
+            llm=self.llm,
+            financial_agent=self.financial_agent,
+            customer_agent=self.customer_agent,
+            process_agent=self.process_agent,
+            learning_agent=self.learning_agent,
+        )
+        
+        # STEP 1: Facilitar SWOT inicial
+        swot = swot_tool.facilitate_swot(
+            company_info=client_profile.company,
+            strategic_context=client_profile.strategic_context,
+            use_rag=use_rag,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] SWOT gerado: {swot.total_items()} itens "
+            f"(resumo: {swot.quadrant_summary()})"
+        )
+        
+        # STEP 2: (Opcional) Refinar com diagnostic
+        if refine_with_diagnostic and diagnostic_result:
+            logger.info("[DIAGNOSTIC] Refinando SWOT com insights do diagnostic...")
+            swot = swot_tool.refine_swot(swot, diagnostic_result)
+            logger.info(
+                f"[DIAGNOSTIC] SWOT refinado: {swot.total_items()} itens "
+                f"(resumo: {swot.quadrant_summary()})"
+            )
+        
+        # Validar completude
+        if not swot.is_complete(min_items_per_quadrant=2):
+            logger.warning(
+                f"[DIAGNOSTIC] SWOT incompleto! Alguns quadrantes têm < 2 itens. "
+                f"Resumo: {swot.quadrant_summary()}"
+            )
+        else:
+            logger.info("[DIAGNOSTIC] SWOT completo e validado!")
+        
+        return swot
+    
+    def generate_five_whys_analysis(
+        self,
+        client_profile: ClientProfile,
+        problem_statement: str,
+        use_rag: bool = True,
+    ):
+        """Gera analise 5 Whys (causa raiz) para problema especifico da empresa.
+        
+        Utiliza FiveWhysTool para facilitar analise de causa raiz iterativa (3-7 niveis)
+        contextualizada com conhecimento BSC (via RAG).
+        
+        Workflow:
+        1. Extrai company_info e strategic_context do ClientProfile
+        2. Chama FiveWhysTool.facilitate_five_whys() para analise iterativa
+        3. Retorna FiveWhysAnalysis com iteracoes + root cause + acoes
+        
+        Args:
+            client_profile: ClientProfile com contexto da empresa
+            problem_statement: Problema especifico a analisar (ex: "Vendas baixas no Q3")
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+            
+        Returns:
+            FiveWhysAnalysis: Objeto Pydantic validado com iteracoes + root cause
+            
+        Raises:
+            ValueError: Se client_profile.company ou strategic_context ausentes
+            ValueError: Se problem_statement vazio ou muito curto (< 10 chars)
+            
+        Example:
+            >>> # 5 Whys basico
+            >>> analysis = agent.generate_five_whys_analysis(
+            ...     profile, 
+            ...     problem_statement="Vendas baixas no ultimo trimestre",
+            ...     use_rag=True
+            ... )
+            >>> analysis.is_complete()
+            True
+            >>> analysis.depth_reached()  # 3-7 iteracoes
+            >>> analysis.root_cause_confidence()  # 0-100%
+            
+            >>> # Usar com desafio do ClientProfile
+            >>> if profile.strategic_context.current_challenges:
+            ...     main_challenge = profile.strategic_context.current_challenges[0]
+            ...     analysis = agent.generate_five_whys_analysis(profile, main_challenge)
+        """
+        from src.tools.five_whys import FiveWhysTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando 5 Whys para {client_profile.company.name}: "
+            f"'{problem_statement}' (use_rag={use_rag})"
+        )
+        
+        # Validacoes
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para 5 Whys.")
+        
+        if not client_profile.strategic_context:
+            raise ValueError(
+                "ClientProfile.strategic_context ausente. "
+                "Execute onboarding completo antes de gerar 5 Whys."
+            )
+        
+        if not problem_statement or len(problem_statement) < 10:
+            raise ValueError(
+                f"problem_statement deve ter >= 10 chars "
+                f"(recebeu: '{problem_statement}')"
+            )
+        
+        # Instanciar FiveWhysTool
+        five_whys_tool = FiveWhysTool(
+            llm=self.llm,
+            financial_agent=self.financial_agent,
+            customer_agent=self.customer_agent,
+            process_agent=self.process_agent,
+            learning_agent=self.learning_agent,
+            max_iterations=7,
+        )
+        
+        # Facilitar 5 Whys iterativo
+        analysis = five_whys_tool.facilitate_five_whys(
+            company_info=client_profile.company,
+            strategic_context=client_profile.strategic_context,
+            problem_statement=problem_statement,
+            use_rag=use_rag,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] 5 Whys gerado: {analysis.depth_reached()} iteracoes, "
+            f"root cause: '{analysis.root_cause[:50]}...', "
+            f"confidence: {analysis.root_cause_confidence()}%, "
+            f"{len(analysis.recommended_actions)} acoes recomendadas"
+        )
+        
+        # Validar completude
+        if not analysis.is_complete():
+            logger.warning(
+                f"[DIAGNOSTIC] 5 Whys incompleto! "
+                f"Iteracoes: {len(analysis.iterations)}, "
+                f"Acoes: {len(analysis.recommended_actions)}"
+            )
+        else:
+            logger.info("[DIAGNOSTIC] 5 Whys completo e validado!")
+        
+        # Validar confianca minima
+        if analysis.root_cause_confidence() < 70.0:
+            logger.warning(
+                f"[DIAGNOSTIC] Confidence baixa ({analysis.root_cause_confidence()}%). "
+                f"Considere aprofundar analise ou fornecer mais contexto."
+            )
+        
+        return analysis
+    
+    def generate_issue_tree_analysis(
+        self,
+        client_profile: ClientProfile,
+        root_problem: str,
+        max_depth: int = 3,
+        use_rag: bool = True,
+    ):
+        """Gera analise Issue Tree (decomposicao MECE) para problema estrategico.
+        
+        Utiliza IssueTreeTool para decomposicao hierarquica MECE (Mutually Exclusive,
+        Collectively Exhaustive) do problema em sub-problemas, gerando arvore de solucoes
+        contextualizada com conhecimento BSC (via RAG).
+        
+        Workflow:
+        1. Extrai company_info e strategic_context do ClientProfile
+        2. Chama IssueTreeTool.facilitate_issue_tree() para decomposicao iterativa
+        3. Retorna IssueTreeAnalysis com nodes hierarquicos + solution paths
+        
+        Args:
+            client_profile: ClientProfile com contexto da empresa
+            root_problem: Problema raiz a decompor (ex: "Baixa lucratividade empresa")
+            max_depth: Profundidade maxima arvore (default 3, min 1, max 4)
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+            
+        Returns:
+            IssueTreeAnalysis: Objeto Pydantic validado com nodes + solution paths
+            
+        Raises:
+            ValueError: Se client_profile.company ou strategic_context ausentes
+            ValueError: Se root_problem vazio ou muito curto (< 10 chars)
+            ValueError: Se max_depth fora do range (1-4)
+            
+        Example:
+            >>> # Issue Tree basico
+            >>> tree = agent.generate_issue_tree_analysis(
+            ...     profile, 
+            ...     root_problem="Baixa lucratividade empresa manufatura",
+            ...     max_depth=3,
+            ...     use_rag=True
+            ... )
+            >>> tree.is_complete()
+            True
+            >>> tree.total_nodes()  # 1 root + N sub-problemas
+            15
+            >>> tree.validate_mece()  # {"is_mece": True, "issues": [], "confidence": 0.85}
+            
+            >>> # Usar com desafio do ClientProfile
+            >>> if profile.strategic_context.current_challenges:
+            ...     main_challenge = profile.strategic_context.current_challenges[0]
+            ...     tree = agent.generate_issue_tree_analysis(profile, main_challenge)
+        """
+        from src.tools.issue_tree import IssueTreeTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando Issue Tree para {client_profile.company.name}: "
+            f"'{root_problem}' (max_depth={max_depth}, use_rag={use_rag})"
+        )
+        
+        # Validacoes
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para Issue Tree.")
+        
+        if not client_profile.strategic_context:
+            raise ValueError(
+                "ClientProfile.strategic_context ausente. "
+                "Execute onboarding completo antes de gerar Issue Tree."
+            )
+        
+        if not root_problem or len(root_problem) < 10:
+            raise ValueError(
+                f"root_problem deve ter >= 10 chars "
+                f"(recebeu: '{root_problem}')"
+            )
+        
+        if not (1 <= max_depth <= 4):
+            raise ValueError(
+                f"max_depth deve ser 1-4 "
+                f"(recebeu: {max_depth})"
+            )
+        
+        # Instanciar IssueTreeTool
+        issue_tree_tool = IssueTreeTool(
+            llm=self.llm,
+            financial_agent=self.financial_agent,
+            customer_agent=self.customer_agent,
+            process_agent=self.process_agent,
+            learning_agent=self.learning_agent,
+        )
+        
+        # Facilitar Issue Tree decomposicao MECE
+        tree_analysis = issue_tree_tool.facilitate_issue_tree(
+            company_info=client_profile.company,
+            strategic_context=client_profile.strategic_context,
+            root_problem=root_problem,
+            max_depth=max_depth,
+            use_rag=use_rag,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] Issue Tree gerado: {tree_analysis.total_nodes()} nodes, "
+            f"{tree_analysis.max_depth} niveis profundidade, "
+            f"{len(tree_analysis.get_leaf_nodes())} leaf nodes (solucoes), "
+            f"{len(tree_analysis.solution_paths)} solution paths"
+        )
+        
+        # Validar completude MECE
+        if not tree_analysis.is_complete(min_branches=2):
+            logger.warning(
+                f"[DIAGNOSTIC] Issue Tree incompleto! "
+                f"Alguns niveis tem < 2 branches (nao MECE Collectively Exhaustive)"
+            )
+        else:
+            logger.info("[DIAGNOSTIC] Issue Tree completo (>= 2 branches por nivel)!")
+        
+        # Validar MECE heuristica
+        mece_validation = tree_analysis.validate_mece()
+        if not mece_validation["is_mece"]:
+            logger.warning(
+                f"[DIAGNOSTIC] MECE validation falhou! "
+                f"Issues: {', '.join(mece_validation['issues'])}, "
+                f"Confidence: {mece_validation['confidence']:.0%}"
+            )
+        else:
+            logger.info(
+                f"[DIAGNOSTIC] MECE validation OK! "
+                f"Confidence: {mece_validation['confidence']:.0%}"
+            )
+        
+        return tree_analysis
+    
+    def generate_kpi_framework(
+        self,
+        client_profile: ClientProfile,
+        diagnostic_result: CompleteDiagnostic,
+        use_rag: bool = True,
+    ):
+        """Gera framework de KPIs SMART para as 4 perspectivas BSC.
+        
+        Utiliza KPIDefinerTool para definir 2-8 KPIs por perspectiva BSC,
+        totalizando 8-32 KPIs customizados para a empresa.
+        
+        Workflow:
+        1. Extrai company_info e strategic_context do ClientProfile
+        2. Usa diagnostic_result para contextualizar KPIs
+        3. (Opcional) Busca conhecimento BSC via specialist agents (RAG)
+        4. Chama KPIDefinerTool.define_kpis() para gerar framework completo
+        5. Valida balanceamento (nenhuma perspectiva com >40% dos KPIs)
+        
+        Args:
+            client_profile: ClientProfile com contexto da empresa
+            diagnostic_result: Diagnostico BSC completo (4 perspectivas)
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+        
+        Returns:
+            KPIFramework: Framework validado com 8-32 KPIs (2-8 por perspectiva)
+        
+        Raises:
+            ValueError: Se dados insuficientes para definir KPIs
+            ValidationError: Se KPIs gerados nao passam em validacoes Pydantic
+        
+        Example:
+            >>> # Definir KPIs apos diagnostic
+            >>> diagnostic = agent.run_diagnostic(state)
+            >>> kpi_framework = agent.generate_kpi_framework(
+            ...     client_profile=profile,
+            ...     diagnostic_result=diagnostic,
+            ...     use_rag=True
+            ... )
+            >>> kpi_framework.total_kpis()
+            14
+            >>> len(kpi_framework.financial_kpis)
+            4
+        """
+        from src.tools.kpi_definer import KPIDefinerTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando KPI Framework para {client_profile.company.name} "
+            f"(use_rag={use_rag})"
+        )
+        
+        # Validacoes
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para KPIs.")
+        
+        if not client_profile.strategic_context:
+            raise ValueError(
+                "ClientProfile.strategic_context ausente. "
+                "Execute onboarding completo antes de definir KPIs."
+            )
+        
+        if not diagnostic_result:
+            raise ValueError(
+                "diagnostic_result ausente. "
+                "Execute run_diagnostic() antes de definir KPIs para contextualizar."
+            )
+        
+        # Instanciar KPIDefinerTool
+        kpi_tool = KPIDefinerTool(
+            llm=self.llm,
+            financial_agent=self.financial_agent,
+            customer_agent=self.customer_agent,
+            process_agent=self.process_agent,
+            learning_agent=self.learning_agent,
+        )
+        
+        # Definir KPIs para 4 perspectivas
+        framework = kpi_tool.define_kpis(
+            company_info=client_profile.company,
+            strategic_context=client_profile.strategic_context,
+            diagnostic_result=diagnostic_result,
+            use_rag=use_rag,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] KPI Framework gerado: {framework.total_kpis()} KPIs total "
+            f"(Financeira: {len(framework.financial_kpis)}, "
+            f"Clientes: {len(framework.customer_kpis)}, "
+            f"Processos: {len(framework.process_kpis)}, "
+            f"Aprendizado: {len(framework.learning_kpis)})"
+        )
+        
+        # Validar balanceamento
+        counts = {
+            "Financeira": len(framework.financial_kpis),
+            "Clientes": len(framework.customer_kpis),
+            "Processos": len(framework.process_kpis),
+            "Aprendizado": len(framework.learning_kpis)
+        }
+        
+        total = framework.total_kpis()
+        max_count = max(counts.values())
+        max_percentage = (max_count / total) * 100
+        
+        if max_percentage > 40:
+            logger.warning(
+                f"[DIAGNOSTIC] Framework desbalanceado! Uma perspectiva tem "
+                f"{max_percentage:.0f}% dos KPIs (recomendado <40%). "
+                f"Distribuicao: {counts}"
+            )
+        else:
+            logger.info(
+                f"[DIAGNOSTIC] Framework balanceado! Distribuicao: {counts}"
+            )
+        
+        return framework
 
