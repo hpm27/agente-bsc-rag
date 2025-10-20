@@ -47,7 +47,7 @@ AÇÃO RECOMENDADA: Implementar Customer Success na revisão BSC Q3
 
 ### Diferencial desta Tool
 
-- ✅ **AI-facilitated conversational** (LLM GPT-4o-mini guia iterações)
+- ✅ **AI-facilitated conversational** (LLM GPT-5 mini guia iterações)
 - ✅ **Integração RAG** (busca casos BSC similares via specialist agents)
 - ✅ **Iterações flexíveis** (3-7 "why", não fixo em 5)
 - ✅ **Validação automática** (detecta quando root cause real foi atingida)
@@ -124,7 +124,7 @@ class FiveWhysTool:
     """Ferramenta de analise de causa raiz usando metodo 5 Whys.
     
     Attributes:
-        llm: LLM para geracao de iteracoes (GPT-4o-mini recomendado)
+        llm: LLM para geracao de iteracoes (GPT-5 mini recomendado)
         financial_agent: (Optional) Agente financeiro para RAG
         customer_agent: (Optional) Agente clientes para RAG
         process_agent: (Optional) Agente processos para RAG
@@ -949,7 +949,7 @@ GOOD: "Receita Q3 abaixo da meta em 25% devido a perda de clientes enterprise"
 tool = FiveWhysTool(llm=llm, max_iterations=5)  # Reduzir para 5 se 7 é muito
 
 # 3. Verificar temperature LLM (deve ser 0.3-0.5 para análise causal)
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
+llm = ChatOpenAI(model="GPT-5 mini", temperature=0.3)
 ```
 
 ---
@@ -1007,7 +1007,7 @@ print(iteration)  # Deve ser IterationOutput Pydantic
 **Solução**:
 ```python
 # 1. Aumentar timeout LLM (default: 60s)
-llm = ChatOpenAI(model="gpt-4o-mini", timeout=120)
+llm = ChatOpenAI(model="GPT-5 mini", timeout=120)
 
 # 2. Retry automático (tenacity)
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -1039,7 +1039,7 @@ Avalie confiança de 0-100%:
 - <50%: Incerteza alta, dados insuficientes
 """
 
-# 2. Usar GPT-4o (mais caro) ao invés de GPT-4o-mini para análises críticas
+# 2. Usar GPT-4o (mais caro) ao invés de GPT-5 mini para análises críticas
 llm_synthesis = ChatOpenAI(model="gpt-4o", temperature=0.1)  # Maior precisão
 
 # 3. Adicionar more context via RAG (use_rag=True)
@@ -1382,7 +1382,7 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 **Características Validadas**:
 - Iterações flexíveis (3-7 "why", não fixo em 5)
-- LLM GPT-4o-mini custo-efetivo ($0.0001/1K tokens)
+- LLM GPT-5 mini custo-efetivo ($0.0001/1K tokens)
 - RAG integration opcional (4 specialist agents parallel)
 - Confidence-based early stop (>= 0.85 após 3 iterations)
 - Structured output Pydantic V2 (IterationOutput, RootCauseOutput)

@@ -88,7 +88,7 @@ graph TD
 
 ### Tecnologias
 
-- **LLM**: GPT-4o-mini (custo-benefício ideal para benchmarking)
+- **LLM**: gpt-5-mini-2025-08-07 (custo-benefício ideal para benchmarking)
 - **Structured Output**: Pydantic V2 com validators customizados
 - **RAG**: Opcional (literatura BSC de Kaplan & Norton)
 - **Validações**: 5 validators Pydantic (gaps realistas, balanceamento, sources específicas)
@@ -466,7 +466,7 @@ class DiagnosticAgent:
     def benchmarking_tool(self) -> BenchmarkingTool:
         """Lazy loading de BenchmarkingTool."""
         if self._benchmarking_tool is None:
-            llm = get_llm(model_name="gpt-4o-mini")
+            llm = get_llm(model_name="gpt-5-mini-2025-08-07")
             retriever = BSCRetriever(...)  # opcional
             self._benchmarking_tool = BenchmarkingTool(llm=llm, retriever=retriever)
         return self._benchmarking_tool

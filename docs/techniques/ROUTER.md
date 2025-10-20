@@ -67,7 +67,7 @@ Routing inteligente que:
 
 1. Detectar query simples (< 30 palavras, padrão "O que é", sem ligações)
 2. Verificar cache (Redis ou dict)
-3. Se cache miss → LLM direto (GPT-4o-mini) sem retrieval pesado
+3. Se cache miss → LLM direto (GPT-5 mini) sem retrieval pesado
 4. Se LLM falhar → Retrieval leve (k=5, sem multilingual)
 
 **Benefícios:**
@@ -164,7 +164,7 @@ Classifica queries em 4 categorias usando:
   - Padrões BSC ("4 perspectivas", múltiplas perspectivas mencionadas)
   
 - **LLM Fallback** (20% casos ambíguos, ~500ms):
-  - GPT-4o-mini com prompt específico
+  - GPT-5 mini com prompt específico
   - Confidence 0.75 (menor que heurística 0.85-0.9)
 
 **Código:**
@@ -420,7 +420,7 @@ O Router loga TODAS decisões em `logs/routing_decisions.jsonl` (JSON Lines form
 # Router Inteligente (RAG Avançado - Fase 2A.3)
 ENABLE_QUERY_ROUTER=True                # Feature flag (True/False)
 ROUTER_USE_LLM_FALLBACK=True            # Usar LLM para queries ambíguas (20% casos)
-ROUTER_LLM_MODEL=gpt-4o-mini            # Modelo para LLM fallback (custo-efetivo)
+ROUTER_LLM_MODEL=GPT-5 mini            # Modelo para LLM fallback (custo-efetivo)
 ROUTER_CONFIDENCE_THRESHOLD=0.8         # Threshold para confiar em heurística
 ROUTER_LOG_DECISIONS=True               # Logar todas decisões para analytics
 ROUTER_LOG_FILE=logs/routing_decisions.jsonl  # Arquivo de log

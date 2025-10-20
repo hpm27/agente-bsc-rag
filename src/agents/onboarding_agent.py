@@ -289,6 +289,246 @@ class OnboardingAgent:
             "onboarding_progress": state.onboarding_progress,
         }
 
+    async def collect_client_info(
+        self, 
+        user_id: str, 
+        user_message: str, 
+        state: BSCState
+    ) -> dict[str, Any]:
+        """
+        Coleta informações do cliente usando Opportunistic Extraction (FASE 1).
+        
+        Fluxo adaptativo:
+        1. Extrai TODAS entidades possíveis da mensagem do usuário (_extract_all_entities)
+        2. Acumula conhecimento em partial_profile (preserva entre turnos)
+        3. Decide próxima ação baseada em informações faltantes:
+           - Se informações mínimas completas → finaliza onboarding
+           - Se informações mínimas incompletas → gera próxima pergunta contextual
+        4. Atualiza BSCState.client_profile progressivamente
+        
+        Informações mínimas necessárias:
+        - company_name (obrigatório)
+        - industry (obrigatório)
+        - size OU revenue (ao menos um)
+        - challenges (mínimo 2)
+        
+        Args:
+            user_id: ID único do cliente
+            user_message: Mensagem do usuário (texto livre)
+            state: BSCState atual (será atualizado)
+        
+        Returns:
+            Dict contendo:
+            - question: str - Próxima pergunta ou mensagem de conclusão
+            - is_complete: bool - True se onboarding finalizado
+            - extracted_entities: Dict - Entidades extraídas neste turno
+            - accumulated_profile: Dict - Perfil acumulado até agora
+        
+        Example:
+            >>> result = await agent.collect_client_info(
+            ...     "user_123", 
+            ...     "Sou da TechCorp, startup de software em SP",
+            ...     state
+            ... )
+            >>> print(result["question"])
+            "TechCorp, como startup de tecnologia, quais são os 2-3 principais desafios..."
+        """
+        from src.prompts.client_profile_prompts import (
+            CONTEXT_AWARE_QUESTION_SYSTEM,
+            CONTEXT_AWARE_QUESTION_USER,
+        )
+        
+        logger.info(
+            "[COLLECT] Coletando informações do cliente user_id=%s (length=%d chars)",
+            user_id,
+            len(user_message),
+        )
+        
+        # STEP 1: Extrair entidades da mensagem atual
+        extraction_result = await self._extract_all_entities(user_message)
+        extracted_entities = extraction_result["entities"]
+        confidence_scores = extraction_result["confidence_scores"]
+        
+        # STEP 2: Inicializar partial_profile se não existir (usar metadata dict)
+        if "partial_profile" not in state.metadata:
+            state.metadata["partial_profile"] = {
+                "company_name": None,
+                "industry": None,
+                "size": None,
+                "revenue": None,
+                "challenges": [],
+                "goals": [],
+                "timeline": None,
+                "budget": None,
+                "location": None,
+            }
+        
+        partial_profile = state.metadata["partial_profile"]
+        
+        # STEP 3: Acumular conhecimento (merge com dados existentes)
+        # Usar confidence_score para decidir se sobrescrever ou manter
+        for field, value in extracted_entities.items():
+            current_value = partial_profile.get(field)
+            confidence = confidence_scores.get(field, 0.0)
+            
+            # Regras de acumulação
+            if field in ["challenges", "goals"]:
+                # Listas: adicionar novos itens (evitar duplicatas)
+                if value and isinstance(value, list):
+                    current_list = current_value if current_value else []
+                    for item in value:
+                        if item not in current_list:
+                            current_list.append(item)
+                    partial_profile[field] = current_list
+            else:
+                # Strings: sobrescrever se confidence > 0.5 e valor atual é None
+                if value is not None and confidence > 0.5:
+                    if current_value is None:
+                        partial_profile[field] = value
+                    # Se já existe valor, manter (não sobrescrever)
+                    # Usuário poderia corrigir em follow-up específico
+        
+        # Atualizar metadata
+        state.metadata["partial_profile"] = partial_profile
+        
+        logger.info(
+            "[COLLECT] Perfil acumulado: company_name=%s, industry=%s, challenges=%d, goals=%d",
+            partial_profile.get("company_name"),
+            partial_profile.get("industry"),
+            len(partial_profile.get("challenges", [])),
+            len(partial_profile.get("goals", [])),
+        )
+        
+        # STEP 4: Verificar se informações mínimas estão completas
+        has_company_name = partial_profile.get("company_name") is not None
+        has_industry = partial_profile.get("industry") is not None
+        has_size_or_revenue = (
+            partial_profile.get("size") is not None
+            or partial_profile.get("revenue") is not None
+        )
+        has_min_challenges = len(partial_profile.get("challenges", [])) >= 2
+        
+        minimum_info_complete = (
+            has_company_name
+            and has_industry
+            and has_size_or_revenue
+            and has_min_challenges
+        )
+        
+        # STEP 5: Decidir próxima ação
+        if minimum_info_complete:
+            # Onboarding completo! Atualizar ClientProfile e transicionar
+            logger.info("[COLLECT] Informações mínimas completas! Finalizando onboarding.")
+            
+            # Atualizar ClientProfile no state
+            if state.client_profile is None:
+                from src.memory.schemas import ClientProfile
+                state.client_profile = ClientProfile()
+            
+            # Copiar dados do partial_profile para ClientProfile
+            if partial_profile.get("company_name"):
+                state.client_profile.company.name = partial_profile["company_name"]
+            if partial_profile.get("industry"):
+                state.client_profile.company.sector = partial_profile["industry"]
+            if partial_profile.get("size"):
+                state.client_profile.company.size = partial_profile["size"]
+            if partial_profile.get("challenges"):
+                state.client_profile.context.current_challenges = partial_profile["challenges"]
+            if partial_profile.get("goals"):
+                state.client_profile.context.strategic_objectives = partial_profile["goals"]
+            
+            # Transição para DISCOVERY
+            state.current_phase = ConsultingPhase.DISCOVERY
+            
+            # Mensagem de conclusão
+            company_name = partial_profile.get("company_name", "sua empresa")
+            num_challenges = len(partial_profile.get("challenges", []))
+            
+            completion_message = (
+                f"Perfeito, {company_name}! Tenho as informações essenciais:\n\n"
+                f"- Setor: {partial_profile.get('industry')}\n"
+                f"- Porte: {partial_profile.get('size', 'Não informado')}\n"
+                f"- Desafios principais: {num_challenges} identificados\n\n"
+                "Agora vamos aprofundar a análise estratégica usando ferramentas consultivas. "
+                "Preparado para a próxima etapa?"
+            )
+            
+            return {
+                "question": completion_message,
+                "is_complete": True,
+                "extracted_entities": extracted_entities,
+                "accumulated_profile": partial_profile,
+            }
+        
+        # STEP 6: Informações incompletas → gerar próxima pergunta contextual
+        logger.info("[COLLECT] Informações incompletas. Gerando próxima pergunta contextual.")
+        
+        # Identificar campos faltando
+        missing_fields = []
+        if not has_company_name:
+            missing_fields.append("company_name")
+        if not has_industry:
+            missing_fields.append("industry")
+        if not has_size_or_revenue:
+            missing_fields.append("size ou revenue")
+        if not has_min_challenges:
+            missing_fields.append(f"challenges (tem {len(partial_profile.get('challenges', []))}, precisa 2)")
+        
+        # Formatar contexto para prompt
+        known_fields_str = "\n".join(
+            [
+                f"- {field}: {value}"
+                for field, value in partial_profile.items()
+                if value is not None and value != [] and value != ""
+            ]
+        )
+        missing_fields_str = "\n".join([f"- {field}" for field in missing_fields])
+        
+        # Gerar próxima pergunta usando LLM
+        system_prompt = CONTEXT_AWARE_QUESTION_SYSTEM
+        user_prompt = CONTEXT_AWARE_QUESTION_USER.format(
+            known_fields=known_fields_str if known_fields_str else "Nenhum campo coletado ainda",
+            missing_fields=missing_fields_str,
+        )
+        
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        
+        try:
+            response = await self.llm.ainvoke(messages)
+            next_question = response.content if hasattr(response, "content") else str(response)
+            
+            logger.info("[COLLECT] Próxima pergunta gerada (length=%d chars)", len(next_question))
+            
+            return {
+                "question": next_question,
+                "is_complete": False,
+                "extracted_entities": extracted_entities,
+                "accumulated_profile": partial_profile,
+            }
+            
+        except Exception as e:
+            logger.error("[COLLECT] Erro ao gerar próxima pergunta: %s", str(e))
+            
+            # Fallback: pergunta genérica baseada no primeiro campo faltando
+            if not has_company_name:
+                fallback_question = "Para começarmos, qual o nome da sua empresa?"
+            elif not has_industry:
+                fallback_question = "Em qual setor/indústria sua empresa atua?"
+            elif not has_size_or_revenue:
+                fallback_question = "Qual o porte da empresa? (micro, pequena, média, grande)"
+            else:
+                fallback_question = "Quais são os 2-3 principais desafios estratégicos que sua empresa enfrenta hoje?"
+            
+            return {
+                "question": fallback_question,
+                "is_complete": False,
+                "extracted_entities": extracted_entities,
+                "accumulated_profile": partial_profile,
+            }
+
     def is_onboarding_complete(self, state: BSCState) -> bool:
         """
         Verifica se onboarding está completo.
@@ -582,6 +822,372 @@ class OnboardingAgent:
         if key:
             state.onboarding_progress[key] = True
             logger.info("[COMPLETE] Step %s marcado como completo", key)
+
+    async def _validate_extraction(
+        self,
+        entity: str,
+        entity_type: str
+    ) -> dict[str, Any]:
+        """
+        Valida semanticamente se entidade corresponde ao tipo esperado (challenge ou objective).
+        
+        Implementa Intelligent Validation (FASE 2): usa LLM para classificar semanticamente
+        se um texto é realmente um challenge (problema/desafio) ou objective (meta/objetivo),
+        evitando confusões comuns (ex: "Aumentar vendas" classificado como challenge).
+        
+        Args:
+            entity: Texto a validar (ex: "Baixa satisfação de clientes")
+            entity_type: Tipo esperado ("challenge" ou "objective")
+        
+        Returns:
+            Dict contendo:
+            - is_valid: bool - True se classificação correta
+            - classified_as: str - "challenge", "objective" ou "ambiguous"
+            - confidence: float - 0.0-1.0
+            - reasoning: str - Explicação da classificação
+            - correction_suggestion: str | None - Sugestão de correção se misclassificado
+        
+        Example:
+            >>> result = await agent._validate_extraction("Aumentar vendas em 20%", "challenge")
+            >>> result["is_valid"]
+            False
+            >>> result["classified_as"]
+            "objective"
+            >>> result["correction_suggestion"]
+            "Isto parece ser um 'objective', não um 'challenge'."
+        """
+        from src.prompts.client_profile_prompts import (
+            SEMANTIC_VALIDATION_SYSTEM,
+            SEMANTIC_VALIDATION_USER,
+        )
+        import json
+        
+        logger.info(
+            "[VALIDATE] Validando entity='%s' como type='%s'",
+            entity[:50],
+            entity_type
+        )
+        
+        # Formatar prompts
+        system_prompt = SEMANTIC_VALIDATION_SYSTEM
+        user_prompt = SEMANTIC_VALIDATION_USER.format(entity=entity, entity_type=entity_type)
+        
+        # Chamar LLM com structured output (JSON)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        
+        try:
+            response = await self.llm.ainvoke(messages)
+            response_text = response.content if hasattr(response, "content") else str(response)
+            
+            # Parse JSON response (LLM pode retornar com markdown code blocks)
+            if "```json" in response_text:
+                json_start = response_text.find("```json") + 7
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif "```" in response_text:
+                json_start = response_text.find("```") + 3
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
+            parsed = json.loads(response_text)
+            
+            # Validar estrutura esperada
+            if "classified_as" not in parsed or "confidence" not in parsed:
+                logger.warning(
+                    "[VALIDATE] LLM retornou JSON sem estrutura esperada, usando fallback"
+                )
+                return {
+                    "is_valid": True,  # Fallback: assumir válido
+                    "classified_as": entity_type,
+                    "confidence": 0.5,
+                    "reasoning": "Estrutura JSON inválida, fallback aplicado",
+                    "correction_suggestion": None,
+                }
+            
+            # Calcular is_valid
+            classified_as = parsed["classified_as"]
+            confidence = parsed["confidence"]
+            reasoning = parsed.get("reasoning", "")
+            
+            is_valid = (
+                (classified_as == entity_type and confidence > 0.7)
+                or (confidence < 0.5)  # Ambíguo também é "válido" (não reclassificar)
+            )
+            
+            # Gerar correction_suggestion se misclassificado com alta confiança
+            correction_suggestion = None
+            if classified_as != entity_type and confidence > 0.7:
+                correction_suggestion = (
+                    f"Isto parece ser um '{classified_as}', não um '{entity_type}'."
+                )
+            
+            logger.info(
+                "[VALIDATE] Resultado: classified_as='%s', confidence=%.2f, is_valid=%s",
+                classified_as,
+                confidence,
+                is_valid
+            )
+            
+            return {
+                "is_valid": is_valid,
+                "classified_as": classified_as,
+                "confidence": confidence,
+                "reasoning": reasoning,
+                "correction_suggestion": correction_suggestion,
+            }
+            
+        except json.JSONDecodeError as e:
+            logger.error("[VALIDATE] Erro ao parsear JSON do LLM: %s", str(e))
+            logger.error("[VALIDATE] Response text: %s", response_text[:500])
+            
+            # Fallback: assumir válido
+            return {
+                "is_valid": True,
+                "classified_as": entity_type,
+                "confidence": 0.5,
+                "reasoning": "Erro ao parsear JSON, fallback aplicado",
+                "correction_suggestion": None,
+            }
+        
+        except Exception as e:
+            logger.error("[VALIDATE] Erro inesperado na validação: %s", str(e))
+            
+            # Fallback: assumir válido
+            return {
+                "is_valid": True,
+                "classified_as": entity_type,
+                "confidence": 0.5,
+                "reasoning": "Erro inesperado, fallback aplicado",
+                "correction_suggestion": None,
+            }
+
+    async def _extract_all_entities(self, user_text: str) -> dict[str, Any]:
+        """
+        Extrai todas as entidades possíveis do texto do usuário usando LLM.
+        
+        Implementa Opportunistic Extraction (FASE 1): identifica company_name, industry,
+        size, revenue, challenges, goals, timeline, budget, location em qualquer ordem.
+        
+        Usa GPT-4o-mini com temperatura 0.1 para extração precisa e econômica.
+        
+        Args:
+            user_text: Texto livre do usuário (pode conter 1+ entidades)
+        
+        Returns:
+            Dict contendo:
+            - entities: Dict com 9 campos (str/list/null)
+            - confidence_scores: Dict com scores 0.0-1.0 para cada campo
+        
+        Example:
+            >>> result = await agent._extract_all_entities("Sou da TechCorp, startup de software")
+            >>> result["entities"]["company_name"]
+            "TechCorp"
+            >>> result["confidence_scores"]["company_name"]
+            1.0
+        """
+        from src.prompts.client_profile_prompts import (
+            ENTITY_EXTRACTION_SYSTEM,
+            ENTITY_EXTRACTION_USER,
+        )
+        import json
+        
+        logger.info("[EXTRACT] Extraindo entidades do texto (length=%d chars)", len(user_text))
+        
+        # Formatar prompts
+        system_prompt = ENTITY_EXTRACTION_SYSTEM
+        user_prompt = ENTITY_EXTRACTION_USER.format(user_text=user_text)
+        
+        # Chamar LLM com structured output (JSON)
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+        
+        try:
+            response = await self.llm.ainvoke(messages)
+            response_text = response.content if hasattr(response, "content") else str(response)
+            
+            # Parse JSON response
+            # LLM pode retornar com markdown code blocks, extrair JSON
+            if "```json" in response_text:
+                json_start = response_text.find("```json") + 7
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            elif "```" in response_text:
+                json_start = response_text.find("```") + 3
+                json_end = response_text.find("```", json_start)
+                response_text = response_text[json_start:json_end].strip()
+            
+            parsed = json.loads(response_text)
+            
+            # Validar estrutura esperada
+            if "entities" not in parsed or "confidence_scores" not in parsed:
+                logger.warning("[EXTRACT] LLM retornou JSON sem estrutura esperada, usando fallback")
+                return {
+                    "entities": {
+                        "company_name": None,
+                        "industry": None,
+                        "size": None,
+                        "revenue": None,
+                        "challenges": [],
+                        "goals": [],
+                        "timeline": None,
+                        "budget": None,
+                        "location": None,
+                    },
+                    "confidence_scores": {
+                        "company_name": 0.0,
+                        "industry": 0.0,
+                        "size": 0.0,
+                        "revenue": 0.0,
+                        "challenges": 0.0,
+                        "goals": 0.0,
+                        "timeline": 0.0,
+                        "budget": 0.0,
+                        "location": 0.0,
+                    },
+                }
+            
+            logger.info(
+                "[EXTRACT] Entidades extraídas com sucesso: %d campos com confidence > 0.5",
+                sum(1 for score in parsed["confidence_scores"].values() if score > 0.5),
+            )
+            
+            # FASE 2: Validar semanticamente challenges e objectives
+            extracted_entities = parsed["entities"]
+            
+            # Validar challenges
+            logger.info("[EXTRACT] Validando %d challenges...", len(extracted_entities.get("challenges", [])))
+            validated_challenges = []
+            reclassified_to_objectives = []
+            
+            for challenge in extracted_entities.get("challenges", []):
+                validation = await self._validate_extraction(challenge, "challenge")
+                
+                if validation["classified_as"] == "challenge":
+                    # Corretamente classificado
+                    validated_challenges.append(challenge)
+                elif validation["classified_as"] == "objective" and validation["confidence"] > 0.7:
+                    # Reclassificar para objective
+                    logger.info(
+                        "[EXTRACT] Reclassificando '%s' de challenge → objective (confidence=%.2f)",
+                        challenge[:50],
+                        validation["confidence"]
+                    )
+                    reclassified_to_objectives.append(challenge)
+                else:
+                    # Ambíguo ou baixa confidence, manter como challenge
+                    logger.info(
+                        "[EXTRACT] Mantendo '%s' como challenge (ambíguo ou baixa confidence)",
+                        challenge[:50]
+                    )
+                    validated_challenges.append(challenge)
+            
+            # Validar objectives (goals)
+            logger.info("[EXTRACT] Validando %d objectives...", len(extracted_entities.get("goals", [])))
+            validated_objectives = []
+            reclassified_to_challenges = []
+            
+            for objective in extracted_entities.get("goals", []):
+                validation = await self._validate_extraction(objective, "objective")
+                
+                if validation["classified_as"] == "objective":
+                    # Corretamente classificado
+                    validated_objectives.append(objective)
+                elif validation["classified_as"] == "challenge" and validation["confidence"] > 0.7:
+                    # Reclassificar para challenge
+                    logger.info(
+                        "[EXTRACT] Reclassificando '%s' de objective → challenge (confidence=%.2f)",
+                        objective[:50],
+                        validation["confidence"]
+                    )
+                    reclassified_to_challenges.append(objective)
+                else:
+                    # Ambíguo ou baixa confidence, manter como objective
+                    logger.info(
+                        "[EXTRACT] Mantendo '%s' como objective (ambíguo ou baixa confidence)",
+                        objective[:50]
+                    )
+                    validated_objectives.append(objective)
+            
+            # Atualizar listas com reclassificações
+            extracted_entities["challenges"] = validated_challenges + reclassified_to_challenges
+            extracted_entities["goals"] = validated_objectives + reclassified_to_objectives
+            
+            # Adicionar flag de validação
+            parsed["validated"] = True
+            
+            logger.info(
+                "[EXTRACT] Validação completa: challenges=%d (reclassified_in=%d), goals=%d (reclassified_in=%d)",
+                len(extracted_entities["challenges"]),
+                len(reclassified_to_challenges),
+                len(extracted_entities["goals"]),
+                len(reclassified_to_objectives)
+            )
+            
+            return parsed
+            
+        except json.JSONDecodeError as e:
+            logger.error("[EXTRACT] Erro ao parsear JSON do LLM: %s", str(e))
+            logger.error("[EXTRACT] Response text: %s", response_text[:500])
+            
+            # Fallback: retornar estrutura vazia
+            return {
+                "entities": {
+                    "company_name": None,
+                    "industry": None,
+                    "size": None,
+                    "revenue": None,
+                    "challenges": [],
+                    "goals": [],
+                    "timeline": None,
+                    "budget": None,
+                    "location": None,
+                },
+                "confidence_scores": {
+                    "company_name": 0.0,
+                    "industry": 0.0,
+                    "size": 0.0,
+                    "revenue": 0.0,
+                    "challenges": 0.0,
+                    "goals": 0.0,
+                    "timeline": 0.0,
+                    "budget": 0.0,
+                    "location": 0.0,
+                },
+            }
+        
+        except Exception as e:
+            logger.error("[EXTRACT] Erro inesperado na extração: %s", str(e))
+            
+            # Fallback: retornar estrutura vazia
+            return {
+                "entities": {
+                    "company_name": None,
+                    "industry": None,
+                    "size": None,
+                    "revenue": None,
+                    "challenges": [],
+                    "goals": [],
+                    "timeline": None,
+                    "budget": None,
+                    "location": None,
+                },
+                "confidence_scores": {
+                    "company_name": 0.0,
+                    "industry": 0.0,
+                    "size": 0.0,
+                    "revenue": 0.0,
+                    "challenges": 0.0,
+                    "goals": 0.0,
+                    "timeline": 0.0,
+                    "budget": 0.0,
+                    "location": 0.0,
+                },
+            }
 
     def _build_conversation_context(self) -> str:
         """

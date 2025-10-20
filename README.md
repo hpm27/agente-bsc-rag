@@ -105,7 +105,7 @@ START → analyze_query → execute_agents → synthesize_response
 
 **Economia de Custos**:
 - 💰 87.5% redução em chamadas OpenAI Embeddings (cache)
-- 💰 ~$0.001/query para tradução multilíngue (GPT-4o-mini)
+- 💰 ~$0.001/query para tradução multilíngue (GPT-5 mini)
 - 💰 Tradução gratuita de contextos (Google Translate vs LLM)
 
 ### 🖥️ Interface Streamlit Moderna
@@ -190,7 +190,7 @@ START → analyze_query → execute_agents → synthesize_response
 | **Claude Sonnet 4.5** | 2025-09-29 | LLM principal (agentes, contextual retrieval) |
 | **OpenAI text-embedding-3-large** | 3072-dim | Embeddings multilíngues |
 | **Cohere Rerank Multilingual** | v3.0 | Re-ranking cross-lingual |
-| **GPT-4o-mini** | 2024-07-18 | Query translation (barato e rápido) |
+| **GPT-5 mini** | 2024-07-18 | Query translation (barato e rápido) |
 
 ### Framework e Orquestração
 
@@ -220,7 +220,7 @@ START → analyze_query → execute_agents → synthesize_response
 - ✅ **Docker Desktop** (para Qdrant)
 - ✅ **8GB RAM** mínimo recomendado
 - ✅ **API Keys**:
-  - OpenAI API Key (embeddings + GPT-4o-mini)
+  - OpenAI API Key (embeddings + GPT-5 mini)
   - Cohere API Key (re-ranking)
   - Anthropic API Key (Claude Sonnet 4.5 + contextual retrieval)
 
@@ -374,7 +374,7 @@ Você verá:
 | Embeddings (OpenAI) | ~$0.002 | Com cache 87.5% hit: $0.00025 |
 | LLM Claude (4 agentes) | ~$0.05-0.10 | Dependente do tamanho da resposta |
 | Reranking (Cohere) | ~$0.002 | 10 docs |
-| Query Translation | ~$0.001 | GPT-4o-mini (opcional, multilíngue) |
+| Query Translation | ~$0.001 | GPT-5 mini (opcional, multilíngue) |
 | **Total/Query** | **~$0.05-0.11** | Com otimizações |
 
 **Economia Mensal** (1000 queries):
@@ -549,7 +549,7 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 - [x] **Validação E2E** - 22/22 testes passing (100%) ✅
 - [x] **Benchmark Fase 2A** - 50 queries × 2 sistemas validado ✅
 - [x] **Métricas Consolidadas** - RAGAS + latência por categoria ✅
-- [x] **Auto-Geração Metadados** - GPT-4o-mini + cache ✅
+- [x] **Auto-Geração Metadados** - GPT-5 mini + cache ✅
 - [x] **TIER 3 Organização** - Índice navegável + lições aprendidas ✅
 
 **Status**: **Fase 2A 100% COMPLETA** 🎉 - **PRONTO PARA PRODUÇÃO**

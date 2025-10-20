@@ -140,7 +140,7 @@ from src.config.settings import settings
 class QueryDecomposer:
     """Decompõe queries BSC complexas em sub-queries independentes.
     
-    Usa LLM (GPT-4o-mini) para decomposição e Reciprocal Rank Fusion (RRF)
+    Usa LLM (GPT-5 mini configurável via .env) para decomposição e Reciprocal Rank Fusion (RRF)
     para agregar resultados. Ideal para queries multi-perspectiva.
     
     Métricas esperadas:
@@ -517,9 +517,11 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 
 ---
 
-### **Lição 6: 🎯 Query Decomposition - GPT-4o-mini é Suficiente**
+### **Lição 6: 🎯 Query Decomposition - Modelo Econômico é Suficiente**
 
-**Descoberta:** GPT-4o-mini ($0.0001/1K tokens) tem qualidade equivalente ao GPT-4o ($0.01/1K tokens) para decomposição de queries
+> **NOTA (Out/2025):** Esta lição histórica validou que modelos econômicos são suficientes para decomposição. **HOJE usamos GPT-5 mini** (`gpt-5-mini-2025-08-07`, configurável via `.env`), que substituiu GPT-4o-mini (obsoleto ago/2025). Princípio permanece: tarefa estruturada → modelo econômico suficiente.
+
+**Descoberta Original:** GPT-4o-mini tinha qualidade equivalente ao GPT-4o para decomposição de queries
 
 **Impacto Medido:**
 - **Custo**: 100x mais barato ($9.90/dia economizados em 1000 queries)
@@ -527,7 +529,7 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 - **Qualidade**: Equivalente (sub-queries igualmente válidas)
 
 **Top 3 Insights:**
-1. ✅ **GPT-4o-mini para tarefas simples** (decomposição, classificação, extração)
+1. ✅ **Modelo econômico para tarefas simples** (decomposição, classificação, extração) - Hoje: GPT-5 mini
 2. ✅ **Contexto nas sub-queries** (manter informação da query original: "BSC para empresas de tecnologia" → sub-query inclui "tecnologia")
 3. ❌ **Regex sem word boundaries** causa falsos positivos (-8% accuracy)
 
@@ -593,7 +595,7 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 **Descoberta:** 5 armadilhas comuns identificadas que custam 2-8h debugging cada
 
 **Antipadrões Críticos:**
-1. ❌ **GPT-4o para tarefas simples** → Usar GPT-4o-mini (100x mais barato)
+1. ❌ **GPT-5 full para tarefas simples** → Usar GPT-5 mini (5x mais barato output, 2.5x input)
 2. ❌ **Regex sem word boundaries** → Usar `\be\b` ao invés de `"e" in text` (-8% accuracy)
 3. ❌ **Sub-queries sem contexto** → Manter informação da query original (precision +15%)
 4. ❌ **Threshold muito alto** → Validar coverage antes de aumentar (5% queries ficam sem decomposição)
@@ -982,7 +984,7 @@ agente-bsc-rag/
 **Atualizado:**
 
 - ✅ **Seção "Lições Aprendidas Fase 2A"** adicionada (108 linhas)
-  - Lição 6: Query Decomposition - GPT-4o-mini é Suficiente ($9.90/dia economizados)
+  - Lição 6: Query Decomposition - Modelo Econômico Suficiente (GPT-5 mini hoje, $9.90/dia economia)
   - Lição 7: Adaptive Re-ranking - TDD Acelera Implementação (-93% bugs)
   - Lição 8: Router Inteligente - Reutilização = Aceleração Exponencial (10x speedup)
   - Lição 9: Top 5 Antipadrões RAG a Evitar (2-8h economizadas/antipadrão)

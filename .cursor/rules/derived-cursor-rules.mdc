@@ -6,7 +6,7 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "2.4"
+version: "2.7"
 last_updated: "2025-10-20"
 ---
 
@@ -479,5 +479,4 @@ pip install hypothesis pytest-hypothesis
     * Antes da correção, o sistema não inicializava corretamente o `client_profile`, resultando em erros de `NoneType` ao acessar atributos. A correção envolveu inicializar o `client_profile` com os valores padrão antes de qualquer acesso, e garantir que todos os nós retornassem o estado completo.
 
 **19. Sempre que encontrar erros de `TypeError: unexpected keyword argument` em chamadas de função, siga este checklist:**
-
 *   **Contexto**: Este erro indica que uma função ou método está sendo chamado com um argumento de palavra-chave

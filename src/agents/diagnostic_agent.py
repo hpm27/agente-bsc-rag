@@ -86,11 +86,11 @@ class DiagnosticAgent:
         """Inicializa DiagnosticAgent com LLM e agentes BSC.
         
         Args:
-            llm: Modelo LLM customizado (opcional). Se None, usa GPT-4o-mini default.
+            llm: Modelo LLM customizado (opcional). Se None, usa configuração via .env.
         """
         self.llm = llm or ChatOpenAI(
-            model="gpt-4o-mini",
-            temperature=0.3,  # Baixo para análise factual
+            model=settings.diagnostic_llm_model,  # Configurável via .env (default: gpt-5-2025-08-07)
+            temperature=1.0,  # GPT-5 requer temperature=1.0
             api_key=settings.openai_api_key,  # type: ignore
         )
         
@@ -100,7 +100,7 @@ class DiagnosticAgent:
         self.process_agent = ProcessAgent()
         self.learning_agent = LearningAgent()
         
-        logger.info("[DIAGNOSTIC] DiagnosticAgent inicializado com GPT-4o-mini")
+        logger.info(f"[DIAGNOSTIC] DiagnosticAgent inicializado com {settings.diagnostic_llm_model}")
     
     @retry(
         stop=stop_after_attempt(3),

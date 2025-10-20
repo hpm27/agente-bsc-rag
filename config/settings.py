@@ -72,6 +72,15 @@ class Settings(BaseSettings):
     gpt5_max_completion_tokens: int = 2048
     gpt5_reasoning_effort: str = "minimal"  # "minimal", "low", "medium", "high"
 
+    # Onboarding Agent Configuration (GPT-5 family)
+    onboarding_llm_model: str = "gpt-5-2025-08-07"  # Opções: "gpt-5-2025-08-07" (top performance, $1.25 in/$10.00 out) ou "gpt-5-mini-2025-08-07" (econômico, $0.25 in/$2.00 out, reasoning mantido)
+
+    # Translation Configuration (Query PT<->EN)
+    translation_llm_model: str = "gpt-5-mini-2025-08-07"  # Tarefa simples, mini suficiente
+
+    # Diagnostic Agent Configuration (Análise 4 perspectivas BSC)
+    diagnostic_llm_model: str = "gpt-5-2025-08-07"  # Reasoning avançado necessário
+
     # Agent Configuration
     max_iterations: int = 10
     temperature: float = 0.0
@@ -92,7 +101,7 @@ class Settings(BaseSettings):
     enable_query_decomposition: bool = True
     decomposition_min_query_length: int = 30
     decomposition_score_threshold: int = 1
-    decomposition_llm: str = "gpt-4o-mini"
+    decomposition_llm: str = "gpt-5-mini-2025-08-07"
 
     # Diversity Re-ranking (RAG Avançado - Fase 2A.2)
     enable_diversity_reranking: bool = True
@@ -106,7 +115,7 @@ class Settings(BaseSettings):
     # Router Inteligente (RAG Avançado - Fase 2A.3)
     enable_query_router: bool = True
     router_use_llm_fallback: bool = True  # Usar LLM para queries ambíguas (20% casos)
-    router_llm_model: str = "gpt-4o-mini"  # Modelo para LLM fallback
+    router_llm_model: str = "gpt-5-mini-2025-08-07"  # Modelo para LLM fallback
     router_confidence_threshold: float = 0.8  # Threshold para confiar na heurística
     router_log_decisions: bool = True  # Logar todas decisões de routing
     router_log_file: str = "logs/routing_decisions.jsonl"
@@ -119,7 +128,7 @@ class Settings(BaseSettings):
     # Auto-Geração de Metadados (Fase 2 - Organização)
     enable_auto_metadata_generation: bool = True  # Gerar metadados com LLM para docs novos
     save_auto_metadata: bool = True  # Salvar metadados gerados no index.json
-    auto_metadata_model: str = "gpt-4o-mini"  # Modelo para extração (barato e rápido)
+    auto_metadata_model: str = "gpt-5-mini-2025-08-07"  # Modelo para extração (econômico e rápido)
     auto_metadata_content_limit: int = 3000  # Palavras do documento para análise LLM
 
     # Filtros por Perspectiva (Fase 2 - Integração)

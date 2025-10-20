@@ -34,7 +34,7 @@
 
 ```
 IssueTreeTool
-├── LLM: GPT-4o-mini (structured output)
+├── LLM: GPT-5 mini (structured output)
 ├── RAG: 4 specialist agents (optional)
 ├── Schemas: IssueNode + IssueTreeAnalysis (Pydantic V2)
 ├── Prompts: MECE-aware facilitation + synthesis

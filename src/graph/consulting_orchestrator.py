@@ -72,10 +72,11 @@ class ConsultingOrchestrator:
             from src.agents.onboarding_agent import OnboardingAgent
             from src.memory.mem0_client import Mem0ClientWrapper
             
-            # Criar LLM objeto (GPT-5 para onboarding conversacional)
+            # Criar LLM objeto (GPT-5 family para onboarding conversacional)
+            # Suporta: gpt-5-2025-08-07 (default) ou gpt-5-mini-2025-08-07 (econômico)
             llm = ChatOpenAI(
-                model=settings.gpt5_model,
-                temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
+                model=settings.onboarding_llm_model,
+                temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
                 max_completion_tokens=settings.gpt5_max_completion_tokens,
                 model_kwargs={"reasoning_effort": "low"}  # Low reasoning para conversação rápida
             )

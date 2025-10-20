@@ -204,7 +204,7 @@
 
 **lessons** (Docs: 9 - Todas criadas!)
 - `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections (validado)
-- `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-4o-mini)
+- `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-5 mini)
 - `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` - Adaptive Re-ranking (626 linhas, TDD)
 - `docs/lessons/lesson-router-2025-10-14.md` - Router Inteligente (786 linhas, 10x speedup)
 - `docs/lessons/antipadrões-rag.md` - 32 antipadrões catalogados (903 linhas)

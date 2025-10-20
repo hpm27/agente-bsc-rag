@@ -651,7 +651,7 @@ Para cada perspectiva BSC:
    - Contexto KPIs existentes (se fornecido)
    - Conhecimento literatura BSC (se RAG ativado)
 4. **Gerar prompt LLM** com JSON Schema structured output
-5. **Invocar LLM** (GPT-4o ou GPT-4o-mini)
+5. **Invocar LLM** (gpt-5-2025-08-07 ou gpt-5-mini-2025-08-07)
 6. **Validar output** (2-5 objetivos SMART)
 7. **Converter para StrategicObjective** Pydantic
 
@@ -850,7 +850,7 @@ from config.settings import settings
 
 # 1. Inicializar LLM
 llm = ChatOpenAI(
-    model="gpt-4o",  # ou "gpt-4o-mini" (100x mais barato, qualidade similar)
+    model="gpt-5-2025-08-07",  # ou "gpt-5-mini-2025-08-07" (100x mais barato, qualidade similar)
     temperature=0.3,  # Criatividade moderada
     api_key=settings.OPENAI_API_KEY
 )
@@ -1407,7 +1407,7 @@ class DiagnosticAgent:
    - **Relevância**: JSON Schema validation automática
 
 8. **OpenAI Structured Outputs** - https://platform.openai.com/docs/guides/structured-outputs
-   - **Relevância**: GPT-4o structured output com strict mode
+   - **Relevância**: gpt-5-2025-08-07 structured output com strict mode
 
 ### Benchmarks e Datasets
 

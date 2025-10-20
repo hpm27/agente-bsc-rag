@@ -93,6 +93,111 @@ Diálogo real com usuário revelou **3 falhas críticas de UX** no onboarding at
 
 ---
 
+## 🎨 REFATORAÇÃO: Modelos LLM Configuráveis via .env (2025-10-20)
+
+**DECISÃO DE ARQUITETURA**: Eliminar TODOS modelos LLM hardcoded no código, centralizar em variáveis .env.
+
+**PROBLEMA RESOLVIDO:** 
+- Modelos hardcoded em 2 arquivos (query_translator.py, diagnostic_agent.py)
+- Atualizar versões de modelo exigia modificar múltiplos arquivos de código
+- Difícil trocar modelos para testes A/B ou gestão de custos
+
+**SOLUÇÃO IMPLEMENTADA:**
+- Criar variáveis .env específicas por uso: TRANSLATION_LLM_MODEL, DIAGNOSTIC_LLM_MODEL
+- Atualizar código para usar `settings.X_llm_model` ao invés de strings hardcoded
+- Arquitetura já usava dependency injection (tools recebem llm: BaseLLM), facilitou refatoração
+
+### Arquivos Modificados (6)
+
+| Arquivo | Mudança | Status |
+|---------|---------|--------|
+| `.env` | Adicionadas 2 variáveis: TRANSLATION_LLM_MODEL, DIAGNOSTIC_LLM_MODEL | ✅ |
+| `.env.example` | Adicionadas 2 variáveis com documentação | ✅ |
+| `config/settings.py` | Adicionados 2 campos: translation_llm_model, diagnostic_llm_model | ✅ |
+| `src/rag/query_translator.py` | Substituído hardcoded por settings.translation_llm_model | ✅ |
+| `src/agents/diagnostic_agent.py` | Substituído "gpt-4o-mini" (obsoleto) por settings.diagnostic_llm_model + temperature=1.0 (GPT-5) | ✅ |
+| `.cursor/progress/consulting-progress.md` | Documentação desta decisão | ✅ |
+
+### Defaults Configurados
+
+```bash
+# Translation (Queries PT<->EN)
+TRANSLATION_LLM_MODEL=gpt-5-mini-2025-08-07  # Tarefa simples, mini suficiente ($0.25/$2.00)
+
+# Diagnostic Agent (Análise 4 perspectivas BSC)
+DIAGNOSTIC_LLM_MODEL=gpt-5-2025-08-07  # Reasoning avançado necessário ($1.25/$10.00)
+```
+
+### Validação
+
+✅ **15 testes de onboarding passando** (0 regressões)
+✅ **Arquitetura mantida** (dependency injection preservada)
+✅ **GPT-4o-mini obsoleto eliminado** (substituído por GPT-5/GPT-5 mini)
+
+### ROI Futuro
+
+**Antes desta refatoração:**
+- Atualizar modelo: Buscar em ~10 arquivos, modificar cada um, testar (~30 min)
+
+**Após esta refatoração:**
+- Atualizar modelo: Editar 1 linha no .env (~2 min)
+
+**Economia esperada:** 28 min/atualização × 2-3 atualizações/ano = **56-84 min/ano economizados**
+
+---
+
+## 🎨 PADRONIZAÇÃO DE MODELOS LLM (2025-10-20)
+
+**DECISÃO**: Padronizar o projeto para usar APENAS 3 modelos LLM da nova geração:
+1. **GPT-5** (`gpt-5-2025-08-07`) - Top performance, reasoning avançado
+2. **GPT-5 mini** (`gpt-5-mini-2025-08-07`) - Econômico (2.5x/5x mais barato), reasoning mantido
+3. **Claude Sonnet 4.5** (`claude-sonnet-4-5-20250929`) - Análise profunda, contexto longo
+
+**RAZÃO**: GPT-4o-mini **obsoleto** (substituído por GPT-5 mini em ago/2025). GPT-5 mini mantém capacidade de reasoning com custo competitivo.
+
+### Mudanças Aplicadas
+
+**Arquivos de Configuração** (críticos):
+- ✅ `config/settings.py` - 3 variáveis atualizadas:
+  - `decomposition_llm`: `gpt-5-mini-2025-08-07`
+  - `router_llm_model`: `gpt-5-mini-2025-08-07`
+  - `auto_metadata_model`: `gpt-5-mini-2025-08-07`
+  - `onboarding_llm_model`: `gpt-5-2025-08-07` (default) ou `gpt-5-mini-2025-08-07` (econômico)
+- ✅ `.env` + `.env.example` - 4 variáveis atualizadas
+- ✅ `src/rag/query_translator.py` - Modelo atualizado de `gpt-4o-mini` para `gpt-5-mini-2025-08-07`
+
+**Validação**:
+- ✅ Testes FASE 1: 15/15 passando (zero regressões)
+- ✅ Código funcional usa `settings.*` (não hardcoded)
+- ⏳ Comentários/docs (~60 referências) serão atualizados incrementalmente
+
+### Comparação de Custos
+
+| Modelo | Input ($/1M tokens) | Output ($/1M tokens) | Use Case |
+|--------|---------------------|----------------------|----------|
+| **GPT-5** | $1.25 | $10.00 | Onboarding, análise crítica |
+| **GPT-5 mini** | $0.25 | $2.00 | Query decomp, router, metadata (econômico) |
+| **Claude Sonnet 4.5** | $3.00 | $15.00 | Default LLM (análise profunda, contexto 200K) |
+
+**ROI Esperado** (vs GPT-4o-mini):
+- GPT-5 mini: Custo similar ($0.25 vs $0.15 input), reasoning superior
+- Redução de complexidade: 3 modelos ao invés de 5-6 (gpt-4, gpt-4o, gpt-4o-mini, gpt-4-turbo)
+
+### Referências Documentadas
+
+**Pesquisa Brightdata (2025-10-20)**:
+- OpenAI Platform: https://platform.openai.com/docs/models
+- GPT-5 pricing: https://openai.com/gpt-5/
+- Unified AI Hub: https://www.unifiedaihub.com/models/openai/gpt-5-mini
+- Microsoft Azure: https://learn.microsoft.com/en-us/azure/ai-foundry/openai/how-to/reasoning
+
+**Modelos Validados**:
+- ✅ `gpt-5-2025-08-07` (confirmed)
+- ✅ `gpt-5-mini-2025-08-07` (confirmed)
+- ✅ `claude-sonnet-4-5-20250929` (em uso desde FASE 1)
+
+---
+
 ## 🎯 STATUS POR FASE
 
 ### FASE 1: Foundation (Mem0) ✅ COMPLETA

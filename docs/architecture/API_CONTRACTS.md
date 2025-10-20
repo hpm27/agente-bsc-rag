@@ -57,7 +57,7 @@ Este documento especifica os **contratos API** de 8 agentes/classes do sistema c
 
 **Location**: `src/agents/client_profile_agent.py`
 
-**LLM**: GPT-4o-mini (cost-effective para onboarding)
+**LLM**: GPT-5 mini (cost-effective para onboarding)
 
 **Visual Reference**: Ver Diagrama 1 (ClientProfile Lifecycle) e Diagrama 4 (Agent Interactions) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -99,7 +99,7 @@ from src.memory.schemas import CompanyInfo
 from pydantic import ValidationError
 from config.settings import get_llm
 
-agent = ClientProfileAgent(llm=get_llm("gpt-4o-mini"))
+agent = ClientProfileAgent(llm=get_llm("gpt-5-mini-2025-08-07"))
 
 try:
     company_info = agent.extract_company_info(
@@ -159,7 +159,7 @@ def identify_challenges(
 from src.agents.client_profile_agent import ClientProfileAgent
 from src.memory.schemas import CompanyInfo
 
-agent = ClientProfileAgent(llm=get_llm("gpt-4o-mini"))
+agent = ClientProfileAgent(llm=get_llm("gpt-5-mini-2025-08-07"))
 
 company_info = CompanyInfo(name="TechCorp", sector="Tecnologia", size="Media")
 
@@ -352,7 +352,7 @@ print(len(profile.context.current_challenges))  # 3-7
 
 **Location**: `src/agents/onboarding_agent.py`
 
-**LLM**: GPT-4o-mini (via ClientProfileAgent)
+**LLM**: GPT-5 mini (via ClientProfileAgent)
 
 **Visual Reference**: Ver Diagrama 4 (Agent Interactions) e Diagrama 5 (State Transitions) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -391,8 +391,8 @@ from src.agents.onboarding_agent import OnboardingAgent
 from src.graph.states import BSCState
 
 agent = OnboardingAgent(
-    llm=get_llm("gpt-4o-mini"),
-    client_profile_agent=ClientProfileAgent(llm=get_llm("gpt-4o-mini")),
+    llm=get_llm("gpt-5-mini-2025-08-07"),
+    client_profile_agent=ClientProfileAgent(llm=get_llm("gpt-5-mini-2025-08-07")),
     mem0_client=Mem0ClientWrapper()
 )
 
@@ -531,7 +531,7 @@ print(is_complete2)  # True
 
 **Location**: `src/agents/diagnostic_agent.py`
 
-**LLM**: GPT-4o-mini (cost-effective) + structured output
+**LLM**: GPT-5 mini (cost-effective) + structured output
 
 **Visual Reference**: Ver Diagrama 2 (Diagnostic Workflow) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -581,7 +581,7 @@ def analyze_perspective(
 from src.agents.diagnostic_agent import DiagnosticAgent
 from src.memory.schemas import ClientProfile, CompanyInfo, StrategicContext
 
-agent = DiagnosticAgent(llm=get_llm("gpt-4o-mini"))
+agent = DiagnosticAgent(llm=get_llm("gpt-5-mini-2025-08-07"))
 
 profile = ClientProfile(
     company=CompanyInfo(name="TechCorp", sector="Tecnologia", size="Media"),
@@ -939,7 +939,7 @@ print(agent.get_name())  # "Financial Agent"
 
 **Location**: `src/agents/orchestrator.py`
 
-**LLM**: GPT-4o-mini para routing, GPT-4o para sintese
+**LLM**: GPT-5 mini para routing, GPT-4o para sintese
 
 **Visual Reference**: Ver Diagrama 4 (Agent Interactions) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -988,7 +988,7 @@ print(decision.is_general_question)  # False
 **Notes**:
 - Usa Query Router interno (ver ROUTER.md) para classificacao inicial
 - Heuristicas: palavras-chave por perspectiva (ex: "retencao" → cliente, "ROI" → financeira)
-- Fallback LLM: se heuristicas incertas, usa GPT-4o-mini para classificacao
+- Fallback LLM: se heuristicas incertas, usa GPT-5 mini para classificacao
 - Queries gerais (ex: "O que e BSC?") acionam todos 4 agentes
 
 ---
@@ -1174,7 +1174,7 @@ print(result["judge_evaluation"]["score"])  # 0.92
 
 **Location**: `src/agents/judge_agent.py`
 
-**LLM**: GPT-4o-mini (cost-effective para evaluation)
+**LLM**: GPT-5 mini (cost-effective para evaluation)
 
 **Visual Reference**: Ver Diagrama 4 (Agent Interactions) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -1672,7 +1672,7 @@ diagnostic = CompleteDiagnostic(
 
 ### LLMs Utilizados
 
-- **GPT-4o-mini**: ClientProfileAgent, OnboardingAgent, DiagnosticAgent, ConsultingOrchestrator (routing), JudgeAgent
+- **GPT-5 mini**: ClientProfileAgent, OnboardingAgent, DiagnosticAgent, ConsultingOrchestrator (routing), JudgeAgent
   - Cost-effective para tarefas simples (extracao, classificacao, avaliacao)
   - Temperature 0.1 (precisao maxima)
   
