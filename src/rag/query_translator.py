@@ -142,8 +142,8 @@ class QueryTranslator:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": query}
                 ],
-                temperature=0.3,
-                max_tokens=200
+                temperature=1.0,  # GPT-5 mini requer temperature=1.0 (unico valor aceito)
+                max_completion_tokens=200
             )
             
             translated = response.choices[0].message.content.strip()

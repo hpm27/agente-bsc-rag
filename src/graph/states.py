@@ -3,14 +3,81 @@ Definição de estados para o grafo LangGraph.
 """
 from __future__ import annotations
 
+from collections.abc import MutableMapping
 from enum import Enum
-from typing import Any
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 from src.memory.schemas import ClientProfile
 
+
+# ============================================================================
+# CUSTOM REDUCER: Deep Merge para Metadata
+# ============================================================================
+
+def deep_merge_dicts(current: Any, update: Any) -> dict[str, Any]:
+    """
+    Custom reducer para LangGraph: deep merge de dicts aninhados.
+    
+    Preserva nested keys como partial_profile entre turnos do onboarding multi-turn.
+    Solução baseada em Stack Overflow (Hans Bouwmeester, 2018) + best practices comunidade 2024-2025.
+    
+    Args:
+        current: Dict existente no checkpoint LangGraph
+        update: Dict novo retornado pelo handler
+    
+    Returns:
+        Dict merged (deep recursivo, não shallow)
+    
+    Behavior:
+        - Se current ou update não são dicts: retorna update
+        - Chaves novas em update: adicionadas ao result
+        - Chaves existentes com valores dict em ambos: merge recursivo
+        - Chaves existentes com outros tipos: update sobrescreve current
+    
+    Example:
+        >>> current = {"partial_profile": {"challenges": ["A"], "company_name": "TechCorp"}, "chat_history": [1]}
+        >>> update = {"partial_profile": {"challenges": ["A", "B"]}, "chat_history": [1, 2]}
+        >>> deep_merge_dicts(current, update)
+        {"partial_profile": {"challenges": ["A", "B"], "company_name": "TechCorp"}, "chat_history": [1, 2]}
+        # NOTE: company_name preservado mesmo não estando em update!
+    
+    Use Case (BSC RAG):
+        - Onboarding multi-turn: acumula company_name, industry, challenges, goals entre turnos
+        - Sem deep merge: partial_profile seria substituído inteiro (perda de dados)
+        - Com deep merge: apenas campos em update são atualizados, demais preservados
+    
+    References:
+        - Stack Overflow Q7204805 (167K views, solução validada Hans Bouwmeester)
+        - LangGraph Docs - Custom Reducers (langchain-ai.github.io/langgraph/concepts/low_level/#reducers)
+    """
+    # Base case: se qualquer um não é MutableMapping, retornar update como dict
+    if not isinstance(current, MutableMapping) or not isinstance(update, MutableMapping):
+        result_dict: dict[str, Any] = dict(update) if isinstance(update, MutableMapping) else {}
+        return result_dict
+    
+    # Converter para dict e criar cópia para evitar mutação
+    result: dict[str, Any] = dict(current)  # Converte MutableMapping -> dict
+    
+    # Iterar sobre chaves do update
+    for key, update_value in update.items():
+        current_value = result.get(key)
+        
+        # Se ambos são MutableMapping (dicts), merge recursivo
+        if isinstance(current_value, MutableMapping) and isinstance(update_value, MutableMapping):
+            result[key] = deep_merge_dicts(current_value, update_value)
+        else:
+            # Caso contrário, update substitui current (comportamento padrão dict.update())
+            result[key] = update_value
+    
+    return result
+
+
+# ============================================================================
+# GRAPH STATE SCHEMAS
+# ============================================================================
 
 class PerspectiveType(str, Enum):
     """Perspectivas do BSC."""
@@ -73,7 +140,7 @@ class BSCState(BaseModel):
 
     # Output final
     final_response: str | None = None
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    metadata: Annotated[dict[str, Any], deep_merge_dicts] = Field(default_factory=dict)
 
     # Controle de fluxo
     needs_refinement: bool = False

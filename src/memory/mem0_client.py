@@ -270,11 +270,13 @@ class Mem0ClientWrapper:
             # Busca memórias do user_id com paginação defensiva
             memories = None
             try:
-                # Alguns backends do Mem0 exigem paginação explícita quando sem filtros adicionais
-                memories = self.client.get_all(user_id=user_id, page=1, page_size=50)
+                # API v2 requer filters estruturados (docs.mem0.ai/platform/features/v2-memory-filters)
+                filters = {"AND": [{"user_id": user_id}]}
+                memories = self.client.get_all(filters=filters, page=1, page_size=50)
             except TypeError:
-                # Versões antigas do client não aceitam page/page_size
-                memories = self.client.get_all(user_id=user_id)
+                # Fallback: versões antigas do client ou sem paginação
+                filters = {"AND": [{"user_id": user_id}]}
+                memories = self.client.get_all(filters=filters)
 
             if not memories:
                 raise ProfileNotFoundError(user_id)
@@ -544,8 +546,9 @@ class Mem0ClientWrapper:
             
             # Deleta benchmarks antigos
             try:
-                # Buscar memórias com benchmark_report_data
-                all_memories = self.client.get_all(user_id=client_id)
+                # Buscar memórias com benchmark_report_data (API v2 filters)
+                filters = {"AND": [{"user_id": client_id}]}
+                all_memories = self.client.get_all(filters=filters)
                 for memory in (all_memories if isinstance(all_memories, list) else [all_memories]):
                     if isinstance(memory, dict) and 'metadata' in memory:
                         metadata = memory['metadata']
@@ -624,8 +627,9 @@ class Mem0ClientWrapper:
             ...     report = BenchmarkReport(**report_data)
         """
         try:
-            # Busca todas memórias do client_id
-            memories = self.client.get_all(user_id=client_id)
+            # Busca todas memórias do client_id (API v2 filters)
+            filters = {"AND": [{"user_id": client_id}]}
+            memories = self.client.get_all(filters=filters)
             
             if not memories:
                 logger.debug("[INFO] Nenhuma memória encontrada para client_id=%r", client_id)

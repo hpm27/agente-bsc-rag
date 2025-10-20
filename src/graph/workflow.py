@@ -14,9 +14,31 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Any, Literal
 
+import nest_asyncio
+import sys
+import warnings
+import asyncio
+
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
+from langgraph.checkpoint.memory import MemorySaver
 from loguru import logger
+
+# CRÍTICO: Aplicar nest_asyncio para permitir asyncio.run() dentro de event loops
+# Necessário para Streamlit (já roda em event loop) chamar handlers async
+nest_asyncio.apply()
+
+# CRÍTICO: Configurar event loop policy para Windows (melhor gerenciamento SSL)
+# ProactorEventLoop gerencia conexões SSL/HTTP de forma mais eficiente no Windows
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
+# Suprimir ResourceWarnings de SSL sockets/event loops (informativos, não críticos)
+# Root cause: LangGraph usa ThreadPoolExecutor internamente, cada thread cria seu próprio loop
+# Esses loops são gerenciados pelo LangGraph e fechados corretamente, mas warnings aparecem
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed.*ssl.SSLSocket')
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed transport')
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed event loop')
 
 from src.agents.judge_agent import JudgeAgent
 from src.agents.orchestrator import Orchestrator
@@ -158,7 +180,9 @@ class BSCWorkflow:
             "3 conditional edges (route_by_phase, route_by_approval, decide_next_step)"
         )
         
-        return workflow.compile()
+        # Adicionar checkpointer para persistir state entre turnos (CRITICAL para onboarding)
+        checkpointer = MemorySaver()
+        return workflow.compile(checkpointer=checkpointer)
     
     def analyze_query(self, state: BSCState) -> dict[str, Any]:
         """
@@ -737,18 +761,28 @@ class BSCWorkflow:
             - is_complete=True → Transição ONBOARDING → DISCOVERY
             - is_complete=False → Aguarda próxima mensagem usuário
         """
+        import asyncio
+        
         try:
             logger.info(
                 f"[INFO] [ONBOARDING] Handler iniciado | "
                 f"user_id={state.user_id} | query={state.query[:50]}..."
             )
             
-            # Delegar para ConsultingOrchestrator
-            result = self.consulting_orchestrator.coordinate_onboarding(state)
+            # Chamar método async usando asyncio.run() (gerencia loop automaticamente)
+            result = asyncio.run(
+                self.consulting_orchestrator.coordinate_onboarding(state)
+            )
             
             logger.info(
                 f"[INFO] [ONBOARDING] Result: is_complete={result.get('is_complete', False)} | "
                 f"next_action={result.get('next_action', 'N/A')}"
+            )
+            logger.info(
+                "[ONBOARDING] ===== HANDLER RETORNANDO: current_phase=%s, previous_phase=%s, is_complete=%s =====",
+                result.get("current_phase"),
+                result.get("previous_phase"),
+                result.get("is_complete")
             )
             
             return result
@@ -780,8 +814,10 @@ class BSCWorkflow:
                 f"user_id={state.user_id} | has_profile={state.client_profile is not None}"
             )
             
-            # Delegar para ConsultingOrchestrator
-            result = self.consulting_orchestrator.coordinate_discovery(state)
+            # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
+            # asyncio.run() funciona graças a nest_asyncio (permite nested loops)
+            import asyncio
+            result = asyncio.run(self.consulting_orchestrator.coordinate_discovery(state))
             
             logger.info(
                 f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "
@@ -854,16 +890,83 @@ class BSCWorkflow:
             logger.info(f"[TIMING] [WORKFLOW] INICIADO para query: '{query[:60]}...'")
             logger.info(f"{'='*80}\n")
             
-            # Criar estado inicial (com user_id para memória)
-            initial_state = BSCState(
-                query=query,
-                session_id=session_id,
-                user_id=user_id,
-                metadata={"chat_history": chat_history} if chat_history else {}
-            )
+            # CRÍTICO: Configuração com thread_id para checkpointer
+            config = {"configurable": {"thread_id": session_id or "default"}}
             
-            # Executar grafo
-            final_state = self.graph.invoke(initial_state)
+            # Verificar se é primeira invocação ou turno subsequente
+            # Para multi-turn: apenas passar campos NOVOS (query), não state completo!
+            try:
+                # Tentar obter state existente do checkpoint
+                existing_state = self.graph.get_state(config)
+                
+                if existing_state and existing_state.values:
+                    # Turno subsequente: passar apenas updates (não sobrescrever checkpoint!)
+                    logger.info(
+                        "[CHECKPOINT] Turno subsequente detectado (checkpoint existe) | "
+                        "Atualizando apenas query e metadata"
+                    )
+                    
+                    # DEBUGGING: Log metadata do checkpoint
+                    existing_metadata = existing_state.values.get("metadata", {})
+                    logger.info(
+                        "[CHECKPOINT] Metadata EXISTENTE no checkpoint: partial_profile=%s",
+                        existing_metadata.get("partial_profile", "N/A")
+                    )
+                    
+                    # Update apenas campos necessários para merge com checkpoint
+                    update = {
+                        "query": query,
+                        "metadata": {
+                            **(existing_metadata),
+                            "chat_history": chat_history
+                        } if chat_history else existing_metadata
+                    }
+                    
+                    logger.info(
+                        "[CHECKPOINT] Update sendo enviado ao invoke: metadata keys=%s",
+                        list(update.get("metadata", {}).keys())
+                    )
+                    
+                    final_state = self.graph.invoke(update, config)
+                    
+                    # DEBUGGING: Log do state após invoke
+                    logger.info(
+                        "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
+                        final_state.get("current_phase") if isinstance(final_state, dict) else getattr(final_state, "current_phase", "N/A"),
+                        final_state.get("is_complete") if isinstance(final_state, dict) else getattr(final_state, "is_complete", "N/A"),
+                        (final_state.get("client_profile") is not None) if isinstance(final_state, dict) else (getattr(final_state, "client_profile", None) is not None)
+                    )
+                else:
+                    # Primeira invocação: criar state completo
+                    logger.info(
+                        "[CHECKPOINT] Primeira invocação (checkpoint vazio) | "
+                        "Criando state inicial completo"
+                    )
+                    
+                    initial_state = BSCState(
+                        query=query,
+                        session_id=session_id,
+                        user_id=user_id,
+                        metadata={"chat_history": chat_history} if chat_history else {}
+                    )
+                    
+                    final_state = self.graph.invoke(initial_state, config)
+                    
+            except Exception as e:
+                # Fallback: se get_state falhar, assumir primeira invocação
+                logger.warning(
+                    f"[CHECKPOINT] Erro ao verificar checkpoint existente: {e} | "
+                    "Assumindo primeira invocação"
+                )
+                
+                initial_state = BSCState(
+                    query=query,
+                    session_id=session_id,
+                    user_id=user_id,
+                    metadata={"chat_history": chat_history} if chat_history else {}
+                )
+                
+                final_state = self.graph.invoke(initial_state, config)
             
             # Extrair resultado
             result = {

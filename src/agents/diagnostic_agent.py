@@ -17,7 +17,7 @@ Best Practices: Multi-agent pattern (Nature 2025), structured diagnostic output
 import asyncio
 import json
 import logging
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -75,7 +75,7 @@ class DiagnosticAgent:
     Example:
         >>> diagnostic_agent = DiagnosticAgent()
         >>> state = BSCState(...)  # Com client_profile preenchido
-        >>> diagnostic = diagnostic_agent.run_diagnostic(state)
+        >>> diagnostic = await diagnostic_agent.run_diagnostic(state)
         >>> diagnostic.executive_summary
         'Empresa TechCorp apresenta sólido EBITDA mas...'
         >>> len(diagnostic.recommendations)
@@ -108,13 +108,13 @@ class DiagnosticAgent:
         retry=retry_if_exception_type((ValidationError, ValueError)),
         reraise=True,
     )
-    def analyze_perspective(
+    async def analyze_perspective(
         self,
         perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"],
         client_profile: ClientProfile,
         state: BSCState,
     ) -> DiagnosticResult:
-        """Analisa uma perspectiva BSC individualmente.
+        """Analisa uma perspectiva BSC individualmente (ASYNC para paralelização real).
         
         Usa o prompt especializado de cada perspectiva para analisar contexto
         do cliente e identificar gaps, oportunidades e prioridade.
@@ -132,7 +132,7 @@ class DiagnosticAgent:
             ValueError: Se perspectiva inválida ou dados insuficientes
         
         Example:
-            >>> result = agent.analyze_perspective(
+            >>> result = await agent.analyze_perspective(
             ...     "Financeira",
             ...     client_profile,
             ...     state
@@ -171,7 +171,7 @@ class DiagnosticAgent:
         query = f"Quais são os principais conceitos e KPIs da perspectiva {perspective} no BSC segundo Kaplan & Norton?"
         
         try:
-            context_response = specialist_agent.invoke(query)  # Método correto: invoke()
+            context_response = await specialist_agent.ainvoke(query)  # ASYNC para paralelização real
             client_context = context_response.get("answer", "Contexto BSC não disponível.")
         except Exception as e:
             logger.warning(f"[DIAGNOSTIC] Erro ao buscar contexto BSC: {e}")
@@ -194,7 +194,7 @@ class DiagnosticAgent:
             objectives=objectives_text,
         )
         
-        # Chamar LLM com structured output
+        # Chamar LLM com structured output (ASYNC)
         structured_llm = self.llm.with_structured_output(DiagnosticResult)
 
         messages = [
@@ -202,7 +202,7 @@ class DiagnosticAgent:
             HumanMessage(content=formatted_prompt),
         ]
 
-        result = structured_llm.invoke(messages)  # type: ignore
+        result = await structured_llm.ainvoke(messages)  # type: ignore
         
         logger.info(f"[DIAGNOSTIC] Perspectiva {perspective} analisada: priority={result.priority}, gaps={len(result.gaps)}, opportunities={len(result.opportunities)}")
         
@@ -234,35 +234,31 @@ class DiagnosticAgent:
         """
         logger.info("[DIAGNOSTIC] Iniciando análise paralela das 4 perspectivas BSC...")
         
-        # Criar tasks para execução paralela
+        # Criar tasks para execução paralela (ASYNC coroutines, não threads)
         tasks = {
-            "Financeira": asyncio.to_thread(
-                self.analyze_perspective,
+            "Financeira": self.analyze_perspective(
                 "Financeira",
                 client_profile,
                 state,
             ),
-            "Clientes": asyncio.to_thread(
-                self.analyze_perspective,
+            "Clientes": self.analyze_perspective(
                 "Clientes",
                 client_profile,
                 state,
             ),
-            "Processos Internos": asyncio.to_thread(
-                self.analyze_perspective,
+            "Processos Internos": self.analyze_perspective(
                 "Processos Internos",
                 client_profile,
                 state,
             ),
-            "Aprendizado e Crescimento": asyncio.to_thread(
-                self.analyze_perspective,
+            "Aprendizado e Crescimento": self.analyze_perspective(
                 "Aprendizado e Crescimento",
                 client_profile,
                 state,
             ),
         }
         
-        # Executar em paralelo e aguardar todos
+        # Executar em paralelo via event loop (não threads, sem GIL)
         results_list = await asyncio.gather(*tasks.values())
         
         # Mapear resultados de volta às perspectivas
@@ -431,7 +427,7 @@ ANÁLISES POR PERSPECTIVA:
         
         return recommendations
     
-    def run_diagnostic(
+    async def run_diagnostic(
         self,
         state: BSCState,
     ) -> CompleteDiagnostic:
@@ -455,7 +451,7 @@ ANÁLISES POR PERSPECTIVA:
             ValidationError: Se algum output não passar validação Pydantic
         
         Example:
-            >>> diagnostic = agent.run_diagnostic(state)
+            >>> diagnostic = await agent.run_diagnostic(state)
             >>> diagnostic.financial.priority
             'HIGH'
             >>> len(diagnostic.recommendations)
@@ -474,10 +470,8 @@ ANÁLISES POR PERSPECTIVA:
         # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
         logger.info("[DIAGNOSTIC] ETAPA 1/4: Análise paralela das 4 perspectivas BSC...")
         
-        # Usar asyncio.run() para executar coroutine
-        perspective_results = asyncio.run(
-            self.run_parallel_analysis(client_profile, state)
-        )
+        # Aguardar coroutine diretamente (sem asyncio.run - já dentro de event loop)
+        perspective_results = await self.run_parallel_analysis(client_profile, state)
         
         # ETAPA 2: Consolidação cross-perspective
         logger.info("[DIAGNOSTIC] ETAPA 2/4: Consolidação cross-perspective...")
@@ -551,7 +545,7 @@ ANÁLISES POR PERSPECTIVA:
             True
             
             >>> # SWOT refinado com diagnostic
-            >>> diagnostic = agent.run_diagnostic(state)
+            >>> diagnostic = await agent.run_diagnostic(state)
             >>> swot = agent.generate_swot_analysis(
             ...     profile, 
             ...     refine_with_diagnostic=True, 
@@ -896,7 +890,7 @@ ANÁLISES POR PERSPECTIVA:
         
         Example:
             >>> # Definir KPIs apos diagnostic
-            >>> diagnostic = agent.run_diagnostic(state)
+            >>> diagnostic = await agent.run_diagnostic(state)
             >>> kpi_framework = agent.generate_kpi_framework(
             ...     client_profile=profile,
             ...     diagnostic_result=diagnostic,

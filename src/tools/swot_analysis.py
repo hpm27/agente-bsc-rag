@@ -205,7 +205,7 @@ class SWOTAnalysisTool:
             
         Example:
             >>> swot_v1 = tool.facilitate_swot(company, context)
-            >>> diagnostic = diagnostic_agent.run_diagnostic(profile)
+            >>> diagnostic = await diagnostic_agent.run_diagnostic(profile)
             >>> swot_v2 = tool.refine_swot(swot_v1, diagnostic)
             >>> swot_v2.total_items() >= swot_v1.total_items()  # Enriquecido
         """

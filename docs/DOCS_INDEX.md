@@ -214,6 +214,7 @@
 - `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` - E2E Workflow Tests (FASE 2.6, 4 problemas, 11.900+ linhas, checklist 12 pontos)
 - `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` - Implementation-First Testing (FASE 3.1, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` - 5 Whys Root Cause Debugging (FASE 3.4, mock múltiplas chamadas, itertools.cycle, 950+ linhas, 15-20 min economizados)
+- `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
 
 ---
 
@@ -467,6 +468,7 @@
 | **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | ✅ |
 | **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | ✅ |
 | **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | ✅ |
+| **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | ✅ |
 
 ---
 

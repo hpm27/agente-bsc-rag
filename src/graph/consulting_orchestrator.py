@@ -15,7 +15,7 @@ Arquitetura baseada em LangGraph Multi-Agent Patterns (2024-2025):
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from loguru import logger
 
@@ -47,9 +47,6 @@ class ConsultingOrchestrator:
         self._onboarding_agent = None
         self._diagnostic_agent = None
         
-        # In-memory sessions para onboarding multi-turn
-        self._onboarding_sessions: dict[str, dict[str, Any]] = {}
-        
         logger.info("[OK] ConsultingOrchestrator inicializado")
     
     @property
@@ -78,7 +75,7 @@ class ConsultingOrchestrator:
                 model=settings.onboarding_llm_model,
                 temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
                 max_completion_tokens=settings.gpt5_max_completion_tokens,
-                model_kwargs={"reasoning_effort": "low"}  # Low reasoning para conversação rápida
+                reasoning_effort="low"  # Low reasoning para conversação rápida (parâmetro direto)
             )
             
             # Obter memory client a partir do provider (evita inicialização indevida em testes)
@@ -110,168 +107,109 @@ class ConsultingOrchestrator:
         
         return self._diagnostic_agent
     
-    def coordinate_onboarding(self, state: BSCState) -> dict[str, Any]:
+    async def coordinate_onboarding(self, state: BSCState) -> dict[str, Any]:
         """
-        Coordena processo de onboarding multi-turn.
+        Coordena processo de onboarding conversacional do cliente.
+        
+        NOVO FLUXO (FASE 1+2 - Refatoração Out/2025):
+        - Usa OnboardingAgent.collect_client_info() unificado
+        - Extração oportunística de entidades (ordem livre)
+        - Validação semântica de challenges/objectives (FASE 2)
+        - Perguntas contextuais adaptativas
+        - Persistência automática em state.metadata["partial_profile"]
         
         Gerencia:
-        - Sessões in-memory (stateless workflow)
-        - Chamadas ao OnboardingAgent (start_onboarding, process_turn)
-        - Criação de ClientProfile ao completar
+        - Coleta conversacional de informações (qualquer ordem)
+        - Acumulação progressiva de conhecimento
+        - Persistência de ClientProfile quando informações mínimas completas
         - Transição automática ONBOARDING → DISCOVERY
         
         Args:
-            state: Estado atual com user_id, query (mensagem usuário)
+            state: Estado BSC atual (será atualizado)
         
         Returns:
-            Estado atualizado com:
-            - onboarding_progress (dict steps)
-            - client_profile (se completo)
-            - current_phase (ONBOARDING ou DISCOVERY)
-            - response (mensagem para usuário)
+            Estado atualizado contendo:
+            - final_response: Próxima pergunta ou mensagem de conclusão
+            - is_complete: True se onboarding finalizado
+            - current_phase: ONBOARDING ou DISCOVERY
+            - previous_phase: Fase anterior
+            - phase_history: Histórico de transições
         """
         try:
-            user_id = state.user_id or "default_user"
+            user_id = state.user_id or "anonymous"
             user_message = state.query or ""
             
             logger.info(
-                f"[INFO] [ORCHESTRATOR] coordinate_onboarding | "
-                f"user_id={user_id} | message={user_message[:50]}..."
+                "[ORCHESTRATOR] coordinate_onboarding | user_id=%s | message=%s",
+                user_id,
+                user_message[:50] if len(user_message) > 50 else user_message
             )
             
-            # Load session (ou criar nova)
-            session = self._onboarding_sessions.get(user_id, {})
-            
-            # Primeira interação? Iniciar onboarding
-            if not session:
-                response = self.onboarding_agent.start_onboarding(user_id=user_id, state=state)
-                # Robustez: aceitar string simples dos mocks/fixtures
-                if isinstance(response, str):
-                    response = {"question": response, "onboarding_progress": {}, "is_complete": False}
-                
-                session = {
-                    "started": True,
-                    "progress": response.get("onboarding_progress", {}),
-                    "messages": [response]
-                }
-                
-                self._onboarding_sessions[user_id] = session
-                
-                logger.info(
-                    f"[INFO] [ORCHESTRATOR] Onboarding iniciado | user_id={user_id}"
-                )
-                
-                # Edge case: Onboarding completo já no start (raro, mas teste válido)
-                if response.get("is_complete"):
-                    logger.info(f"[OK] [ORCHESTRATOR] Onboarding completo (edge case) | user_id={user_id}")
-                    
-                    profile = self.client_profile_agent.extract_profile(state)
-                    del self._onboarding_sessions[user_id]  # Cleanup
-                    
-                    transition_data = self._prepare_phase_transition(
-                        state=state,
-                        to_phase=self._get_consulting_phase("DISCOVERY"),
-                        trigger="profile_completed"
-                    )
-                    
-                    return {
-                        "client_profile": profile,
-                        "onboarding_progress": session["progress"],
-                        "final_response": response.get("question", response.get("response", "")),
-                        "is_complete": True,
-                        **transition_data
-                    }
-                
-                transition_data = self._prepare_phase_transition(
-                    state=state,
-                    to_phase=self._get_consulting_phase("ONBOARDING"),
-                    trigger="onboarding_started"
-                )
-                # Não devemos forçar previous_phase em primeira interação; remover se igual.
-                if transition_data["current_phase"] == transition_data["previous_phase"]:
-                    transition_data.pop("previous_phase", None)
-                
-                return {
-                    "onboarding_progress": session["progress"],
-                    "final_response": response.get("question", response.get("response", "")),  # Extrair string do dict
-                    **transition_data
-                }
-            
-            # CRÍTICO: Restaurar onboarding_progress para o state ANTES de process_turn
-            # process_turn() precisa de state.onboarding_progress["current_step"]
-            state.onboarding_progress = session.get("progress", {})
-            
-            # Processar turn (resposta usuário)
-            result = self.onboarding_agent.process_turn(
+            # NOVO FLUXO: collect_client_info() unificado (não mais start + process_turn)
+            # Método async, acumula conhecimento em state.metadata["partial_profile"]
+            result = await self.onboarding_agent.collect_client_info(
                 user_id=user_id,
                 user_message=user_message,
-                state=state  # Passa state completo com progress restaurado
+                state=state  # collect_client_info() atualiza state internamente
             )
-            # Robustez: aceitar string simples dos mocks/fixtures
-            if isinstance(result, str):
-                result = {"question": result, "onboarding_progress": {}, "is_complete": False}
             
-            # Atualizar session
-            session["messages"].append(user_message)
-            session["messages"].append(result.get("question", result.get("response", "")))  # robusto
-            session["progress"] = result.get("onboarding_progress", {})
-            
-            # Onboarding completo?
-            if result.get("is_complete"):
-                logger.info(
-                    f"[OK] [ORCHESTRATOR] Onboarding completo | user_id={user_id} | "
-                    f"Extraindo profile..."
-                )
+            # Verificar se onboarding completo
+            if result["is_complete"]:
+                logger.info("[ORCHESTRATOR] ===== ONBOARDING COMPLETO! ===== | user_id=%s", user_id)
+                logger.info("[ORCHESTRATOR] state.current_phase ANTES de transition: %s", state.current_phase)
                 
-                # Extrair ClientProfile
-                profile = self.client_profile_agent.extract_profile(state)
+                # Cleanup metadata (partial_profile não mais necessário)
+                state.metadata.pop("partial_profile", None)
                 
-                # Cleanup session
-                del self._onboarding_sessions[user_id]
-                
-                logger.info(
-                    f"[OK] [ORCHESTRATOR] Profile criado | company={profile.company.name} | "
-                    f"Transição → DISCOVERY"
-                )
-                
+                # Preparar transição para DISCOVERY
                 transition_data = self._prepare_phase_transition(
                     state=state,
                     to_phase=self._get_consulting_phase("DISCOVERY"),
                     trigger="profile_completed"
                 )
                 
-                return {
-                    "client_profile": profile,
-                    "onboarding_progress": session["progress"],
-                    "final_response": result.get("question", result.get("response", "")),
+                logger.info("[ORCHESTRATOR] transition_data: %s", transition_data)
+                logger.info("[ORCHESTRATOR] state.current_phase DEPOIS de transition: %s", state.current_phase)
+                logger.info("[ORCHESTRATOR] state.client_profile criado: %s", state.client_profile is not None)
+                
+                # CRÍTICO: Retornar client_profile para persistir no checkpoint!
+                final_return = {
+                    "final_response": result["question"],
                     "is_complete": True,
+                    "client_profile": state.client_profile,  # Persistir no checkpoint
                     **transition_data
                 }
+                
+                logger.info(
+                    "[ORCHESTRATOR] ===== RETORNANDO (is_complete=True): current_phase=%s, has_client_profile=%s =====",
+                    final_return.get("current_phase"),
+                    final_return.get("client_profile") is not None
+                )
+                return final_return
             
-            # Ainda em andamento
-            self._onboarding_sessions[user_id] = session
+            # Onboarding ainda em progresso
+            logger.info("[ORCHESTRATOR] Onboarding em progresso | user_id=%s", user_id)
             
             transition_data = self._prepare_phase_transition(
                 state=state,
                 to_phase=self._get_consulting_phase("ONBOARDING"),
                 trigger="onboarding_in_progress"
             )
-            if transition_data["current_phase"] == transition_data.get("previous_phase"):
-                transition_data.pop("previous_phase", None)
             
+            # CRÍTICO: Retornar metadata atualizado para persistir partial_profile entre turnos
             return {
-                "onboarding_progress": session["progress"],
-                "final_response": result.get("question", result.get("response", "")),
+                "final_response": result["question"],
+                "metadata": state.metadata,  # Persistir acumulação de informações
                 **transition_data
             }
             
         except Exception as e:
-            logger.error(f"[ERROR] [ORCHESTRATOR] coordinate_onboarding: {e}")
+            logger.error("[ORCHESTRATOR] coordinate_onboarding error: %s", str(e))
             return self.handle_error(error=e, state=state, phase="ONBOARDING")
     
-    def coordinate_discovery(self, state: BSCState) -> dict[str, Any]:
+    async def coordinate_discovery(self, state: BSCState) -> dict[str, Any]:
         """
-        Coordena processo de diagnóstico BSC.
+        Coordena processo de diagnóstico BSC (ASYNC para paralelizar 4 agentes).
         
         Gerencia:
         - Validação de ClientProfile existente
@@ -312,8 +250,8 @@ class ConsultingOrchestrator:
                     **transition_data
                 }
             
-            # Executar diagnóstico
-            complete_diagnostic = self.diagnostic_agent.run_diagnostic(state)
+            # Executar diagnóstico (ASYNC: 4 agentes em paralelo com asyncio.gather)
+            complete_diagnostic = await self.diagnostic_agent.run_diagnostic(state)
             
             logger.info(
                 f"[OK] [ORCHESTRATOR] Diagnóstico completo | "
@@ -439,6 +377,9 @@ class ConsultingOrchestrator:
             f"Type: {type(error).__name__}"
         )
         
+        # Defensive programming: verificar se state tem metadata
+        existing_metadata = getattr(state, "metadata", {}) or {}
+        
         return {
             "final_response": (
                 f"Ocorreu um erro durante a fase {phase}. "
@@ -447,7 +388,7 @@ class ConsultingOrchestrator:
             ),
             "current_phase": self._get_consulting_phase("ERROR"),
             "metadata": {
-                **state.metadata,
+                **existing_metadata,
                 f"{phase.lower()}_error": error_msg,
                 "error_type": type(error).__name__
             }
@@ -546,4 +487,3 @@ class ConsultingOrchestrator:
             "current_phase": to_phase,
             "phase_history": history
         }
-

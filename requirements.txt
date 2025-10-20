@@ -49,6 +49,9 @@ streamlit>=1.41.0
 streamlit-chat==0.1.1
 gradio==4.8.0
 
+# Asyncio Support (nested event loops para Streamlit/Jupyter)
+nest-asyncio==1.6.0
+
 # API & Async
 fastapi==0.108.0
 uvicorn==0.25.0

@@ -183,10 +183,11 @@ def test_coordinate_onboarding_error_handling(orchestrator):
 # TESTES: coordinate_discovery
 # ============================================================================
 
-def test_coordinate_discovery_success(orchestrator, valid_bsc_state, mock_complete_diagnostic):
+@pytest.mark.asyncio
+async def test_coordinate_discovery_success(orchestrator, valid_bsc_state, mock_complete_diagnostic):
     """Discovery executa diagnóstico e transiciona para APPROVAL_PENDING."""
     with patch.object(orchestrator.diagnostic_agent, 'run_diagnostic', return_value=mock_complete_diagnostic):
-        result = orchestrator.coordinate_discovery(valid_bsc_state)
+        result = await orchestrator.coordinate_discovery(valid_bsc_state)
 
     # Validações
     assert "diagnostic" in result
@@ -196,21 +197,23 @@ def test_coordinate_discovery_success(orchestrator, valid_bsc_state, mock_comple
     assert len(result["diagnostic"]["diagnostic_results"]) == 4
 
 
-def test_coordinate_discovery_missing_profile(orchestrator):
+@pytest.mark.asyncio
+async def test_coordinate_discovery_missing_profile(orchestrator):
     """Discovery sem ClientProfile retorna fallback para ONBOARDING."""
     state = BSCState(query="Fazer diagnóstico", user_id="test_no_profile", client_profile=None, metadata={})
 
-    result = orchestrator.coordinate_discovery(state)
+    result = await orchestrator.coordinate_discovery(state)
 
     # Validações
     assert result["current_phase"] == ConsultingPhase.ONBOARDING
     assert "perfil do cliente não encontrado" in result["final_response"].lower()
 
 
-def test_coordinate_discovery_error_handling(orchestrator, valid_bsc_state):
+@pytest.mark.asyncio
+async def test_coordinate_discovery_error_handling(orchestrator, valid_bsc_state):
     """Discovery com erro retorna fallback amigável."""
     with patch.object(orchestrator.diagnostic_agent, 'run_diagnostic', side_effect=RuntimeError("Diagnostic failed")):
-        result = orchestrator.coordinate_discovery(valid_bsc_state)
+        result = await orchestrator.coordinate_discovery(valid_bsc_state)
 
     # Validações
     assert result["current_phase"] == ConsultingPhase.ERROR

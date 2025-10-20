@@ -185,7 +185,9 @@ def test_load_profile_success(mem0_wrapper, sample_profile, mock_mem0_client):
     assert isinstance(profile, ClientProfile)
     assert profile.client_id == "test_client_123"
     assert profile.company.name == "Empresa Teste Ltda"
-    mock_mem0_client.get_all.assert_called_once_with(user_id="test_client_123")
+    # API v2 usa filters estruturados
+    expected_filters = {"AND": [{"user_id": "test_client_123"}]}
+    mock_mem0_client.get_all.assert_called_once_with(filters=expected_filters, page=1, page_size=50)
 
 
 def test_load_profile_not_found_raises_error(mem0_wrapper, mock_mem0_client):

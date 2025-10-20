@@ -114,6 +114,20 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
         logger.info(
             f"[TIMING] [load_client_memory] INICIADO | user_id: {state.user_id}"
         )
+        
+        # CRÍTICO: Se client_profile JÁ EXISTE no checkpoint, NÃO carregar do Mem0!
+        # Evita ProfileNotFoundError quando profile foi salvo mas ainda não disponível em Mem0
+        if state.client_profile is not None:
+            elapsed_time = time.time() - start_time
+            logger.info(
+                "[LOAD] ===== CLIENT_PROFILE JÁ EXISTE NO CHECKPOINT! ===== | "
+                "user_id='%s' | company='%s' | Skipping Mem0 load | Tempo: %.3fs",
+                state.user_id,
+                getattr(state.client_profile.company, "name", "N/A"),
+                elapsed_time
+            )
+            # Retornar dict vazio preserva tudo que já está no checkpoint
+            return {}
 
         # Obter memory provider (Mem0)
         try:
@@ -127,6 +141,10 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
 
         # Tentar carregar profile existente
         try:
+            logger.info(
+                "[LOAD] Tentando carregar profile do Mem0 | user_id='%s'",
+                state.user_id
+            )
             profile = provider.load_profile(state.user_id)
 
             elapsed_time = time.time() - start_time
@@ -153,20 +171,50 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
                 "current_phase": consulting_phase
             }
 
-        except ProfileNotFoundError:
+        except ProfileNotFoundError as e:
             # Cliente novo - não é erro, é esperado
             # FASE 2.6: Definir current_phase = ONBOARDING para iniciar onboarding
             elapsed_time = time.time() - start_time
-            logger.info(
-                f"[INFO] [load_client_memory] Cliente novo (sem profile) | "
-                f"user_id: {state.user_id} | "
-                f"Iniciando current_phase = ONBOARDING | "
-                f"Tempo: {elapsed_time:.3f}s"
+            logger.warning(
+                "[LOAD] ProfileNotFoundError no Mem0 | user_id='%s' | Tempo decorrido: %.3fs",
+                state.user_id,
+                elapsed_time
             )
-            return {
-                "client_profile": None,
-                "current_phase": ConsultingPhase.ONBOARDING  # Cliente novo → onboarding
-            }
+            
+            # CRÍTICO: Preservar current_phase se já existe no state (ex: transição ONBOARDING→DISCOVERY)
+            # Só setar ONBOARDING se current_phase ainda não está definido
+            existing_phase = state.current_phase
+            logger.info(
+                "[LOAD] Verificando existing_phase no state: %s (None=%s, IDLE=%s)",
+                existing_phase,
+                existing_phase is None,
+                existing_phase == ConsultingPhase.IDLE if existing_phase else False
+            )
+            if existing_phase is None or existing_phase == ConsultingPhase.IDLE:
+                # Cliente realmente novo ou idle → iniciar onboarding
+                logger.info(
+                    f"[INFO] [load_client_memory] Cliente novo (sem profile) | "
+                    f"user_id: {state.user_id} | "
+                    f"Iniciando current_phase = ONBOARDING | "
+                    f"Tempo: {elapsed_time:.3f}s"
+                )
+                return {
+                    "client_profile": None,
+                    "current_phase": ConsultingPhase.ONBOARDING
+                }
+            else:
+                # Cliente em processo (ex: DISCOVERY) → preservar phase existente
+                logger.info(
+                    f"[INFO] [load_client_memory] Cliente novo mas current_phase já existe (%s) | "
+                    f"user_id: {state.user_id} | "
+                    f"Preservando phase | "
+                    f"Tempo: {elapsed_time:.3f}s",
+                    existing_phase
+                )
+                return {
+                    "client_profile": None,
+                    # NÃO retornar current_phase (deixa LangGraph usar o existente do checkpoint)
+                }
 
     except Mem0ClientError as e:
         # Erro de API Mem0 - log mas não falha workflow
@@ -307,25 +355,41 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
             # Continua sem salvar (perda aceitável)
             return {"user_id": user_id}
 
-        # Salvar profile
+        # Salvar profile com TIMEOUT (30s) para evitar travar processo inteiro
         try:
-            provider.save_profile(profile)
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+            
+            logger.info("[SAVE] Salvando profile no Mem0 com timeout de 30s...")
+            
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(provider.save_profile, profile)
+                try:
+                    # Aguardar com timeout de 30s
+                    future.result(timeout=30.0)
+                    
+                    # ⏱️ CRÍTICO: Aguardar API Mem0 processar completamente (eventual consistency)
+                    # O save_profile já tem sleep(1) interno entre delete e add,
+                    # mas precisamos de OUTRO sleep após o add para garantir que
+                    # a memória está disponível para leitura subsequente
+                    time.sleep(1)
+                    logger.debug("[TIMING] [save_client_memory] Sleep 1s após save_profile (garantir disponibilidade)")
 
-            # ⏱️ CRÍTICO: Aguardar API Mem0 processar completamente (eventual consistency)
-            # O save_profile já tem sleep(1) interno entre delete e add,
-            # mas precisamos de OUTRO sleep após o add para garantir que
-            # a memória está disponível para leitura subsequente
-            time.sleep(1)
-            logger.debug("[TIMING] [save_client_memory] Sleep 1s após save_profile (garantir disponibilidade)")
+                    elapsed_time = time.time() - start_time
+                    logger.info(
+                        f"[TIMING] [save_client_memory] CONCLUÍDO em {elapsed_time:.3f}s | "
+                        f"Profile salvo: {profile.company.name} | "
+                        f"Fase: {profile.engagement.current_phase}"
+                    )
 
-            elapsed_time = time.time() - start_time
-            logger.info(
-                f"[TIMING] [save_client_memory] CONCLUÍDO em {elapsed_time:.3f}s | "
-                f"Profile salvo: {profile.company.name} | "
-                f"Fase: {profile.engagement.current_phase}"
-            )
-
-            return {"user_id": user_id}
+                    return {"user_id": user_id}
+                    
+                except FuturesTimeoutError:
+                    logger.error(
+                        "[TIMEOUT] save_client_memory excedeu 30s! Profile NÃO foi salvo no Mem0. "
+                        "Continuando workflow (client_profile persiste no checkpoint LangGraph)."
+                    )
+                    # Continuar sem salvar (checkpoint LangGraph tem o profile)
+                    return {"user_id": user_id}
 
         except Mem0ClientError as e:
             # Erro de API - log mas não falha workflow

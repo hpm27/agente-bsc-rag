@@ -351,6 +351,7 @@ class OnboardingAgent:
         
         # STEP 2: Inicializar partial_profile se não existir (usar metadata dict)
         if "partial_profile" not in state.metadata:
+            logger.info("[COLLECT] INICIALIZANDO partial_profile (PRIMEIRA VEZ)")
             state.metadata["partial_profile"] = {
                 "company_name": None,
                 "industry": None,
@@ -362,6 +363,12 @@ class OnboardingAgent:
                 "budget": None,
                 "location": None,
             }
+        else:
+            logger.info(
+                "[COLLECT] CARREGANDO partial_profile EXISTENTE: challenges=%d, company_name=%s",
+                len(state.metadata["partial_profile"].get("challenges", [])),
+                state.metadata["partial_profile"].get("company_name")
+            )
         
         partial_profile = state.metadata["partial_profile"]
         
@@ -391,8 +398,13 @@ class OnboardingAgent:
         # Atualizar metadata
         state.metadata["partial_profile"] = partial_profile
         
+        # DEBUGGING: Log completo do partial_profile
         logger.info(
-            "[COLLECT] Perfil acumulado: company_name=%s, industry=%s, challenges=%d, goals=%d",
+            "[COLLECT] Perfil acumulado COMPLETO: %s",
+            partial_profile
+        )
+        logger.info(
+            "[COLLECT] Resumo: company_name=%s, industry=%s, challenges=%d, goals=%d",
             partial_profile.get("company_name"),
             partial_profile.get("industry"),
             len(partial_profile.get("challenges", [])),
@@ -418,7 +430,16 @@ class OnboardingAgent:
         # STEP 5: Decidir próxima ação
         if minimum_info_complete:
             # Onboarding completo! Atualizar ClientProfile e transicionar
-            logger.info("[COLLECT] Informações mínimas completas! Finalizando onboarding.")
+            logger.info("[COLLECT] ===== INFORMAÇÕES MÍNIMAS COMPLETAS! =====")
+            logger.info(
+                "[COLLECT] company_name=%s | industry=%s | size=%s | revenue=%s | challenges=%d",
+                partial_profile.get("company_name"),
+                partial_profile.get("industry"),
+                partial_profile.get("size"),
+                partial_profile.get("revenue"),
+                len(partial_profile.get("challenges", []))
+            )
+            logger.info("[COLLECT] Finalizando onboarding e transicionando para DISCOVERY.")
             
             # Atualizar ClientProfile no state
             if state.client_profile is None:
@@ -439,6 +460,7 @@ class OnboardingAgent:
             
             # Transição para DISCOVERY
             state.current_phase = ConsultingPhase.DISCOVERY
+            logger.info("[COLLECT] ===== STATE.CURRENT_PHASE ATUALIZADO PARA: %s =====", state.current_phase)
             
             # Mensagem de conclusão
             company_name = partial_profile.get("company_name", "sua empresa")
@@ -458,6 +480,7 @@ class OnboardingAgent:
                 "is_complete": True,
                 "extracted_entities": extracted_entities,
                 "accumulated_profile": partial_profile,
+                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
             }
         
         # STEP 6: Informações incompletas → gerar próxima pergunta contextual
@@ -507,6 +530,7 @@ class OnboardingAgent:
                 "is_complete": False,
                 "extracted_entities": extracted_entities,
                 "accumulated_profile": partial_profile,
+                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
             }
             
         except Exception as e:
@@ -527,6 +551,7 @@ class OnboardingAgent:
                 "is_complete": False,
                 "extracted_entities": extracted_entities,
                 "accumulated_profile": partial_profile,
+                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
             }
 
     def is_onboarding_complete(self, state: BSCState) -> bool:

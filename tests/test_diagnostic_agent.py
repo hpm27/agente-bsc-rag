@@ -422,14 +422,14 @@ def test_generate_recommendations_invalid_list(diagnostic_agent, sample_perspect
 # ============================================================================
 
 
-def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_perspective_results):
+@pytest.mark.asyncio
+async def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_perspective_results):
     """Testa execução completa do diagnóstico E2E."""
-    # Mock run_parallel_analysis
-    async def mock_parallel():
+    # Mock run_parallel_analysis para retornar sample_perspective_results
+    async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
 
-    import asyncio
-    with patch('asyncio.run', return_value=sample_perspective_results):
+    with patch.object(diagnostic_agent, 'run_parallel_analysis', side_effect=mock_parallel):
         # Mock consolidate_diagnostic
         mock_consolidated = {
             "cross_perspective_synergies": ["Synergy 1"],
@@ -470,7 +470,7 @@ def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_persp
             ]
 
             with patch.object(diagnostic_agent, 'generate_recommendations', return_value=mock_recommendations):
-                diagnostic = diagnostic_agent.run_diagnostic(sample_bsc_state)
+                diagnostic = await diagnostic_agent.run_diagnostic(sample_bsc_state)
 
     # Validar CompleteDiagnostic
     assert isinstance(diagnostic, CompleteDiagnostic)
@@ -484,7 +484,8 @@ def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_persp
     assert diagnostic.next_phase == "APPROVAL_PENDING"
 
 
-def test_run_diagnostic_missing_client_profile(diagnostic_agent):
+@pytest.mark.asyncio
+async def test_run_diagnostic_missing_client_profile(diagnostic_agent):
     """Testa que client_profile ausente lança ValueError."""
     state = BSCState(
         query="Como implementar BSC?",
@@ -493,7 +494,7 @@ def test_run_diagnostic_missing_client_profile(diagnostic_agent):
     )
 
     with pytest.raises(ValueError, match="client_profile ausente"):
-        diagnostic_agent.run_diagnostic(state)
+        await diagnostic_agent.run_diagnostic(state)
 
 
 # ============================================================================

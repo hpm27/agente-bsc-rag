@@ -17,6 +17,7 @@ import streamlit as st
 from typing import Dict, Any
 import sys
 from pathlib import Path
+import asyncio
 
 # Adicionar diretorio raiz ao path para imports
 root_dir = Path(__file__).parent.parent
@@ -31,6 +32,68 @@ from app.utils import (
 )
 from app.components.sidebar import render_sidebar, get_active_perspectives
 from app.components.results import render_results
+
+
+# ============================================================================
+# Configuracao de Logging por Sessao
+# ============================================================================
+
+def setup_session_logging():
+    """
+    Configura logging por sessao Streamlit com dual output (console + arquivo).
+    
+    Cada sessao tem arquivo separado em logs/session_TIMESTAMP_PID.log
+    Console: output simplificado (INFO level)
+    Arquivo: output completo (DEBUG level) com timestamps precisos e thread IDs
+    
+    Returns:
+        str: Path do arquivo de log criado
+    """
+    from loguru import logger
+    from datetime import datetime
+    
+    # Gerar session_id unico (timestamp + PID para garantir unicidade)
+    if 'session_id' not in st.session_state:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        st.session_state.session_id = f"{timestamp}_{os.getpid()}"
+    
+    session_id = st.session_state.session_id
+    
+    # Criar pasta logs se nao existir
+    os.makedirs("logs", exist_ok=True)
+    
+    # Path do arquivo de log
+    log_file = f"logs/session_{session_id}.log"
+    
+    # Configurar loguru (apenas se ainda nao configurado para esta sessao)
+    if 'logging_configured' not in st.session_state:
+        # Remover handler padrao
+        logger.remove()
+        
+        # Handler 1: Console (simplificado, apenas INFO+)
+        logger.add(
+            sys.stderr,
+            format="<green>{time:HH:mm:ss.SSS}</green> | <level>{message}</level>",
+            level="INFO",
+            colorize=True
+        )
+        
+        # Handler 2: Arquivo (completo, DEBUG+, com thread IDs)
+        logger.add(
+            log_file,
+            format="{time:YYYY-MM-DD HH:mm:ss.SSS} | {thread.name:<20} | {level:<8} | {message}",
+            level="DEBUG",
+            rotation="50 MB",  # Rotacionar se arquivo > 50MB
+            retention="7 days",  # Manter logs por 7 dias
+            compression="zip",  # Comprimir logs antigos
+            enqueue=True  # Thread-safe (importante para async!)
+        )
+        
+        st.session_state.logging_configured = True
+        st.session_state.log_file = log_file
+        logger.info(f"[LOGGING] Sessao iniciada | arquivo={log_file}")
+    
+    return st.session_state.get('log_file', log_file)
 
 
 # ============================================================================
@@ -111,6 +174,9 @@ def initialize_app() -> None:
     """
     Inicializa a aplicacao: carrega env vars, verifica config, inicializa workflow.
     """
+    # Configurar logging por sessao
+    log_file = setup_session_logging()
+    
     # Carregar variaveis de ambiente
     load_environment()
 
@@ -148,8 +214,12 @@ def process_query(query: str) -> Dict[str, Any]:
         # Primeira interacao: gerar user_id unico
         st.session_state.user_id = f"streamlit_user_{uuid.uuid4().hex[:8]}"
     
+    # CRÍTICO: Gerar session_id UMA VEZ por sessão (persistente entre mensagens)
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = f"session_{uuid.uuid4().hex[:8]}"
+    
     user_id = st.session_state.user_id
-    session_id = f"session_{uuid.uuid4().hex[:8]}"
+    session_id = st.session_state.session_id  # Reutilizar mesmo session_id
 
     # Obter historico de chat
     chat_history = [
@@ -252,6 +322,12 @@ def main() -> None:
     # Header principal
     st.title("Agente BSC RAG")
     st.caption("Consultor Inteligente em Balanced Scorecard")
+    
+    # Mostrar path do log da sessao atual
+    if 'log_file' in st.session_state:
+        with st.expander("[INFO] Log da Sessao", expanded=False):
+            st.info(f"📝 **Arquivo de log completo**: `{st.session_state.log_file}`")
+            st.caption("Este arquivo contem logs detalhados com timestamps precisos e thread IDs para analise de performance.")
 
     # Mostrar mensagem de boas-vindas ou historico
     if not st.session_state.messages:

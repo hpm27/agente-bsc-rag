@@ -6,7 +6,7 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "2.7"
+version: "2.49"
 last_updated: "2025-10-20"
 ---
 
@@ -52,6 +52,8 @@ last_updated: "2025-10-20"
 - `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied + PONTO 15 fixtures Pydantic)
 - `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md` (950+ linhas, 5 Whys + Hypothesis Property-Based Testing discovery, SUB-PONTO 15.6)
 - `docs/lessons/lesson-testes-reais-do-projeto.md`
+- `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
+- `docs/lessons/lesson-asyncio-streamlit-resource-warnings-2025-10-20.md` - ResourceWarning, nest_asyncio, loop.create_task()
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -104,7 +106,7 @@ def test_benchmark_comparison_properties(comparison):
 **Quando NÃO usar** (usar fixtures manuais):
 - ❌ Casos de negócio BSC específicos (ex: 4 perspectivas balanceadas, KPIs setoriais específicos)
 - ❌ Testes rápidos CI/CD (Hypothesis adiciona ~5-10s por teste)
-- ❌ Testes de regressão (precisa reproduzir cenário exato)
+- ❌ Não substitui testes de regressão (precisa reproduzir cenário exato)
 
 **Decision Matrix**:
 
@@ -191,7 +193,7 @@ pip install hypothesis pytest-hypothesis
 **4 Pontos Adicionais (Checklist expandido: 8 → 12 pontos)**:
 
 **9. Verificar property/método existe**:
-*   **SEMPRE** usar `grep "@property\|def method_name" src/file.py` antes de usar em código
+*   **SEMPRE** usar `grep "@property\|def method_name" src/file.py` before de usar em código
 *   **Exemplo validado (2025-10-16)**: Assumiu `client_profile_agent` property existia → `AttributeError`
 *   **Prevenção**: 
     ```bash
@@ -475,8 +477,4 @@ pip install hypothesis pytest-hypothesis
     *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied).
     *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
     *   `docs/lessons/lesson-testes-reais-do-projeto.md`
-*   **Exemplo Concreto (resolução dos bugs #5, #7 e #9)**:
-    * Antes da correção, o sistema não inicializava corretamente o `client_profile`, resultando em erros de `NoneType` ao acessar atributos. A correção envolveu inicializar o `client_profile` com os valores padrão antes de qualquer acesso, e garantir que todos os nós retornassem o estado completo.
-
-**19. Sempre que encontrar erros de `TypeError: unexpected keyword argument` em chamadas de função, siga este checklist:**
-*   **Contexto**: Este erro indica que uma função ou método está sendo chamado com um argumento de palavra-chave
+*   **Ex
