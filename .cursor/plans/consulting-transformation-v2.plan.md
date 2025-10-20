@@ -479,6 +479,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 **Problema**: API Mem0 é assíncrona, operações CRUD podem não ser imediatamente visíveis.
 
 **Solução Validada**:
+
 - Delete-then-Add pattern: `delete_all() + sleep(1) + add()` garante 1 memória por user_id
 - Sleep 1s após write operations (add, update, delete)
 - Mensagens contextuais ricas (evitar extraction filter)
@@ -496,6 +497,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 **Problema**: LangChain v0.3+ usa Pydantic V2, imports V1 deprecated.
 
 **Solução Validada**:
+
 - Imports: `from pydantic import BaseModel, Field` (NÃO langchain_core.pydantic_v1)
 - Config: `model_config = ConfigDict(...)` (NÃO class Config:)
 - Settings: `model_config = SettingsConfigDict(...)` para BaseSettings
@@ -513,6 +515,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 **Problema**: Agentes/Workflow interdependentes causam `ImportError: cannot import from partially initialized module`
 
 **Solução Validada**:
+
 - `from __future__ import annotations` (PEP 563 - postponed annotations)
 - `from typing import TYPE_CHECKING` + imports dentro de `if TYPE_CHECKING:`
 - Lazy imports em properties/métodos com cache (`@property` + `if self._agent is None`)
@@ -530,6 +533,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 **Problema**: TDD tradicional falha para APIs desconhecidas (testes baseados em assunções erradas).
 
 **Solução Validada**:
+
 1. `grep "def " src/module/file.py` → Descobrir métodos disponíveis
 2. `grep "def method_name" src/module/file.py -A 15` → Ler signatures completas
 3. `grep "class Schema" src/memory/schemas.py -A 30` → Verificar schemas Pydantic
@@ -550,6 +554,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 **Problema**: Debugging trial-and-error desperdiça tempo, soluções não validadas pela comunidade.
 
 **Solução Validada**:
+
 - Sequential Thinking: 8-15 thoughts ANTES de implementar (planejamento estruturado)
 - Brightdata proativo: Pesquisar durante thoughts 2-3 (não quando stuck >30 min)
 - Micro-etapas: Dividir em A-H steps com validação incremental (pytest/read_lints após cada)

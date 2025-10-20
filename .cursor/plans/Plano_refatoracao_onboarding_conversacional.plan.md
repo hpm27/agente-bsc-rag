@@ -1,8 +1,11 @@
 # PLANO DE REFATORAÇÃO: Onboarding Conversacional Inteligente
 
-**Data de Criação:** 2025-10-20  
-**Decisão:** OPÇÃO B (Sequencial) - Pausar FASE 3, implementar refatoração completa  
-**Estimativa Total:** 7 horas (4h + 2h + 1h)  
+**Data de Criação:** 2025-10-20
+
+**Decisão:** OPÇÃO B (Sequencial) - Pausar FASE 3, implementar refatoração completa
+
+**Estimativa Total:** 7 horas (4h + 2h + 1h)
+
 **Branch:** `feature/onboarding-conversational-redesign`
 
 ---
@@ -37,21 +40,25 @@ O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 **3 Fases de Refatoração:**
 
 1. **FASE 1: Opportunistic Extraction** (4h)
+
    - Extrair TODAS entidades (empresa, challenges, objectives) em QUALQUER turn
    - Análise de contexto conversacional
    - Respostas adaptativas baseadas em contexto
 
 2. **FASE 2: Intelligent Validation** (2h)
+
    - Validação semântica de challenges vs objectives
    - Diferenciação LLM-based (problema vs meta)
 
 3. **FASE 3: Periodic Confirmation** (1h)
+
    - Sumários periódicos a cada 3-4 turns
    - Validação explícita com usuário
 
 ### Decisão Tomada
 
 **OPÇÃO B (Sequencial):**
+
 - Pausar FASE 3 (Diagnostic Tools)
 - Implementar refatoração completa (3 fases)
 - Garantir base sólida antes de prosseguir
@@ -64,28 +71,38 @@ O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 
 ### Root Cause Analysis (5 Whys)
 
-**Why 1:** Por que o agente não reconheceu os objectives?  
+**Why 1:** Por que o agente não reconheceu os objectives?
+
 → Esperava "challenges", recebeu "objectives" fora da ordem
 
-**Why 2:** Por que não adaptou quando recebeu informação diferente?  
+**Why 2:** Por que não adaptou quando recebeu informação diferente?
+
 → Fluxo rígido baseado em `current_step` fixo
 
-**Why 3:** Por que o fluxo é rígido?  
+**Why 3:** Por que o fluxo é rígido?
+
 → `current_step` define mono-processamento (1 entidade por turn)
 
-**Why 4:** Por que mono-processamento?  
+**Why 4:** Por que mono-processamento?
+
 → `_extract_information()` processa apenas step atual
 
-**Why 5 (ROOT CAUSE):** Por que design mono-step?  
+**Why 5 (ROOT CAUSE):** Por que design mono-step?
+
 → **Design é "formulário sequencial" ao invés de "consultor conversacional"**
 
 ### Consequências Atuais
 
 | Problema | Frequência | Impacto UX | Exemplo Real |
+
 |----------|-----------|------------|--------------|
+
 | Não reconhece informação já dada | 80% | CRÍTICO | "Como mencionado anteriormente" → ignorado |
+
 | Confunde challenges/objectives | 60% | ALTO | Objectives classificados como challenges |
+
 | Loop infinito de perguntas | 15% | CRÍTICO | Repete mesma pergunta 3+ vezes |
+
 | Falta de empatia | 100% | MÉDIO | Não detecta frustração do usuário |
 
 ---
@@ -166,10 +183,10 @@ def _analyze_conversation_context(
     """Analisa o contexto da conversação para detectar situações especiais.
     
     Detecta:
-    - Objectives fornecidos ANTES de challenges
-    - Frustração do usuário ("como mencionado", "já disse")
-    - Informação repetida sendo ignorada
-    - Confusão de conceitos
+ - Objectives fornecidos ANTES de challenges
+ - Frustração do usuário ("como mencionado", "já disse")
+ - Informação repetida sendo ignorada
+ - Confusão de conceitos
     
     Returns:
         {
@@ -192,9 +209,9 @@ async def _generate_contextual_response(
     """Gera resposta adaptada ao contexto conversacional.
     
     Exemplos:
-    - Se objectives antes de challenges → reconhecer e adaptar fluxo
-    - Se frustração detectada → empatia e sumário do que já temos
-    - Se informação completa → confirmação e próxima etapa
+ - Se objectives antes de challenges → reconhecer e adaptar fluxo
+ - Se frustração detectada → empatia e sumário do que já temos
+ - Se informação completa → confirmação e próxima etapa
     """
     
     scenario = context["scenario"]
@@ -288,6 +305,7 @@ Retorne JSON: {{"is_frustrated": true/false, "confidence": 0.0-1.0}}
 #### Testes
 
 **Testes Unitários (10+):**
+
 - `test_extract_all_entities_complete` - Mensagem com empresa + challenges + objectives
 - `test_extract_all_entities_partial` - Mensagem com apenas challenges
 - `test_extract_all_entities_empty` - Mensagem sem entidades
@@ -300,6 +318,7 @@ Retorne JSON: {{"is_frustrated": true/false, "confidence": 0.0-1.0}}
 - `test_incremental_state_update` - State atualizado corretamente
 
 **Testes E2E (5+):**
+
 - `test_e2e_objectives_before_challenges` - Fluxo completo fora de ordem
 - `test_e2e_all_info_first_turn` - Tudo em 1 mensagem
 - `test_e2e_frustration_recovery` - Detecta e recupera de frustração
@@ -309,11 +328,13 @@ Retorne JSON: {{"is_frustrated": true/false, "confidence": 0.0-1.0}}
 #### Validação
 
 **Benchmark (20 queries):**
+
 - 10 queries "fora de ordem" (objectives → challenges)
 - 5 queries "tudo de uma vez"
 - 5 queries "com frustração"
 
 **Métricas esperadas:**
+
 - Turns médios: 10-15 → 6-8 (-40%)
 - Taxa de reconhecimento: 60% → 100% (+67%)
 - Taxa de frustração não detectada: 100% → 20% (-80%)
@@ -427,6 +448,7 @@ for objective in extracted_objectives:
 #### Testes
 
 **Testes Unitários (10+):**
+
 - `test_validate_challenge_correct` - Challenge válido
 - `test_validate_objective_correct` - Objective válido
 - `test_validate_challenge_misclassified` - Challenge confundido com objective
@@ -439,6 +461,7 @@ for objective in extracted_objectives:
 - `test_validation_batch_mixed` - Lista mista
 
 **Testes E2E (3+):**
+
 - `test_e2e_automatic_reclassification` - Fluxo completo com reclassificação
 - `test_e2e_no_false_positives` - Zero confusões
 - `test_e2e_edge_case_ambiguous` - Lidar com ambiguidade
@@ -446,6 +469,7 @@ for objective in extracted_objectives:
 #### Validação
 
 **Métricas esperadas:**
+
 - Accuracy de classificação: > 90%
 - Confusões challenges/objectives: 60% → 0% (-100%)
 - Latência adicional: < 1s por validação
@@ -484,10 +508,10 @@ def _should_generate_confirmation(self, state: BSCState) -> bool:
     """Decide se deve gerar confirmação periódica.
     
     Heurísticas:
-    1. A cada 3-4 turns de conversação
-    2. Quando informação ambígua foi detectada
-    3. Quando usuário mostrou frustração
-    4. Quando 1 categoria completa (ex: empresa + challenges prontos)
+ 1. A cada 3-4 turns de conversação
+ 2. Quando informação ambígua foi detectada
+ 3. Quando usuário mostrou frustração
+ 4. Quando 1 categoria completa (ex: empresa + challenges prontos)
     """
     
     progress = state.onboarding_progress
@@ -525,17 +549,17 @@ async def _generate_confirmation_summary(self, state: BSCState) -> str:
     Deixe-me confirmar o que entendi até agora:
     
     [EMPRESA]
-    - Nome: ...
-    - Setor: ...
-    - Tamanho: ...
+ - Nome: ...
+ - Setor: ...
+ - Tamanho: ...
     
     [DESAFIOS ATUAIS]
-    - Desafio 1
-    - Desafio 2
+ - Desafio 1
+ - Desafio 2
     
     [OBJETIVOS]
-    - Objetivo 1
-    - Objetivo 2
+ - Objetivo 1
+ - Objetivo 2
     
     Está correto? Falta alguma informação importante?
     ---
@@ -606,6 +630,7 @@ async def process_turn(self, state: BSCState) -> BSCState:
 #### Testes
 
 **Testes Unitários (7+):**
+
 - `test_should_confirm_after_3_turns` - Heurística de turns
 - `test_should_confirm_on_ambiguity` - Heurística de ambiguidade
 - `test_should_confirm_on_frustration` - Heurística de frustração
@@ -615,12 +640,14 @@ async def process_turn(self, state: BSCState) -> BSCState:
 - `test_confirmation_tracking` - Contadores atualizados
 
 **Testes E2E (2+):**
+
 - `test_e2e_periodic_confirmations` - Fluxo com 2-3 confirmações
 - `test_e2e_confirmation_correction` - Usuário corrige informação no sumário
 
 #### Validação
 
 **Métricas esperadas:**
+
 - Confirmations geradas: 100% dos casos elegíveis
 - Frequência: 1 confirmação a cada 3-4 turns
 - Sumários corretos: 100% (validação manual em 10 conversações)
@@ -633,9 +660,11 @@ async def process_turn(self, state: BSCState) -> BSCState:
 ### Modificações (5 arquivos)
 
 #### 1. `src/agents/onboarding_agent.py`
+
 **Linhas estimadas:** +270 (de ~200 para ~470)
 
 **Mudanças:**
+
 - [ ] `_extract_all_entities()` - Novo método (50 linhas)
 - [ ] `_extract_information()` - Refatoração completa (70 linhas)
 - [ ] `_analyze_conversation_context()` - Novo método (40 linhas)
@@ -649,9 +678,11 @@ async def process_turn(self, state: BSCState) -> BSCState:
 ---
 
 #### 2. `src/prompts/client_profile_prompts.py`
+
 **Linhas estimadas:** +120 (de ~150 para ~270)
 
 **Mudanças:**
+
 - [ ] `EXTRACT_ALL_ENTITIES_PROMPT` - Novo prompt (30 linhas)
 - [ ] `CONTEXTUAL_RESPONSE_OBJECTIVES_BEFORE_CHALLENGES` - Novo prompt (20 linhas)
 - [ ] `CONTEXTUAL_RESPONSE_FRUSTRATION_DETECTED` - Novo prompt (20 linhas)
@@ -663,13 +694,16 @@ async def process_turn(self, state: BSCState) -> BSCState:
 ---
 
 #### 3. `src/graph/states.py`
+
 **Linhas estimadas:** +15 (de ~180 para ~195)
 
 **Mudanças:**
+
 - [ ] Atualizar docstring de `onboarding_progress` com novos campos
 - [ ] Adicionar comentários explicativos inline
 
 **Estrutura expandida:**
+
 ```python
 onboarding_progress: Dict[str, Any]
 # {
@@ -687,9 +721,11 @@ onboarding_progress: Dict[str, Any]
 ---
 
 #### 4. `tests/test_onboarding_agent.py`
+
 **Linhas estimadas:** +50 (atualização de testes existentes)
 
 **Mudanças:**
+
 - [ ] Atualizar fixtures para incluir novos campos em `onboarding_progress`
 - [ ] Atualizar assertions para validar novos comportamentos
 - [ ] Adicionar mocks para novos métodos LLM (`_extract_all_entities`, `_validate_extraction`)
@@ -699,9 +735,11 @@ onboarding_progress: Dict[str, Any]
 ---
 
 #### 5. `.cursor/progress/consulting-progress.md`
+
 **Linhas estimadas:** +30 (documentação de pausa)
 
 **Mudanças:**
+
 - [ ] Adicionar seção "PAUSA ESTRATÉGICA FASE 3" no início
 - [ ] Documentar razão da pausa (refatoração onboarding)
 - [ ] Adicionar link para `.plan.md` e lição aprendida
@@ -714,9 +752,11 @@ onboarding_progress: Dict[str, Any]
 ### Criações (3 arquivos)
 
 #### 6. `tests/test_onboarding_conversational.py`
+
 **Linhas estimadas:** ~800 linhas (novo arquivo)
 
 **Conteúdo:**
+
 - [ ] 10+ testes unitários FASE 1 (Opportunistic Extraction)
 - [ ] 5+ testes E2E FASE 1
 - [ ] 10+ testes unitários FASE 2 (Intelligent Validation)
@@ -731,9 +771,11 @@ onboarding_progress: Dict[str, Any]
 ---
 
 #### 7. `docs/lessons/lesson-onboarding-conversational-redesign-2025-10-20.md`
+
 **Linhas estimadas:** ~600 linhas (novo arquivo)
 
 **Estrutura:**
+
 ```markdown
 # Lição Aprendida: Onboarding Conversacional Inteligente
 
@@ -764,9 +806,11 @@ onboarding_progress: Dict[str, Any]
 ---
 
 #### 8. `docs/consulting/onboarding-conversational-design.md`
+
 **Linhas estimadas:** ~400 linhas (novo arquivo)
 
 **Estrutura:**
+
 ```markdown
 # Design Pattern: Onboarding Conversacional
 
@@ -799,6 +843,7 @@ onboarding_progress: Dict[str, Any]
 **Razão:** Documento reflete design sequencial antigo (obsoleto após refatoração).
 
 **Ações:**
+
 - [ ] Criar pasta `docs/consulting/archive/`
 - [ ] Mover arquivo para archive com comentário no topo:
   ```markdown
@@ -810,6 +855,7 @@ onboarding_progress: Dict[str, Any]
   Arquivado para referência histórica.
   ```
 
+
 **Impacto:** Baixo. Preservação histórica.
 
 ---
@@ -817,10 +863,15 @@ onboarding_progress: Dict[str, Any]
 ### Resumo de Impacto
 
 | Tipo | Quantidade | Linhas Totais | Impacto |
+
 |------|-----------|--------------|---------|
+
 | **Modificações** | 5 arquivos | ~485 linhas | ALTO |
+
 | **Criações** | 3 arquivos | ~1.800 linhas | ALTO |
+
 | **Arquivamento** | 1 arquivo | 0 linhas (movido) | BAIXO |
+
 | **TOTAL** | **9 arquivos** | **~2.285 linhas** | **ALTO** |
 
 ---
@@ -974,12 +1025,19 @@ onboarding_progress: Dict[str, Any]
 ### RESUMO DO CHECKLIST
 
 | Fase | Tasks | Tempo Estimado | Status |
+
 |------|-------|---------------|--------|
+
 | **PREPARAÇÃO** | 5 | 15 min | [ ] |
+
 | **FASE 1** | 33 (8 impl + 15 testes + 3 val + 7 outros) | 4h | [ ] |
+
 | **FASE 2** | 17 (4 impl + 13 testes) | 2h | [ ] |
+
 | **FASE 3** | 13 (4 impl + 9 testes) | 1h | [ ] |
+
 | **FINALIZAÇÃO** | 10 (3 docs + 4 val + 3 git) | 30 min | [ ] |
+
 | **TOTAL** | **78 tasks** | **7h 45min** | [ ] |
 
 ---
@@ -991,11 +1049,17 @@ onboarding_progress: Dict[str, Any]
 #### FASE 1: Opportunistic Extraction
 
 | Métrica | Baseline | Target | Medição |
+
 |---------|----------|--------|---------|
+
 | **Turns médios por onboarding** | 10-15 | 6-8 | Benchmark 20 queries |
+
 | **Taxa de reconhecimento de informação já dada** | 60% | 100% | Validação manual |
+
 | **Taxa de frustração NÃO detectada** | 100% | 20% | Análise de contexto |
+
 | **Taxa de adaptação contextual** | 0% | 100% | Testes E2E |
+
 | **Latência adicional por turn** | - | < 1s | Benchmark |
 
 **Status:** [ ] PASS / [ ] FAIL
@@ -1005,11 +1069,17 @@ onboarding_progress: Dict[str, Any]
 #### FASE 2: Intelligent Validation
 
 | Métrica | Baseline | Target | Medição |
+
 |---------|----------|--------|---------|
+
 | **Accuracy de classificação challenges/objectives** | 60% | > 90% | Benchmark 50 casos |
+
 | **Taxa de confusão challenges ↔ objectives** | 60% | 0% | Validação manual |
+
 | **Taxa de reclassificação automática correta** | - | > 95% | Testes unitários |
+
 | **False positives** | - | < 5% | Benchmark |
+
 | **Latência adicional validação semântica** | - | < 1s | Benchmark |
 
 **Status:** [ ] PASS / [ ] FAIL
@@ -1019,10 +1089,15 @@ onboarding_progress: Dict[str, Any]
 #### FASE 3: Periodic Confirmation
 
 | Métrica | Baseline | Target | Medição |
+
 |---------|----------|--------|---------|
+
 | **Confirmations geradas (casos elegíveis)** | 0% | 100% | Testes E2E |
+
 | **Frequência de confirmações** | - | 1 a cada 3-4 turns | Benchmark |
+
 | **Accuracy de sumários gerados** | - | 100% | Validação manual 10 casos |
+
 | **Taxa de correção pós-confirmação** | - | < 10% | Benchmark |
 
 **Status:** [ ] PASS / [ ] FAIL
@@ -1032,10 +1107,15 @@ onboarding_progress: Dict[str, Any]
 ### Métricas UX (Qualitativas)
 
 | Aspecto | Baseline | Target | Validação |
+
 |---------|----------|--------|-----------|
+
 | **Naturalidade da conversação** | 3/10 | 8/10 | Avaliação manual de diálogos |
+
 | **Empatia e adaptabilidade** | 2/10 | 8/10 | Análise de respostas contextuais |
+
 | **Clareza das confirmações** | N/A | 9/10 | Review de sumários gerados |
+
 | **Redução de frustração do usuário** | - | 80% | Comparação diálogos antes/depois |
 
 **Status:** [ ] PASS / [ ] FAIL
@@ -1076,6 +1156,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Detalhamento por Fase
 
 #### PREPARAÇÃO (15 minutos)
+
 - **PREP-1:** Criar branch (2 min)
 - **PREP-2:** Criar pasta archive (1 min)
 - **PREP-3:** Arquivar workflow-design.md (3 min)
@@ -1089,12 +1170,15 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 #### FASE 1: Opportunistic Extraction (4 horas)
 
 **Implementação (2h 30min):**
+
 - F1-IMPL-1 a F1-IMPL-8 (implementar 8 componentes)
 
 **Testes (1h 15min):**
+
 - F1-TEST-1 a F1-TEST-15 (escrever e executar 15 testes)
 
 **Validação (15min):**
+
 - F1-VAL-1 a F1-VAL-3 (benchmark e métricas)
 
 **Checkpoint:** Opportunistic extraction funcional, 15 testes passando, métricas validadas
@@ -1104,12 +1188,15 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 #### FASE 2: Intelligent Validation (2 horas)
 
 **Implementação (1h 15min):**
+
 - F2-IMPL-1 a F2-IMPL-4 (implementar validação semântica)
 
 **Testes (40min):**
+
 - F2-TEST-1 a F2-TEST-13 (escrever e executar 13 testes)
 
 **Validação (5min):**
+
 - F2-VAL-1 a F2-VAL-3 (accuracy e latência)
 
 **Checkpoint:** Validação semântica funcional, accuracy > 90%, 13 testes passando
@@ -1119,12 +1206,15 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 #### FASE 3: Periodic Confirmation (1 hora)
 
 **Implementação (40min):**
+
 - F3-IMPL-1 a F3-IMPL-4 (implementar confirmações periódicas)
 
 **Testes (15min):**
+
 - F3-TEST-1 a F3-TEST-9 (escrever e executar 9 testes)
 
 **Validação (5min):**
+
 - F3-VAL-1 a F3-VAL-3 (heurísticas e sumários)
 
 **Checkpoint:** Confirmações periódicas funcionais, 9 testes passando, sumários corretos
@@ -1134,12 +1224,15 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 #### FINALIZAÇÃO (30 minutos)
 
 **Documentação (20min):**
+
 - FIN-DOC-1 a FIN-DOC-3 (criar 2 docs novos + atualizar progress)
 
 **Validação Final (10min):**
+
 - FIN-VAL-1 a FIN-VAL-4 (suite E2E completa, zero regressões)
 
 **Git (5min):**
+
 - FIN-GIT-1 a FIN-GIT-3 (commit, push, PR)
 
 **Checkpoint:** Refatoração completa, documentada, testada, e pronta para merge
@@ -1149,17 +1242,29 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Cronograma Sugerido (1 dia)
 
 | Horário | Fase | Duração | Atividade |
+
 |---------|------|---------|-----------|
+
 | **09:00 - 09:15** | PREP | 15min | Setup inicial |
+
 | **09:15 - 11:45** | FASE 1 (Impl) | 2h 30min | Opportunistic extraction |
+
 | **11:45 - 12:00** | PAUSA | 15min | Café ☕ |
+
 | **12:00 - 13:15** | FASE 1 (Testes) | 1h 15min | Escrever e executar testes |
+
 | **13:15 - 14:15** | ALMOÇO | 1h | 🍽️ |
+
 | **14:15 - 15:30** | FASE 2 (Impl) | 1h 15min | Intelligent validation |
+
 | **15:30 - 16:10** | FASE 2 (Testes) | 40min | Escrever e executar testes |
+
 | **16:10 - 16:25** | PAUSA | 15min | Café ☕ |
+
 | **16:25 - 17:05** | FASE 3 (Impl) | 40min | Periodic confirmation |
+
 | **17:05 - 17:20** | FASE 3 (Testes) | 15min | Escrever e executar testes |
+
 | **17:20 - 17:50** | FINALIZAÇÃO | 30min | Docs, validação, PR |
 
 **Total:** 7h 45min (trabalho efetivo) + 2h 30min (pausas) = **10h 15min total**
@@ -1175,6 +1280,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 **Progresso:** 3.6 COMPLETA (Benchmarking Tool)
 
 **Próximos passos planejados:**
+
 - 3.7: Integração com Workflow (1h)
 - 3.8: Documentação (30min)
 - 3.9: Deployment (30min)
@@ -1188,11 +1294,13 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 **BLOQUEANTE?** ❌ NÃO
 
 **RAZÃO:**
+
 - Refatoração afeta apenas `OnboardingAgent` (módulo isolado)
 - FASE 3 (Diagnostic Tools) usa `DiagnosticAgent`, não `OnboardingAgent`
 - Nenhuma dependência direta entre refatoração e FASE 3
 
 **CONFLITOS POTENCIAIS:**
+
 - ✅ **Nenhum arquivo compartilhado** entre refatoração e FASE 3
 - ✅ **Nenhuma mudança em schemas core** que afetem diagnostic tools
 - ✅ **Nenhuma alteração em workflow principal** (apenas onboarding subworkflow)
@@ -1222,16 +1330,26 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 **Mensagem:**
 
-> "Identificamos gap crítico de UX no onboarding (porta de entrada do sistema). 
+> "Identificamos gap crítico de UX no onboarding (porta de entrada do sistema).
+
 > Pausando FASE 3 por 1 dia para implementar refatoração conversacional completa.
-> 
+
+>
+
 > **Benefícios:**
+
 > - Onboarding 40% mais rápido (10-15 turns → 6-8 turns)
+
 > - Zero loops infinitos (era 15% dos casos)
+
 > - 100% reconhecimento de informação já dada (era 60%)
-> 
+
+>
+
 > **Impacto em FASE 3:** Nenhum bloqueio técnico. Retomada em 3.7 após merge.
-> 
+
+>
+
 > **ROI:** 7h investimento → 20-30h economia futura + UX superior desde o início."
 
 ---
@@ -1275,12 +1393,14 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Retorno Direto
 
 **Métricas Técnicas:**
+
 - **-40% turns por onboarding** (10-15 → 6-8) → 4-6 min economizados por usuário
 - **-100% loops infinitos** (15% → 0%) → Zero casos de frustração extrema
 - **+67% reconhecimento** (60% → 100%) → Informação nunca repetida
 - **+100% adaptação contextual** (0% → 100%) → Fluxo natural
 
 **Economia de Tempo:**
+
 - **Por usuário:** 4-6 min economizados por onboarding
 - **100 usuários/mês:** 400-600 min = 6-10h economizadas
 - **Break-even:** ~1 mês (7h investimento ÷ 6-10h/mês)
@@ -1288,12 +1408,14 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Retorno Indireto
 
 **Benefícios Qualitativos:**
+
 - **UX Superior:** First impression positiva, retenção maior
 - **Base Sólida:** Pattern conversacional reutilizável em outros agentes
 - **Menos Bugs UX:** Validação semântica previne confusões futuras
 - **Documentação:** Lições aprendidas para próximas refatorações
 
 **Economia Futura:**
+
 - **Debugging UX:** 10-15h economizadas (bugs prevenidos)
 - **Expansão:** 5-10h economizadas (pattern reutilizável)
 - **Manutenção:** 3-5h economizadas (código mais claro)
@@ -1305,11 +1427,17 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Análise Custo-Benefício
 
 | Métrica | Valor |
+
 |---------|-------|
+
 | **Investimento** | 7h 45min |
+
 | **Break-even** | 1 mês |
+
 | **Economia 6 meses** | 36-60h |
+
 | **Economia 1 ano** | 72-120h |
+
 | **ROI 1 ano** | **9-15x** |
 
 **CONCLUSÃO:** Investimento altamente justificável. ROI positivo em 1 mês, exponencial em 1 ano.
@@ -1341,6 +1469,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 ### Manutenção do Plano
 
 **Atualizar este arquivo quando:**
+
 - [ ] Fases forem concluídas (marcar checkboxes)
 - [ ] Métricas reais divergirem das estimadas (atualizar seção ROI)
 - [ ] Novos problemas forem descobertos durante implementação (adicionar em Notas)
@@ -1354,7 +1483,8 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 ---
 
-**Última Atualização:** 2025-10-20 (criação inicial)  
-**Status:** 📝 PLANEJAMENTO COMPLETO - AGUARDANDO EXECUÇÃO  
-**Próximo Checkpoint:** PREPARAÇÃO (15 min)
+**Última Atualização:** 2025-10-20 (criação inicial)
 
+**Status:** 📝 PLANEJAMENTO COMPLETO - AGUARDANDO EXECUÇÃO
+
+**Próximo Checkpoint:** PREPARAÇÃO (15 min)

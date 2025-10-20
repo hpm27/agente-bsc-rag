@@ -1,9 +1,95 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-19 (Sessão 21 - FASE 3.6 Benchmarking Tool COMPLETA)  
-**Fase Atual**: FASE 3 - Diagnostic Tools 🚀 EM PROGRESSO (3.6 Completa - 6/8 tools consultivas!)  
-**Sessão**: 21 de 15-20  
-**Progresso Geral**: 60.0% (30/50 tarefas - 3.6 Benchmarking Tool ✅)
+**Última Atualização**: 2025-10-20 (Sessão 22 - PAUSA ESTRATÉGICA FASE 3)  
+**Fase Atual**: REFATORAÇÃO ONBOARDING 🔧 EM PROGRESSO (Pausa temporária FASE 3)  
+**Sessão**: 22 de 15-20  
+**Progresso Geral**: 60.0% (30/50 tarefas - refatoração não muda baseline)
+
+---
+
+## 🚨 PAUSA ESTRATÉGICA FASE 3 (2025-10-20)
+
+**DECISÃO**: Pausar FASE 3 (Diagnostic Tools) temporariamente para implementar refatoração crítica de UX no OnboardingAgent.
+
+### Problema Identificado
+
+Diálogo real com usuário revelou **3 falhas críticas de UX** no onboarding atual:
+
+1. **Rigidez de fluxo** - Segue script fixo (Empresa → Challenges → Objectives), não adaptável
+2. **Falta de reconhecimento** - Não identifica informações já fornecidas, repete perguntas  
+3. **Loops infinitos** - Não valida semanticamente, confunde objectives com challenges
+
+**Evidência**: 10+ turns com repetições, confusão de conceitos, frustração explícita ("Como mencionado anteriormente...").
+
+### Solução: Refatoração Conversacional (3 Fases)
+
+**Branch**: `feature/onboarding-conversational-redesign`  
+**Duração Estimada**: 7h 45min  
+**Plano Completo**: `.cursor/plans/Plano_refatoracao_onboarding_conversacional.plan.md`
+
+**3 Fases da Refatoração**:
+
+1. **FASE 1: Opportunistic Extraction** (4h)
+   - Extrair TODAS entidades (empresa, challenges, objectives) em QUALQUER turn
+   - Análise de contexto conversacional
+   - Respostas adaptativas baseadas em contexto
+   - **Target**: Turns médios 10-15 → 6-8 (-40%)
+
+2. **FASE 2: Intelligent Validation** (2h)
+   - Validação semântica de challenges vs objectives
+   - Diferenciação LLM-based (problema vs meta)
+   - **Target**: Accuracy > 90%, confusões 60% → 0%
+
+3. **FASE 3: Periodic Confirmation** (1h)
+   - Sumários periódicos a cada 3-4 turns
+   - Validação explícita com usuário
+   - **Target**: 1 confirmação/3-4 turns, 100% coverage
+
+### Impacto FASE 3
+
+**BLOQUEANTE?** ❌ NÃO
+
+**JUSTIFICATIVA**:
+- Refatoração afeta apenas `OnboardingAgent` (módulo isolado)
+- FASE 3 (Diagnostic Tools) não depende de onboarding
+- Nenhuma dependência direta entre refatoração e FASE 3
+- 3.7-3.8 (próximas tarefas) podem continuar após merge
+
+**Pausa estimada**: 1 dia (7h 45min trabalho efetivo)  
+**Retomada FASE 3**: Após merge do PR `feature/onboarding-conversational-redesign`  
+**Próxima tarefa FASE 3**: 3.7 Integração com Workflow
+
+### ROI Esperado
+
+**Investimento**: 7h 45min  
+**Economia Direta**: 4-6 min/usuário (100 usuários/mês = 6-10h economizadas)  
+**Break-even**: 1 mês  
+**ROI 1 ano**: 9-15x
+
+**Benefícios Qualitativos**:
+- UX superior (first impression positiva)
+- Base sólida (pattern conversacional reutilizável)
+- Menos bugs UX (validação semântica previne confusões)
+- Economia futura: 20-30h (debugging + manutenção + expansão)
+
+### Arquivos Afetados
+
+**Modificações** (5 arquivos):
+- `src/agents/onboarding_agent.py` (+270 linhas)
+- `src/prompts/client_profile_prompts.py` (+120 linhas)
+- `src/graph/states.py` (+15 linhas docstring)
+- `tests/test_onboarding_agent.py` (+50 linhas atualização)
+- `.cursor/progress/consulting-progress.md` (esta seção)
+
+**Criações** (3 arquivos):
+- `tests/test_onboarding_conversational.py` (~800 linhas, 37+ testes)
+- `docs/lessons/lesson-onboarding-conversational-redesign-2025-10-20.md` (~600 linhas)
+- `docs/consulting/onboarding-conversational-design.md` (~400 linhas)
+
+**Arquivamento** (1 arquivo):
+- `docs/consulting/workflow-design.md` → `docs/consulting/archive/` (design sequencial obsoleto)
+
+**Impacto total**: 9 arquivos, ~2.285 linhas
 
 ---
 
