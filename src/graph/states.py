@@ -91,7 +91,8 @@ class BSCState(BaseModel):
     approval_feedback: str | None = None
 
     # Onboarding (FASE 2.6)
-    onboarding_progress: dict[str, bool] = Field(default_factory=dict)
+    # Estrutura: {"current_step": int, "followup_counts": dict[int, int], "challenges": bool, "objectives": bool}
+    onboarding_progress: dict[str, Any] = Field(default_factory=dict)
 
     # Diagnostic (FASE 2.7)
     diagnostic: dict[str, Any] | None = None

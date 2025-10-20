@@ -7,7 +7,7 @@ globs: *
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 version: "2.4"
-last_updated: "2025-10-19"
+last_updated: "2025-10-20"
 ---
 
 ## HEADERS
@@ -51,6 +51,7 @@ last_updated: "2025-10-19"
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
 - `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied + PONTO 15 fixtures Pydantic)
 - `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md` (950+ linhas, 5 Whys + Hypothesis Property-Based Testing discovery, SUB-PONTO 15.6)
+- `docs/lessons/lesson-testes-reais-do-projeto.md`
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -268,13 +269,133 @@ pip install hypothesis pytest-hypothesis
 *   **QUANDO NÃO USAR** (TDD tradicional melhor): API conhecida, lógica simples (math, pure functions), refactoring (testes já existem).
 *   **Lição detalhada**: `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+ linhas com checklist completo).
 
+**14. Mock Múltiplas Chamadas com itertools.cycle**:
+*   **Mock Múltiplas Chamadas com itertools.cycle**: Mock para múltiplas chamadas sequenciais requer abordagem dinâmica. Mock estático (`return_value` fixo) causa falhas quando tool processa lista de items esperando outputs diferentes.
+*   **QUANDO USAR**: Mock será invocado N vezes (N > 1) esperando outputs diferentes a cada chamada.
+*   **RAZÃO**: Mock estático retorna sempre o mesmo valor. Tools que processam lista items (ex: 4 perspectivas BSC) falham com ValidationError quando mock não diferencia outputs.
+*   **SOLUÇÃO VALIDADA**: `itertools.cycle` para retornar valores sequencialmente.
+*   **Template Geral**:
+    ```python
+    from itertools import cycle
+
+    @pytest.fixture
+    def mock_with_cycle():
+        """Mock com itertools.cycle - múltiplos valores sequenciais."""
+        mock_obj = MagicMock()
+        
+        # Step 1: Definir valores esperados em ordem
+        values_order = [value1, value2, value3, value4]
+        values_cycle = cycle(values_order)
+        
+        # Step 2: side_effect usa next(cycle)
+        def side_effect_fn(*args, **kwargs):
+            """Retorna próximo valor na sequência."""
+            return next(values_cycle)
+        
+        mock_obj.method.side_effect = side_effect_fn
+        return mock_obj
+    ```
+*   **Exemplo Real - KPI Definer Tool** (validado 2025-10-19):
+    ```python
+    from itertools import cycle
+    from pydantic import BaseModel
+
+    @pytest.fixture
+    def mock_llm() -> MagicMock:
+        """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
+        llm = MagicMock(spec=["invoke", "with_structured_output"])
+        
+        class KPIListOutput(BaseModel):
+            kpis: list[KPIDefinition]
+    
+        # Define KPIs mock para cada perspectiva
+        kpis_by_perspective = {
+            "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
+            "Clientes": [KPIDefinition(name="NPS", perspective="Clientes", ...)],
+            "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
+            "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
+        }
+        
+        # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
+        # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
+        perspective_order = [
+            "Financeira",
+            "Financeira",
+            "Clientes",
+            "Processos Internos",
+            "Aprendizado e Crescimento"
+        ]
+        perspective_cycle = cycle(perspective_order)
+        
+        def mock_invoke_side_effect(prompt: str):
+            """Retorna KPIs da próxima perspectiva na sequência."""
+            perspective = next(perspective_cycle)
+            kpis = kpis_by_perspective[perspective]
+            return KPIListOutput(kpis=kpis)
+        
+        mock_structured_llm = MagicMock()
+        mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
+        llm.with_structured_output.return_value = mock_structured_llm
+        return llm
+    ```
+*   **Pergunta-Chave ANTES de criar mock**:
+    > "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
+*   **Decisão Tree**:
+    - Mock invocado **1x** OU **N vezes com MESMO output**? → `return_value` fixo OK
+    - Mock invocado **N vezes com OUTPUTS DIFERENTES**? → `itertools.cycle` ou `side_effect` lista
+    - Mock invocado **N vezes exatas** (N == len(lista))? → `side_effect = [val1, val2, val3]`
+    - Mock invocado **N vezes indefinido** OU **N > len(values)**? → `itertools.cycle` (melhor escolha)
+*   **Alternativas e Trade-offs**:
+    1. **Lista finita** (`side_effect = [val1, val2, val3]`):
+       - ✅ Simples, direto
+       - ❌ Erro `StopIteration` se chamadas > len(lista)
+       - **Usar quando**: N chamadas exatas conhecido
+    2. **Callable com contador**:
+       ```python
+       call_count = 0
+       def side_effect():
+           nonlocal call_count
+           call_count += 1
+           return values[call_count - 1]
+       ```
+       - ✅ Controle explícito
+       - ❌ Mais verboso, `nonlocal` não pythônico
+       - **Usar quando**: Lógica complexa por chamada
+    3. **itertools.cycle** (RECOMENDADO):
+       - ✅ Pythônico, elegante
+       - ✅ Nunca lança `StopIteration` (ciclo infinito)
+       - ✅ Alinha naturalmente com ordem de chamadas da tool
+       - ❌ Ciclo repete (pode mascarar bugs se tool chamar mais que esperado)
+       - **Usar quando**: Mock múltiplas chamadas sequenciais (99% dos casos)
+*   **Checklist Aplicação**:
+    - [ ] Mock será invocado N vezes (N > 1)?
+    - [ ] Outputs esperados são diferentes a cada chamada?
+    - [ ] Tool processa lista de items sequencialmente?
+    - [ ] Ordem do cycle alinha com ordem de chamadas da tool? (verificar código `for item in items:`)
+    - [ ] `side_effect` usa `next(cycle)` corretamente?
+    - [ ] Teste valida perspectiva/category/type correto em cada output?
+*   **Antipadrões Evitados**:
+    - ❌ **Mock estático com return_value fixo** para múltiplas chamadas
+    - ❌ **String matching no prompt** para detectar qual output retornar (frágil, dependente de formato)
+    - ❌ **Parsing JSON/XML** para diferenciar chamadas (adiciona complexidade desnecessária)
+    - ❌ **Criar ValidationError manualmente** em Pydantic (preferir passar dados inválidos e deixar Pydantic validar)
+*   **ROI**: 15-20 min economizados (debugging mock estático vs criação correta desde início)
+*   **Aplicabilidade Futura**:
+    - ✅ Objetivos Estratégicos Tool (múltiplos objetivos por perspectiva BSC)
+    - ✅ Action Plan Tool (lista de ações sequenciais)
+    - ✅ Benchmarking Tool (comparações múltiplas perspectivas)
+    - ✅ Qualquer tool que processa lista items com LLM/API calls sequenciais
+*   **Lições Detalhadas**:
+    - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
+    - Memória [[memory:9969868]] ponto 14 (checklist obrigatório 14 pontos)
+
 **15. LER SCHEMA PYDANTIC VIA GREP ANTES DE CRIAR FIXTURE OU ACESSAR CAMPOS (validado FASE 3.5 - 2025-10-19)**
 *   PROBLEMA RESOLVIDO: Fixtures Pydantic inválidas (5 erros recorrentes 4 sessões: SWOT, Five Whys, Issue Tree, KPI, Strategic Obj), context builders acessando campos inexistentes (2 erros 3 sessões).
 *   ROOT CAUSE: NÃO ler schema Pydantic ANTES de criar fixture/acessar campos, assumir estrutura baseada em memória.
 *   **QUANDO APLICAR**: SEMPRE antes de: (1) Criar fixture Pydantic, (2) Escrever context builder, (3) Acessar campos de schema em qualquer código.
 *   **COMO APLICAR** (5 sub-pontos detalhados em [[memory:9969868]]):
-    1. `grep "class SchemaName" src/memory/schemas.py -A 50` → Identificar campos obrigatórios/opcionais/Literal
-    2. `grep "min_length\|@field_validator" src/memory/schemas.py` → Identificar validators
+    1.  `grep "class SchemaName" src/memory/schemas.py -A 50` → Identificar campos obrigatórios/opcionais/Literal
+    2.  `grep "min_length\|@field_validator" src/memory/schemas.py` → Identificar validators
     3. Validar nested schemas (schemas que agregam outros schemas)
     4. Criar fixture com campos validados (margem de segurança em min_length)
     5. Defensive programming em context builders (hasattr/getattr antes de acessar)
@@ -295,309 +416,68 @@ pip install hypothesis pytest-hypothesis
 *   **ROI ESPERADO**: 30-60 min economizados por sessão (fixtures corretas primeira tentativa).
 *   **Lição detalhada**: `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
 
-#### Mock Testing Patterns (Validado FASE 3.4 - Out/2025)
-
-**Context**: Mocks para múltiplas chamadas sequenciais requerem abordagem dinâmica. Mock estático (`return_value` fixo) causa falhas quando tool processa lista de items esperando outputs diferentes.
-
-**Ponto 14: Mock Múltiplas Chamadas com itertools.cycle**:
-
-**QUANDO USAR**: Mock será invocado N vezes (N > 1) esperando outputs diferentes a cada chamada.
-
-**RAZÃO**: Mock estático retorna sempre o mesmo valor. Tools que processam lista items (ex: 4 perspectivas BSC) falham com ValidationError quando mock não diferencia outputs.
-
-**SOLUÇÃO VALIDADA**: `itertools.cycle` para retornar valores sequencialmente.
-
-**Template Geral**:
-```python
-from itertools import cycle
-
-@pytest.fixture
-def mock_with_cycle():
-    """Mock com itertools.cycle - múltiplos valores sequenciais."""
-    mock_obj = MagicMock()
-    
-    # Step 1: Definir valores esperados em ordem
-    values_order = [value1, value2, value3, value4]
-    values_cycle = cycle(values_order)
-    
-    # Step 2: side_effect usa next(cycle)
-    def side_effect_fn(*args, **kwargs):
-        """Retorna próximo valor na sequência."""
-        return next(values_cycle)
-    
-    mock_obj.method.side_effect = side_effect_fn
-    return mock_obj
-```
-
-**Exemplo Real - KPI Definer Tool** (validado 2025-10-19):
-```python
-from itertools import cycle
-from pydantic import BaseModel
-
-@pytest.fixture
-def mock_llm() -> MagicMock:
-    """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
-    llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
-    class KPIListOutput(BaseModel):
-        kpis: list[KPIDefinition]
-    
-    # Define KPIs mock para cada perspectiva
-    kpis_by_perspective = {
-        "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
-        "Clientes": [KPIDefinition(name="NPS", perspective="Clientes", ...)],
-        "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
-        "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
-    }
-    
-    # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
-    # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
-    perspective_order = [
-        "Financeira",
-        "Clientes",
-        "Processos Internos",
-        "Aprendizado e Crescimento"
-    ]
-    perspective_cycle = cycle(perspective_order)
-    
-    def mock_invoke_side_effect(prompt: str):
-        """Retorna KPIs da próxima perspectiva na sequência."""
-        perspective = next(perspective_cycle)
-        kpis = kpis_by_perspective[perspective]
-        return KPIListOutput(kpis=kpis)
-    
-    mock_structured_llm = MagicMock()
-    mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
-    llm.with_structured_output.return_value = mock_structured_llm
-    return llm
-```
-
-**Pergunta-Chave ANTES de criar mock**:
-> "Quantas vezes o mock será invocado e com quais diferenças nos outputs esperados?"
-
-**Decisão Tree**:
-- Mock invocado **1x** OU **N vezes com MESMO output**? → `return_value` fixo OK
-- Mock invocado **N vezes com OUTPUTS DIFERENTES**? → `itertools.cycle` ou `side_effect` lista
-- Mock invocado **N vezes exatas** (N == len(lista))? → `side_effect = [val1, val2, val3]`
-- Mock invocado **N vezes indefinido** OU **N > len(values)**? → `itertools.cycle` (melhor escolha)
-
-**Alternativas e Trade-offs**:
-
-1. **Lista finita** (`side_effect = [val1, val2, val3]`):
-   - ✅ Simples, direto
-   - ❌ Erro `StopIteration` se chamadas > len(lista)
-   - **Usar quando**: N chamadas exatas conhecido
-
-2. **Callable com contador**:
-   ```python
-   call_count = 0
-   def side_effect():
-       nonlocal call_count
-       call_count += 1
-       return values[call_count - 1]
-   ```
-   - ✅ Controle explícito
-   - ❌ Mais verboso, `nonlocal` não pythônico
-   - **Usar quando**: Lógica complexa por chamada
-
-3. **itertools.cycle** (RECOMENDADO):
-   - ✅ Pythônico, elegante
-   - ✅ Nunca lança `StopIteration` (ciclo infinito)
-   - ✅ Alinha naturalmente com ordem de chamadas da tool
-   - ❌ Ciclo repete (pode mascarar bugs se tool chamar mais que esperado)
-   - **Usar quando**: Mock múltiplas chamadas sequenciais (99% dos casos)
-
-**Checklist Aplicação**:
-- [ ] Mock será invocado N vezes (N > 1)?
-- [ ] Outputs esperados são diferentes a cada chamada?
-- [ ] Tool processa lista de items sequencialmente?
-- [ ] Ordem do cycle alinha com ordem de chamadas da tool? (verificar código `for item in items:`)
-- [ ] `side_effect` usa `next(cycle)` corretamente?
-- [ ] Teste valida perspectiva/category/type correto em cada output?
-
-**Antipadrões Evitados**:
-- ❌ **Mock estático com return_value fixo** para múltiplas chamadas
-- ❌ **String matching no prompt** para detectar qual output retornar (frágil, dependente de formato)
-- ❌ **Parsing JSON/XML** para diferenciar chamadas (adiciona complexidade desnecessária)
-- ❌ **Criar ValidationError manualmente** em Pydantic (preferir passar dados inválidos e deixar Pydantic validar)
-
-**ROI**: 15-20 min economizados (debugging mock estático vs criação correta desde início)
-
-**Aplicabilidade Futura**:
-- ✅ Objetivos Estratégicos Tool (múltiplos objetivos por perspectiva BSC)
-- ✅ Action Plan Tool (lista de ações sequenciais)
-- ✅ Benchmarking Tool (comparações múltiplas perspectivas)
-- ✅ Qualquer tool que processa lista items com LLM/API calls sequenciais
-
-**Lições Detalhadas**:
-- `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
-- Memória [[memory:9969868]] ponto 14 (checklist obrigatório 14 pontos)
-
- Regarding `.cursorignore` files:
-
-*   Cursor IDE uses `.cursorignore` files to control which files Cursor can access. This is for security and performance. This is for security and performance.
-*   `.env` files are ignored by default.
-*   To unignore a file, place an exclamation mark `!` in front of the ignore glob pattern in the `.cursorignore` file. For example: `!.env`.
-*   You can edit the global ignore list in Cursor's settings. Go to `File > Preferences > VS code settings` and search for "Global Cursor Ignore List". You can remove patterns from the list there.
-*   If you don't have a `.cursorignore` file, but `.env` files are still ignored, check the global ignore list.
-*   Global cursorignore negations do not override `.gitignore` rules unless specific syntax is used.
-
-### How to Liberate .env from the Global Cursor Ignore
-
-Based on collected information, Cursor ignores `.env` files by default through global configuration. Here are three ways to liberate the file:
-
-#### Method 1: Modify Global Ignore List (Recommended)
-
-1.  **Open Cursor Settings:**
-    *   Press `Ctrl + ,` (Windows) or `Cmd + ,` (Mac)
-    *   Or go to: `File > Preferences > Settings`
-2.  **Search for "Global Cursor Ignore":**
-    *   Type in the search bar: `cursor ignore`
-    *   Locate: **"Cursor > General: Global Cursor Ignore List"**
-3.  **Remove or Comment the `.env` Entry:**
-    *   You will see a list with patterns like:
-
-    ```
-    **/node_modules/**
-    **/.git/**
-    **/.env
-    ```
-    *   **Delete** the line `**/.env` or patterns related to `.env*`
-    *   Click **"OK"** or save the settings.
-
-#### Method 2: Use `.cursorignore` to "Unignore" (Local Override)
-
-Create or edit the `.cursorignore` file in the **root of your project**:
-
-```bash
-# .cursorignore
-
-# Unignore .env files (overrides the global ignore)
-!.env
-!.env.local
-!.env.development
-
-# You can also be more specific
-!**/.env
-```
-
-**Important:** The `!` (exclamation) prefix **reverses** the ignore, allowing the file.
-
-#### Method 3: Via Cursor Interface (Quick Shortcut)
-
-1.  **Access Indexing Settings:**
-    *   Go to: `Settings > Cursor > Indexing and Docs`
-    *   Or search for: `cursor indexing`
-2.  **Edit .cursorignore:**
-    *   Click **"Edit .cursorignore"**
-    *   Add the line: `!.env`
-3.  **Reload the Index:**
-    *   Press `Ctrl + Shift + P` (Windows) or `Cmd + Shift + P` (Mac)
-    *   Type: `Cursor: Reindex Codebase`
-    *   Execute the command
-
-**IMPORTANT: Security Considerations**
-
-Brightdata's research revealed important community discussions:
-
-> **"Cursor ignores env files by default. Although risky, you can remove env files from the ignore list..."**
-
-**Why does Cursor ignore `.env` by default?**
-
-1.  **Credential Protection:** `.env` files contain API keys, passwords, and sensitive tokens.
-2.  **Leakage Prevention:** Prevents information from being inadvertently sent to AI servers.
-3.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
-4.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
-5.  **Context Security:** Prevents information from being inadvertently sent to AI servers.
-6.  **Context Security:** Prevents credentials from appearing in chat/completions context.
-
-**If you REALLY need to liberate `.env`:**
-
-✅ **Best Practice:**
-
-*   Use `.env.example` or `.env.template` with dummy values.
-*   Liberate **only** these template files in the ignore.
-*   Keep the real `.env` ignored.
-
-❌ **Avoid:**
-
-*   Liberating `.env` in public/shared projects.
-*   Exposing real credentials in the AI context.
-*   Removing protection in repositories with multiple collaborators.
-
-**Test if it Worked**
-
-1.  **Check the File Icon:**
-
-    *   In the Cursor Explorer, ignored files show a 🚫 icon.
-    *   After liberating, the icon should disappear.
-2.  **Test in Chat:**
-
-    *   Open Cursor Chat.
-    *   Type: `@.env` (mention the file).
-    *   If it works, the file has been successfully liberated.
-3.  **Verify Indexing:**
-
-    *   `Ctrl + P` → Type `.env`
-    *   The file should appear in the results.
-
-**Complete Example: `.cursorignore`**
-
-```bash
-# .cursorignore - Complete Example
-
-# Keep ignored (security)
-**/.env
-**/.env.local
-**/.env.production
-
-# Liberate templates (safe)
-!.env.example
-!.env.template
-
-# Other useful ignores
-**/node_modules/**
-**/.git/**
-**/dist/**
-**/build/**
-**/__pycache/**
-**/.pytest_cache/**
-**/.venv/**
-**/venv/**
-```
-
-**Sources (2025)**
-
-*   [Cursor Docs - Ignore Files](https://cursor.com/docs/context/ignore/files)
-*   [Cursor Forum - You can unignore files in .cursorignore](https://forum.cursor.com/t/you-can-unignore-files-in-cursorignore/38074)
-*   [GitHub Issue #3101 - .env files ignored by default](https://github.com/cursor/cursor/issues/3101)
-*   [Reddit r/cursor - How to disable .cursorignore from .cursorignore](https://www.reddit.com/r/cursor/comments/1ki08ww/)
-
-### Language Detection Improvements
-
-When the language detector in `src/rag/query_translator.py` is unable to determine the language of a query, it defaults to PT-BR. To improve language detection accuracy:
-
-*   The `_detect_language` function has been enhanced with a regular expression to identify Portuguese suffixes (ção, ões, ário, ários, eira, eiras, eiro, eiros).
-*   Word boundaries are used in keyword searches to prevent substring matches (e.g., "financial" in "financeiros").
-*   The logging message has been updated to provide more context when the language is ambiguous.
-*   Expand the list of keywords to include common BSC terms to improve language detection for technical queries.
-*   When no keywords are detected, the system defaults to PT-BR, assuming a Brazilian context.
-
-#### Code Snippets:
-
-*   **Detecting Portuguese Suffixes:**
-
-    ```python
-    has_pt_suffixes = bool(re.search(r'\b\w*(ção|ões|ário|ários|eira|eiras|eiro|eiros)\b', text_lower))
-    ```
-
-*   **Keyword Search with Word Boundaries:**
-
-    ```python
-    pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
-    en_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b', text_lower))
-    ```
-
-### Dependency Management
-
-*   When updating dependencies, especially `ruff`, ensure the version specified in `requirements.txt` is compatible with the project's other dependencies. Aim to use the latest stable version, but specify a version range to allow for minor updates without breaking
+**16. Sequential Thinking + 5 Whys Root Cause Analysis para Debugging Persistente (Validado FASE 3.7 - 2025-10-20)**
+*   **Context**: Erros complexos em workflows LangGraph (ex: loops infinitos, routing incorreto) requerem metodologia sistemática para identificar CAUSA RAIZ.
+*   **QUANDO USAR**: Erro persiste mesmo após múltiplas tentativas de correção, logs confusos, dependências complexas (ex: Pydantic, LangGraph, LLMs, APIs).
+*   **FERRAMENTAS**:
+    1.  Sequential Thinking (MCP): Analisar problema passo a passo, gerar hipóteses, validar com evidências.
+    2.  5 Whys Root Cause Analysis: Encontrar causa raiz perguntando "Por que?" 5 vezes (ou mais).
+*   **COMO APLICAR (5 Whys Adaptado)**:
+    1.  WHY 1: Por que o sistema falha? (Descrever o erro exato - ex: KeyError, TypeError, loop infinito)
+    2.  WHY 2: Por que esse erro ocorre? (Identificar a função/linha de código exata)
+    3.  WHY 3: Por que essa função/linha está sendo executada? (Rastrear o fluxo de execução)
+    4.  WHY 4: Qual a entrada dessa função/linha? (Examinar o state Pydantic)
+    5.  WHY 5: Por que essa entrada é inválida? (Causa raiz - ex: schema incorreto, valor não inicializado)
+*   **Checklist Aplicação**:
+    *   [ ] Descrever erro exato (TypeError, KeyError, loop infinito)
+    *   [ ] Rastrear função/linha causadora do erro
+    *   [ ] Entender fluxo de execução até o erro
+    *   [ ] Examinar state Pydantic no ponto da falha
+    *   [ ] Identificar causa raiz da entrada inválida
+*   **Lições Detalhadas**:
+    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
+*   **Exemplo Concreto (resolução loop infinito FASE 3.7)**:
+    *   WHY 1: Loop infinito de refinamento (iteração 1/2 sempre)
+    *   WHY 2: decide_next_step() chamado repetidamente
+    *   WHY 3: Mutações em edge NÃO persistem no LangGraph
+    *   WHY 4: state.refinement_iteration nunca incrementa
+    *   WHY 5: judge_evaluation() (nó) NÃO retorna "refinement_iteration" no dict
+
+**17. Checklist para evitar erros de incompatibilidade de parâmetros em chamadas de função/método:**
+*   **QUANDO APLICAR**: SEMPRE que houver alteração na assinatura de uma função/método (adição, remoção ou alteração de parâmetros).
+*   **COMO APLICAR**:
+    1.  Listar TODOS os locais onde a função/método é chamado (usar `grep "method_name(" src/` para encontrar todas as chamadas).
+    2.  Verificar se os parâmetros passados na chamada correspondem à assinatura atualizada da função/método.
+    3.  Se a assinatura foi simplificada (parâmetros removidos), remover os parâmetros desnecessários na chamada.
+    4.  Se a assinatura foi expandida (novos parâmetros), fornecer valores para os novos parâmetros na chamada (usar valores default si apropriado).
+*   **ROI**: Economiza tempo de debugging e previne erros de `TypeError: unexpected keyword argument`.
+*   **Lições Detalhadas**:
+    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
+    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied).
+    *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
+    *   `docs/lessons/lesson-testes-reais-do-projeto.md`
+
+**18. Para garantir a correta inicialização e persistência do estado em workflows LangGraph, especialmente durante o processo de onboarding, siga este guia:**
+
+*   **QUANDO APLICAR**: Principalmente em workflows com múltiplos passos (multi-turn), como o onboarding, onde a informação precisa ser coletada e persistida ao longo de várias interações com o usuário.
+*   **COMO APLICAR:**
+    1.  Certifique-se de que todos os dados necessários para a execução do workflow (incluindo o estado inicial) estejam corretamente inicializados no objeto de estado (BSCState).
+    2.  Verifique se todos os nós do workflow que modificam o estado (funções que retornam um dicionário com as atualizações) estão retornando TODAS as informações necessárias, e não apenas as modificações. Isso garante que o estado completo seja persistido.
+    3.  Nos casos em que o estado é carregado de uma fonte externa (ex: Mem0), verifique se todos os campos necessários são carregados corretamente. Se o estado não existir, inicialize-o com valores default.
+    4.  Ao transitar entre diferentes fases do workflow (ex: ONBOARDING -> DISCOVERY), certifique-se de que todos os dados relevantes sejam transferidos para o novo estado.
+*   **PROBLEMAS COMUNS**:
+    *   `KeyError` devido a campos não inicializados no estado.
+    *   Perda de estado entre interações.
+    *   Comportamento inesperado devido a valores default incorretos.
+*   **ROI**: Evita erros de tempo de execução, garante a persistência correta do estado e facilita a depuração.
+*   **Lições Detalhadas**:
+    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
+    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied).
+    *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
+    *   `docs/lessons/lesson-testes-reais-do-projeto.md`
+*   **Exemplo Concreto (resolução dos bugs #5, #7 e #9)**:
+    * Antes da correção, o sistema não inicializava corretamente o `client_profile`, resultando em erros de `NoneType` ao acessar atributos. A correção envolveu inicializar o `client_profile` com os valores padrão antes de qualquer acesso, e garantir que todos os nós retornassem o estado completo.
+
+**19. Sempre que encontrar erros de `TypeError: unexpected keyword argument` em chamadas de função, siga este checklist:**
+
+*   **Contexto**: Este erro indica que uma função ou método está sendo chamado com um argumento de palavra-chave

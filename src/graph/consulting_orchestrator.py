@@ -72,10 +72,12 @@ class ConsultingOrchestrator:
             from src.agents.onboarding_agent import OnboardingAgent
             from src.memory.mem0_client import Mem0ClientWrapper
             
-            # Criar LLM objeto
+            # Criar LLM objeto (GPT-5 para onboarding conversacional)
             llm = ChatOpenAI(
-                model=settings.default_llm_model,
-                temperature=0.1
+                model=settings.gpt5_model,
+                temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
+                max_completion_tokens=settings.gpt5_max_completion_tokens,
+                model_kwargs={"reasoning_effort": "low"}  # Low reasoning para conversação rápida
             )
             
             # Obter memory client a partir do provider (evita inicialização indevida em testes)
@@ -194,11 +196,15 @@ class ConsultingOrchestrator:
                     **transition_data
                 }
             
+            # CRÍTICO: Restaurar onboarding_progress para o state ANTES de process_turn
+            # process_turn() precisa de state.onboarding_progress["current_step"]
+            state.onboarding_progress = session.get("progress", {})
+            
             # Processar turn (resposta usuário)
             result = self.onboarding_agent.process_turn(
                 user_id=user_id,
                 user_message=user_message,
-                state=state  # Passa state completo
+                state=state  # Passa state completo com progress restaurado
             )
             # Robustez: aceitar string simples dos mocks/fixtures
             if isinstance(result, str):

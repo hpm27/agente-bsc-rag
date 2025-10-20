@@ -466,10 +466,18 @@ class BSCWorkflow:
                 f"Veredito: {judgment.verdict}"
             )
             
-            return {
+            # Preparar dict de retorno
+            result_dict = {
                 "judge_evaluation": judge_evaluation,
                 "needs_refinement": needs_refinement
             }
+            
+            # CRÍTICO: Incrementar contador de refinamento AQUI (nó retorna dict)
+            # NÃO em decide_next_step (edge não persiste mutações!)
+            if needs_refinement:
+                result_dict["refinement_iteration"] = state.refinement_iteration + 1
+            
+            return result_dict
             
         except Exception as e:
             logger.error(f"[ERRO] judge_evaluation: {e}")
@@ -512,14 +520,13 @@ class BSCWorkflow:
             
             # Se precisa refinamento e ainda há iterações disponíveis, refina
             if state.needs_refinement:
-                new_iteration = state.refinement_iteration + 1
-                if new_iteration <= state.max_refinement_iterations:
+                # Nota: O contador já foi incrementado em judge_evaluation()
+                # Aqui apenas verificamos se ainda há iterações disponíveis
+                if state.refinement_iteration <= state.max_refinement_iterations:
                     logger.info(
-                        f"[INFO] Decisão: REFINE (iteração {new_iteration}/"
+                        f"[INFO] Decisão: REFINE (iteração {state.refinement_iteration}/"
                         f"{state.max_refinement_iterations})"
                     )
-                    # Incrementa contador de refinamento
-                    state.refinement_iteration = new_iteration
                     return "refine"
                 else:
                     logger.warning(
@@ -870,9 +877,16 @@ class BSCWorkflow:
                     {
                         "perspective": r.perspective.value,
                         "content": r.content,
-                        "confidence": r.confidence
+                        "confidence": r.confidence,
+                        "sources": r.sources  # Campo omitido - Streamlit precisa!
                     }
                     for r in final_state.get("agent_responses", [])
+                ],
+                # Agregar retrieved_documents de todas as respostas dos agentes
+                "retrieved_documents": [
+                    doc
+                    for r in final_state.get("agent_responses", [])
+                    for doc in r.sources
                 ],
                 "judge_evaluation": (
                     final_state["judge_evaluation"].model_dump()

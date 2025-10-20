@@ -142,9 +142,14 @@ def process_query(query: str) -> Dict[str, Any]:
     workflow = st.session_state.workflow
     config = st.session_state.config
 
-    # Gerar session_id unico para rastreamento
+    # Gerar/recuperar user_id unico para o cliente (persistente na sessao)
     import uuid
-    session_id = f"streamlit_{uuid.uuid4().hex[:8]}"
+    if "user_id" not in st.session_state:
+        # Primeira interacao: gerar user_id unico
+        st.session_state.user_id = f"streamlit_user_{uuid.uuid4().hex[:8]}"
+    
+    user_id = st.session_state.user_id
+    session_id = f"session_{uuid.uuid4().hex[:8]}"
 
     # Obter historico de chat
     chat_history = [
@@ -154,11 +159,11 @@ def process_query(query: str) -> Dict[str, Any]:
     ]
 
     try:
-        # Executar workflow (configuracoes vem do .env por enquanto)
-        # TODO: Refatorar workflow para aceitar config dinamico
+        # Executar workflow consultivo (ONBOARDING → DISCOVERY → APPROVAL)
         result = workflow.run(
             query=query,
             session_id=session_id,
+            user_id=user_id,  # CRÍTICO: Habilita workflow consultivo!
             chat_history=chat_history if chat_history else None
         )
 

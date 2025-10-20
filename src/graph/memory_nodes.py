@@ -93,15 +93,23 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
         >>> result = load_client_memory(state)
         >>> result["client_profile"]  # None (sem user_id)
     """
+    # Import no topo da função (usado em múltiplos returns)
+    from src.graph.consulting_states import ConsultingPhase
+    
     start_time = time.time()
 
     try:
         # Skip se não há user_id (query anônima)
+        # IMPORTANTE: Cliente sem user_id = NOVO CLIENTE → iniciar ONBOARDING
         if not state.user_id:
             logger.info(
-                "[INFO] [load_client_memory] Skip - query anônima (sem user_id)"
+                "[INFO] [load_client_memory] Cliente NOVO (sem user_id) → "
+                "current_phase=ONBOARDING (iniciar processo consultivo)"
             )
-            return {"client_profile": None}
+            return {
+                "client_profile": None,
+                "current_phase": ConsultingPhase.ONBOARDING
+            }
 
         logger.info(
             f"[TIMING] [load_client_memory] INICIADO | user_id: {state.user_id}"
@@ -167,7 +175,8 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
             f"[ERRO] [load_client_memory] Falha Mem0 API: {e} | "
             f"Tempo: {elapsed_time:.3f}s"
         )
-        return {"client_profile": None}
+        # Fallback seguro: entra em ONBOARDING para iniciar fluxo consultivo
+        return {"client_profile": None, "current_phase": ConsultingPhase.ONBOARDING}
 
     except Exception as e:
         # Qualquer outro erro - log mas não falha workflow

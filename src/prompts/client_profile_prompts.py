@@ -85,42 +85,41 @@ Se informação não foi mencionada, deixe null."""
 # ============================================================================
 
 IDENTIFY_CHALLENGES_SYSTEM = """Você é um consultor BSC identificando desafios estratégicos.
-Analise a conversa e identifique 3-7 desafios principais que a empresa enfrenta.
+Analise a conversa e identifique 2-5 PROBLEMAS/DIFICULDADES que a empresa enfrenta.
+
+IMPORTANTE: Desafio NÃO é objetivo/meta! 
+- ❌ ERRADO: "crescimento de 10%", "aumento da eficiência em 15%" (isso é OBJETIVO)
+- ✅ CORRETO: "crescimento atual insuficiente", "eficiência operacional abaixo do desejado"
 
 CONTEXTO DA EMPRESA:
 - Nome: {company_name}
 - Setor: {sector}
 - Porte: {size}
 
-TIPOS DE DESAFIOS:
-- Operacionais: processos ineficientes, qualidade, capacidade produtiva
-- Mercado: concorrência intensa, pricing, posicionamento, market share
-- Gestão: liderança, cultura organizacional, comunicação interna
-- Crescimento: expansão limitada, inovação estagnada, captação de recursos
-- Financeiros: rentabilidade baixa, fluxo de caixa, custos elevados
-- Pessoas: rotatividade, capacitação, engajamento, atração de talentos
-- Tecnologia: sistemas defasados, falta automação, transformação digital
+TIPOS DE DESAFIOS (PROBLEMAS):
+- Operacionais: processos ineficientes, qualidade baixa, capacidade limitada
+- Mercado: perda de clientes, concorrência intensa, dificuldade de diferenciação
+- Gestão: falta de visibilidade, comunicação deficiente, liderança fragmentada
+- Crescimento: expansão estagnada, inovação limitada, falta de recursos
+- Financeiros: rentabilidade baixa, fluxo de caixa apertado, custos elevados
+- Pessoas: alta rotatividade, baixo engajamento, falta de capacitação
 
 INSTRUÇÕES:
-- Identifique 3-7 desafios estratégicos (não operacionais simples)
-- Use palavras-chave da conversa
-- Seja específico e acionável
-- Priorize desafios que impactam objetivos estratégicos
+- Identifique 2-5 PROBLEMAS (não objetivos/metas)
+- Se usuário mencionar metas, transforme em desafio (ex: "crescer 10%" → "crescimento insuficiente")
+- Use linguagem de problema: "baixo", "insuficiente", "falta de", "dificuldade"
 - NÃO invente desafios não mencionados
 
 EXEMPLO:
-Empresa: TechCorp | Setor: Tecnologia | Porte: média
-Conversa: "Estamos perdendo clientes para concorrentes mais baratos. Nossa equipe é pequena e sobrecarregada. Precisamos crescer mas falta capital. Os processos são todos manuais."
-Saída:
+Conversa: "crescimento de 10%, aumento da eficiência em 15%, lançamento de 2 novas linhas"
+Desafios corretos:
 [
-  "Perda de clientes para concorrentes com pricing mais agressivo",
-  "Equipe pequena e sobrecarregada afetando produtividade",
-  "Falta de capital para financiar crescimento",
-  "Posicionamento de valor pouco claro no mercado",
-  "Processos manuais reduzindo eficiência operacional"
+  "Crescimento atual insuficiente para ambições da empresa",
+  "Eficiência operacional abaixo do desejado",
+  "Necessidade de diversificação do portfólio de produtos"
 ]
 
-LEMBRE-SE: 3-7 desafios, específicos, baseados na conversa."""
+LEMBRE-SE: 2-5 desafios, focados em PROBLEMAS (não metas)."""
 
 IDENTIFY_CHALLENGES_USER = """Analise a conversa abaixo e identifique os desafios estratégicos da empresa {company_name} ({sector}).
 

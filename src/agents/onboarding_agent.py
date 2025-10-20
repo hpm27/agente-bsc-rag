@@ -124,6 +124,11 @@ class OnboardingAgent:
         self.conversation_history = []
         self.followup_count = {1: 0, 2: 0, 3: 0}
 
+        # Garantir ClientProfile inicializado
+        if state.client_profile is None:
+            from src.memory.schemas import ClientProfile
+            state.client_profile = ClientProfile()
+
         # Inicializar onboarding_progress no state
         if not state.onboarding_progress:
             state.onboarding_progress = {
@@ -155,6 +160,7 @@ class OnboardingAgent:
             "step": OnboardingStep.COMPANY_INFO,
             "is_complete": False,
             "followup_count": 0,
+            "onboarding_progress": state.onboarding_progress  # CRÍTICO: Retornar progress!
         }
 
     def process_turn(self, user_id: str, user_message: str, state: BSCState) -> dict[str, Any]:
@@ -235,6 +241,7 @@ class OnboardingAgent:
                 "is_complete": False,
                 "followup_count": self.followup_count[current_step],
                 "extraction": extraction_result,
+                "onboarding_progress": state.onboarding_progress,
             }
 
         # Informação suficiente (ou max follow-ups atingido) → avançar
@@ -259,6 +266,7 @@ class OnboardingAgent:
                 "is_complete": True,
                 "followup_count": self.followup_count[current_step],
                 "extraction": extraction_result,
+                "onboarding_progress": state.onboarding_progress,
             }
 
         # Avançar para próximo step
@@ -278,6 +286,7 @@ class OnboardingAgent:
             "is_complete": False,
             "followup_count": 0,
             "extraction": extraction_result,
+            "onboarding_progress": state.onboarding_progress,
         }
 
     def is_onboarding_complete(self, state: BSCState) -> bool:
@@ -362,6 +371,10 @@ class OnboardingAgent:
             )
 
             # Atualizar state
+            if state.client_profile is None:
+                from src.memory.schemas import ClientProfile
+                state.client_profile = ClientProfile()
+
             if result and hasattr(result, "name"):
                 state.client_profile.company.name = result.name or state.client_profile.company.name
                 state.client_profile.company.sector = (
@@ -369,29 +382,76 @@ class OnboardingAgent:
                 )
                 state.client_profile.company.size = result.size or state.client_profile.company.size
 
-            return result.dict() if hasattr(result, "dict") else result
+            return result.model_dump() if hasattr(result, "model_dump") else (result.dict() if hasattr(result, "dict") else result)
 
         elif current_step == OnboardingStep.CHALLENGES:
+            # Garantir ClientProfile e company_info
+            if state.client_profile is None:
+                from src.memory.schemas import ClientProfile
+                state.client_profile = ClientProfile()
+            company_info = state.client_profile.company
+
             result = self.profile_agent.identify_challenges(
-                user_message, conversation_history=conversation_context
+                user_message,
+                company_info,
+                conversation_history=conversation_context
             )
 
             # Atualizar state
             if result and hasattr(result, "challenges"):
                 state.client_profile.context.current_challenges = result.challenges
+            elif isinstance(result, list):
+                state.client_profile.context.current_challenges = result
 
-            return result.dict() if hasattr(result, "dict") else result
+            # Normalizar retorno para dict esperado pelo validador
+            if isinstance(result, list):
+                return {"challenges": result}
+            return result.model_dump() if hasattr(result, "model_dump") else (result.dict() if hasattr(result, "dict") else result)
 
         elif current_step == OnboardingStep.OBJECTIVES:
+            # Garantir ClientProfile inicializado
+            if state.client_profile is None:
+                from src.memory.schemas import ClientProfile
+                state.client_profile = ClientProfile()
+
+            # Obter desafios atuais do state
+            challenges = []
+            if state.client_profile and state.client_profile.context and getattr(state.client_profile.context, 'current_challenges', None):
+                challenges = state.client_profile.context.current_challenges
+
+            # Se ainda não há desafios suficientes, pedir desafios antes de objetivos
+            if len(challenges) < 2:
+                self.followup_count[OnboardingStep.CHALLENGES] = self.followup_count.get(OnboardingStep.CHALLENGES, 0)
+                state.onboarding_progress["current_step"] = OnboardingStep.CHALLENGES
+                msg = (
+                    "Antes de definirmos objetivos SMART, preciso de pelo menos **2-3 desafios estratégicos**. "
+                    "Quais são os principais desafios hoje?"
+                )
+                return {
+                    "question": msg,
+                    "step": OnboardingStep.CHALLENGES,
+                    "is_complete": False,
+                    "followup_count": self.followup_count[OnboardingStep.CHALLENGES],
+                    "extraction": {"objectives": []},
+                    "onboarding_progress": state.onboarding_progress,
+                }
+
             result = self.profile_agent.define_objectives(
-                user_message, conversation_history=conversation_context
+                user_message,
+                challenges,
+                conversation_history=conversation_context
             )
 
             # Atualizar state
             if result and hasattr(result, "objectives"):
                 state.client_profile.context.strategic_objectives = result.objectives
+            elif isinstance(result, list):
+                state.client_profile.context.strategic_objectives = result
 
-            return result.dict() if hasattr(result, "dict") else result
+            # Normalizar retorno para dict esperado pelo validador
+            if isinstance(result, list):
+                return {"objectives": result}
+            return result.model_dump() if hasattr(result, "model_dump") else (result.dict() if hasattr(result, "dict") else result)
 
         return {}
 
@@ -484,19 +544,25 @@ class OnboardingAgent:
         if completed_step == OnboardingStep.COMPANY_INFO:
             company_name = extraction.get("name", "sua empresa")
             sector = extraction.get("sector", "seu setor")
-            return f"✓ Perfeito! Empresa **{company_name}** no setor de **{sector}** registrada."
+            return f"Entendi, **{company_name}** atua no setor de **{sector}**. Vamos prosseguir!"
 
         if completed_step == OnboardingStep.CHALLENGES:
-            num_challenges = len(extraction.get("challenges", []))
-            return (
-                f"✓ Excelente! Identifiquei **{num_challenges} desafios estratégicos** principais."
-            )
+            challenges = extraction.get("challenges", [])
+            num_challenges = len(challenges)
+            if num_challenges > 0:
+                # Mostrar os desafios identificados para confirmar
+                challenges_list = "\n".join([f"• {c}" for c in challenges[:3]])
+                return f"Perfeito! Identifiquei {num_challenges} desafios principais:\n\n{challenges_list}\n\nVamos prosseguir!"
+            return "Certo, vamos prosseguir para os objetivos estratégicos."
 
         if completed_step == OnboardingStep.OBJECTIVES:
-            num_objectives = len(extraction.get("objectives", []))
-            return f"✓ Ótimo! **{num_objectives} objetivos estratégicos** definidos nas perspectivas BSC."
+            objectives = extraction.get("objectives", [])
+            num_objectives = len(objectives)
+            if num_objectives > 0:
+                return f"Ótimo! Mapeei {num_objectives} objetivos estratégicos nas perspectivas BSC. Agora posso iniciar o diagnóstico!"
+            return "Certo, vamos iniciar o diagnóstico!"
 
-        return "✓ Informações registradas!"
+        return "Informações registradas!"
 
     def _mark_step_complete(self, step: int, state: BSCState) -> None:
         """

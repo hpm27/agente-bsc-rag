@@ -267,8 +267,14 @@ class Mem0ClientWrapper:
             >>> print(f"Empresa: {profile.company.name}")
         """
         try:
-            # Busca todas memórias do user_id
-            memories = self.client.get_all(user_id=user_id)
+            # Busca memórias do user_id com paginação defensiva
+            memories = None
+            try:
+                # Alguns backends do Mem0 exigem paginação explícita quando sem filtros adicionais
+                memories = self.client.get_all(user_id=user_id, page=1, page_size=50)
+            except TypeError:
+                # Versões antigas do client não aceitam page/page_size
+                memories = self.client.get_all(user_id=user_id)
 
             if not memories:
                 raise ProfileNotFoundError(user_id)

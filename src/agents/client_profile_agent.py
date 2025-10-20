@@ -109,7 +109,7 @@ class ClientProfileAgent:
     - process_onboarding(): Orquestra workflow completo
 
     Características:
-    - LLM: GPT-4o-mini (temperature=0.1 para determinismo)
+    - LLM: GPT-5 (temperature=1.0, reasoning_effort=low para determinismo)
     - Structured output: LangChain with_structured_output() (best practice 2025)
     - Retry automático: 3 tentativas com backoff exponencial
     - Validação Pydantic: Runtime validation de todos outputs
@@ -127,11 +127,15 @@ class ClientProfileAgent:
         """Inicializa ClientProfileAgent com LLM configurado.
 
         Args:
-            llm: LLM customizado (opcional). Se None, usa GPT-4o-mini padrão.
+            llm: LLM customizado (opcional). Se None, usa GPT-5 padrão.
         """
+        from config.settings import settings
+        
         self.llm = llm or ChatOpenAI(
-            model="gpt-4o-mini",  # Cost-effective para onboarding
-            temperature=0.1  # Baixa temperatura para determinismo
+            model=settings.gpt5_model,
+            temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
+            max_completion_tokens=settings.gpt5_max_completion_tokens,
+            model_kwargs={"reasoning_effort": "low"}  # Low reasoning para extração estruturada
         )
 
         logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {self.llm.model_name}")
@@ -245,7 +249,11 @@ class ClientProfileAgent:
         wait=wait_exponential(multiplier=1, min=1, max=5),
         retry=retry_if_exception_type((ValidationError, ValueError))
     )
-    def extract_company_info(self, conversation: str) -> CompanyInfo:
+    def extract_company_info(
+        self, 
+        conversation: str,
+        conversation_history: str = ""
+    ) -> CompanyInfo:
         """Extrai CompanyInfo estruturado de conversa natural.
 
         Usa LLM com structured output (LangChain 2025) para extrair:
@@ -256,7 +264,9 @@ class ClientProfileAgent:
         - founded_year: Ano de fundação (opcional)
 
         Args:
-            conversation: String de conversa com informações da empresa
+            conversation: String de conversa com informações da empresa (mensagem atual)
+            conversation_history: Histórico completo da conversa multi-turn (opcional)
+                                 Se fornecido, melhora contexto para extração LLM
 
         Returns:
             CompanyInfo validado com campos obrigatórios preenchidos
@@ -274,8 +284,13 @@ class ClientProfileAgent:
             >>> company.sector
             'Tecnologia'
         """
+        # Concatenar histórico se fornecido (melhora contexto LLM)
+        full_conversation = conversation
+        if conversation_history:
+            full_conversation = f"{conversation_history}\n\n{conversation}"
+        
         # Validação pre-flight
-        if not conversation or len(conversation.strip()) < 50:
+        if not full_conversation or len(full_conversation.strip()) < 50:
             raise ValueError(
                 "Conversa muito curta para extração (mínimo 50 caracteres). "
                 "Por favor, forneça mais informações sobre sua empresa."
@@ -283,7 +298,8 @@ class ClientProfileAgent:
 
         logger.info(
             f"[EXTRACT] Iniciando extração company_info | "
-            f"Chars: {len(conversation)}"
+            f"Chars: {len(full_conversation)} "
+            f"(history: {len(conversation_history)} + current: {len(conversation)})"
         )
 
         try:
@@ -291,10 +307,11 @@ class ClientProfileAgent:
             structured_llm = self.llm.with_structured_output(CompanyInfo)
 
             # Construir prompt com few-shot examples
+            # Usa full_conversation (history + current) para melhor contexto
             messages = [
                 SystemMessage(content=EXTRACT_COMPANY_INFO_SYSTEM),
                 HumanMessage(content=EXTRACT_COMPANY_INFO_USER.format(
-                    conversation=conversation
+                    conversation=full_conversation
                 ))
             ]
 
@@ -342,7 +359,8 @@ class ClientProfileAgent:
     def identify_challenges(
         self,
         conversation: str,
-        company_info: CompanyInfo
+        company_info: CompanyInfo,
+        conversation_history: str = ""
     ) -> list[str]:
         """Identifica desafios estratégicos da empresa context-aware.
 
@@ -370,9 +388,10 @@ class ClientProfileAgent:
         """
         # Validação pre-flight
         if not conversation or len(conversation.strip()) < 30:
-            raise ValueError(
-                "Conversa muito curta para identificar desafios (mínimo 30 caracteres)."
+            logger.warning(
+                "[CHALLENGES] Conversa muito curta (<30 chars). Retornando lista vazia para follow-up."
             )
+            return []
 
         logger.info(
             f"[CHALLENGES] Iniciando identificação | "
@@ -390,10 +409,13 @@ class ClientProfileAgent:
                 size=company_info.size
             )
 
+            # Concatenar histórico se fornecido
+            full_conversation = conversation if not conversation_history else f"{conversation_history}\n\n{conversation}"
+
             user_prompt = IDENTIFY_CHALLENGES_USER.format(
+                conversation=full_conversation,
                 company_name=company_info.name,
-                sector=company_info.sector,
-                conversation=conversation
+                sector=company_info.sector
             )
 
             messages = [
@@ -430,11 +452,8 @@ class ClientProfileAgent:
             raise  # Retry automático via tenacity
 
         except Exception as e:
-            logger.error(f"[CHALLENGES] Erro inesperado: {e}")
-            raise ValueError(
-                f"Não consegui identificar desafios estratégicos. "
-                f"Por favor, me conte mais sobre os desafios que sua empresa enfrenta. Erro: {e}"
-            )
+            logger.error(f"[CHALLENGES] Erro inesperado: {e}. Retornando lista vazia para follow-up.")
+            return []
 
     @retry(
         stop=stop_after_attempt(3),
@@ -444,7 +463,8 @@ class ClientProfileAgent:
     def define_objectives(
         self,
         conversation: str,
-        challenges: list[str]
+        challenges: list[str],
+        conversation_history: str = ""
     ) -> list[str]:
         """Define objetivos estratégicos BSC SMART baseados em desafios.
 
@@ -474,9 +494,10 @@ class ClientProfileAgent:
         """
         # Validação pre-flight
         if not challenges or len(challenges) < 2:
-            raise ValueError(
-                "Lista de challenges insuficiente para definir objetivos (mínimo 2)."
+            logger.warning(
+                "[OBJECTIVES] Challenges insuficientes (<2). Retornando lista vazia para follow-up."
             )
+            return []
 
         logger.info(
             f"[OBJECTIVES] Iniciando definição | "
@@ -490,10 +511,13 @@ class ClientProfileAgent:
             # Formatar challenges para prompt
             challenges_text = "\n".join([f"- {challenge}" for challenge in challenges])
 
+            # Concatenar histórico se fornecido
+            full_conversation = conversation if not conversation_history else f"{conversation_history}\n\n{conversation}"
+
             # Construir prompt BSC-aware
             user_prompt = DEFINE_OBJECTIVES_USER.format(
-                challenges=challenges_text,
-                conversation=conversation
+                conversation=full_conversation,
+                challenges=challenges_text
             )
 
             messages = [
@@ -534,11 +558,8 @@ class ClientProfileAgent:
             raise  # Retry automático via tenacity
 
         except Exception as e:
-            logger.error(f"[OBJECTIVES] Erro inesperado: {e}")
-            raise ValueError(
-                f"Não consegui definir objetivos estratégicos. "
-                f"Por favor, revise os desafios identificados. Erro: {e}"
-            )
+            logger.error(f"[OBJECTIVES] Erro inesperado: {e}. Retornando lista vazia para follow-up.")
+            return []
 
     def process_onboarding(self, state: BSCState) -> dict[str, Any]:
         """Orquestra workflow completo de onboarding BSC.

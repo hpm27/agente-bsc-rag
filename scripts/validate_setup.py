@@ -75,12 +75,19 @@ def check_env_file():
         from config.settings import settings
         
         checks = {
-            "OPENAI_API_KEY": settings.openai_api_key,
-            "COHERE_API_KEY": settings.cohere_api_key,
+            "OPENAI_API_KEY": (settings.openai_api_key, "sk-"),  # OpenAI keys start with sk-
+            "COHERE_API_KEY": (settings.cohere_api_key, None),   # Cohere keys have variable format
         }
         
-        for key, value in checks.items():
-            if value and "your-" not in value.lower() and "sk-" in value:
+        for key, (value, required_prefix) in checks.items():
+            # Check if value exists and is not placeholder
+            is_valid = value and "your-" not in value.lower()
+            
+            # For OpenAI/Anthropic, also check prefix
+            if required_prefix and is_valid:
+                is_valid = required_prefix in value
+            
+            if is_valid:
                 print_status(f"{key}: configurado", "ok")
             else:
                 print_status(f"{key}: não configurado", "warning")
@@ -179,17 +186,44 @@ def check_bsc_documents():
         print_status("Pasta bsc_literature: não existe", "error")
         return False
     
+    # Verificar múltiplos formatos (PDF, Markdown, Word, TXT)
     pdfs = list(lit_dir.glob("*.pdf"))
-    if pdfs:
-        print_status(f"Documentos PDF: {len(pdfs)} encontrados", "ok")
-        for pdf in pdfs[:5]:  # Mostra primeiros 5
-            print(f"   • {pdf.name}")
-        if len(pdfs) > 5:
-            print(f"   ... e mais {len(pdfs) - 5}")
+    mds = list(lit_dir.glob("*.md"))
+    docs = list(lit_dir.glob("*.docx")) + list(lit_dir.glob("*.doc"))
+    txts = list(lit_dir.glob("*.txt"))
+    
+    all_docs = pdfs + mds + docs + txts
+    
+    if all_docs:
+        # Mostrar estatísticas por tipo
+        stats = []
+        if pdfs:
+            stats.append(f"{len(pdfs)} PDF")
+        if mds:
+            stats.append(f"{len(mds)} Markdown")
+        if docs:
+            stats.append(f"{len(docs)} Word")
+        if txts:
+            stats.append(f"{len(txts)} TXT")
+        
+        print_status(f"Documentos: {len(all_docs)} encontrados ({', '.join(stats)})", "ok")
+        
+        # Mostrar primeiros 5 documentos (safe encoding para Windows)
+        for doc in all_docs[:5]:
+            try:
+                print(f"   - {doc.name}")
+            except UnicodeEncodeError:
+                # Fallback para nomes com caracteres especiais
+                safe_name = doc.name.encode('ascii', errors='replace').decode('ascii')
+                print(f"   - {safe_name}")
+        if len(all_docs) > 5:
+            print(f"   ... e mais {len(all_docs) - 5}")
+        
         return True
     else:
-        print_status("Documentos PDF: nenhum encontrado", "warning")
-        print_status("Adicione PDFs BSC em data/bsc_literature/", "info")
+        print_status("Documentos: nenhum encontrado", "warning")
+        print_status("Adicione documentos BSC em data/bsc_literature/", "info")
+        print_status("Formatos aceitos: PDF, Markdown (.md), Word (.docx), TXT", "info")
         return False
 
 def main():
