@@ -6,7 +6,7 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "3.16"
+version: "3.20"
 last_updated: "2025-10-22"
 ---
 
@@ -55,6 +55,7 @@ last_updated: "2025-10-22"
 - `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
 - `docs/lessons/lesson-asyncio-streamlit-resource-warnings-2025-10-20.md` - ResourceWarning, nest_asyncio, loop.create_task()
 - `docs/lessons/lesson-streamlit-module-cache-2025-10-21.md` - Cache de módulos Streamlit (RESOLVIDO, 317+ linhas, Pydantic nested, 5 Whys, Brightdata research, 75 min economizados)
+- `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` - Streamlit UI & Debugging Complexo (FASE 2.7, 7 problemas, Sequential Thinking, Brightdata research, prompt schema alignment, UI best practices, 800+ linhas, ROI 50-67% debugging)
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -184,6 +185,146 @@ pip install hypothesis pytest-hypothesis
 4. Hypothesis Documentation (https://hypothesis.readthedocs.io/)
 
 **Lição Completa**: `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md` (950+ linhas, 5 Whys Root Cause Analysis, Hypothesis discovery, SUB-PONTO 15.6 validado)
+
+---
+
+### LangChain Structured Output - Prompt Schema Alignment (Validado Out/2025 - ROI: 1-2h economizadas por sessão)
+
+**PROBLEMA RECORRENTE**: ValidationError em campos obrigatórios Pydantic mesmo usando `with_structured_output()` (3+ sessões FASE 2).
+
+**ROOT CAUSE DESCOBERTA (Brightdata Nov 2024 - leocon.dev):**
+> "LLM segue EXEMPLO do prompt PRIMEIRO. O schema Pydantic fornece validação, mas se o exemplo do prompt omite um campo obrigatório, o LLM provavelmente omitirá também."
+
+**EXEMPLO CONCRETO (Sessão Out 22, 2025):**
+```python
+# Schema Pydantic:
+class Recommendation(BaseModel):
+    impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(description="Impacto esperado")
+
+# Prompt original (ERRADO):
+"""
+RETORNE JSON:
+{
+    "title": "...",
+    "expected_impact": "HIGH"  # ❌ Campo ERRADO! Schema usa 'impact'
+}
+"""
+
+# Resultado: LLM retorna JSON sem campo 'impact' → ValidationError após 3 retries (~9 min)
+```
+
+**BEST PRACTICE VALIDADA (comunidade 2024-2025):**
+
+**1. Field() com Examples:**
+```python
+class Recommendation(BaseModel):
+    impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Impacto esperado da recomendação",
+        examples=["HIGH", "MEDIUM", "LOW"]  # ✅ Ajuda LLM entender opções
+    )
+    timeframe: str = Field(
+        description="Prazo estimado",
+        examples=["3-6 meses", "quick win (1-3 meses)", "6-12 meses"]
+    )
+```
+
+**2. json_schema_extra com Exemplo Completo:**
+```python
+class Recommendation(BaseModel):
+    title: str
+    description: str
+    impact: Literal["HIGH", "MEDIUM", "LOW"]
+    effort: Literal["HIGH", "MEDIUM", "LOW"]
+    priority: Literal["HIGH", "MEDIUM", "LOW"]
+    timeframe: str
+    next_steps: list[str]
+    
+    class Config:
+        json_schema_extra = {
+            "example": {  # ✅ Objeto completo válido
+                "title": "Implementar Dashboard Financeiro",
+                "description": "Criar dashboard consolidando top 10 KPIs...",
+                "impact": "HIGH",  # ✅ Campo PRESENTE no exemplo!
+                "effort": "LOW",
+                "priority": "HIGH",
+                "timeframe": "3-6 meses",
+                "next_steps": ["Definir KPIs com CFO", "Prototipar em Power BI"]
+            }
+        }
+```
+
+**3. Prompt Alinhado com Schema:**
+```python
+# Prompt DEVE mencionar TODOS campos obrigatórios
+GENERATE_RECOMMENDATIONS_PROMPT = """
+Retorne JSON com:
+{
+    "title": "string (10-150 caracteres)",
+    "description": "string (mínimo 50 caracteres)",
+    "impact": "HIGH" | "MEDIUM" | "LOW",  # ✅ CORRETO (alinhado com schema)
+    "effort": "HIGH" | "MEDIUM" | "LOW",
+    "priority": "HIGH" | "MEDIUM" | "LOW",
+    "timeframe": "string (ex: '3-6 meses', 'quick win')",
+    "next_steps": ["lista de strings"]
+}
+"""
+```
+
+**CHECKLIST PRÉ-PROMPT OBRIGATÓRIO:**
+
+ANTES de criar QUALQUER prompt com structured output:
+- [ ] Grep schema Pydantic: `grep "class SchemaName" src/memory/schemas.py -A 50`
+- [ ] Listar TODOS campos obrigatórios (sem `= None` ou default)
+- [ ] Verificar Literal values (se aplicável)
+- [ ] Adicionar `examples=[...]` em Field() para campos complexos
+- [ ] Criar `json_schema_extra` com objeto completo válido
+- [ ] Prompt menciona TODOS campos obrigatórios explicitamente
+- [ ] Testar com 3+ queries variadas antes de commit
+
+**PATTERN COMPLETO VALIDADO:**
+```python
+# 1. Schema Pydantic com examples
+class MyOutput(BaseModel):
+    field1: str = Field(description="...", examples=["exemplo1", "exemplo2"])
+    field2: Literal["A", "B", "C"] = Field(description="...", examples=["A"])
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "field1": "exemplo1",
+                "field2": "A"
+            }
+        }
+
+# 2. Prompt alinhado
+PROMPT = """
+Retorne JSON com:
+- field1: string (exemplos: "exemplo1", "exemplo2")
+- field2: "A" | "B" | "C"
+"""
+
+# 3. Structured output com fallback
+structured_llm = llm.with_structured_output(MyOutput, method="function_calling")
+try:
+    result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=300)
+except Exception as e:
+    logger.warning(f"function_calling falhou: {e}. Tentando json_mode...")
+    structured_llm = llm.with_structured_output(MyOutput, method="json_mode")
+    result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=240)
+```
+
+**QUANDO NÃO APLICAR:**
+- ❌ Schema Pydantic simples (1-3 campos, todos strings)
+- ❌ Free-form text (chat, conversação)
+- ❌ Prototipagem rápida (validar conceito)
+
+**ROI VALIDADO:** Previne ValidationError recorrente (3+ sessões FASE 2), economiza 1-2h debugging por sessão.
+
+**FONTES:**
+- leocon.dev/blog/2024/11/from-chaos-to-control-mastering-llm-outputs-with-langchain-and-pydantic/ (Nov 2024)
+- LangChain Official Docs - How to return structured data (2024-2025)
+- `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 200-400, validação empírica)
+- Memória [[memory:10230048]] (criada Out 22, 2025)
 
 ---
 
@@ -410,71 +551,4 @@ pip install hypothesis pytest-hypothesis
 *   PROBLEMA: PONTO 15 aplicado PARCIALMENTE (apenas em 1 de 4 schemas), fixtures inválidas passaram despercebidas.
 *   ROOT CAUSE: Checklist não especifica "identificar TODOS schemas via grep imports do teste".
 *   **QUANDO APLICAR**: SEMPRE antes de criar fixtures Pydantic OU escrever testes com múltiplos schemas
-*   **COMO APLICAR** (5 sub-passos):
-    1.  Grep imports do teste → listar todos schemas Pydantic usados
-    2.  Grep CADA schema identificado (fields + constraints)
-    3.  Grep validators de CADA schema (@field_validator, @model_validator)
-    4.  Criar fixtures com margem +20%
-    5.  Dry-run validation (try/except ValidationError em fixture)
-*   **ROI ESPERADO**: 30-60 min economizados por sessão (fixtures corretas primeira tentativa).
-*   **Lição detalhada**: `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
-
-**16. Sequential Thinking + 5 Whys Root Cause Analysis para Debugging Persistente (Validado FASE 3.7 - 2025-10-20)**
-*   **Context**: Erros complexos em workflows LangGraph (ex: loops infinitos, routing incorreto) requerem metodologia sistemática para identificar CAUSA RAIZ.
-*   **QUANDO USAR**: Erro persiste mesmo após múltiplas tentativas de correção, logs confusos, dependências complexas (ex: Pydantic, LangGraph, LLMs, APIs).
-*   **FERRAMENTAS**:
-    1.  Sequential Thinking (MCP): Analisar problema passo a passo, gerar hipóteses, validar com evidências.
-    2.  5 Whys Root Cause Analysis: Encontrar causa raiz perguntando "Por que?" 5 vezes (ou mais).
-*   **COMO APLICAR (5 Whys Adaptado)**:
-    1.  WHY 1: Por que o sistema falha? (Descrever o erro exato - ex: KeyError, TypeError, loop infinito)
-    2.  WHY 2: Por que esse erro ocorre? (Identificar a função/linha de código exata)
-    3.  WHY 3: Por que essa função/linha está sendo executada? (Rastrear o fluxo de execução)
-    4.  WHY 4: Qual a entrada dessa função/linha? (Examinar o state Pydantic)
-    5.  WHY 5: Por que essa entrada é inválida? (Causa raiz - ex: schema incorreto, valor não inicializado)
-*   **Checklist Aplicação**:
-    *   [ ] Descrever erro exato (TypeError, KeyError, loop infinito)
-    *   [ ] Rastrear função/linha causadora do erro
-    *   [ ] Entender fluxo de execução até o erro
-    *   [ ] Examinar state Pydantic no ponto da falha
-    *   [ ] Identificar causa raiz da entrada inválida
-*   **Lições Detalhadas**:
-    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging)
-*   **Exemplo Concreto (resolução loop infinito FASE 3.7)**:
-    *   WHY 1: Loop infinito de refinamento (iteração 1/2 sempre)
-    *   WHY 2: decide_next_step() chamado repetidamente
-    *   WHY 3: Mutações em edge NÃO persistem no LangGraph
-    *   WHY 4: state.refinement_iteration nunca incrementa
-    *   WHY 5: judge_evaluation() (nó) NÃO retorna "refinement_iteration" no dict
-
-**17. Checklist para evitar erros de incompatibilidade de parâmetros em chamadas de função/método:**
-*   **QUANDO APLICAR**: SEMPRE que houver alteração na assinatura de uma função/método (adição, remoção ou alteração de parâmetros).
-*   **COMO APLICAR**:
-    1.  Listar TODOS os locais onde a função/método é chamado (usar `grep "method_name(" src/` para encontrar todas as chamadas).
-    2.  Verificar se os parâmetros passados na chamada correspondem à assinatura atualizada da função/método.
-    3.  Se a assinatura foi simplificada (parâmetros removidos), remover os parâmetros desnecessários na chamada.
-    4.  Se a assinatura foi expandida (novos parâmetros), fornecer valores para os novos parâmetros na chamada (usar valores default si apropriado).
-*   **ROI**: Economiza tempo de debugging e previne erros de `TypeError: unexpected keyword argument`.
-*   **Lições Detalhadas**:
-    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
-    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ lines, 5 Whys applied).
-    *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
-    *   `docs/lessons/lesson-testes-reais-do-projeto.md`
-
-**18. Para garantir a correta inicialização e persistência do estado em workflows LangGraph, especialmente durante o processo de onboarding, siga este guia:**
-
-*   **QUANDO APLICAR**: Principalmente em workflows com múltiplos passos (multi-turn), como o onboarding, onde a informação precisa ser coletada e persistida ao longo de várias interações com o usuário.
-*   **COMO APLICAR:**
-    1.  Certifique-se de que todos os dados necessários para a execução do workflow (incluindo o estado inicial) estejam corretamente inicializados no objeto de estado (BSCState).
-    2.  Verifique se todos os nós do workflow que modificam o estado (funções que retornam um dicionário com as atualizações) estão retornando TODAS as informações necessárias, e não apenas as modificações. Isso garante que o estado completo seja persistido.
-    3.  Nos casos em que o estado é carregado de uma fonte externa (ex: Mem0), verifique se todos os campos necessários são carregados corretamente. Se o estado não existir, inicialize-o com valores default.
-    4.  Ao transitar entre diferentes fases do workflow (ex: ONBOARDING -> DISCOVERY), certifique-se de que todos os dados relevantes sejam transferidos para o novo estado.
-*   **PROBLEMAS COMUNS**:
-    *   `KeyError` devido a campos não inicializados no estado.
-    *   Perda de estado entre interações.
-    *   Comportamento inesperado devido a valores default incorretos.
-*   **ROI**: Evita erros de tempo de execução, garante a persistência correta do estado e facilita a depuração.
-*   **Lições Detalhadas**:
-    *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
-    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (9
-
-## WORK
+*   **COMO A

@@ -787,15 +787,16 @@ Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
 
 ---
 
-### Documentação Essencial (Top 10 Críticos)
+### Documentação Essencial (Top 11 Críticos)
 
-**SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (46 documentos)**
+**SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (47 documentos)**
 
-#### Arquitetura (4 docs)
+#### Arquitetura (5 docs)
 - `docs/ARCHITECTURE.md` - Overview arquitetural high-level
 - `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph detalhado
 - `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
 - `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (fluxos dados)
+- `docs/architecture/AGENTS_WORKFLOW.md` - Diagrama Mermaid workflow DISCOVERY (4 perspectivas paralelas)
 
 #### Implementação (3 docs)
 - `docs/TUTORIAL.md` - Guia completo de uso end-to-end
@@ -811,6 +812,7 @@ Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
 - Implementando features novas → API_CONTRACTS + DATA_FLOW_DIAGRAMS primeiro
 - Escrevendo testes → TESTING_GUIDE para estratégias validadas
 - Debugando fluxos de dados → DATA_FLOW_DIAGRAMS + LANGGRAPH_WORKFLOW
+- Debugando fase DISCOVERY → AGENTS_WORKFLOW.md (diagrama Mermaid paralelização 4 perspectivas)
 - Implementando técnicas RAG → docs/techniques/[TECHNIQUE].md específico
 - Buscando doc específico → docs/DOCS_INDEX.md (tags, quick search matrix)
 
@@ -827,7 +829,12 @@ agente-bsc-rag/
 │   └── rag-lessons-learned.mdc       ← 🔜 TIER 3 (lições + antipadrões)
 │
 ├── docs/
-│   ├── DOCS_INDEX.md                 ← 🔜 TIER 3 (índice navegável completo)
+│   ├── DOCS_INDEX.md                 ← ✅ TIER 3 COMPLETO (47 docs)
+│   │
+│   ├── architecture/                 ← ✅ Diagramas e contratos (criado TIER 3)
+│   │   ├── DATA_FLOW_DIAGRAMS.md    ← ✅ 5 diagramas Mermaid
+│   │   ├── API_CONTRACTS.md         ← ✅ Contratos API 8 agentes
+│   │   └── AGENTS_WORKFLOW.md       ← ✅ Workflow DISCOVERY (Out 22, 2025)
 │   │
 │   ├── techniques/                   ← ✅ Técnicas RAG detalhadas (Fase 2A completa)
 │   │   ├── QUERY_DECOMPOSITION.md   ← ✅ Fase 2A.1 (400+ linhas)
@@ -842,10 +849,18 @@ agente-bsc-rag/
 │   │   ├── ASYNCIO_PARALLEL.md      ← 🔜 TIER 2 (Pattern do MVP)
 │   │   └── EMBEDDING_CACHE.md       ← 🔜 TIER 2 (Pattern do MVP)
 │   │
-│   ├── lessons/                      ← ✅ Lições aprendidas (criado TIER 1)
-│   │   ├── lesson-query-decomposition-2025-10-XX.md  ← 🔜 Pós Fase 2A.1
-│   │   ├── lesson-adaptive-reranking-2025-10-XX.md   ← 🔜 Pós Fase 2A.2
-│   │   └── lesson-router-2025-10-XX.md               ← 🔜 Pós Fase 2A.3
+│   ├── lessons/                      ← ✅ Lições aprendidas (10 completas, 6.400+ linhas)
+│   │   ├── lesson-query-decomposition-2025-10-14.md         ← ✅ FASE 2A.1
+│   │   ├── lesson-adaptive-reranking-2025-10-14.md          ← ✅ FASE 2A.2
+│   │   ├── lesson-router-2025-10-14.md                      ← ✅ FASE 2A.3
+│   │   ├── lesson-test-debugging-methodology-2025-10-15.md  ← ✅ FASE 2.4
+│   │   ├── lesson-diagnostic-agent-test-2025-10-16.md       ← ✅ FASE 2.5
+│   │   ├── lesson-onboarding-state-e2e-2025-10-16.md        ← ✅ FASE 2.6
+│   │   ├── lesson-swot-testing-2025-10-19.md                ← ✅ FASE 3.1
+│   │   ├── lesson-kpi-testing-5whys-2025-10-19.md           ← ✅ FASE 3.4
+│   │   ├── lesson-async-parallelization-2025-10-20.md       ← ✅ FASE 1
+│   │   ├── lesson-streamlit-ui-debugging-2025-10-22.md      ← ✅ FASE 2.7 (hoje)
+│   │   └── antipadrões-rag.md                               ← ✅ 32 antipadrões
 │   │
 │   ├── history/                      ← ✅ Progresso histórico (já existe)
 │   │   ├── MVP_100_COMPLETO.md      ← ✅ MVP completo (14/10/2025)
@@ -1039,9 +1054,45 @@ agente-bsc-rag/
 
 **Próximo:**
 
--
+- 🔜 **Fase 3** - Ferramentas Consultivas (SWOT, Five Whys, etc)
 
 ---
 
-**Última Atualização:** 2025-10-19 (v1.4)
-**Status:** ✅ TIER 1+2+3 COMPLETO | ✅ MINI-SUMMARIES IMPLEMENTADO | 🎯 Pronto para FASE 3.1
+### v1.5 - 2025-10-22 (Diagramas Mermaid & Lessons Update)
+
+**Criado:**
+
+- ✅ `docs/architecture/AGENTS_WORKFLOW.md` - Diagrama Mermaid workflow DISCOVERY
+  - Fluxo completo: 4 perspectivas paralelas → consolidação → recomendações → judge → finalize
+  - Paralelização asyncio.gather visualizada
+  - Roteamento por approval_status detalhado
+  
+- ✅ `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+ linhas)
+  - 7 problemas resolvidos (loop infinito, ValidationError, logs, UI)
+  - Sequential Thinking methodology (8 thoughts)
+  - Brightdata research validado (2 fontes: leocon.dev, Medium)
+  - Top 5 lições-chave + Top 5 antipadrões
+  - 3 checklists acionáveis (PRÉ-PROMPT, PRÉ-COMMIT, PRÉ-UI)
+
+**Atualizado:**
+
+- ✅ **Top 10 → Top 11 Críticos** (adicionado AGENTS_WORKFLOW.md)
+- ✅ **Lessons:** 9 → 10 completas (6.400+ linhas)
+- ✅ **Total docs:** 46 → 47 documentos
+- ✅ **Estrutura de diretórios** atualizada (lessons detalhado, architecture expandido)
+- ✅ **Instruções consulta:** adicionado "Debugando fase DISCOVERY → AGENTS_WORKFLOW.md"
+
+**ROI Validado v1.5:**
+
+- **Diagramas Mermaid:** Visualização imediata de fluxos complexos (vs ler código)
+- **Lesson aprendida:** 50-67% economia debugging, UI 1h vs 3-4h
+- **Documentação atualizada:** Agente consciente de 47 docs (vs 46)
+
+**Próximo:**
+
+- 🔜 **Fase 3** - Ferramentas Consultivas (SWOT, Five Whys, KPI, Objectives, Benchmarking)
+
+---
+
+**Última Atualização:** 2025-10-22 (v1.5)
+**Status:** ✅ TIER 1+2+3 COMPLETO | ✅ DIAGRAMAS MERMAID | ✅ 10 LIÇÕES | 🎯 Pronto para FASE 3

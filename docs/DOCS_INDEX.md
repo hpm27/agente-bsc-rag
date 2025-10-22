@@ -202,7 +202,7 @@
 - `src/graph/workflow.py` - Código
 - `src/graph/states.py` - Estados
 
-**lessons** (Docs: 9 - Todas criadas!)
+**lessons** (Docs: 10 - Todas criadas!)
 - `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections (validado)
 - `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-5 mini)
 - `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` - Adaptive Re-ranking (626 linhas, TDD)
@@ -215,6 +215,7 @@
 - `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` - Implementation-First Testing (FASE 3.1, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` - 5 Whys Root Cause Debugging (FASE 3.4, mock múltiplas chamadas, itertools.cycle, 950+ linhas, 15-20 min economizados)
 - `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
+- `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` - Streamlit UI & Debugging Complexo (FASE 2.7, 7 problemas, Sequential Thinking, Brightdata research, prompt schema alignment, UI best practices, 800+ linhas, ROI 50-67% debugging)
 
 ---
 
@@ -453,7 +454,7 @@
 
 ---
 
-### 📚 Lessons - Lições Aprendidas (9 completas)
+### 📚 Lessons - Lições Aprendidas (10 completas)
 
 | Lição | Técnica | ROI Observado | Status |
 |-------|---------|---------------|--------|
@@ -469,6 +470,7 @@
 | **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | ✅ |
 | **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | ✅ |
 | **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | ✅ |
+| **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | ✅ |
 
 ---
 
@@ -543,6 +545,9 @@
 | **Criar testes E2E** | e2e-tests, testing | `TESTING_GUIDE.md`, `E2E_TESTS_IMPLEMENTATION_SUMMARY.md` | `tests/integration/test_e2e.py` |
 | **Deploy em produção** | deployment, docker | `DEPLOYMENT.md` | `docker-compose.yml` |
 | **Usar interface Streamlit** | streamlit, ui | `STREAMLIT_GUIDE.md` | `app/main.py` |
+| **Formatar UI Streamlit (cards, badges)** | streamlit-ui, cards, layout, best-practices | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 400-600) | `app/components/results.py` |
+| **Debuggar loop infinito LLM** | debugging, sequential-thinking, loop-infinito | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 1-200) | - |
+| **Alinhar prompt com schema Pydantic** | prompt-schema, validation-error, pydantic | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 200-400) | `src/prompts/*.py` |
 | **Adicionar metadados docs** | metadata, index-json | `data/README.md` (Auto-Geração seção) | `scripts/build_knowledge_base.py` |
 | **Entender lições aprendidas** | lessons, antipadrões | `lessons/` directory | - |
 | **Ver progresso histórico** | history, mvp | `history/MVP_100_COMPLETO.md` | - |
@@ -562,10 +567,10 @@
 | **Rules** | 4 docs | 11% |
 | **Tests/Benchmarks** | 4 docs | 11% |
 | **Patterns** | 1 doc | 3% |
-| **Lessons** | 8 docs (5.600+ linhas) | 22% |
+| **Lessons** | 10 docs (6.400+ linhas) | 27% |
 | **Vector Stores** | 2 docs | 5% |
 
-**Total:** 46 documentos
+**Total:** 47 documentos
 
 ---
 
