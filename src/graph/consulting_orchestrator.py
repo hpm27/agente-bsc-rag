@@ -96,14 +96,20 @@ class ConsultingOrchestrator:
     
     @property
     def diagnostic_agent(self) -> DiagnosticAgent:
-        """Lazy loading DiagnosticAgent."""
-        if self._diagnostic_agent is None:
-            from src.agents.diagnostic_agent import DiagnosticAgent
-            
-            # DiagnosticAgent cria próprio LLM (GPT-4o-mini default)
-            # Specialist agents criados internamente pelo DiagnosticAgent
-            self._diagnostic_agent = DiagnosticAgent()
-            logger.info("[LOAD] DiagnosticAgent carregado")
+        """Lazy loading DiagnosticAgent - FORCE RELOAD v3.4."""
+        # FORÇA RELOAD SEMPRE (temporário para debug)
+        # TODO: Remover após confirmar v3.4 funcionando
+        from src.agents.diagnostic_agent import DiagnosticAgent
+        
+        logger.info("[ORCHESTRATOR v3.8-20251022-15:00] FORCE RELOAD DiagnosticAgent (bypass cache)...")
+        
+        # DiagnosticAgent cria próprio LLM (GPT-5 com max_completion_tokens=64000)
+        # Specialist agents criados internamente pelo DiagnosticAgent
+        self._diagnostic_agent = DiagnosticAgent()
+        
+        logger.info("[ORCHESTRATOR v3.8-20251022-15:00] DiagnosticAgent recarregado com sucesso")
+        logger.info(f"[ORCHESTRATOR v3.8-20251022-15:00] DiagnosticAgent type: {type(self._diagnostic_agent)}")
+        logger.info(f"[ORCHESTRATOR v3.8-20251022-15:00] DiagnosticAgent module: {self._diagnostic_agent.__module__}")
         
         return self._diagnostic_agent
     
@@ -228,6 +234,7 @@ class ConsultingOrchestrator:
         """
         try:
             logger.info("[INFO] [ORCHESTRATOR] coordinate_discovery iniciado")
+            logger.debug(f"[DEBUG] [ORCHESTRATOR] state.client_profile existe? {state.client_profile is not None}")
             
             # Validar ClientProfile
             if not state.client_profile:
@@ -250,8 +257,34 @@ class ConsultingOrchestrator:
                     **transition_data
                 }
             
+            logger.debug("[DEBUG] [ORCHESTRATOR] Validação client_profile PASSOU")
+            logger.debug(f"[DEBUG] [ORCHESTRATOR] Acessando self.diagnostic_agent (lazy loading)...")
+
+            # Hardening: garantir que nested dicts foram convertidos antes do diagnóstico
+            try:
+                cp = state.client_profile
+                # Se vier dict do checkpoint, converter aqui também (defensive)
+                if isinstance(cp, dict):
+                    from src.memory.schemas import ClientProfile, StrategicContext, CompanyInfo
+                    if 'context' in cp and isinstance(cp['context'], dict):
+                        cp['context'] = StrategicContext(**cp['context'])
+                    if 'company' in cp and isinstance(cp['company'], dict):
+                        cp['company'] = CompanyInfo(**cp['company'])
+                    state.client_profile = ClientProfile(**cp)
+                else:
+                    # Se já for Pydantic, normalizar nested se necessário
+                    from src.memory.schemas import StrategicContext, CompanyInfo
+                    if hasattr(cp, 'context') and isinstance(cp.context, dict):
+                        cp.context = StrategicContext(**cp.context)
+                    if hasattr(cp, 'company') and isinstance(cp.company, dict):
+                        cp.company = CompanyInfo(**cp.company)
+            except Exception as norm_err:
+                logger.warning(f"[ORCHESTRATOR] Falha ao normalizar client_profile nested dicts: {norm_err}")
+            
             # Executar diagnóstico (ASYNC: 4 agentes em paralelo com asyncio.gather)
+            logger.debug("[DEBUG] [ORCHESTRATOR] ANTES de chamar diagnostic_agent.run_diagnostic()")
             complete_diagnostic = await self.diagnostic_agent.run_diagnostic(state)
+            logger.debug(f"[DEBUG] [ORCHESTRATOR] DEPOIS de chamar run_diagnostic() | Recomendações: {len(complete_diagnostic.recommendations)}")
             
             logger.info(
                 f"[OK] [ORCHESTRATOR] Diagnóstico completo | "
@@ -280,7 +313,8 @@ class ConsultingOrchestrator:
             }
             
         except Exception as e:
-            logger.error(f"[ERROR] [ORCHESTRATOR] coordinate_discovery: {e}")
+            # Log detalhado com traceback
+            logger.exception("[ERROR] [ORCHESTRATOR] coordinate_discovery falhou com exceção")
             return self.handle_error(error=e, state=state, phase="DISCOVERY")
     
     def validate_transition(
@@ -419,6 +453,8 @@ class ConsultingOrchestrator:
                     f"{i}. **{rec.title}** (Impacto: {rec.impact}, Prioridade: {rec.priority})\n"
                     f"   {rec.description}\n"
                 )
+        else:
+            summary_parts.append("\n(Nenhuma recomendação gerada)\n")
         
         return "".join(summary_parts)
     

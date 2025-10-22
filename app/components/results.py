@@ -4,7 +4,7 @@ Componente para exibicao de resultados do workflow BSC.
 
 import streamlit as st
 import pandas as pd
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, cast
 from app.utils import (
     format_perspective_name,
     get_perspective_color,
@@ -21,10 +21,135 @@ def render_results(result: Dict[str, Any]) -> None:
     Args:
         result: Dicionario com resultados do workflow (BSCState)
     """
-    # Expanders para detalhes (resposta principal ja foi exibida em app/main.py)
+    # Resumo estruturado do diagnóstico (executive summary + recomendações)
+    render_diagnostic_section(result)
+
+    # Expanders para detalhes (resposta principal pode ter sido exibida em app/main.py)
     render_perspectives_section(result)
     render_documents_section(result)
     render_judge_section(result)
+
+def _coerce_to_dict(obj: Any) -> Dict[str, Any]:
+    """Converte objeto Pydantic ou dataclass para dict de forma segura."""
+    if obj is None:
+        return {}
+    if hasattr(obj, "model_dump"):
+        return cast(Dict[str, Any], obj.model_dump())
+    if hasattr(obj, "dict"):
+        return cast(Dict[str, Any], obj.dict())  # type: ignore[no-any-return]
+    if isinstance(obj, dict):
+        return obj
+    # Fallback raso via vars
+    try:
+        return {k: getattr(obj, k) for k in dir(obj) if not k.startswith("_")}
+    except Exception:
+        return {}
+
+
+def _bullets_from_paragraph(text: str, max_items: int = 7) -> List[str]:
+    """Quebra parágrafo longo em bullets curtos para escaneabilidade."""
+    if not text:
+        return []
+    # Quebras por pontuação comum; remove espaços extras e linhas vazias
+    import re
+    parts = re.split(r"[.;]\s+|\n+", text.strip())
+    # Filtrar bullets com mínimo 20 chars (evitar fragmentos incompletos)
+    bullets = [p.strip("- • ") for p in parts if p and len(p.strip()) >= 20]
+    return bullets[:max_items]
+
+
+def render_diagnostic_section(result: Dict[str, Any]) -> None:
+    """
+    Renderiza visão executiva do diagnóstico (cards/colunas, bullets, top 3 recomendações).
+    """
+    diagnostic_obj = result.get("diagnostic")
+    diagnostic = _coerce_to_dict(diagnostic_obj)
+
+    if not diagnostic:
+        return
+
+    executive_summary = diagnostic.get("executive_summary", "")
+    recommendations = diagnostic.get("recommendations", []) or []
+    synergies = diagnostic.get("cross_perspective_synergies", []) or []
+    next_phase = diagnostic.get("next_phase", "APPROVAL_PENDING")
+
+    # Separador visual discreto
+    st.markdown("---")
+
+    # Tudo dentro de um expander organizado
+    with st.expander("[CHECK] Diagnóstico BSC Completo", expanded=True):
+        # Métricas rápidas (cards)
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Perspectivas analisadas", f"{len(result.get('agent_responses', []))}")
+        with col2:
+            st.metric("Recomendações", f"{len(recommendations)}")
+        with col3:
+            st.metric("Synergies", f"{len(synergies)}")
+        with col4:
+            st.metric("Próxima fase", next_phase)
+
+        st.divider()
+
+        # Resumo Executivo em expander
+        if executive_summary:
+            with st.expander("Resumo Executivo (bullet points)", expanded=False):
+                bullets = _bullets_from_paragraph(executive_summary)
+                if bullets:
+                    for b in bullets:
+                        st.markdown(f"- {b}")
+                else:
+                    st.markdown(executive_summary)
+
+        # Synergies em expander
+        if synergies:
+            with st.expander(f"Synergies cross-perspective ({len(synergies)})", expanded=False):
+                for s in synergies:
+                    st.markdown(f"- {s}")
+
+        st.markdown("\n")
+        st.markdown("### Top 3 Recomendações")
+
+        # Normalizar recomendações (podem ser objetos Pydantic)
+        norm_recs: List[Dict[str, Any]] = []
+        for r in recommendations[:3]:
+            rec = _coerce_to_dict(r)
+            norm_recs.append(rec)
+
+        # Exibir cards empilhados verticalmente (largura total para mais espaço horizontal)
+        if norm_recs:
+            for rec in norm_recs:
+                title = rec.get("title", "Recomendação")
+                desc = rec.get("description", "")
+                impact = rec.get("impact", "-")
+                priority = rec.get("priority", "-")
+                timeframe = rec.get("timeframe", "-")
+                next_steps = rec.get("next_steps", []) or []
+
+                # Truncar description para legibilidade (máx 300 chars com mais espaço)
+                desc_short = truncate_text(desc, 300) if desc else "Sem detalhes disponíveis"
+
+                st.markdown(
+                    f"<div style='background:#f8f9fb;border:1px solid #e6e9ef;padding:16px;border-radius:8px;margin-bottom:16px;'>"
+                    f"<div style='font-weight:700;font-size:1.1rem;color:#1f1f1f;margin-bottom:8px;'>{title}</div>"
+                    f"<div style='font-size:0.95rem;color:#333;margin-bottom:12px;line-height:1.5;'>{desc_short}</div>"
+                    f"<div style='margin-bottom:12px;'>"
+                    f"<span style='background:#34a853;color:#fff;border-radius:6px;padding:4px 10px;margin-right:8px;font-size:0.88rem;font-weight:600;'>Impacto: {impact}</span>"
+                    f"<span style='background:#4285f4;color:#fff;border-radius:6px;padding:4px 10px;margin-right:8px;font-size:0.88rem;font-weight:600;'>Prioridade: {priority}</span>"
+                    f"<span style='background:#fbbc04;color:#000;border-radius:6px;padding:4px 10px;font-size:0.88rem;font-weight:600;'>Prazo: {timeframe}</span>"
+                    f"</div>"
+                    f"<div style='font-size:0.90rem;color:#444;'>"
+                    f"<strong>Proximos passos:</strong>"
+                    f"<ul style='margin:6px 0 0 20px;line-height:1.6;'>"
+                    + "".join(f"<li>{ns}</li>" for ns in next_steps[:3]) +
+                    "</ul>"
+                    f"</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+    st.divider()
+
 
 
 def render_perspectives_section(result: Dict[str, Any]) -> None:

@@ -6,8 +6,8 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "2.49"
-last_updated: "2025-10-20"
+version: "3.16"
+last_updated: "2025-10-22"
 ---
 
 ## HEADERS
@@ -54,6 +54,7 @@ last_updated: "2025-10-20"
 - `docs/lessons/lesson-testes-reais-do-projeto.md`
 - `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
 - `docs/lessons/lesson-asyncio-streamlit-resource-warnings-2025-10-20.md` - ResourceWarning, nest_asyncio, loop.create_task()
+- `docs/lessons/lesson-streamlit-module-cache-2025-10-21.md` - Cache de módulos Streamlit (RESOLVIDO, 317+ linhas, Pydantic nested, 5 Whys, Brightdata research, 75 min economizados)
 
 **ROI Comprovado**: Aplicar checklist ANTES economiza 38 minutos de debugging por implementação (validado FASE 2.5 unitário, FASE 2.6 E2E).
 
@@ -104,7 +105,7 @@ def test_benchmark_comparison_properties(comparison):
 - ❌ Fixtures geradas são aleatórias (não reproduzíveis sem seed)
 
 **Quando NÃO usar** (usar fixtures manuais):
-- ❌ Casos de negócio BSC específicos (ex: 4 perspectivas balanceadas, KPIs setoriais específicos)
+- ❌ Casos de negócio BSC específicos (ex: ex: 4 perspectivas balanceadas, KPIs setoriais específicos)
 - ❌ Testes rápidos CI/CD (Hypothesis adiciona ~5-10s por teste)
 - ❌ Não substitui testes de regressão (precisa reproduzir cenário exato)
 
@@ -120,7 +121,7 @@ def test_benchmark_comparison_properties(comparison):
 | **Testes regressão** | ❌ | ✅ | Reproduz cenário exato |
 
 **Recomendação: Abordagem Híbrida** (validada CodiLime + Semaphore 2024):
-- ✅ Hypothesis para validators Pydantic (min_length, ranges, Literal, field_validator)
+- ✅ Hypothesis para validators Pydantic (min_length, ranges, field_validator)
 - ✅ Fixtures manuais para casos de negócio BSC (4 perspectivas, 10-15 KPIs balanceados)
 
 **Exemplo Concreto Benchmarking Tool**:
@@ -367,7 +368,7 @@ pip install hypothesis pytest-hypothesis
        - ✅ Pythônico, elegante
        - ✅ Nunca lança `StopIteration` (ciclo infinito)
        - ✅ Alinha naturalmente com ordem de chamadas da tool
-       - ❌ Ciclo repete (pode mascarar bugs se tool chamar mais que esperado)
+       - ❌ Ciclo repete (pode mascarar bugs se tool chamar mais que o esperado)
        - **Usar quando**: Mock múltiplas chamadas sequenciais (99% dos casos)
 *   **Checklist Aplicação**:
     - [ ] Mock será invocado N vezes (N > 1)?
@@ -455,7 +456,7 @@ pip install hypothesis pytest-hypothesis
 *   **ROI**: Economiza tempo de debugging e previne erros de `TypeError: unexpected keyword argument`.
 *   **Lições Detalhadas**:
     *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
-    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied).
+    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ lines, 5 Whys applied).
     *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
     *   `docs/lessons/lesson-testes-reais-do-projeto.md`
 
@@ -474,7 +475,6 @@ pip install hypothesis pytest-hypothesis
 *   **ROI**: Evita erros de tempo de execução, garante a persistência correta do estado e facilita a depuração.
 *   **Lições Detalhadas**:
     *   `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys root cause debugging).
-    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (950+ linhas, 5 Whys applied).
-    *   `docs/lessons/lesson-benchmarking-testing-methodology-2025-10-19.md`
-    *   `docs/lessons/lesson-testes-reais-do-projeto.md`
-*   **Ex
+    *   `docs/lessons/lesson-strategic-objectives-5whys-methodology-2025-10-19.md` (9
+
+## WORK

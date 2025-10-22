@@ -143,7 +143,7 @@ class QueryTranslator:
                     {"role": "user", "content": query}
                 ],
                 temperature=1.0,  # GPT-5 mini requer temperature=1.0 (unico valor aceito)
-                max_completion_tokens=200
+                max_completion_tokens=settings.gpt5_max_completion_tokens  # usar máximo suportado
             )
             
             translated = response.choices[0].message.content.strip()

@@ -6,7 +6,7 @@ from typing import Any
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from src.memory.factory import MemoryFactory  # Exposto no módulo para facilitar patch em testes
 
@@ -69,7 +69,7 @@ class Settings(BaseSettings):
 
     # GPT-5 Configuration (para Contextual Retrieval)
     gpt5_model: str = "gpt-5-2025-08-07"
-    gpt5_max_completion_tokens: int = 2048
+    gpt5_max_completion_tokens: int = 128000
     gpt5_reasoning_effort: str = "minimal"  # "minimal", "low", "medium", "high"
 
     # Onboarding Agent Configuration (GPT-5 family)
@@ -84,7 +84,7 @@ class Settings(BaseSettings):
     # Agent Configuration
     max_iterations: int = 10
     temperature: float = 0.0
-    max_tokens: int = 2000
+    max_tokens: int = 128000
     agent_max_workers: int = 4
 
     # Embedding Fine-tuning
@@ -221,15 +221,15 @@ class Settings(BaseSettings):
         return v_lower
 
     model_config = SettingsConfigDict(
-        env_file=None,
+        env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         populate_by_name=True,  # Permite usar aliases (MEM0_API_KEY no .env)
     )
 
 
-# Singleton instance (lê do .env explicitamente)
-settings = Settings(_env_file=".env")
+# Singleton instance (usa env_file do model_config)
+settings = Settings()  # type: ignore[call-arg]
 
 
 def get_llm(
@@ -267,7 +267,7 @@ def get_llm(
                 "Necessaria para usar modelos Claude."
             )
 
-        return ChatAnthropic(
+        return ChatAnthropic(  # type: ignore[call-arg]
             model=model,
             anthropic_api_key=settings.anthropic_api_key,
             temperature=temperature,
@@ -276,13 +276,24 @@ def get_llm(
         )
     if model.startswith("gpt-"):
         # Modelo OpenAI
-        return ChatOpenAI(
-            model=model,
-            api_key=settings.openai_api_key,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **kwargs
-        )
+        # GPT-5 usa max_completion_tokens, modelos antigos usam max_tokens
+        if model.startswith("gpt-5"):
+            return ChatOpenAI(  # type: ignore[arg-type,call-arg]
+                model=model,
+                api_key=SecretStr(settings.openai_api_key),
+                temperature=1.0,  # GPT-5 exige temperature=1.0
+                max_completion_tokens=max_tokens,  # GPT-5 usa max_completion_tokens
+                reasoning_effort=settings.gpt5_reasoning_effort,
+                **kwargs
+            )
+        else:
+            return ChatOpenAI(  # type: ignore[arg-type,call-arg]
+                model=model,
+                api_key=SecretStr(settings.openai_api_key),
+                temperature=temperature,
+                max_tokens=max_tokens,  # GPT-4/3.5 usam max_tokens
+                **kwargs
+            )
     raise ValueError(
         f"Modelo '{model}' nao reconhecido. "
         f"Deve comecar com 'gpt-' (OpenAI) ou 'claude-' (Anthropic)."

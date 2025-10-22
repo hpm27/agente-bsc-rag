@@ -350,9 +350,7 @@ FEW-SHOT EXAMPLES:
 EXEMPLO 1 - Quick Win (HIGH priority):
 title: "Implementar Dashboard Financeiro Executivo"
 description: "Criar dashboard consolidando top 10 KPIs financeiros (EBITDA, cash flow, custos por projeto) com drill-down e atualização semanal. Usar Power BI conectado a ERP existente para evitar reestruturação de sistemas."
-perspective: "Financeira"
-related_perspectives: ["Processos Internos"]
-expected_impact: "HIGH"
+impact: "HIGH"
 effort: "LOW"
 priority: "HIGH"
 timeframe: "quick win (1-3 meses)"
@@ -361,9 +359,7 @@ next_steps: ["Definir 10 KPIs financeiros críticos com CFO", "Mapear fontes de 
 EXEMPLO 2 - Médio Prazo (HIGH priority):
 title: "Automatizar Processos de Onboarding de Clientes"
 description: "Reduzir time-to-value de 60 para 14 dias através de onboarding self-service: (1) setup automatizado via APIs, (2) in-app tutorials interativos, (3) templates pré-configurados por segmento. Implementar health score para identificar clientes em risco."
-perspective: "Processos Internos"
-related_perspectives: ["Clientes", "Aprendizado e Crescimento"]
-expected_impact: "HIGH"
+impact: "HIGH"
 effort: "MEDIUM"
 priority: "HIGH"
 timeframe: "médio prazo (3-6 meses)"
@@ -372,22 +368,18 @@ next_steps: ["Mapear jornada atual de onboarding (customer journey map)", "Prior
 EXEMPLO 3 - Longo Prazo (MEDIUM priority):
 title: "Modernizar Stack Tecnológico (ERP Cloud + CRM Integrado)"
 description: "Migrar de ERP on-premise legado (15 anos) para ERP cloud moderno (SAP S/4HANA ou Oracle Fusion). Integrar com CRM (Salesforce) para single source of truth. Habilitar analytics avançado e decisões data-driven."
-perspective: "Aprendizado e Crescimento"
-related_perspectives: ["Financeira", "Processos Internos", "Clientes"]
-expected_impact: "HIGH"
+impact: "HIGH"
 effort: "HIGH"
 priority: "MEDIUM"
 timeframe: "longo prazo (9-12 meses)"
 next_steps: ["Elaborar RFP para seleção de ERP cloud", "Avaliar 3-5 fornecedores (demos + PoCs)", "Planejar migração por fases (minimizar risco)", "Criar change management plan (treinamento + comunicação)"]
 
-RETORNE uma lista de objetos JSON:
+RETORNE uma lista de objetos JSON seguindo EXATAMENTE este schema:
 [
     {{
         "title": "string (10-150 caracteres)",
         "description": "string (mínimo 50 caracteres)",
-        "perspective": "Financeira" | "Clientes" | "Processos Internos" | "Aprendizado e Crescimento",
-        "related_perspectives": ["string", ...],
-        "expected_impact": "LOW" | "MEDIUM" | "HIGH",
+        "impact": "LOW" | "MEDIUM" | "HIGH",
         "effort": "LOW" | "MEDIUM" | "HIGH",
         "priority": "LOW" | "MEDIUM" | "HIGH",
         "timeframe": "string",

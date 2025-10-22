@@ -86,7 +86,7 @@ def setup_session_logging():
             rotation="50 MB",  # Rotacionar se arquivo > 50MB
             retention="7 days",  # Manter logs por 7 dias
             compression="zip",  # Comprimir logs antigos
-            enqueue=True  # Thread-safe (importante para async!)
+            enqueue=False  # ⚡ DESABILITADO: enqueue=True causa delay de segundos nos logs (Issue #2 Out/2025)
         )
         
         st.session_state.logging_configured = True
@@ -176,6 +176,14 @@ def initialize_app() -> None:
     """
     # Configurar logging por sessao
     log_file = setup_session_logging()
+    
+    # [VERSAO] Log de versao para confirmar codigo carregado
+    from loguru import logger
+    logger.info("[APP v3.8-20251022-15:00] Streamlit - Logging fix (enqueue=False) + defensive try/except asyncio.gather")
+    logger.info(f"[APP v3.8-20251022-15:00] Python executable: {sys.executable}")
+    logger.info(f"[APP v3.8-20251022-15:00] Python version: {sys.version}")
+    logger.info(f"[APP v3.8-20251022-15:00] Working directory: {os.getcwd()}")
+    logger.info(f"[APP v3.8-20251022-15:00] Project root: {root_dir}")
     
     # Carregar variaveis de ambiente
     load_environment()

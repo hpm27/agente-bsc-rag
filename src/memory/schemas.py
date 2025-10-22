@@ -757,17 +757,43 @@ class CompanyInfo(BaseModel):
     @field_validator('size')
     @classmethod
     def validate_size(cls, v: str) -> str:
-        """Permite porte em categorias (micro/pequena/média/grande) OU faixa numérica (ex: '50-100')."""
+        """Permite porte em categorias (micro/pequena/média/grande) OU faixa numérica (ex: '50-100').
+
+        Aceita sinônimos comuns no Brasil e normaliza para valores canônicos:
+        - "médio porte", "medio porte", "medio", "média empresa" → "média"
+        - "pequeno porte", "pequeno", "pequena empresa" → "pequena"
+        - "grande porte", "grande empresa" → "grande"
+        - "microempresa", "micro empresa" → "micro"
+        """
         if not isinstance(v, str):
             raise ValueError("Porte da empresa deve ser texto")
-        value = v.strip()
+        raw = v.strip()
+        value = raw.lower()
+
+        # Normalização leve: remover palavra 'porte' e hifens/underscores, colapsar espaços
+        simplified = re.sub(r"\bporte\b", "", value)
+        simplified = simplified.replace("-", " ").replace("_", " ")
+        simplified = re.sub(r"\s+", " ", simplified).strip()
+
+        # Mapeamento de sinônimos comuns → valores canônicos
+        if any(tok in simplified for tok in ["medio", "médio", "media", "média"]):
+            return "média"
+        if any(tok in simplified for tok in ["pequeno", "pequena"]):
+            return "pequena"
+        if "micro" in simplified or "microempresa" in simplified or "micro empresa" in simplified:
+            return "micro"
+        if "grande" in simplified:
+            return "grande"
+
+        # Checagem direta de valores canônicos
         allowed = {"micro", "pequena", "média", "grande"}
-        if value.lower() in allowed:
-            # Normaliza somente espaçamento; mantém acentuação conforme entrada
-            return value
+        if value in allowed:
+            return raw  # mantém acentuação/forma original fornecida
+
         # Aceita formato de faixa numérica de colaboradores (ex: '50-100')
-        if re.match(r'^\d+\s*-\s*\d+$', value):
-            return value
+        if re.match(r'^\d+\s*-\s*\d+$', raw):
+            return raw
+
         raise ValueError("Porte inválido: use 'micro', 'pequena', 'média', 'grande' ou faixa '50-100'")
 
 
@@ -1098,11 +1124,11 @@ class DiagnosticResult(BaseModel):
         description="Descrição do estado atual da perspectiva"
     )
     gaps: list[str] = Field(
-        min_length=1,
+        min_items=1,  # CORRIGIDO: min_items para listas (era min_length)
         description="Gaps identificados na perspectiva"
     )
     opportunities: list[str] = Field(
-        min_length=1,
+        min_items=1,  # CORRIGIDO: min_items para listas (era min_length)
         description="Oportunidades de melhoria identificadas"
     )
     priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
@@ -1203,6 +1229,83 @@ class Recommendation(BaseModel):
         return self
 
 
+class RecommendationsList(BaseModel):
+    """Lista de recomendações retornadas pelo LLM.
+    
+    Schema wrapper para structured output do LLM ao gerar recomendações.
+    Garante que LLM retorna lista válida com todos os campos obrigatórios
+    de Recommendation (incluindo 'impact') via function calling.
+    
+    Attributes:
+        recommendations: Lista de recomendações acionáveis (mínimo 3, máximo 10)
+    
+    Example:
+        >>> recs_list = RecommendationsList(
+        ...     recommendations=[
+        ...         Recommendation(
+        ...             title="Implementar ABC Costing",
+        ...             description="...",
+        ...             impact="HIGH",
+        ...             effort="MEDIUM",
+        ...             priority="HIGH",
+        ...             timeframe="6-9 meses",
+        ...             next_steps=[...]
+        ...         ),
+        ...         # ... outras recomendações
+        ...     ]
+        ... )
+    """
+    
+    recommendations: list[Recommendation] = Field(
+        min_length=3,
+        max_length=10,
+        description="Lista de recomendações acionáveis priorizadas por impacto vs esforço"
+    )
+
+
+class ConsolidatedAnalysis(BaseModel):
+    """Consolidação cross-perspective das análises diagnósticas.
+    
+    Schema intermediário usado pelo LLM para consolidar as 4 perspectivas BSC
+    identificando synergies, gaps sistêmicos e resumo executivo.
+    
+    Attributes:
+        cross_perspective_synergies: Lista de synergies identificadas entre perspectivas
+        executive_summary: Resumo executivo da análise (mínimo 200 caracteres)
+        next_phase: Próxima fase do workflow (sempre APPROVAL_PENDING)
+    
+    Example:
+        >>> analysis = ConsolidatedAnalysis(
+        ...     cross_perspective_synergies=[
+        ...         "Baixa retenção clientes impacta receita financeira",
+        ...         "Processos manuais aumentam custo operacional"
+        ...     ],
+        ...     executive_summary="A ENGELAR apresenta...",
+        ...     next_phase="APPROVAL_PENDING"
+        ... )
+    """
+    
+    cross_perspective_synergies: list[str] = Field(
+        min_items=2,
+        max_items=8,
+        description="Synergies cross-perspective identificadas (2-8 itens, cada um com 50-150 caracteres)"
+    )
+    executive_summary: str = Field(
+        min_length=200,
+        max_length=10000,
+        description="Resumo executivo da análise diagnóstica (200-2000 caracteres)"
+    )
+    next_phase: Literal["APPROVAL_PENDING"] = Field(
+        default="APPROVAL_PENDING",
+        description="Próxima fase do workflow (sempre APPROVAL_PENDING após consolidação)"
+    )
+    
+    model_config = ConfigDict(
+        extra="forbid",
+        validate_assignment=True,
+    )
+
+
 class CompleteDiagnostic(BaseModel):
     """Diagnóstico BSC completo multi-perspectiva.
     
@@ -1286,7 +1389,7 @@ class CompleteDiagnostic(BaseModel):
         description="Análise da perspectiva Aprendizado e Crescimento"
     )
     recommendations: list[Recommendation] = Field(
-        min_length=3,
+        min_items=3,
         description="Mínimo 3 recomendações priorizadas"
     )
     cross_perspective_synergies: list[str] = Field(

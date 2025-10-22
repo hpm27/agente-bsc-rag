@@ -206,16 +206,34 @@ class Mem0ClientWrapper:
                     delete_error
                 )
 
+            # Sanitizar metadata para ficar < 2000 chars (limite Mem0)
+            import json as _json
+            def _truncate(text: str, max_len: int) -> str:
+                return text if len(text) <= max_len else text[: max_len - 3] + "..."
+
+            # Compactar profile_data (minified JSON) e cortar se necessário
+            profile_data_str = _json.dumps(data, separators=(",", ":"), ensure_ascii=False)
+            # Reservar espaço p/ campos fixos (~200-300 chars)
+            max_profile_data_len = 1600
+            if len(profile_data_str) > max_profile_data_len:
+                profile_data_str = profile_data_str[: max_profile_data_len]
+
+            company_name = _truncate(profile.company.name or "", 120)
+            sector = _truncate(profile.company.sector or "", 120)
+            phase = _truncate(profile.engagement.current_phase or "", 60)
+
+            metadata_compact = {
+                "profile_data": profile_data_str,
+                "company_name": company_name,
+                "sector": sector,
+                "phase": phase,
+            }
+
             # Agora salva no Mem0 usando user_id como chave
             self.client.add(
                 messages=messages,
                 user_id=profile.client_id,
-                metadata={
-                    "profile_data": data,
-                    "company_name": profile.company.name,
-                    "sector": profile.company.sector,
-                    "phase": profile.engagement.current_phase,
-                }
+                metadata=metadata_compact
             )
 
             logger.info(

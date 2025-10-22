@@ -536,6 +536,7 @@
 | **Otimizar estratégia por query** | query-router, strategies | `techniques/ROUTER.md` | `src/rag/query_router.py` |
 | **Entender workflow LangGraph** | langgraph, workflow, agents | `LANGGRAPH_WORKFLOW.md` | `src/graph/workflow.py` |
 | **Entender fluxos de dados** | diagrams, mermaid, architecture | `architecture/DATA_FLOW_DIAGRAMS.md` | - |
+| **Workflow dos agentes (DISCOVERY)** | mermaid, agents, discovery | `architecture/AGENTS_WORKFLOW.md` | `src/agents/diagnostic_agent.py` |
 | **Chamar métodos de agentes** | api-contracts, agents, architecture | `architecture/API_CONTRACTS.md` | `src/agents/*.py` |
 | **Setup inicial do projeto** | quickstart, setup | `QUICKSTART.md` | `setup.ps1` |
 | **Configurar vector store** | qdrant, vector-store | `VECTOR_STORE_MIGRATION_GUIDE.md` | `src/rag/qdrant_vector_store.py` |

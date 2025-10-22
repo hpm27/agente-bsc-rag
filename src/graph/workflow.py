@@ -280,6 +280,20 @@ class BSCWorkflow:
                 if p in perspective_to_agent
             ]
             
+            # Validação defensiva: Se nenhum agente relevante, retornar resposta padrão
+            if not agent_names:
+                logger.warning(
+                    f"[WARN] [execute_agents] Nenhuma perspectiva relevante identificada para query: '{state.query[:60]}...'"
+                )
+                elapsed_time = time.time() - start_time
+                return {
+                    "agent_responses": [],
+                    "metadata": {
+                        "execution_time": elapsed_time,
+                        "warning": "Nenhuma perspectiva BSC relevante para esta query"
+                    }
+                }
+            
             # Invocar agentes usando Orchestrator
             chat_history = state.metadata.get("chat_history", None)
             raw_responses = self.orchestrator.invoke_agents(
@@ -653,9 +667,9 @@ class BSCWorkflow:
             )
             return "discovery"
         else:
-            # Fallback: PENDING ou None → END
-            logger.warning(
-                f"[WARN] [ROUTING] Approval status desconhecido ({approval_status}) → END"
+            # PENDING (ou None) → END por design (fase futura pode reabrir)
+            logger.info(
+                f"[INFO] [ROUTING] Approval status PENDING/None detectado ({approval_status}). Encerrando por design."
             )
             return "end"
 
@@ -769,8 +783,15 @@ class BSCWorkflow:
                 f"user_id={state.user_id} | query={state.query[:50]}..."
             )
             
-            # Chamar método async usando asyncio.run() (gerencia loop automaticamente)
-            result = asyncio.run(
+            # Chamar método async - Python 3.12 compatible
+            # Criar event loop se não existir (Streamlit ScriptRunner thread)
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            result = loop.run_until_complete(
                 self.consulting_orchestrator.coordinate_onboarding(state)
             )
             
@@ -815,9 +836,15 @@ class BSCWorkflow:
             )
             
             # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
-            # asyncio.run() funciona graças a nest_asyncio (permite nested loops)
+            # Python 3.12 compatible - criar loop se não existir
             import asyncio
-            result = asyncio.run(self.consulting_orchestrator.coordinate_discovery(state))
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            result = loop.run_until_complete(self.consulting_orchestrator.coordinate_discovery(state))
             
             logger.info(
                 f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "

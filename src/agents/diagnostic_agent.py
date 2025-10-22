@@ -17,7 +17,7 @@ Best Practices: Multi-agent pattern (Nature 2025), structured diagnostic output
 import asyncio
 import json
 import logging
-from typing import Any, Literal, Optional
+from typing import Any, Literal, Optional, cast, Dict
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -33,7 +33,9 @@ from src.graph.states import BSCState
 from src.memory.schemas import (
     ClientProfile,
     CompleteDiagnostic,
+    ConsolidatedAnalysis,
     DiagnosticResult,
+    KPIFramework,
     Recommendation,
 )
 from src.prompts.diagnostic_prompts import (
@@ -92,6 +94,10 @@ class DiagnosticAgent:
             model=settings.diagnostic_llm_model,  # Configurável via .env (default: gpt-5-2025-08-07)
             temperature=1.0,  # GPT-5 requer temperature=1.0
             api_key=settings.openai_api_key,  # type: ignore
+            request_timeout=120,  # Timeout de 2 minutos por request (previne travamentos)
+            max_retries=2,  # Máximo 2 retries automáticos
+            max_completion_tokens=settings.gpt5_max_completion_tokens,  # GPT-5 usa max_completion_tokens (128K máx), NÃO max_tokens!
+            reasoning_effort=settings.gpt5_reasoning_effort,
         )
         
         # Agentes BSC especializados (já existentes)
@@ -100,112 +106,237 @@ class DiagnosticAgent:
         self.process_agent = ProcessAgent()
         self.learning_agent = LearningAgent()
         
-        logger.info(f"[DIAGNOSTIC] DiagnosticAgent inicializado com {settings.diagnostic_llm_model}")
+        logger.info(f"[DIAGNOSTIC v3.5] DiagnosticAgent __init__() completo - model={settings.diagnostic_llm_model}")
+        logger.info(
+            f"[DIAGNOSTIC v3.5-20251022-11:45] DiagnosticAgent inicializado: "
+            f"model={settings.diagnostic_llm_model}, max_completion_tokens={settings.gpt5_max_completion_tokens} | "
+            f"CORREÇÃO: Logs salvando em arquivo .log (print → logger.info)"
+        )
     
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=2, max=10),
-        retry=retry_if_exception_type((ValidationError, ValueError)),
+        retry=retry_if_exception_type((ValidationError, ValueError, AttributeError)),
         reraise=True,
     )
-    async def analyze_perspective(
+    async def _call_llm_perspective(
         self,
         perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"],
         client_profile: ClientProfile,
         state: BSCState,
     ) -> DiagnosticResult:
-        """Analisa uma perspectiva BSC individualmente (ASYNC para paralelização real).
+        """Chama o LLM para gerar o DiagnosticResult de uma perspectiva (com retry e timeout)."""
+        logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] >>>>> ENTROU em _call_llm_perspective() <<<<<")
+        logger.info(f"[DIAGNOSTIC v3.0] [{perspective}] >>>>> ENTROU em _call_llm_perspective() <<<<<")
         
-        Usa o prompt especializado de cada perspectiva para analisar contexto
-        do cliente e identificar gaps, oportunidades e prioridade.
-        
-        Args:
-            perspective: Nome da perspectiva BSC a analisar
-            client_profile: Perfil completo do cliente (company, context, engagement)
-            state: Estado LangGraph atual (para contexto adicional)
-        
-        Returns:
-            DiagnosticResult: Análise estruturada da perspectiva com gaps + oportunidades
-        
-        Raises:
-            ValidationError: Se output LLM não passar validação Pydantic
-            ValueError: Se perspectiva inválida ou dados insuficientes
-        
-        Example:
-            >>> result = await agent.analyze_perspective(
-            ...     "Financeira",
-            ...     client_profile,
-            ...     state
-            ... )
-            >>> result.priority
-            'HIGH'
-            >>> len(result.gaps)
-            4
-        """
-        logger.info(f"[DIAGNOSTIC] Analisando perspectiva: {perspective}")
-        
-        # Selecionar prompt correto por perspectiva
+        # Selecionar prompt
         prompt_map = {
             "Financeira": ANALYZE_FINANCIAL_PERSPECTIVE_PROMPT,
             "Clientes": ANALYZE_CUSTOMER_PERSPECTIVE_PROMPT,
             "Processos Internos": ANALYZE_PROCESS_PERSPECTIVE_PROMPT,
             "Aprendizado e Crescimento": ANALYZE_LEARNING_PERSPECTIVE_PROMPT,
         }
-        
         if perspective not in prompt_map:
             raise ValueError(f"Perspectiva inválida: {perspective}")
-        
         prompt_template = prompt_map[perspective]
-        
-        # Buscar contexto relevante da literatura BSC via agente especialista
-        agent_map = {
-            "Financeira": self.financial_agent,
-            "Clientes": self.customer_agent,
-            "Processos Internos": self.process_agent,
-            "Aprendizado e Crescimento": self.learning_agent,
-        }
-        
-        specialist_agent = agent_map[perspective]
-        
-        # Query específica para contexto BSC da perspectiva
-        query = f"Quais são os principais conceitos e KPIs da perspectiva {perspective} no BSC segundo Kaplan & Norton?"
-        
-        try:
-            context_response = await specialist_agent.ainvoke(query)  # ASYNC para paralelização real
-            client_context = context_response.get("answer", "Contexto BSC não disponível.")
-        except Exception as e:
-            logger.warning(f"[DIAGNOSTIC] Erro ao buscar contexto BSC: {e}")
-            client_context = "Contexto BSC não disponível. Análise baseada em princípios gerais."
-        
-        # Preparar variáveis do prompt
+
         company = client_profile.company
         context = client_profile.context
-        
         challenges_text = ", ".join(context.current_challenges) if context.current_challenges else "Não informados"
         objectives_text = ", ".join(context.strategic_objectives) if context.strategic_objectives else "Não informados"
-        
-        # Formatar prompt com dados do cliente
+
+        perspective_map: Dict[str, str] = cast(Dict[str, str], state.metadata.get("perspective_context", {}) or {})
+        client_context_str: str = perspective_map.get(perspective, "Contexto BSC não disponível.")
         formatted_prompt = prompt_template.format(
-            client_context=client_context,
+            client_context=client_context_str,
             company_name=company.name,
             sector=company.sector,
             size=company.size,
             challenges=challenges_text,
             objectives=objectives_text,
         )
-        
-        # Chamar LLM com structured output (ASYNC)
-        structured_llm = self.llm.with_structured_output(DiagnosticResult)
 
+        logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Criando structured_llm com method=function_calling...")
+        
+        # LOG SCHEMA PARA DEBUG
+        try:
+            schema_dict = DiagnosticResult.model_json_schema()
+            logger.debug(f"[DIAGNOSTIC] [{perspective}] Schema Pydantic gerado (primeiros 500 chars): {str(schema_dict)[:500]}...")
+        except Exception as schema_err:
+            logger.warning(f"[DIAGNOSTIC] [{perspective}] Erro ao gerar schema: {schema_err}")
+        
+        structured_llm: Any = self.llm.with_structured_output(
+            DiagnosticResult,
+            method="function_calling"  # CRITICAL: force function_calling method (LangChain 0.3.0+ compatibility)
+        )
+        
+        logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Structured LLM criado! Type: {type(structured_llm)}")
+        
         messages = [
             SystemMessage(content="Você é um especialista em Balanced Scorecard conduzindo análise diagnóstica."),
             HumanMessage(content=formatted_prompt),
         ]
 
-        result = await structured_llm.ainvoke(messages)  # type: ignore
-        
-        logger.info(f"[DIAGNOSTIC] Perspectiva {perspective} analisada: priority={result.priority}, gaps={len(result.gaps)}, opportunities={len(result.opportunities)}")
-        
+        # Timeout por perspectiva (evita travas)
+        # Log da raw response para debug (verificar se LLM está gerando algo)
+        logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Iniciando try/except para chamadas LLM...")
+        try:
+            logger.info(f"[DIAGNOSTIC] [{perspective}] STEP 2/2: Chamando LLM structured output (GPT-5)...")
+            
+            logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] PASSO 1: Testando raw LLM...")
+            # PASSO 1: Testar raw LLM primeiro (sem structured)
+            logger.debug(f"[DIAGNOSTIC] [{perspective}] PASSO 1: Testando raw LLM (sem structured)...")
+            raw_test = await asyncio.wait_for(self.llm.ainvoke(messages), timeout=120)
+            logger.info(f"[DIAGNOSTIC] [{perspective}] Raw LLM OK: type={type(raw_test).__name__}, has_content={hasattr(raw_test, 'content')}")
+            
+            # CRITICO: Verificar response_metadata para MALFORMED_FUNCTION_CALL
+            if hasattr(raw_test, 'response_metadata'):
+                metadata = raw_test.response_metadata
+                finish_reason = metadata.get('finish_reason', 'N/A')
+                finish_message = metadata.get('finish_message', '')
+                logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Raw finish_reason: {finish_reason}")
+                logger.warning(f"[DIAGNOSTIC] [{perspective}] Response metadata: finish_reason={finish_reason}, finish_message={finish_message[:100]}")
+                logger.info(f"[CHECKPOINT v3.5] [{perspective}] APÓS log finish_reason - continuando...")
+                
+                if finish_reason == 'MALFORMED_FUNCTION_CALL':
+                    logger.error(f"[DIAGNOSTIC] [{perspective}] CRITICO: MALFORMED_FUNCTION_CALL detectado! Message: {finish_message}")
+                    logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] ERRO: MALFORMED_FUNCTION_CALL - {finish_message}")
+            
+            if hasattr(raw_test, 'content'):
+                content_str = str(raw_test.content) if raw_test.content else "[VAZIO]"
+                logger.info(f"[DIAGNOSTIC] [{perspective}] Raw content (primeiros 300 chars): {content_str[:300]}...")
+                logger.debug(f"[DIAGNOSTIC] [{perspective}] Raw content length: {len(content_str)} chars")
+            
+            logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] PASSO 2: Testando structured output...")
+            logger.info(f"[CHECKPOINT v3.5] [{perspective}] ANTES de structured_llm.ainvoke() - timeout=120s...")
+            # PASSO 2: Testar structured output
+            logger.debug(f"[DIAGNOSTIC] [{perspective}] PASSO 2: Chamando structured_llm.ainvoke() (method=function_calling)...")
+            result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=120)  # type: ignore[attr-defined]
+            logger.info(f"[CHECKPOINT v3.5] [{perspective}] DEPOIS de structured_llm.ainvoke() - result type: {type(result).__name__ if result else 'NoneType'}")
+            
+            logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Result type: {type(result).__name__ if result else 'NoneType'}")
+            logger.info(f"[DIAGNOSTIC] [{perspective}] Structured retornou: type={type(result).__name__ if result else 'NoneType'}, is_None={result is None}")
+            
+            if result is not None:
+                logger.debug(f"[DIAGNOSTIC] [{perspective}] Structured object attrs: {dir(result)[:10]}...")
+                if hasattr(result, 'perspective'):
+                    logger.info(f"[DIAGNOSTIC] [{perspective}] Structured SUCESSO: perspective={result.perspective}, priority={getattr(result, 'priority', 'N/A')}")
+            
+        except asyncio.TimeoutError as e:
+            logger.error(f"[DIAGNOSTIC] [{perspective}] Timeout do LLM na análise da perspectiva")
+            raise ValueError("Timeout LLM analyze_perspective") from e
+        except Exception as llm_err:
+            logger.exception(f"[DIAGNOSTIC] [{perspective}] Erro inesperado na chamada LLM")
+            raise
+
+        if result is None:
+            logger.warning(f"[DIAGNOSTIC] [{perspective}] Structured LLM retornou None. Tentando fallback com prompt JSON estrito...")
+            strict_instructions = (
+                "Você DEVE responder estritamente em JSON compatível com o schema DiagnosticResult: "
+                "{ \"perspective\": one of [\"Financeira\",\"Clientes\",\"Processos Internos\",\"Aprendizado e Crescimento\"], "
+                "\"current_state\": string (>=20 chars), \"gaps\": [\"string\"], \"opportunities\": [\"string\"], "
+                "\"priority\": one of [\"HIGH\",\"MEDIUM\",\"LOW\"], \"key_insights\": [\"string\"] }."
+            )
+            strict_messages = [
+                SystemMessage(content=strict_instructions),
+                HumanMessage(content=formatted_prompt + "\n\nIMPORTANTE: Responda APENAS com JSON válido, sem texto extra."),
+            ]
+            try:
+                # 1) Tentar novamente via structured output com instruções estritas
+                result = await asyncio.wait_for(structured_llm.ainvoke(strict_messages), timeout=120)  # type: ignore[attr-defined]
+            except asyncio.TimeoutError as e:
+                logger.error(f"[DIAGNOSTIC] [{perspective}] Timeout também no fallback JSON estrito")
+                raise ValueError("Timeout LLM analyze_perspective (fallback)") from e
+            if result is None:
+                logger.warning(f"[DIAGNOSTIC] [{perspective}] Structured ainda None. Tentando fallback via JSON plano + parse...")
+                # 2) Fallback final: pedir JSON plano e parsear manualmente
+                raw_messages = [
+                    SystemMessage(content=strict_instructions),
+                    HumanMessage(content=formatted_prompt + "\n\nApenas JSON válido, sem texto extra."),
+                ]
+                try:
+                    raw_response = await asyncio.wait_for(self.llm.ainvoke(raw_messages), timeout=120)
+                    data = json.loads(str(getattr(raw_response, "content", "")).strip())  # type: ignore
+                    candidate = DiagnosticResult.model_validate(data)
+                    # Checagem rápida de campos críticos
+                    if not candidate.gaps or not candidate.opportunities or candidate.priority is None:
+                        raise ValueError("Campos críticos ausentes no JSON plano")
+                    return candidate
+                except Exception as parse_err:
+                    logger.error(f"[DIAGNOSTIC] [{perspective}] Fallback JSON plano falhou: {parse_err}")
+                    # 3) Default seguro para não travar fluxo
+                    return DiagnosticResult(
+                        perspective=perspective,
+                        current_state="Análise indisponível no momento. Estado atual não pôde ser obtido do LLM.",
+                        gaps=["Falta de dados estruturados para esta perspectiva"],
+                        opportunities=["Reexecutar análise desta perspectiva ou fornecer mais contexto"],
+                        priority="MEDIUM",
+                        key_insights=[],
+                    )
+
+        if getattr(result, "priority", None) is None or getattr(result, "gaps", None) is None or getattr(result, "opportunities", None) is None:
+            logger.error(
+                f"[DIAGNOSTIC] [{perspective}] Campos críticos ausentes no resultado (priority/gaps/opportunities). Requisitando retry."
+            )
+            raise ValueError("DiagnosticResult incompleto (priority/gaps/opportunities ausentes)")
+
+        return result
+
+    async def analyze_perspective(
+        self,
+        perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"],
+        client_profile: ClientProfile,
+        state: BSCState,
+    ) -> DiagnosticResult:
+        """Analisa uma perspectiva BSC: faz retrieval uma vez e chama LLM com retry isolado."""
+        logger.info(f"[DIAGNOSTIC v3.1 LOG] [{perspective}] >>>>> analyze_perspective() CHAMADO <<<<<")
+        logger.info(f"[DIAGNOSTIC v3.1] [{perspective}] ===== INICIANDO analyze_perspective =====")
+        logger.info(f"[DIAGNOSTIC v3.1] [{perspective}] Analisando perspectiva: {perspective}")
+
+        # 1) Retrieval de contexto via agente especialista (sem retry)
+        agent_map = {
+            "Financeira": self.financial_agent,
+            "Clientes": self.customer_agent,
+            "Processos Internos": self.process_agent,
+            "Aprendizado e Crescimento": self.learning_agent,
+        }
+        specialist_agent = agent_map[perspective]
+        query = (
+            f"Quais são os principais conceitos e KPIs da perspectiva {perspective} no BSC segundo Kaplan & Norton?"
+        )
+        try:
+            logger.info(f"[DIAGNOSTIC v3.1 LOG] [{perspective}] ANTES de await specialist_agent.ainvoke()")
+            logger.info(f"[DIAGNOSTIC v3.1] [{perspective}] STEP 1/2: Buscando contexto BSC via specialist agent...")
+            
+            context_response = await specialist_agent.ainvoke(query)
+            
+            logger.info(f"[DIAGNOSTIC v3.1 LOG] [{perspective}] DEPOIS de await specialist_agent.ainvoke() - type={type(context_response).__name__}")
+            logger.info(f"[DIAGNOSTIC v3.1] [{perspective}] STEP 1/2: Contexto BSC obtido - type={type(context_response)}")
+            logger.info(f"[DIAGNOSTIC v3.1] [{perspective}] context_response keys: {context_response.keys() if isinstance(context_response, dict) else 'not_dict'}")
+            
+            client_context = context_response.get("answer", "Contexto BSC não disponível.")
+            logger.info(f"[DIAGNOSTIC v3.1 LOG] [{perspective}] client_context extraído ({len(client_context)} chars)")
+        except Exception as e:
+            logger.info(f"[DIAGNOSTIC v3.1 LOG] [{perspective}] EXCEÇÃO em retrieval: {type(e).__name__}: {e}")
+            logger.warning(f"[DIAGNOSTIC] Erro ao buscar contexto BSC: {e}")
+            client_context = "Contexto BSC não disponível. Análise baseada em princípios gerais."
+
+        # 2) Salvar contexto em metadata para o método de LLM
+        if not hasattr(state, "metadata") or state.metadata is None:
+            state.metadata = {}
+        perspective_ctx = state.metadata.get("perspective_context", {})
+        perspective_ctx[perspective] = client_context
+        state.metadata["perspective_context"] = perspective_ctx
+
+        # 3) Chamada LLM com retry/timeout isolados
+        logger.info(f"[DIAGNOSTIC v3.0] [{perspective}] ===== CHAMANDO _call_llm_perspective =====")
+        result = await self._call_llm_perspective(perspective, client_profile, state)
+        logger.info(f"[DIAGNOSTIC v3.0] [{perspective}] ===== RETORNOU de _call_llm_perspective =====")
+
+        logger.info(
+            f"[DIAGNOSTIC] Perspectiva {perspective} analisada: priority={result.priority}, gaps={len(result.gaps)}, opportunities={len(result.opportunities)}"
+        )
+        logger.info(f"[CHECKPOINT v3.5] [{perspective}] PRONTO para retornar analyze_perspective() - result válido")
         return result
     
     async def run_parallel_analysis(
@@ -232,7 +363,9 @@ class DiagnosticAgent:
             >>> results['Financeira'].priority
             'HIGH'
         """
-        logger.info("[DIAGNOSTIC] Iniciando análise paralela das 4 perspectivas BSC...")
+        logger.info("[DIAGNOSTIC v3.1 LOG] >>>>> run_parallel_analysis() CHAMADO <<<<<")
+        logger.info("[DIAGNOSTIC v3.1] Iniciando análise paralela das 4 perspectivas BSC...")
+        logger.debug("[DIAGNOSTIC v3.1] Criando 4 tasks assíncronas para asyncio.gather()...")
         
         # Criar tasks para execução paralela (ASYNC coroutines, não threads)
         tasks = {
@@ -259,13 +392,45 @@ class DiagnosticAgent:
         }
         
         # Executar em paralelo via event loop (não threads, sem GIL)
-        results_list = await asyncio.gather(*tasks.values())
+        logger.info("[DIAGNOSTIC] Executando asyncio.gather() com 4 tasks...")
+        logger.info("[CHECKPOINT v3.7] ANTES de asyncio.gather() - 4 tasks prontas")
         
+        try:
+            results_list = await asyncio.gather(*tasks.values())
+            logger.info(f"[CHECKPOINT v3.7] DEPOIS de asyncio.gather() - results_list len={len(results_list)}, type={type(results_list)}")
+            logger.info("[DIAGNOSTIC] asyncio.gather() RETORNOU ✅")
+        except Exception as gather_err:
+            logger.error(f"[DIAGNOSTIC] ERRO em asyncio.gather(): {gather_err}", exc_info=True)
+            raise
+
         # Mapear resultados de volta às perspectivas
-        perspectives = list(tasks.keys())
-        results = {perspectives[i]: results_list[i] for i in range(4)}
-        
+        try:
+            perspectives = list(tasks.keys())
+            logger.debug(f"[DIAGNOSTIC] Mapeando {len(results_list)} results para {len(perspectives)} perspectivas")
+            results = {perspectives[i]: results_list[i] for i in range(4)}
+            logger.info(f"[DIAGNOSTIC] Mapping completo - keys: {list(results.keys())}")
+        except Exception as map_err:
+            logger.error(f"[DIAGNOSTIC] ERRO ao mapear results: {map_err}", exc_info=True)
+            raise
+
+        # Logs defensivos: validar que priority existe em todos
+        try:
+            priorities_snapshot = {
+                name: getattr(res, "priority", None) for name, res in results.items()
+            }
+            logger.debug(
+                f"[DIAGNOSTIC] Priorities snapshot pós-gather: {priorities_snapshot}"
+            )
+            missing = [k for k, v in priorities_snapshot.items() if v is None]
+            if missing:
+                logger.warning(
+                    f"[DIAGNOSTIC] Resultados sem priority detectados: {missing}. Conteúdos parciais podem causar erros adiante."
+                )
+        except Exception as snap_err:
+            logger.warning(f"[DIAGNOSTIC] Falha ao inspecionar prioridades: {snap_err}")
+
         logger.info("[DIAGNOSTIC] Análise paralela concluída: 4 perspectivas processadas")
+        logger.info(f"[CHECKPOINT v3.7] >>>>> run_parallel_analysis() RETORNANDO results com {len(results)} keys <<<<<")
         
         return results
     
@@ -275,7 +440,7 @@ class DiagnosticAgent:
         retry=retry_if_exception_type((ValidationError, ValueError)),
         reraise=True,
     )
-    def consolidate_diagnostic(
+    async def consolidate_diagnostic(
         self,
         perspective_results: dict[str, DiagnosticResult],
     ) -> dict[str, Any]:
@@ -299,43 +464,143 @@ class DiagnosticAgent:
             True
         """
         logger.info("[DIAGNOSTIC] Consolidando análises cross-perspective...")
+
+        # Fallback offline: se todos resultados são defaults (sem análise), pular LLM
+        try:
+            all_defaults = all(
+                isinstance(r.current_state, str) and "Análise indisponível no momento" in r.current_state
+                for r in perspective_results.values()
+            )
+        except Exception:
+            all_defaults = False
+        if all_defaults:
+            logger.warning("[DIAGNOSTIC] Todos os resultados vieram em fallback default. Pulando LLM de consolidação (offline).")
+            return {
+                "cross_perspective_synergies": [],
+                "executive_summary": (
+                    "Diagnóstico indisponível: as análises por perspectiva não puderam ser geradas agora. "
+                    "Recomenda-se reexecutar a DISCOVERY com mais contexto ou em nova sessão."
+                ),
+                "next_phase": "APPROVAL_PENDING",
+            }
         
         # Preparar resumo das 4 análises para o prompt
         analyses_text = ""
         for perspective, result in perspective_results.items():
-            analyses_text += f"\n\n{perspective} (Priority: {result.priority}):\n"
-            analyses_text += f"Current State: {result.current_state}\n"
-            analyses_text += f"Gaps: {', '.join(result.gaps)}\n"
-            analyses_text += f"Opportunities: {', '.join(result.opportunities)}\n"
+            prio = getattr(result, "priority", None)
+            if prio is None:
+                logger.warning(
+                    f"[DIAGNOSTIC] Consolidation: priority ausente em '{perspective}'. Usando 'MEDIUM' como fallback."
+                )
+                prio = "MEDIUM"
+            state_text = getattr(result, "current_state", "(sem current_state)")
+            gaps_list = getattr(result, "gaps", []) or []
+            opps_list = getattr(result, "opportunities", []) or []
+            analyses_text += f"\n\n{perspective} (Priority: {prio}):\n"
+            analyses_text += f"Current State: {state_text}\n"
+            analyses_text += f"Gaps: {', '.join(gaps_list)}\n"
+            analyses_text += f"Opportunities: {', '.join(opps_list)}\n"
         
         # Formatar prompt de consolidação
         formatted_prompt = CONSOLIDATE_DIAGNOSTIC_PROMPT.format(
             perspective_analyses=analyses_text
         )
         
-        # Chamar LLM (output é dict, não Pydantic - estrutura variável)
+        # [CORREÇÃO Oct/2025] Usar with_structured_output() ao invés de json.loads()
+        # PROBLEMA: LLM.ainvoke() sem structured output retorna content='' vazio quando usa function calling
+        # SOLUÇÃO: Usar with_structured_output(ConsolidatedAnalysis, method="function_calling")
+        # ConsolidatedAnalysis importado no topo do arquivo (linha 36)
+        
         messages = [
             SystemMessage(content="Você é um consultor BSC sênior com visão sistêmica."),
             HumanMessage(content=formatted_prompt),
         ]
         
-        response = self.llm.invoke(messages)
-
-        # Parse JSON do content
+        logger.info("[DIAGNOSTIC v3.2 LOG] Criando structured_llm com ConsolidatedAnalysis...")
+        
+        # Criar structured LLM com schema Pydantic
+        structured_llm = self.llm.with_structured_output(
+            ConsolidatedAnalysis,
+            method="function_calling",  # Usar OpenAI function calling (mais preciso)
+            include_raw=False,
+        )
+        
+        logger.info("[DIAGNOSTIC v3.2 LOG] structured_llm criado! Chamando com timeout 150s...")
+        logger.info(f"[DIAGNOSTIC v3.2] Chamando LLM estruturado para consolidação (timeout=150s)...")
+        
         try:
-            consolidated = json.loads(str(response.content))  # type: ignore
-        except json.JSONDecodeError as e:
-            logger.error(f"[DIAGNOSTIC] Erro ao parsear consolidação: {e}")
-            raise ValueError(f"LLM retornou JSON inválido: {response.content[:200]}") from e
+            # PASSO 1: Testar raw LLM primeiro (debug)
+            logger.info("[DIAGNOSTIC v3.2 LOG] PASSO 1: Testando raw LLM...")
+            raw_test = await asyncio.wait_for(self.llm.ainvoke(messages), timeout=150)
+            
+            # Verificar response_metadata
+            if hasattr(raw_test, 'response_metadata'):
+                metadata = raw_test.response_metadata
+                finish_reason = metadata.get('finish_reason', 'N/A')
+                
+                # [DIAGNOSTICO TOKEN USAGE] Extrair estatísticas de tokens
+                token_usage = metadata.get('token_usage', {})
+                prompt_tokens = token_usage.get('prompt_tokens', 0)
+                completion_tokens = token_usage.get('completion_tokens', 0)
+                total_tokens = token_usage.get('total_tokens', 0)
+                
+                logger.info(f"[DIAGNOSTIC v3.2 LOG] Raw finish_reason: {finish_reason}")
+                logger.info(f"[DIAGNOSTIC v3.2 LOG] TOKEN USAGE: input={prompt_tokens}, output={completion_tokens}, total={total_tokens}")
+                logger.info(f"[DIAGNOSTIC v3.2 LOG] MAX ALLOWED: max_completion_tokens={settings.gpt5_max_completion_tokens}")
+                
+                logger.info(f"[DIAGNOSTIC v3.2] Raw LLM finish_reason: {finish_reason}")
+                logger.info(f"[DIAGNOSTIC v3.2] TOKEN USAGE: prompt={prompt_tokens}, completion={completion_tokens}, total={total_tokens}")
+                logger.info(f"[DIAGNOSTIC v3.2] MAX CONFIG: max_completion_tokens={settings.gpt5_max_completion_tokens}")
+                
+                # Calcular % utilizado
+                if completion_tokens > 0 and settings.gpt5_max_completion_tokens > 0:
+                    usage_percent = (completion_tokens / settings.gpt5_max_completion_tokens) * 100
+                    logger.info(f"[DIAGNOSTIC v3.2 LOG] OUTPUT TOKEN USAGE: {usage_percent:.1f}% do limite ({completion_tokens}/{settings.gpt5_max_completion_tokens})")
+                    logger.info(f"[DIAGNOSTIC v3.2] OUTPUT TOKEN USAGE: {usage_percent:.1f}% do limite")
+                
+                if finish_reason == 'length':
+                    logger.error(f"[DIAGNOSTIC v3.2] ERRO: finish_reason=length! LLM truncado. Tokens usados: {completion_tokens}/{settings.gpt5_max_completion_tokens}")
+                    raise ValueError(f"LLM response truncada: finish_reason={finish_reason}, tokens={completion_tokens}/{settings.gpt5_max_completion_tokens}")
+                elif finish_reason == 'MALFORMED_FUNCTION_CALL':
+                    logger.error(f"[DIAGNOSTIC v3.2] ERRO: MALFORMED_FUNCTION_CALL! Schema muito complexo.")
+                    raise ValueError(f"Schema Pydantic muito complexo: {metadata.get('finish_message')}")
+            
+            # PASSO 2: Chamar structured output
+            logger.info("[DIAGNOSTIC v3.2 LOG] PASSO 2: Chamando structured output...")
+            result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=150)
+            
+            logger.info(f"[DIAGNOSTIC v3.2 LOG] Result type: {type(result).__name__ if result else 'NoneType'}")
+            logger.info(f"[DIAGNOSTIC v3.2] Structured output retornou: type={type(result).__name__ if result else 'NoneType'}")
+            
+            if result is None:
+                logger.error("[DIAGNOSTIC v3.2] ERRO: Structured output retornou None!")
+                raise ValueError("Structured output retornou None - verificar finish_reason acima")
+            
+            # Converter Pydantic para dict (compatibilidade backwards)
+            consolidated = result.model_dump()
+            logger.info(f"[DIAGNOSTIC v3.2] Consolidação SUCESSO: {len(consolidated['cross_perspective_synergies'])} synergies")
+            
+        except asyncio.TimeoutError as e:
+            logger.error("[DIAGNOSTIC v3.2] Timeout na consolidação do diagnóstico")
+            raise ValueError("Timeout consolidating diagnostic (LLM)") from e
+        except RuntimeError as e:
+            if "cannot schedule new futures after shutdown" in str(e):
+                logger.error("[DIAGNOSTIC v3.2] Executor fechado durante consolidação. Usando fallback offline.")
+                return {
+                    "cross_perspective_synergies": [],
+                    "executive_summary": (
+                        "Consolidação indisponível no momento devido a recurso de execução encerrado. "
+                        "Reexecute a DISCOVERY ou tente novamente."
+                    ),
+                    "next_phase": "APPROVAL_PENDING",
+                }
+            raise
         
-        # Validar campos obrigatórios
-        required_fields = ["cross_perspective_synergies", "executive_summary", "next_phase"]
-        for field in required_fields:
-            if field not in consolidated:
-                raise ValueError(f"Campo obrigatório ausente na consolidação: {field}")
-        
+        # Validação automática via Pydantic (já garantida pelo with_structured_output)
+        # Campos obrigatórios: cross_perspective_synergies (min_items=2), executive_summary (min_length=200), next_phase
+        logger.info(f"[DIAGNOSTIC v3.2 LOG] Consolidação concluída! {len(consolidated['cross_perspective_synergies'])} synergies")
         logger.info(
-            f"[DIAGNOSTIC] Consolidação concluída: {len(consolidated['cross_perspective_synergies'])} synergies, "
+            f"[DIAGNOSTIC v3.2] Consolidação concluída: {len(consolidated['cross_perspective_synergies'])} synergies, "
             f"next_phase={consolidated['next_phase']}"
         )
         
@@ -347,7 +612,7 @@ class DiagnosticAgent:
         retry=retry_if_exception_type((ValidationError, ValueError)),
         reraise=True,
     )
-    def generate_recommendations(
+    async def generate_recommendations(
         self,
         perspective_results: dict[str, DiagnosticResult],
         consolidated: dict[str, Any],
@@ -371,6 +636,18 @@ class DiagnosticAgent:
             'quick win (1-3 meses)'
         """
         logger.info("[DIAGNOSTIC] Gerando recomendações priorizadas...")
+
+        # Fallback offline: se consolidação é minimal/offline ou se todos resultados são defaults, pular LLM
+        try:
+            all_defaults = all(
+                isinstance(r.current_state, str) and "Análise indisponível no momento" in r.current_state
+                for r in perspective_results.values()
+            )
+        except Exception:
+            all_defaults = False
+        if all_defaults:
+            logger.warning("[DIAGNOSTIC] Resultados default detectados. Pulando geração de recomendações (offline=sem recomendações).")
+            return []
         
         # Preparar dados completos do diagnóstico para o prompt
         diagnostic_summary = f"""
@@ -384,9 +661,12 @@ ANÁLISES POR PERSPECTIVA:
 """
         
         for perspective, result in perspective_results.items():
-            diagnostic_summary += f"\n{perspective} (Priority: {result.priority}):\n"
-            diagnostic_summary += f"Gaps: {', '.join(result.gaps)}\n"
-            diagnostic_summary += f"Opportunities: {', '.join(result.opportunities)}\n"
+            prio = getattr(result, "priority", None) or "MEDIUM"
+            gaps_list = getattr(result, "gaps", []) or []
+            opps_list = getattr(result, "opportunities", []) or []
+            diagnostic_summary += f"\n{perspective} (Priority: {prio}):\n"
+            diagnostic_summary += f"Gaps: {', '.join(gaps_list)}\n"
+            diagnostic_summary += f"Opportunities: {', '.join(opps_list)}\n"
         
         # Formatar prompt de recomendações
         formatted_prompt = GENERATE_RECOMMENDATIONS_PROMPT.format(
@@ -399,24 +679,81 @@ ANÁLISES POR PERSPECTIVA:
             HumanMessage(content=formatted_prompt),
         ]
         
-        response = self.llm.invoke(messages)
-
-        # Parse JSON do content
+        logger.info("[CHECKPOINT v3.7] Iniciando generate_recommendations LLM call com structured output...")
+        logger.debug("[DIAGNOSTIC] Chamando LLM para gerar recomendações (with_structured_output)...")
         try:
-            recommendations_data = json.loads(str(response.content))  # type: ignore
-        except json.JSONDecodeError as e:
-            logger.error(f"[DIAGNOSTIC] Erro ao parsear recomendações: {e}")
-            raise ValueError(f"LLM retornou JSON inválido: {response.content[:200]}") from e
+            # PASSO 1: Testar raw LLM primeiro (diagnóstico)
+            logger.info("[CHECKPOINT v3.7] ANTES de raw LLM test (recomendações)...")
+            raw_test = await asyncio.wait_for(self.llm.ainvoke(messages), timeout=300)
+            logger.info("[CHECKPOINT v3.7] DEPOIS de raw LLM test (recomendações)")
+            
+            # Verificar response_metadata
+            if hasattr(raw_test, 'response_metadata'):
+                metadata = raw_test.response_metadata
+                finish_reason = metadata.get('finish_reason', 'N/A')
+                token_usage = metadata.get('token_usage', {})
+                prompt_tokens = token_usage.get('prompt_tokens', 0)
+                completion_tokens = token_usage.get('completion_tokens', 0)
+                total_tokens = token_usage.get('total_tokens', 0)
+                
+                logger.info(f"[CHECKPOINT v3.7] finish_reason: {finish_reason}")
+                logger.info(f"[CHECKPOINT v3.7] TOKEN USAGE: input={prompt_tokens}, output={completion_tokens}, total={total_tokens}")
+                logger.info(f"[CHECKPOINT v3.7] MAX ALLOWED: max_completion_tokens=64000")
+                logger.info(f"[CHECKPOINT v3.7] OUTPUT TOKEN USAGE: {(completion_tokens/64000)*100:.1f}% do limite ({completion_tokens}/64000)")
+                
+                if finish_reason == 'length':
+                    logger.error(f"[DIAGNOSTIC] ERRO: finish_reason=length! LLM truncado ao gerar recomendações.")
+                    raise ValueError(f"LLM response truncada: finish_reason={finish_reason}")
+            
+            # PASSO 2: Usar with_structured_output para garantir schema Pydantic
+            logger.info("[CHECKPOINT v3.7] ANTES de structured output call...")
+            from src.memory.schemas import RecommendationsList
+            
+            structured_llm = self.llm.with_structured_output(
+                RecommendationsList,
+                method="function_calling"  # CRÍTICO: forçar function calling (garante campo 'impact')
+            )
+            
+            try:
+                result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=300)
+            except Exception as fc_err:
+                logger.warning(
+                    f"[DIAGNOSTIC] function_calling falhou ({type(fc_err).__name__}: {fc_err}). Tentando json_mode..."
+                )
+                structured_llm = self.llm.with_structured_output(
+                    RecommendationsList,
+                    method="json_mode"
+                )
+                result = await asyncio.wait_for(structured_llm.ainvoke(messages), timeout=240)
+            logger.info("[CHECKPOINT v3.7] DEPOIS de structured output call")
+            
+            if result is None:
+                logger.error("[DIAGNOSTIC] ERRO: with_structured_output retornou None!")
+                raise ValueError("LLM structured output retornou None - verificar schema Pydantic")
+            
+            recommendations = result.recommendations  # Lista de Recommendation já validada!
+            logger.info(f"[CHECKPOINT v3.7] Structured output retornou {len(recommendations)} recomendações válidas")
+            
+        except asyncio.TimeoutError as e:
+            logger.error("[DIAGNOSTIC] Timeout ao gerar recomendações (300s)")
+            # Converter para ValueError para acionar retry do tenacity
+            raise ValueError("Timeout generating recommendations (LLM)") from e
         
-        # Validar e criar objetos Pydantic Recommendation
-        if not isinstance(recommendations_data, list):
-            raise ValueError("LLM deve retornar lista de recomendações")
-        
-        recommendations = [Recommendation.model_validate(rec) for rec in recommendations_data]
-        
-        # Ordenar por prioridade: HIGH → MEDIUM → LOW
+        logger.debug(f"[DIAGNOSTIC] LLM retornou {len(recommendations)} recomendações (schema Pydantic garantido via function calling)")
+
+        # Logar snapshot de prioridades antes de ordenar
+        try:
+            rec_priorities = [getattr(r, "priority", None) for r in recommendations]
+            logger.debug(f"[DIAGNOSTIC] Prioridades das recomendações (pré-ordenação): {rec_priorities}")
+        except Exception:
+            pass
+
+        # Ordenar por prioridade: HIGH → MEDIUM → LOW (com fallback defensivo)
         priority_order = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
-        recommendations.sort(key=lambda r: priority_order[r.priority])
+        def _safe_priority(rec: Recommendation) -> int:
+            pr = getattr(rec, "priority", None) or "MEDIUM"
+            return priority_order.get(pr, 1)
+        recommendations.sort(key=_safe_priority)
         
         logger.info(
             f"[DIAGNOSTIC] {len(recommendations)} recomendações geradas: "
@@ -427,61 +764,73 @@ ANÁLISES POR PERSPECTIVA:
         
         return recommendations
     
-    async def run_diagnostic(
-        self,
-        state: BSCState,
-    ) -> CompleteDiagnostic:
-        """Orquestrador completo do diagnóstico BSC multi-perspectiva.
-        
-        Workflow:
-        1. Valida que ClientProfile está disponível no state
-        2. Executa análise paralela das 4 perspectivas (AsyncIO)
-        3. Consolida análises identificando synergies cross-perspective
-        4. Gera recomendações priorizadas (matriz impacto vs esforço)
-        5. Constrói CompleteDiagnostic com todos resultados
-        
-        Args:
-            state: Estado LangGraph com client_profile preenchido
-        
-        Returns:
-            CompleteDiagnostic: Diagnóstico completo validado (4 perspectivas + recomendações)
-        
-        Raises:
-            ValueError: Se client_profile ausente ou dados insuficientes
-            ValidationError: Se algum output não passar validação Pydantic
-        
-        Example:
-            >>> diagnostic = await agent.run_diagnostic(state)
-            >>> diagnostic.financial.priority
-            'HIGH'
-            >>> len(diagnostic.recommendations)
-            7
-            >>> diagnostic.executive_summary[:50]
-            'Empresa TechCorp apresenta sólido desempenho fi...'
-        """
-        logger.info("[DIAGNOSTIC] ========== INICIANDO DIAGNÓSTICO BSC COMPLETO ==========")
+    async def _run_diagnostic_inner(self, state: BSCState) -> CompleteDiagnostic:
+        """Implementação interna do diagnóstico (sem timeout externo)."""
+        logger.info("[DIAGNOSTIC v3.1 LOG] >>>>> _run_diagnostic_inner() CHAMADO <<<<<")
+        # Log ÚNICO para confirmar versão nova do código (detectar cache antigo)
+        logger.info("[DIAGNOSTIC v3.1-20251021-19:10] _run_diagnostic_inner() VERSAO NOVA EXECUTANDO!")
+        logger.debug("[DEBUG] [DIAGNOSTIC] run_diagnostic() FOI CHAMADO! Iniciando diagnóstico...")
+        logger.info("[DIAGNOSTIC v3.1] ========== INICIANDO DIAGNÓSTICO BSC COMPLETO ==========")
         
         # Validação: client_profile obrigatório
+        logger.info(f"[DIAGNOSTIC v3.1 LOG] Validando client_profile... exists={state.client_profile is not None}")
         if not state.client_profile:
             raise ValueError("client_profile ausente no state. Execute onboarding primeiro.")
+        logger.info("[DIAGNOSTIC v3.1 LOG] client_profile existe! Validação OK")
         
-        client_profile = state.client_profile
+        # Converter dict para ClientProfile Pydantic se necessário (RECURSIVO para nested dicts)
+        client_profile_raw = state.client_profile
+        if isinstance(client_profile_raw, dict):
+            logger.debug("[DIAGNOSTIC] Convertendo client_profile de dict para ClientProfile Pydantic")
+            from src.memory.schemas import ClientProfile, StrategicContext, CompanyInfo
+            
+            # CRITICAL: Converter nested dicts ANTES de criar ClientProfile
+            # Pydantic V2 com extra='allow' não converte nested automaticamente
+            
+            # Converter context se é dict
+            if 'context' in client_profile_raw and isinstance(client_profile_raw['context'], dict):
+                logger.debug("[DIAGNOSTIC] Convertendo nested context de dict para StrategicContext")
+                client_profile_raw['context'] = StrategicContext(**client_profile_raw['context'])
+            
+            # Converter company se é dict
+            if 'company' in client_profile_raw and isinstance(client_profile_raw['company'], dict):
+                logger.debug("[DIAGNOSTIC] Convertendo nested company de dict para CompanyInfo")
+                client_profile_raw['company'] = CompanyInfo(**client_profile_raw['company'])
+            
+            # Agora converter para ClientProfile (com nested objects corretos)
+            client_profile = ClientProfile(**client_profile_raw)
+        else:
+            client_profile = client_profile_raw
+            # Defensive: mesmo quando o topo já é Pydantic, nested podem vir como dict
+            try:
+                from src.memory.schemas import StrategicContext, CompanyInfo
+                if hasattr(client_profile, "context") and isinstance(client_profile.context, dict):
+                    logger.debug("[DIAGNOSTIC] Normalizando nested context (dict -> StrategicContext)")
+                    client_profile.context = StrategicContext(**client_profile.context)
+                if hasattr(client_profile, "company") and isinstance(client_profile.company, dict):
+                    logger.debug("[DIAGNOSTIC] Normalizando nested company (dict -> CompanyInfo)")
+                    client_profile.company = CompanyInfo(**client_profile.company)
+            except Exception as conv_err:
+                logger.warning(f"[DIAGNOSTIC] Falha ao normalizar nested dicts: {conv_err}")
         
         # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
-        logger.info("[DIAGNOSTIC] ETAPA 1/4: Análise paralela das 4 perspectivas BSC...")
+        logger.info("[DIAGNOSTIC v3.1 LOG] ETAPA 1/4: Iniciando run_parallel_analysis()...")
+        logger.info("[DIAGNOSTIC v3.1] ETAPA 1/4: Análise paralela das 4 perspectivas BSC...")
         
         # Aguardar coroutine diretamente (sem asyncio.run - já dentro de event loop)
+        logger.info(f"[DIAGNOSTIC v3.1 LOG] Chamando self.run_parallel_analysis(client_profile={client_profile.company.name if client_profile else 'None'}, state)")
         perspective_results = await self.run_parallel_analysis(client_profile, state)
+        logger.info(f"[DIAGNOSTIC v3.1 LOG] run_parallel_analysis() RETORNOU! Keys: {list(perspective_results.keys())}")
         
         # ETAPA 2: Consolidação cross-perspective
         logger.info("[DIAGNOSTIC] ETAPA 2/4: Consolidação cross-perspective...")
         
-        consolidated = self.consolidate_diagnostic(perspective_results)
+        consolidated = await self.consolidate_diagnostic(perspective_results)
         
         # ETAPA 3: Geração de recomendações priorizadas
         logger.info("[DIAGNOSTIC] ETAPA 3/4: Geração de recomendações priorizadas...")
         
-        recommendations = self.generate_recommendations(
+        recommendations = await self.generate_recommendations(
             perspective_results,
             consolidated,
         )
@@ -507,6 +856,31 @@ ANÁLISES POR PERSPECTIVA:
         )
         
         return complete_diagnostic
+
+    async def run_diagnostic(
+        self,
+        state: BSCState,
+    ) -> CompleteDiagnostic:
+        """Orquestrador completo do diagnóstico com timeout global (failsafe)."""
+        logger.info("[DIAGNOSTIC v3.4 PRINT] >>>>> run_diagnostic() CHAMADO <<<<<")
+        global_timeout_sec = 900  # 15 minutos para todo o diagnóstico (consolidação pode demorar)
+        logger.info(
+            f"[DIAGNOSTIC v3.4] Iniciando run_diagnostic com timeout global de {global_timeout_sec}s (15 min)"
+        )
+        logger.info(f"[DIAGNOSTIC v3.4 PRINT] Timeout global: {global_timeout_sec}s (15 min) - Consolidação pode demorar 3-5 min")
+        try:
+            logger.info("[DIAGNOSTIC v3.1 LOG] ANTES de asyncio.wait_for(_run_diagnostic_inner)")
+            result = await asyncio.wait_for(
+                self._run_diagnostic_inner(state), timeout=global_timeout_sec
+            )
+            logger.info("[DIAGNOSTIC v3.1 LOG] DEPOIS de asyncio.wait_for - SUCCESS!")
+            logger.info("[DIAGNOSTIC] run_diagnostic concluído dentro do timeout global")
+            return result
+        except asyncio.TimeoutError as e:
+            logger.error(
+                f"[DIAGNOSTIC] Timeout global ({global_timeout_sec}s) no diagnóstico completo"
+            )
+            raise ValueError("Timeout global no diagnóstico BSC") from e
     
     def generate_swot_analysis(
         self,
@@ -1171,7 +1545,7 @@ ANÁLISES POR PERSPECTIVA:
             ...     client_id="cliente_001",
             ...     use_rag=False
             ... )
-            >>> print(report.summary())
+            >>> logger.info(report.summary())
             >>> 
             >>> # Com RAG (contexto literatura BSC)
             >>> report = agent.generate_benchmarking_report(
