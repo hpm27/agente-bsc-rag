@@ -660,17 +660,20 @@ INSTRUÇÕES CRÍTICAS:
 
 CATEGORIA 1: COMPANY_INFO (Informações da Empresa)
 
-CAMPOS (todos opcionais):
-- name: Nome da empresa
-- sector: Setor de atuação (Tecnologia, Manufatura, Serviços, Saúde, etc)
-- size: Porte (micro, pequena, média, grande)
-- industry: Indústria específica (ex: Software empresarial, E-commerce)
-- founded_year: Ano de fundação (1800-2025)
+IMPORTANTE: Se você decidir fornecer company_info (não null), os campos 'name' e 'sector' são OBRIGATÓRIOS.
+Outros campos (size, industry, founded_year) são opcionais.
+
+CAMPOS:
+- name: Nome da empresa (OBRIGATÓRIO se company_info != null)
+- sector: Setor de atuação (OBRIGATÓRIO se company_info != null) - Ex: Tecnologia, Manufatura, Serviços, Saúde, Varejo, Educação, Financeiro
+- size: Porte (opcional) - EXATAMENTE: micro, pequena, média ou grande - Default: "média"
+- industry: Indústria específica (opcional) - Ex: Software empresarial, E-commerce, Logística
+- founded_year: Ano de fundação (opcional) - Intervalo: 1800-2025
 
 REGRAS:
-- name NÃO pode ser genérico ("empresa", "companhia", "negócio")
-- size deve ser EXATAMENTE: micro, pequena, média ou grande
-- Se nenhum campo foi mencionado, company_info = null, has_company_info = False
+- name NÃO pode ser genérico ("empresa", "companhia", "negócio") - use o nome próprio mencionado
+- sector é OBRIGATÓRIO: se usuário não mencionou explicitamente, INFIRA do contexto (ex: "startup de apps" → "Tecnologia")
+- Se nenhum campo foi mencionado E não é possível inferir, company_info = null, has_company_info = False
 
 ---
 

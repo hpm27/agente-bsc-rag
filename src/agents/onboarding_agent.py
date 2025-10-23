@@ -509,75 +509,73 @@ class OnboardingAgent:
                 "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
             }
         
-        # STEP 6: Informações incompletas → gerar próxima pergunta contextual
-        logger.info("[COLLECT] Informações incompletas. Gerando próxima pergunta contextual.")
+        # STEP 6: Informacoes incompletas → analisar contexto e gerar resposta adaptativa (BLOCO 2)
+        logger.info("[COLLECT] Informacoes incompletas. Analisando contexto conversacional...")
         
-        # Identificar campos faltando
-        missing_fields = []
-        if not has_company_name:
-            missing_fields.append("company_name")
-        if not has_industry:
-            missing_fields.append("industry")
-        if not has_size_or_revenue:
-            missing_fields.append("size ou revenue")
-        if not has_min_challenges:
-            missing_fields.append(f"challenges (tem {len(partial_profile.get('challenges', []))}, precisa 2)")
+        # STEP 6.1: Preparar conversation_history (recuperar do state.metadata)
+        conversation_history = state.metadata.get("conversation_history", [])
+        # Adicionar mensagem atual ao historico
+        conversation_history.append({"role": "user", "content": user_message})
         
-        # Formatar contexto para prompt
-        known_fields_str = "\n".join(
-            [
-                f"- {field}: {value}"
-                for field, value in partial_profile.items()
-                if value is not None and value != [] and value != ""
-            ]
-        )
-        missing_fields_str = "\n".join([f"- {field}" for field in missing_fields])
-        
-        # Gerar próxima pergunta usando LLM
-        system_prompt = CONTEXT_AWARE_QUESTION_SYSTEM
-        user_prompt = CONTEXT_AWARE_QUESTION_USER.format(
-            known_fields=known_fields_str if known_fields_str else "Nenhum campo coletado ainda",
-            missing_fields=missing_fields_str,
-        )
-        
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-        
+        # STEP 6.2: Analisar contexto conversacional (BLOCO 1 - ETAPA 4)
         try:
-            response = await self.llm.ainvoke(messages)
-            next_question = response.content if hasattr(response, "content") else str(response)
+            context = await self._analyze_conversation_context(
+                conversation_history=conversation_history,
+                extracted_entities=extraction_result
+            )
             
-            logger.info("[COLLECT] Próxima pergunta gerada (length=%d chars)", len(next_question))
+            logger.info(
+                "[COLLECT] Contexto analisado: scenario=%s, sentiment=%s, completeness=%.0f%%",
+                context.scenario,
+                context.user_sentiment,
+                context.completeness
+            )
+            
+            # STEP 6.3: Gerar resposta contextual adaptativa (BLOCO 1 - ETAPA 5)
+            next_question = await self._generate_contextual_response(
+                context=context,
+                user_message=user_message,
+                extracted_entities=extraction_result
+            )
+            
+            logger.info("[COLLECT] Resposta contextual gerada (length=%d chars)", len(next_question))
+            
+            # STEP 6.4: Atualizar conversation_history no state.metadata
+            conversation_history.append({"role": "assistant", "content": next_question})
+            state.metadata["conversation_history"] = conversation_history
             
             return {
                 "question": next_question,
                 "is_complete": False,
                 "extracted_entities": extracted_entities,
                 "accumulated_profile": partial_profile,
-                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
+                "metadata": {
+                    "partial_profile": partial_profile,
+                    "conversation_history": conversation_history,
+                    "conversation_context": context.model_dump()  # Salvar contexto para analytics
+                },
             }
             
         except Exception as e:
-            logger.error("[COLLECT] Erro ao gerar próxima pergunta: %s", str(e))
+            logger.error("[COLLECT] Erro ao analisar contexto ou gerar resposta: %s", str(e))
+            logger.info("[COLLECT] Usando fallback _get_fallback_response()...")
             
-            # Fallback: pergunta genérica baseada no primeiro campo faltando
-            if not has_company_name:
-                fallback_question = "Para começarmos, qual o nome da sua empresa?"
-            elif not has_industry:
-                fallback_question = "Em qual setor/indústria sua empresa atua?"
-            elif not has_size_or_revenue:
-                fallback_question = "Qual o porte da empresa? (micro, pequena, média, grande)"
-            else:
-                fallback_question = "Quais são os 2-3 principais desafios estratégicos que sua empresa enfrenta hoje?"
+            # Fallback: usar metodo helper (BLOCO 1)
+            fallback_question = self._get_fallback_response(extraction_result)
+            
+            # Atualizar conversation_history mesmo em fallback
+            conversation_history.append({"role": "assistant", "content": fallback_question})
+            state.metadata["conversation_history"] = conversation_history
             
             return {
                 "question": fallback_question,
                 "is_complete": False,
                 "extracted_entities": extracted_entities,
                 "accumulated_profile": partial_profile,
-                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
+                "metadata": {
+                    "partial_profile": partial_profile,
+                    "conversation_history": conversation_history
+                },
             }
 
     def is_onboarding_complete(self, state: BSCState) -> bool:

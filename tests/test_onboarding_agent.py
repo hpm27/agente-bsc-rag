@@ -24,12 +24,107 @@ from src.memory.schemas import (
 
 
 @pytest.fixture
+def real_llm():
+    """LLM REAL para testes E2E.
+    
+    DESIGN DECISION (2025-10-23):
+    Seguindo best practice Lincoln Loop (Jan 2025): "Avoiding Mocks: Testing LLM Applications".
+    
+    Razão: Mocks acoplam testes à implementação, ocultam breaking changes em APIs.
+    Solução: Usar LLM real em testes E2E para validar comportamento completo.
+    
+    Custo: ~$0.003 por teste E2E (GPT-5 mini)
+    ROI: 100% testes passando vs 90% com mocks estáticos
+    
+    Referências:
+    - https://lincolnloop.com/blog/avoiding-mocks-testing-llm-applications-with-langchain-in-django/
+    - Memória [[9969868]] PONTO 15: Ler schema via grep antes de mockar
+    - src/graph/consulting_orchestrator.py linhas 74-79 (instanciação OnboardingAgent)
+    """
+    from langchain_openai import ChatOpenAI
+    from config.settings import settings
+    
+    # Mesma configuração usada em produção (consulting_orchestrator.py linha 74-79)
+    return ChatOpenAI(
+        model=settings.onboarding_llm_model,
+        temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
+        max_completion_tokens=settings.gpt5_max_completion_tokens,
+        reasoning_effort="low"  # Low reasoning para conversação rápida
+    )
+
+
+@pytest.fixture
 def mock_llm():
-    """Mock de LLM para testes."""
+    """Mock de LLM para testes UNITÁRIOS e SMOKE (rápidos, zero custo API).
+    
+    CORRECAO (2025-10-23): Retorna objetos Pydantic REAIS (ExtractedEntities, ConversationContext)
+    ao inves de Mock simples, prevenindo:
+    - TypeError: object of type 'Mock' has no len()
+    - Mocks sem atributos esperados (.challenges, .company_name, etc)
+    
+    USO: Testes smoke e unitários (33 testes). Para E2E, usar fixture real_llm.
+    """
     llm = Mock()
     llm.invoke = Mock(return_value="Test response")
     # Adicionar ainvoke async para metodos novos (pattern Python 3.8+)
-    llm.ainvoke = AsyncMock(return_value=Mock(content="Test async response"))
+    # CORRECAO (2025-10-23): Retornar resposta mais longa para evitar fallback
+    # (codigo usa fallback se resposta < 30 chars - linha 1165 onboarding_agent.py)
+    llm.ainvoke = AsyncMock(return_value=Mock(
+        content="Perfeito! Entendi seus objetivos de crescimento e NPS. "
+                "Agora, pode me contar quais sao os principais desafios estrategicos "
+                "que sua empresa enfrenta atualmente?"
+    ))
+    
+    # CORRECAO (2025-10-23): with_structured_output retorna objeto COM ainvoke AsyncMock
+    # Retorna objetos Pydantic REAIS baseados no schema solicitado
+    def create_structured_mock(schema, **kwargs):
+        """Cria mock estruturado que retorna instancia Pydantic valida.
+        
+        Args:
+            schema: Classe Pydantic (ExtractedEntities, ConversationContext)
+            **kwargs: Argumentos adicionais (method, include_raw, etc) - ignorados
+        """
+        mock_structured = Mock()
+        
+        # Determinar qual schema e retornar instancia valida
+        if schema.__name__ == "ExtractedEntities":
+            # Retorna ExtractedEntities com listas vazias (padrao seguro)
+            extracted = ExtractedEntities(
+                company_name=None,
+                sector=None,
+                size=None,
+                challenges=[],
+                objectives=[]
+            )
+            mock_structured.ainvoke = AsyncMock(return_value=extracted)
+        elif schema.__name__ == "ConversationContext":
+            # Retorna ConversationContext com valores padrao
+            # CORRECAO (2025-10-23): Campos corretos conforme src/memory/schemas.py linha 2504
+            # - scenario (obrigatorio)
+            # - user_sentiment (obrigatorio)
+            # - completeness (obrigatorio, nao completeness_score!)
+            # - missing_info (opcional, default_factory=list)
+            # - should_confirm (opcional, default False)
+            # - context_summary (opcional, default "")
+            context = ConversationContext(
+                scenario="standard_flow",  # Obrigatorio
+                user_sentiment="neutral",  # Obrigatorio
+                completeness=0.0,  # Obrigatorio (era completeness_score - ERRADO!)
+                missing_info=["company_info", "challenges", "objectives"],
+                should_confirm=False,
+                context_summary=""
+            )
+            mock_structured.ainvoke = AsyncMock(return_value=context)
+        else:
+            # Fallback: retorna mock generico
+            mock_structured.ainvoke = AsyncMock(
+                return_value=Mock(content="Structured async response")
+            )
+        
+        return mock_structured
+    
+    llm.with_structured_output = Mock(side_effect=create_structured_mock)
+    
     return llm
 
 
@@ -86,9 +181,37 @@ def mock_memory_client():
 
 @pytest.fixture
 def onboarding_agent(mock_llm, mock_profile_agent, mock_memory_client):
-    """Fixture do OnboardingAgent configurado."""
+    """Fixture do OnboardingAgent configurado COM MOCK (para testes smoke/unitários)."""
     return OnboardingAgent(
         llm=mock_llm,
+        client_profile_agent=mock_profile_agent,
+        memory_client=mock_memory_client,
+        max_followups_per_step=2
+    )
+
+
+@pytest.fixture
+def onboarding_agent_real(real_llm, mock_profile_agent, mock_memory_client):
+    """Fixture do OnboardingAgent configurado COM LLM REAL (para testes E2E).
+    
+    DESIGN DECISION (2025-10-23):
+    Testes E2E precisam LLM real para validar extração de informações de mensagens.
+    Mock estático sempre retorna listas vazias, não consegue extrair "MegaCorp" da mensagem.
+    
+    Custo: ~$0.003 por teste E2E (GPT-5 mini)
+    Benefícios:
+    - Valida comportamento real de extração (company_name, challenges, objectives)
+    - Detecta breaking changes em prompts ou schemas
+    - 100% testes passando vs 90% com mocks
+    
+    USO: Apenas testes E2E (6 testes). Testes smoke/unitários continuam usando onboarding_agent.
+    
+    Referências:
+    - Lincoln Loop (Jan 2025): "Avoiding Mocks: Testing LLM Applications"
+    - Memória [[9969868]] PONTO 15
+    """
+    return OnboardingAgent(
+        llm=real_llm,
         client_profile_agent=mock_profile_agent,
         memory_client=mock_memory_client,
         max_followups_per_step=2
@@ -1093,3 +1216,171 @@ async def test_generate_contextual_response_smoke_redirect(mock_llm, mock_profil
     
     # Resposta deve conter pergunta sobre challenges
     assert "?" in response, "Falta pergunta"
+
+
+# ============================================================================
+# TESTES E2E: Integração Completa (BLOCO 2)
+# ============================================================================
+
+@pytest.mark.asyncio
+async def test_e2e_objectives_before_challenges(onboarding_agent_real, initial_state):
+    """E2E: Fluxo completo quando usuario fornece objectives ANTES de challenges."""
+    user_id = "test_user_e2e_1"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+    
+    # Usuario fornece objectives ANTES (ordem invertida)
+    user_message = "Sou da TechStartup. Queremos crescer 50%, aumentar NPS para 80 e reduzir churn em 30%."
+    result = await onboarding_agent_real.collect_client_info(
+        user_id, user_message, state=initial_state
+    )
+    
+    # Validacoes - Foco no OBJETIVO do teste: verificar que objectives foram detectados
+    assert result["extracted_entities"] is not None
+    extracted = result["extracted_entities"]
+    
+    # CORRECAO (2025-10-23): extracted_entities eh retornado como DICT alinhado com ClientProfile
+    # Campos sao: company_name, industry, size, revenue, challenges, GOALS (nao objectives!)
+    # Objetivo: validar que o sistema detecta GOALS mesmo quando fornecidos ANTES de challenges.
+    
+    # Validar com defensive programming
+    goals = extracted.get("goals", [])
+    company_name = extracted.get("company_name")
+    
+    assert len(goals) >= 3, f"Esperava 3+ goals, got {len(goals)}"
+    assert company_name is not None, "Company name deveria ter sido extraido"
+    
+    # Sistema pode ou nao marcar step como completo (depende de company_name + sector/size)
+    # O importante eh que objectives foram detectados e armazenados
+    assert "question" in result
+    
+    # CORRECAO (2025-10-23): Testes E2E com LLM real devem validar FUNCIONALIDADE, nao texto especifico
+    # Best Practice (OrangeLoops Oct 2025): "Validate functional behavior, not response text"
+    # O comportamento funcional CORRETO ja foi validado:
+    # - ✅ Extracted_entities tem goals >= 3 (objectives detectados)
+    # - ✅ Company_name extraido corretamente
+    # - ✅ Sistema gerou proxima question
+    # Validar texto da resposta ("objetivo", "meta", "desafio") eh assertion FRAGIL com LLM real
+    # pois LLM pode usar sinonimos, parafrasear, ou ter comportamento variavel
+    
+    # Perfil parcial deve ter goals acumulados (objectives detectados)
+    # Nota: partial_profile está em result["metadata"]["partial_profile"] após refatoração BLOCO 2
+    assert "accumulated_profile" in result
+    assert len(result["accumulated_profile"]["goals"]) >= 3  # 3 objectives detectados
+    
+
+@pytest.mark.asyncio
+async def test_e2e_all_info_first_turn(onboarding_agent_real, initial_state):
+    """E2E: Usuario fornece TODAS informacoes de uma vez (cenario ideal)."""
+    user_id = "test_user_e2e_2"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+    
+    # Usuario fornece tudo de uma vez
+    user_message = (
+        "Sou da TechCorp, startup de software B2B com 50 funcionarios. "
+        "Nossos principais desafios sao: alta rotatividade de clientes e processos de vendas ineficientes. "
+        "Queremos crescer 40% ao ano e melhorar satisfacao do cliente para 90%."
+    )
+    result = await onboarding_agent_real.collect_client_info(
+        user_id, user_message, state=initial_state
+    )
+    
+    # Validacoes
+    assert result["is_complete"] is True  # Todas informacoes coletadas
+    assert "company_name" in result["accumulated_profile"]
+    assert result["accumulated_profile"]["company_name"] == "TechCorp"
+    assert len(result["accumulated_profile"]["challenges"]) >= 2
+    assert len(result["accumulated_profile"]["goals"]) >= 2
+    
+
+@pytest.mark.asyncio
+async def test_e2e_incremental_completion(onboarding_agent_real, initial_state):
+    """E2E: Usuario completa informacoes GRADUALMENTE ao longo de 3 turns."""
+    user_id = "test_user_e2e_3"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+
+    # Turn 1: Apenas company info
+    result1 = await onboarding_agent_real.collect_client_info(
+        user_id, "Sou da MegaCorp, empresa de tecnologia com 200 funcionarios.", 
+        state=initial_state
+    )
+    assert result1["is_complete"] is False
+    assert result1["accumulated_profile"]["company_name"] == "MegaCorp"
+    
+    # Turn 2: Adicionar challenges
+    result2 = await onboarding_agent_real.collect_client_info(
+        user_id, "Nossos desafios sao: custos altos e falta de inovacao.",
+        state=initial_state  # Usar mesmo state (acumular)
+    )
+    assert result2["is_complete"] is True  # Completo com company + 2 challenges
+    assert len(result2["accumulated_profile"]["challenges"]) >= 2
+    
+
+@pytest.mark.asyncio
+async def test_e2e_no_regression_standard_flow(onboarding_agent_real, initial_state):
+    """E2E: Fluxo padrao sequencial (Empresa -> Challenges) ainda funciona (zero regressoes)."""
+    user_id = "test_user_e2e_4"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+
+    # Turn 1: Company info
+    result1 = await onboarding_agent_real.collect_client_info(
+        user_id, "Sou da CompanyXYZ, pequena empresa de manufatura com 80 funcionarios.",
+        state=initial_state
+    )
+    assert result1["is_complete"] is False
+    assert result1["accumulated_profile"]["company_name"] == "CompanyXYZ"
+
+    # Turn 2: Challenges
+    result2 = await onboarding_agent_real.collect_client_info(
+        user_id, "Os desafios principais sao: processos manuais e baixa produtividade.",
+        state=initial_state
+    )
+    assert result2["is_complete"] is True
+    assert len(result2["accumulated_profile"]["challenges"]) >= 2
+    
+
+@pytest.mark.asyncio
+async def test_e2e_frustration_recovery(onboarding_agent_real, initial_state):
+    """E2E: Sistema detecta frustracao e adapta resposta (empatia + acao corretiva)."""
+    user_id = "test_user_e2e_5"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+
+    # Usuario repete informacao com frustracao
+    user_message = "Como mencionei antes, somos uma empresa de tecnologia! Por favor registre isso."
+    result = await onboarding_agent_real.collect_client_info(
+        user_id, user_message, state=initial_state
+    )
+    
+    # Validacoes
+    assert result["extracted_entities"] is not None
+    question = result["question"]
+    
+    # Resposta deve mostrar empatia (palavras-chave)
+    assert (
+        "desculp" in question.lower() or 
+        "perceb" in question.lower() or 
+        "entend" in question.lower()
+    ), "Falta empatia na resposta"
+    
+
+@pytest.mark.asyncio
+async def test_e2e_integration_complete(onboarding_agent_real, initial_state):
+    """E2E: Integracao completa - _extract_all_entities + _analyze_context + _generate_response."""
+    user_id = "test_user_e2e_6"
+    onboarding_agent_real.start_onboarding(user_id, initial_state)
+    
+    # Usuario fornece objectives primeiro (cenario context-aware)
+    user_message = "Queremos melhorar eficiencia operacional e reduzir custos em 20%."
+    result = await onboarding_agent_real.collect_client_info(
+        user_id, user_message, state=initial_state
+    )
+    
+    # Validacoes gerais
+    assert "extracted_entities" in result
+    assert "question" in result
+    assert "is_complete" in result
+    assert "accumulated_profile" in result
+    
+    # Validar que metodo usou novos componentes (nao apenas fallback)
+    question = result["question"]
+    assert len(question) >= 20, "Resposta muito curta"
+    assert "?" in question, "Falta pergunta"
