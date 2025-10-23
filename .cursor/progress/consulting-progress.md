@@ -1,9 +1,15 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-20 (Sessão 22 - PAUSA ESTRATÉGICA FASE 3)  
-**Fase Atual**: REFATORAÇÃO ONBOARDING 🔧 EM PROGRESSO (Pausa temporária FASE 3)  
-**Sessão**: 22 de 15-20  
-**Progresso Geral**: 60.0% (30/50 tarefas - refatoração não muda baseline)
+**Última Atualização**: 2025-10-22 (Sessão 23 - REFATORACAO ONBOARDING INICIADA)  
+**Fase Atual**: REFATORACAO ONBOARDING - BLOCO 1 EM PROGRESSO (Pausa temporaria FASE 3)  
+**Sessao**: 23 de 15-20  
+**Progresso Geral**: 60.0% (30/50 tarefas - refatoracao nao muda baseline)
+
+### Atualizacao 2025-10-22 (Sessao 23)
+
+**Branch criado**: feature/onboarding-conversational-redesign  
+**Inicio execucao**: BLOCO 1 - FASE 1 Opportunistic Extraction (2h 45min)  
+**Proximo checkpoint**: Core FASE 1 funcional
 
 ---
 

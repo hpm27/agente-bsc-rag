@@ -6,8 +6,8 @@ globs: *
 ---
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
-version: "3.20"
-last_updated: "2025-10-22"
+version: "3.37"
+last_updated: "2025-10-23"
 ---
 
 ## HEADERS
@@ -206,7 +206,7 @@ class Recommendation(BaseModel):
 RETORNE JSON:
 {
     "title": "...",
-    "expected_impact": "HIGH"  # ❌ Campo ERRADO! Schema usa 'impact'
+    "expected_impact": "HIGH"  # ❌ Campo ERRADO! Schema usa 'expected_impact'
 }
 """
 
@@ -267,7 +267,6 @@ Retorne JSON com:
     "timeframe": "string (ex: '3-6 meses', 'quick win')",
     "next_steps": ["lista de strings"]
 }
-"""
 ```
 
 **CHECKLIST PRÉ-PROMPT OBRIGATÓRIO:**
@@ -550,5 +549,4 @@ except Exception as e:
 **15.6 IDENTIFICAR TODOS SCHEMAS PYDANTIC USADOS NO TESTE (Validado FASE 3.6 - 2025-10-19)**
 *   PROBLEMA: PONTO 15 aplicado PARCIALMENTE (apenas em 1 de 4 schemas), fixtures inválidas passaram despercebidas.
 *   ROOT CAUSE: Checklist não especifica "identificar TODOS schemas via grep imports do teste".
-*   **QUANDO APLICAR**: SEMPRE antes de criar fixtures Pydantic OU escrever testes com múltiplos schemas
-*   **COMO A
+*   **QUANDO APLICAR**: SEMPRE antes de aplicar PONTO 15 (leitura via grep), identificar TODOS schemas Pydantic

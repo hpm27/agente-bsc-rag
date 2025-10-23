@@ -9,12 +9,18 @@ Data: 2025-10-15
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, AsyncMock
 
 from src.agents.onboarding_agent import OnboardingAgent, OnboardingStep
 from src.graph.states import BSCState
 from src.graph.consulting_states import ConsultingPhase
-from src.memory.schemas import ClientProfile, CompanyInfo, StrategicContext
+from src.memory.schemas import (
+    ClientProfile,
+    CompanyInfo,
+    StrategicContext,
+    ExtractedEntities,
+    ConversationContext
+)
 
 
 @pytest.fixture
@@ -22,6 +28,8 @@ def mock_llm():
     """Mock de LLM para testes."""
     llm = Mock()
     llm.invoke = Mock(return_value="Test response")
+    # Adicionar ainvoke async para metodos novos (pattern Python 3.8+)
+    llm.ainvoke = AsyncMock(return_value=Mock(content="Test async response"))
     return llm
 
 
@@ -35,27 +43,34 @@ def mock_profile_agent():
     company_info.name = "Empresa Teste"
     company_info.sector = "Tecnologia"
     company_info.size = "50-200"
-    company_info.dict = Mock(return_value={
+    
+    # CORRECAO (2025-10-23): Adicionar model_dump() para Pydantic V2
+    # Prevenir bug: _extract_information() tenta model_dump() ANTES de dict()
+    company_info_dict = {
         "name": "Empresa Teste",
         "sector": "Tecnologia",
         "size": "50-200"
-    })
+    }
+    company_info.model_dump = Mock(return_value=company_info_dict)
+    company_info.dict = Mock(return_value=company_info_dict)
     agent.extract_company_info = Mock(return_value=company_info)
 
     # Mock identify_challenges
     challenges_result = Mock()
     challenges_result.challenges = ["Desafio 1", "Desafio 2"]
-    challenges_result.dict = Mock(return_value={
-        "challenges": ["Desafio 1", "Desafio 2"]
-    })
+    
+    challenges_dict = {"challenges": ["Desafio 1", "Desafio 2"]}
+    challenges_result.model_dump = Mock(return_value=challenges_dict)
+    challenges_result.dict = Mock(return_value=challenges_dict)
     agent.identify_challenges = Mock(return_value=challenges_result)
 
     # Mock define_objectives
     objectives_result = Mock()
     objectives_result.objectives = ["Objetivo 1", "Objetivo 2", "Objetivo 3"]
-    objectives_result.dict = Mock(return_value={
-        "objectives": ["Objetivo 1", "Objetivo 2", "Objetivo 3"]
-    })
+    
+    objectives_dict = {"objectives": ["Objetivo 1", "Objetivo 2", "Objetivo 3"]}
+    objectives_result.model_dump = Mock(return_value=objectives_dict)
+    objectives_result.dict = Mock(return_value=objectives_dict)
     agent.define_objectives = Mock(return_value=objectives_result)
 
     return agent
@@ -186,11 +201,17 @@ def test_process_turn_step1_incomplete_triggers_followup(
     incomplete_info.name = "Empresa X"
     incomplete_info.sector = None
     incomplete_info.size = "100"
-    incomplete_info.dict = Mock(return_value={
+    
+    # CORRECAO (2025-10-23): Adicionar model_dump() para Pydantic V2
+    # _extract_information() tenta model_dump() ANTES de dict()
+    incomplete_info_dict = {
         "name": "Empresa X",
         "sector": None,
         "size": "100"
-    })
+    }
+    incomplete_info.model_dump = Mock(return_value=incomplete_info_dict)
+    incomplete_info.dict = Mock(return_value=incomplete_info_dict)
+    
     mock_profile_agent.extract_company_info = Mock(return_value=incomplete_info)
 
     result = onboarding_agent.process_turn(
@@ -220,7 +241,12 @@ def test_process_turn_step1_max_followups_forces_continue(
     incomplete_info.name = "Empresa Y"
     incomplete_info.sector = None
     incomplete_info.size = None
-    incomplete_info.dict = Mock(return_value={"name": "Empresa Y", "sector": None, "size": None})
+    
+    # CORRECAO (2025-10-23): Adicionar model_dump() para Pydantic V2
+    incomplete_info_dict = {"name": "Empresa Y", "sector": None, "size": None}
+    incomplete_info.model_dump = Mock(return_value=incomplete_info_dict)
+    incomplete_info.dict = Mock(return_value=incomplete_info_dict)
+    
     mock_profile_agent.extract_company_info = Mock(return_value=incomplete_info)
 
     result = onboarding_agent.process_turn(
@@ -271,7 +297,12 @@ def test_process_turn_step2_incomplete_triggers_followup(
     # Mock apenas 1 desafio
     challenges_result = Mock()
     challenges_result.challenges = ["Apenas um desafio"]
-    challenges_result.dict = Mock(return_value={"challenges": ["Apenas um desafio"]})
+    
+    # CORRECAO (2025-10-23): Adicionar model_dump() para Pydantic V2
+    challenges_dict = {"challenges": ["Apenas um desafio"]}
+    challenges_result.model_dump = Mock(return_value=challenges_dict)
+    challenges_result.dict = Mock(return_value=challenges_dict)
+    
     mock_profile_agent.identify_challenges = Mock(return_value=challenges_result)
 
     result = onboarding_agent.process_turn(
@@ -298,6 +329,13 @@ def test_process_turn_step3_completes_onboarding(onboarding_agent, initial_state
     initial_state.onboarding_progress["company_info"] = True
     initial_state.onboarding_progress["challenges"] = True
     initial_state.onboarding_progress["current_step"] = OnboardingStep.OBJECTIVES
+    
+    # CORRECAO (2025-10-23): Popular current_challenges no state
+    # _extract_information() verifica len(challenges) >= 2 antes de permitir objectives
+    initial_state.client_profile.context.current_challenges = [
+        "Crescimento sustentável",
+        "Gestão de equipe"
+    ]
 
     result = onboarding_agent.process_turn(
         "test_user_123",
@@ -325,7 +363,12 @@ def test_process_turn_step3_incomplete_triggers_followup(
     # Mock apenas 2 objetivos
     objectives_result = Mock()
     objectives_result.objectives = ["Objetivo 1", "Objetivo 2"]
-    objectives_result.dict = Mock(return_value={"objectives": ["Objetivo 1", "Objetivo 2"]})
+    
+    # CORRECAO (2025-10-23): Adicionar model_dump() para Pydantic V2
+    objectives_dict = {"objectives": ["Objetivo 1", "Objetivo 2"]}
+    objectives_result.model_dump = Mock(return_value=objectives_dict)
+    objectives_result.dict = Mock(return_value=objectives_dict)
+    
     mock_profile_agent.define_objectives = Mock(return_value=objectives_result)
 
     result = onboarding_agent.process_turn(
@@ -507,3 +550,546 @@ def test_complete_onboarding_workflow(onboarding_agent, initial_state):
     assert initial_state.current_phase == ConsultingPhase.DISCOVERY
     assert onboarding_agent.is_onboarding_complete(initial_state) is True
 
+
+# ============================================================================
+# TESTES SMOKE - _extract_all_entities() (Refatoracao Conversacional Out/2025)
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_extract_all_entities_smoke_todas_categorias(mock_llm, mock_profile_agent, mock_memory_client):
+    """SMOKE TEST 1: Mensagem COM company_info + challenges + objectives.
+    
+    Cenario: Usuario fornece TODAS categorias em 1 mensagem.
+    Esperado: has_* = True, listas nao vazias.
+    """
+    from src.memory.schemas import ExtractedEntities, CompanyInfo
+    
+    # Mock LLM retornando ExtractedEntities completo
+    mock_result = ExtractedEntities(
+        company_info=CompanyInfo(
+            name="TechCorp Brasil",
+            sector="Tecnologia",
+            size="media",
+            industry="Software empresarial",
+            founded_year=None
+        ),
+        challenges=[
+            "Crescimento insuficiente para ambicoes da empresa",
+            "Baixa eficiencia operacional"
+        ],
+        objectives=[
+            "Crescer 15% no proximo periodo",
+            "Automatizar 50% dos processos operacionais"
+        ],
+        has_company_info=True,
+        has_challenges=True,
+        has_objectives=True
+    )
+    
+    # Configurar mock async (pattern validado Stack Overflow Q70995419)
+    # with_structured_output() retorna objeto COM metodo ainvoke()
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Executar extracao
+    result = await agent._extract_all_entities(
+        "Sou da TechCorp Brasil, empresa media de tecnologia. Temos crescimento insuficiente e baixa eficiencia. Queremos crescer 15% e automatizar 50% dos processos."
+    )
+    
+    # Assertions
+    assert result.has_company_info is True
+    assert result.has_challenges is True
+    assert result.has_objectives is True
+    assert result.company_info is not None
+    assert result.company_info.name == "TechCorp Brasil"
+    assert len(result.challenges) == 2
+    assert len(result.objectives) == 2
+    assert "Crescimento insuficiente" in result.challenges[0]
+    assert "Crescer 15%" in result.objectives[0]
+
+
+@pytest.mark.asyncio
+async def test_extract_all_entities_smoke_apenas_company_info(mock_llm, mock_profile_agent, mock_memory_client):
+    """SMOKE TEST 2: Mensagem COM APENAS company_info.
+    
+    Cenario: Usuario fornece APENAS informacoes da empresa.
+    Esperado: has_company_info=True, has_challenges=False, has_objectives=False.
+    """
+    from src.memory.schemas import ExtractedEntities, CompanyInfo
+    
+    # Mock LLM retornando apenas company_info
+    mock_result = ExtractedEntities(
+        company_info=CompanyInfo(
+            name="Clinica Vida",
+            sector="Saude",
+            size="pequena",
+            industry="Clinica medica",
+            founded_year=2010
+        ),
+        challenges=[],
+        objectives=[],
+        has_company_info=True,
+        has_challenges=False,
+        has_objectives=False
+    )
+    
+    # Configurar mock async (pattern validado Stack Overflow Q70995419)
+    # with_structured_output() retorna objeto COM metodo ainvoke()
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Executar extracao
+    result = await agent._extract_all_entities(
+        "Trabalho na Clinica Vida, somos uma pequena clinica medica fundada em 2010."
+    )
+    
+    # Assertions
+    assert result.has_company_info is True
+    assert result.has_challenges is False
+    assert result.has_objectives is False
+    assert result.company_info is not None
+    assert result.company_info.name == "Clinica Vida"
+    assert result.company_info.sector == "Saude"
+    assert len(result.challenges) == 0
+    assert len(result.objectives) == 0
+
+
+@pytest.mark.asyncio
+async def test_extract_all_entities_smoke_objectives_antes_challenges(mock_llm, mock_profile_agent, mock_memory_client):
+    """SMOKE TEST 3: Mensagem COM objectives ANTES de challenges (cenario critico).
+    
+    Cenario: Usuario fornece OBJETIVOS PRIMEIRO, depois desafios (60% casos reais).
+    Esperado: Extrair AMBOS corretamente, independente da ordem.
+    """
+    from src.memory.schemas import ExtractedEntities
+    
+    # Mock LLM retornando objectives + challenges (fora da ordem esperada)
+    mock_result = ExtractedEntities(
+        company_info=None,
+        challenges=[
+            "Alta rotatividade de colaboradores",
+            "Custos operacionais elevados"
+        ],
+        objectives=[
+            "Aumentar receita em 20%",
+            "Melhorar NPS para 80 pontos"
+        ],
+        has_company_info=False,
+        has_challenges=True,
+        has_objectives=True
+    )
+    
+    # Configurar mock async (pattern validado Stack Overflow Q70995419)
+    # with_structured_output() retorna objeto COM metodo ainvoke()
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Executar extracao (objetivos ANTES de challenges na mensagem)
+    result = await agent._extract_all_entities(
+        "Queremos aumentar receita em 20% e melhorar NPS para 80. Hoje sofremos com alta rotatividade e custos elevados."
+    )
+    
+    # Assertions - CRITICO: Deve detectar objectives mesmo estando ANTES de challenges
+    assert result.has_objectives is True
+    assert result.has_challenges is True
+    assert result.has_company_info is False
+    assert len(result.objectives) == 2
+    assert len(result.challenges) == 2
+    assert "Aumentar receita" in result.objectives[0]
+    assert "Alta rotatividade" in result.challenges[0]
+    # Validar que ordem nao importa
+    assert result.objectives[0] != result.challenges[0]  # Nao confundiu objective com challenge
+
+
+# ============================================================================
+# SMOKE TESTS: _analyze_conversation_context() (ETAPA 4)
+# ============================================================================
+
+@pytest.mark.asyncio
+async def test_analyze_conversation_context_smoke_frustration_detected(
+    mock_llm,
+    mock_profile_agent,
+    mock_memory_client
+):
+    """SMOKE TEST - Cenario 1: Detectar frustracao quando usuario repete informacao.
+    
+    Valida:
+    - Deteccao de cenario frustration_detected
+    - Sentiment frustrated
+    - Completeness calculada corretamente (manual)
+    - should_confirm False (menos de 6 mensagens)
+    """
+    from src.memory.schemas import ExtractedEntities, CompanyInfo, ConversationContext
+    
+    # Mock LLM retornando ConversationContext com frustracao detectada
+    mock_result = ConversationContext(
+        scenario="frustration_detected",
+        user_sentiment="frustrated",
+        missing_info=["challenges"],
+        completeness=0.35,  # Sera overridden pelo codigo
+        should_confirm=False,
+        context_summary="TechCorp mencionada 2x, usuario repetindo informacao"
+    )
+    
+    # Mock raw test (finish_reason: stop - OK)
+    mock_raw_response = Mock()
+    mock_raw_response.response_metadata = {"finish_reason": "stop"}
+    mock_llm.ainvoke = AsyncMock(return_value=mock_raw_response)
+    
+    # Mock structured output
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Cenario: Usuario repetiu informacao da empresa (sistema nao capturou antes)
+    conversation_history = [
+        {"role": "assistant", "content": "Ola! Qual o nome da sua empresa?"},
+        {"role": "user", "content": "Somos a TechCorp, atuamos em software empresarial."},
+        {"role": "assistant", "content": "Entendi! Quais sao os principais desafios?"},
+        {"role": "user", "content": "Como eu disse, somos a TechCorp de software empresarial. Por favor registre isso."}
+    ]
+    
+    # Entidades extraidas (somente company_info)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="TechCorp", sector="Tecnologia", size="media"),
+        challenges=[],
+        objectives=[],
+        has_company_info=True,
+        has_challenges=False,
+        has_objectives=False
+    )
+    
+    # Executar analise
+    result = await agent._analyze_conversation_context(conversation_history, extracted_entities)
+    
+    # Assertions - Cenario frustration_detected
+    assert result.scenario == "frustration_detected"
+    assert result.user_sentiment == "frustrated"
+    
+    # Completeness deve ser calculada MANUALMENTE (0.35 company_info)
+    assert result.completeness == 0.35
+    assert "challenges" in result.missing_info
+    assert "objectives" in result.missing_info
+    
+    # should_confirm False (apenas 4 mensagens, menos que 6)
+    assert result.should_confirm is False
+    
+    # context_summary deve existir
+    assert len(result.context_summary) > 0
+
+
+@pytest.mark.asyncio
+async def test_analyze_conversation_context_smoke_standard_flow(
+    mock_llm,
+    mock_profile_agent,
+    mock_memory_client
+):
+    """SMOKE TEST - Cenario 2: Fluxo standard com informacoes incompletas.
+    
+    Valida:
+    - Deteccao de cenario standard_flow
+    - Sentiment neutral
+    - Completeness parcial (company + challenges = 0.65)
+    - missing_info corretamente identificado (objectives)
+    """
+    from src.memory.schemas import ExtractedEntities, CompanyInfo, ConversationContext
+    
+    # Mock LLM retornando ConversationContext standard
+    mock_result = ConversationContext(
+        scenario="standard_flow",
+        user_sentiment="neutral",
+        missing_info=["objectives"],
+        completeness=0.65,  # Sera overridden
+        should_confirm=False,
+        context_summary="TechCorp (software), 2 desafios identificados"
+    )
+    
+    # Mock raw test
+    mock_raw_response = Mock()
+    mock_raw_response.response_metadata = {"finish_reason": "stop"}
+    mock_llm.ainvoke = AsyncMock(return_value=mock_raw_response)
+    
+    # Mock structured output
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Cenario: Fluxo normal, coletando progressivamente
+    conversation_history = [
+        {"role": "assistant", "content": "Qual o nome da sua empresa?"},
+        {"role": "user", "content": "TechCorp, atuamos em software empresarial."},
+        {"role": "assistant", "content": "Quais os principais desafios?"},
+        {"role": "user", "content": "Temos dificuldade em escalar equipe e processos imaturos."}
+    ]
+    
+    # Entidades extraidas (company_info + challenges, SEM objectives)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="TechCorp", sector="Tecnologia", size="media"),
+        challenges=["Dificuldade em escalar equipe", "Processos imaturos"],
+        objectives=[],
+        has_company_info=True,
+        has_challenges=True,
+        has_objectives=False
+    )
+    
+    # Executar analise
+    result = await agent._analyze_conversation_context(conversation_history, extracted_entities)
+    
+    # Assertions - Cenario standard_flow
+    assert result.scenario == "standard_flow"
+    assert result.user_sentiment == "neutral"
+    
+    # Completeness = 0.35 (company) + 0.30 (challenges) = 0.65
+    assert result.completeness == 0.65
+    assert result.missing_info == ["objectives"]
+    assert "company_info" not in result.missing_info
+    assert "challenges" not in result.missing_info
+    
+    # should_confirm False (4 mensagens < 6)
+    assert result.should_confirm is False
+
+
+@pytest.mark.asyncio
+async def test_analyze_conversation_context_smoke_information_complete(
+    mock_llm,
+    mock_profile_agent,
+    mock_memory_client
+):
+    """SMOKE TEST - Cenario 3: Informacoes completas, pronto para diagnostico.
+    
+    Valida:
+    - Deteccao de cenario information_complete
+    - Sentiment positive
+    - Completeness 1.0 (100% - todas categorias preenchidas)
+    - missing_info vazia
+    - should_confirm True (6 mensagens = checkpoint periodico)
+    """
+    from src.memory.schemas import ExtractedEntities, CompanyInfo, ConversationContext
+    
+    # Mock LLM retornando ConversationContext completo
+    mock_result = ConversationContext(
+        scenario="information_complete",
+        user_sentiment="positive",
+        missing_info=[],
+        completeness=1.0,  # Sera overridden (mas ja esta correto)
+        should_confirm=True,
+        context_summary="TechCorp (software, media), 2 desafios, 2 objetivos - perfil completo!"
+    )
+    
+    # Mock raw test
+    mock_raw_response = Mock()
+    mock_raw_response.response_metadata = {"finish_reason": "stop"}
+    mock_llm.ainvoke = AsyncMock(return_value=mock_raw_response)
+    
+    # Mock structured output
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=mock_result)
+    mock_llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Criar agent
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Cenario: Todas informacoes coletadas (6 mensagens = checkpoint)
+    conversation_history = [
+        {"role": "assistant", "content": "Qual o nome da sua empresa?"},
+        {"role": "user", "content": "TechCorp, software empresarial, empresa media."},
+        {"role": "assistant", "content": "Quais os principais desafios?"},
+        {"role": "user", "content": "Dificuldade em escalar equipe mantendo qualidade e processos imaturos."},
+        {"role": "assistant", "content": "Quais sao seus objetivos estrategicos?"},
+        {"role": "user", "content": "Crescer 30% ao ano mantendo margem e expandir para mercado enterprise."}
+    ]
+    
+    # Entidades extraidas (TUDO preenchido)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="TechCorp", sector="Tecnologia", size="media"),
+        challenges=["Dificuldade em escalar equipe", "Processos imaturos"],
+        objectives=["Crescer 30% ao ano", "Expandir para enterprise"],
+        has_company_info=True,
+        has_challenges=True,
+        has_objectives=True
+    )
+    
+    # Executar analise
+    result = await agent._analyze_conversation_context(conversation_history, extracted_entities)
+    
+    # Assertions - Cenario information_complete
+    assert result.scenario == "information_complete"
+    assert result.user_sentiment == "positive"
+    
+    # Completeness = 0.35 + 0.30 + 0.35 = 1.0 (100%)
+    assert result.completeness == 1.0
+    assert result.missing_info == []
+    
+    # should_confirm True (6 mensagens = checkpoint periodico)
+    assert result.should_confirm is True
+    
+    # context_summary deve existir
+    assert len(result.context_summary) > 0
+
+
+# ============================================================================
+# SMOKE TESTS: _generate_contextual_response() (ETAPA 5)
+# ============================================================================
+
+@pytest.mark.asyncio
+async def test_generate_contextual_response_smoke_frustration(mock_llm, mock_profile_agent, mock_memory_client):
+    """Smoke test: Geracao de resposta empatica para cenario de frustracao."""
+    # Configurar mock do LLM para retornar resposta empatica
+    mock_llm.ainvoke = AsyncMock(
+        return_value=Mock(
+            content="Percebo que voce ja havia mencionado o setor financeiro. Vou registrar agora corretamente: setor FINANCEIRO. Para continuarmos, pode me contar os principais desafios que sua empresa enfrenta atualmente?"
+        )
+    )
+    
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Context com frustration_detected
+    context = ConversationContext(
+        scenario="frustration_detected",
+        user_sentiment="frustrated",
+        missing_info=["challenges", "objectives"],
+        completeness=0.33,  # Apenas company_info preenchida
+        context_summary="Usuario repetiu setor 2x, sistema nao registrou",
+        should_confirm=False
+    )
+    
+    # Entidades extraidas (apenas company_info)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="FinCorp", sector="Financeiro", size="grande"),
+        challenges=[],
+        objectives=[],
+        has_company_info=True,
+        has_challenges=False,
+        has_objectives=False
+    )
+    
+    # Executar geracao
+    user_message = "Ja falei que somos do setor FINANCEIRO! Voce nao registrou?"
+    response = await agent._generate_contextual_response(context, user_message, extracted_entities)
+    
+    # Assertions - Resposta deve conter empatia
+    assert len(response) >= 20, "Resposta muito curta"
+    assert "percebo" in response.lower() or "entendo" in response.lower(), "Falta empatia"
+    assert "financeiro" in response.lower(), "Nao menciona setor especifico"
+    
+    # Resposta deve conter acao corretiva
+    assert "registrar" in response.lower() or "registrado" in response.lower(), "Falta acao corretiva"
+
+
+@pytest.mark.asyncio
+async def test_generate_contextual_response_smoke_confirmation(mock_llm, mock_profile_agent, mock_memory_client):
+    """Smoke test: Geracao de sumario estruturado para confirmacao."""
+    # Configurar mock do LLM para retornar sumario estruturado
+    mock_llm.ainvoke = AsyncMock(
+        return_value=Mock(
+            content="""Otimo! Vamos confirmar as informacoes:
+[OK] TechCorp - Setor Tecnologia, media empresa
+[OK] 2 challenges: Dificuldade em escalar equipe, Processos imaturos
+[OK] 2 objectives: Crescer 30% ao ano, Expandir para enterprise
+
+Posso confirmar que esta tudo correto?"""
+        )
+    )
+    
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Context com information_complete + should_confirm
+    context = ConversationContext(
+        scenario="information_complete",
+        user_sentiment="positive",
+        missing_info=[],
+        completeness=1.0,  # 100% preenchido
+        context_summary="Todas informacoes basicas coletadas",
+        should_confirm=True
+    )
+    
+    # Entidades extraidas (TUDO preenchido)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="TechCorp", sector="Tecnologia", size="media"),
+        challenges=["Dificuldade em escalar equipe", "Processos imaturos"],
+        objectives=["Crescer 30% ao ano", "Expandir para enterprise"],
+        has_company_info=True,
+        has_challenges=True,
+        has_objectives=True
+    )
+    
+    # Executar geracao
+    user_message = "Sim, essas sao as principais informacoes."
+    response = await agent._generate_contextual_response(context, user_message, extracted_entities)
+    
+    # Assertions - Resposta deve conter sumario estruturado
+    assert len(response) >= 50, "Resposta muito curta para sumario"
+    assert "[OK]" in response or "ok" in response.lower(), "Falta formato [OK]"
+    assert "TechCorp" in response, "Falta nome da empresa"
+    assert "confirmar" in response.lower() or "correto" in response.lower(), "Falta pergunta confirmacao"
+    
+    # Resposta deve mencionar categorias principais
+    assert "challenge" in response.lower() or "desafio" in response.lower(), "Falta mencionar challenges"
+    assert "objective" in response.lower() or "objetivo" in response.lower(), "Falta mencionar objectives"
+
+
+@pytest.mark.asyncio
+async def test_generate_contextual_response_smoke_redirect(mock_llm, mock_profile_agent, mock_memory_client):
+    """Smoke test: Redirecionamento suave quando usuario menciona objectives antes de challenges."""
+    # Configurar mock do LLM para retornar redirecionamento educativo
+    mock_llm.ainvoke = AsyncMock(
+        return_value=Mock(
+            content="Entendo os objetivos de crescimento. Para criar um diagnostico BSC efetivo, preciso primeiro entender os desafios atuais. Quais sao os principais problemas que impedem esse crescimento hoje?"
+        )
+    )
+    
+    agent = OnboardingAgent(mock_llm, mock_profile_agent, mock_memory_client)
+    
+    # Context com objectives_before_challenges
+    context = ConversationContext(
+        scenario="objectives_before_challenges",
+        user_sentiment="neutral",
+        missing_info=["challenges"],  # Objectives preenchidos, mas challenges NAO
+        completeness=0.68,  # company_info + objectives preenchidos
+        context_summary="Usuario forneceu objectives antes de identificar challenges",
+        should_confirm=False
+    )
+    
+    # Entidades extraidas (company_info + objectives, SEM challenges)
+    extracted_entities = ExtractedEntities(
+        company_info=CompanyInfo(name="GrowthCo", sector="SaaS", size="pequena"),
+        challenges=[],  # VAZIO - nao mencionou challenges
+        objectives=["Crescer 50% ano", "Aumentar MRR"],
+        has_company_info=True,
+        has_challenges=False,  # Falta!
+        has_objectives=True
+    )
+    
+    # Executar geracao
+    user_message = "Queremos crescer 50% e aumentar MRR."
+    response = await agent._generate_contextual_response(context, user_message, extracted_entities)
+    
+    # Assertions - Resposta deve conter redirecionamento suave
+    assert len(response) >= 30, "Resposta muito curta"
+    assert "entendo" in response.lower() or "percebo" in response.lower(), "Falta reconhecimento"
+    assert "desafio" in response.lower() or "problema" in response.lower(), "Falta mencionar challenges"
+    
+    # Resposta deve conter explicacao BREVE (nao condescendente)
+    assert "primeiro" in response.lower() or "antes" in response.lower(), "Falta explicar ordem"
+    
+    # Resposta deve conter pergunta sobre challenges
+    assert "?" in response, "Falta pergunta"

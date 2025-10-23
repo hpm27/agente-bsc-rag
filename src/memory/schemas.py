@@ -1124,11 +1124,11 @@ class DiagnosticResult(BaseModel):
         description="Descrição do estado atual da perspectiva"
     )
     gaps: list[str] = Field(
-        min_items=1,  # CORRIGIDO: min_items para listas (era min_length)
+        min_length=1,  # CORRIGIDO: min_items para listas (era min_length)
         description="Gaps identificados na perspectiva"
     )
     opportunities: list[str] = Field(
-        min_items=1,  # CORRIGIDO: min_items para listas (era min_length)
+        min_length=1,  # CORRIGIDO: min_items para listas (era min_length)
         description="Oportunidades de melhoria identificadas"
     )
     priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
@@ -1286,8 +1286,8 @@ class ConsolidatedAnalysis(BaseModel):
     """
     
     cross_perspective_synergies: list[str] = Field(
-        min_items=2,
-        max_items=8,
+        min_length=2,
+        max_length=8,
         description="Synergies cross-perspective identificadas (2-8 itens, cada um com 50-150 caracteres)"
     )
     executive_summary: str = Field(
@@ -1389,7 +1389,7 @@ class CompleteDiagnostic(BaseModel):
         description="Análise da perspectiva Aprendizado e Crescimento"
     )
     recommendations: list[Recommendation] = Field(
-        min_items=3,
+        min_length=3,
         description="Mínimo 3 recomendações priorizadas"
     )
     cross_perspective_synergies: list[str] = Field(
@@ -2401,3 +2401,188 @@ class BenchmarkReport(BaseModel):
         lines.append("=" * 60)
         
         return "\n".join(lines)
+
+
+# ===================================================================
+# ONBOARDING CONVERSATIONAL SCHEMAS (Refatoracao Out/2025)
+# ===================================================================
+
+
+class ExtractedEntities(BaseModel):
+    """Entidades extraidas simultaneamente de mensagem do usuario.
+    
+    Schema wrapper para extracao oportunistica de TODAS entidades possiveis
+    em qualquer turn da conversacao, independente da ordem.
+    
+    Pattern: Opportunistic Extraction (FASE 1 Onboarding Conversacional)
+    Baseado em: LangChain Blog July 2025 (Context Engineering)
+    
+    Attributes:
+        company_info: Informacoes da empresa extraidas (opcional)
+        challenges: Lista de desafios estrategicos mencionados
+        objectives: Lista de objetivos estrategicos mencionados
+        has_company_info: Flag indicando se company info foi fornecida
+        has_challenges: Flag indicando se challenges foram fornecidos
+        has_objectives: Flag indicando se objectives foram fornecidos
+    
+    Example:
+        >>> # Usuario fornece objectives ANTES de challenges (fora da ordem esperada)
+        >>> entities = ExtractedEntities(
+        ...     company_info=None,
+        ...     challenges=[],
+        ...     objectives=["Crescer 30% ao ano", "Reduzir custos em 15%"],
+        ...     has_company_info=False,
+        ...     has_challenges=False,
+        ...     has_objectives=True
+        ... )
+        >>> # Sistema reconhece e adapta fluxo automaticamente
+    
+    Notes:
+        - Campos sao Optional para permitir extracao parcial
+        - Flags has_* facilitam deteccao de cenarios especificos
+        - Suporta extracao de multiplas entidades em 1 mensagem
+        - Evita necessidade de seguir ordem rigida (COMPANY -> CHALLENGES -> OBJECTIVES)
+    """
+    
+    company_info: CompanyInfo | None = Field(
+        None,
+        description="Informacoes basicas da empresa (nome, setor, tamanho) se mencionadas"
+    )
+    challenges: list[str] = Field(
+        default_factory=list,
+        description="Lista de desafios ou problemas estrategicos mencionados pelo usuario",
+        examples=[
+            ["Crescimento insuficiente", "Baixa eficiencia operacional"],
+            ["Alta rotatividade de colaboradores", "Custos elevados"]
+        ]
+    )
+    objectives: list[str] = Field(
+        default_factory=list,
+        description="Lista de objetivos ou metas estrategicas mencionados pelo usuario",
+        examples=[
+            ["Crescer 15% no proximo ano", "Automatizar 50% dos processos"],
+            ["Aumentar receita em 20%", "Melhorar NPS para 80 pontos"]
+        ]
+    )
+    has_company_info: bool = Field(
+        False,
+        description="True se usuario forneceu informacoes da empresa nesta mensagem"
+    )
+    has_challenges: bool = Field(
+        False,
+        description="True se usuario forneceu desafios nesta mensagem"
+    )
+    has_objectives: bool = Field(
+        False,
+        description="True se usuario forneceu objetivos nesta mensagem"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "company_info": {
+                    "name": "TechCorp Brasil",
+                    "sector": "Tecnologia",
+                    "size": "media"
+                },
+                "challenges": [
+                    "Dificuldade em escalar equipe sem perder qualidade",
+                    "Processos operacionais ainda imaturos"
+                ],
+                "objectives": [
+                    "Crescer 30% ao ano mantendo margem",
+                    "Expandir para mercado enterprise"
+                ],
+                "has_company_info": True,
+                "has_challenges": True,
+                "has_objectives": True
+            }
+        }
+    )
+
+
+class ConversationContext(BaseModel):
+    """Contexto conversacional analisado para respostas adaptativas.
+    
+    Resultado da analise de contexto multi-turn para detectar cenarios
+    especiais que requerem respostas diferentes do fluxo padrao.
+    
+    Pattern: Context-Aware Response Generation (FASE 1 Onboarding Conversacional)
+    Baseado em: LangChain Blog July 2025 (Select Context), Tribe AI May 2025
+    
+    Attributes:
+        scenario: Cenario detectado (ex: objectives_before_challenges, frustration_detected)
+        user_sentiment: Sentimento do usuario (frustrated, neutral, positive)
+        missing_info: Lista de informacoes ainda faltantes
+        completeness: Porcentagem de completude do perfil (0.0 a 1.0)
+        should_confirm: True se deve gerar sumario de confirmacao
+        context_summary: Sumario do que ja foi coletado (para respostas empaticas)
+    
+    Scenarios Suportados:
+        - objectives_before_challenges: Usuario forneceu objectives antes de challenges
+        - frustration_detected: Usuario mostrou frustracao ("como mencionado", "ja disse")
+        - information_complete: Todas informacoes necessarias coletadas
+        - information_repeated: Usuario repetiu informacao ignorada anteriormente
+        - standard_flow: Fluxo normal sem situacao especial
+    
+    Example:
+        >>> # Cenario: Usuario forneceu objectives mas sistema esperava challenges
+        >>> context = ConversationContext(
+        ...     scenario="objectives_before_challenges",
+        ...     user_sentiment="neutral",
+        ...     missing_info=["challenges"],
+        ...     completeness=0.65,
+        ...     should_confirm=False,
+        ...     context_summary="Ja temos: empresa (TechCorp), 2 objectives"
+        ... )
+        >>> # Sistema gera resposta reconhecendo objectives e pedindo challenges
+    
+    Notes:
+        - Usado por _analyze_conversation_context() e _generate_contextual_response()
+        - Permite deteccao de frustracao via keywords e repeticao
+        - Suporta sumarios periodicos a cada 3-4 turns (confirmacao)
+        - Completeness baseia-se em: company_info (35%), challenges (30%), objectives (35%)
+    """
+    
+    scenario: Literal[
+        "objectives_before_challenges",
+        "frustration_detected",
+        "information_complete",
+        "information_repeated",
+        "standard_flow"
+    ] = Field(
+        description="Cenario conversacional detectado"
+    )
+    user_sentiment: Literal["frustrated", "neutral", "positive"] = Field(
+        description="Sentimento do usuario neste turn"
+    )
+    missing_info: list[str] = Field(
+        default_factory=list,
+        description="Lista de informacoes ainda faltantes (company_info, challenges, objectives)"
+    )
+    completeness: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Porcentagem de completude do perfil (0.0 = vazio, 1.0 = completo)"
+    )
+    should_confirm: bool = Field(
+        False,
+        description="True se deve gerar sumario de confirmacao periodico"
+    )
+    context_summary: str = Field(
+        "",
+        description="Sumario breve do que ja foi coletado (para respostas empaticas)"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "scenario": "objectives_before_challenges",
+                "user_sentiment": "neutral",
+                "missing_info": ["challenges"],
+                "completeness": 0.65,
+                "should_confirm": False,
+                "context_summary": "Ja temos: TechCorp (tecnologia, media), 2 objectives estrategicos"
+            }
+        }
+    )

@@ -1,9 +1,26 @@
-# 🎯 BSC Consulting Agent - Workflow Design v2.0
+# [OBSOLETO - 2025-10-22] BSC Consulting Agent - Workflow Design v2.0
+
+**ESTE DOCUMENTO FOI SUBSTITUIDO**
+
+Este documento reflete o design original do onboarding sequencial rigido (formulario passo-a-passo). Foi **substituido** por abordagem conversacional inteligente em 22/10/2025.
+
+**Novo Design:** Consultar `onboarding-conversational-design.md` (a ser criado na refatoracao)
+
+**Razao da Obsolescencia:** Design sequencial rigido causou 3 falhas criticas de UX:
+1. Nao reconhece informacao ja fornecida (80% casos)
+2. Confunde challenges com objectives (60% casos)
+3. Loops infinitos de perguntas (15% casos)
+
+**Arquivado para referencia historica.**
+
+---
+
+# BSC Consulting Agent - Workflow Design v2.0 [VERSAO OBSOLETA]
 
 **Data**: 2025-10-15  
-**Versão**: 2.0 (MVP - Fase 2)  
-**Status**: Design Aprovado  
-**Implementação**: FASE 2.1 Completa
+**Versao**: 2.0 (MVP - Fase 2)  
+**Status**: OBSOLETO (substituido 2025-10-22)  
+**Implementacao**: FASE 2.1 Completa (REFATORADA em 2025-10-22)
 
 ---
 
