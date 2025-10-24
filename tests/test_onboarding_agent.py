@@ -1256,9 +1256,9 @@ async def test_e2e_objectives_before_challenges(onboarding_agent_real, initial_s
     # CORRECAO (2025-10-23): Testes E2E com LLM real devem validar FUNCIONALIDADE, nao texto especifico
     # Best Practice (OrangeLoops Oct 2025): "Validate functional behavior, not response text"
     # O comportamento funcional CORRETO ja foi validado:
-    # - ✅ Extracted_entities tem goals >= 3 (objectives detectados)
-    # - ✅ Company_name extraido corretamente
-    # - ✅ Sistema gerou proxima question
+    # - [OK] Extracted_entities tem goals >= 3 (objectives detectados)
+    # - [OK] Company_name extraido corretamente
+    # - [OK] Sistema gerou proxima question
     # Validar texto da resposta ("objetivo", "meta", "desafio") eh assertion FRAGIL com LLM real
     # pois LLM pode usar sinonimos, parafrasear, ou ter comportamento variavel
     

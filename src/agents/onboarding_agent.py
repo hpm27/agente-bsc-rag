@@ -46,7 +46,7 @@ class OnboardingAgent:
     - Integrar ClientProfileAgent para extração progressiva
     - Implementar follow-up inteligente quando informações incompletas
     - Atualizar BSCState.onboarding_progress
-    - Transição automática ONBOARDING → DISCOVERY quando completo
+    - Transicao automatica ONBOARDING -> DISCOVERY quando completo
 
     Workflow de 3 Steps:
     1. COMPANY_INFO: Nome, setor, tamanho da empresa
@@ -246,7 +246,7 @@ class OnboardingAgent:
                 "onboarding_progress": state.onboarding_progress,
             }
 
-        # Informação suficiente (ou max follow-ups atingido) → avançar
+        # Informacao suficiente (ou max follow-ups atingido) -> avancar
         self._mark_step_complete(current_step, state)
 
         # Verificar se onboarding completo
@@ -304,8 +304,8 @@ class OnboardingAgent:
         1. Extrai TODAS entidades possíveis da mensagem do usuário (_extract_all_entities)
         2. Acumula conhecimento em partial_profile (preserva entre turnos)
         3. Decide próxima ação baseada em informações faltantes:
-           - Se informações mínimas completas → finaliza onboarding
-           - Se informações mínimas incompletas → gera próxima pergunta contextual
+           - Se informacoes minimas completas -> finaliza onboarding
+           - Se informacoes minimas incompletas -> gera proxima pergunta contextual
         4. Atualiza BSCState.client_profile progressivamente
         
         Informações mínimas necessárias:
@@ -357,7 +357,7 @@ class OnboardingAgent:
             "size": extraction_result.company_info.size if extraction_result.company_info else None,
             "revenue": None,  # Nao existe em ExtractedEntities
             "challenges": extraction_result.challenges,
-            "goals": extraction_result.objectives,  # Mapeado: objectives → goals
+            "goals": extraction_result.objectives,  # Mapeado: objectives -> goals
             "timeline": None,  # Nao existe em ExtractedEntities
             "budget": None,  # Nao existe em ExtractedEntities
             "location": None,  # Nao existe em ExtractedEntities
@@ -509,7 +509,7 @@ class OnboardingAgent:
                 "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
             }
         
-        # STEP 6: Informacoes incompletas → analisar contexto e gerar resposta adaptativa (BLOCO 2)
+        # STEP 6: Informacoes incompletas -> analisar contexto e gerar resposta adaptativa (BLOCO 2)
         logger.info("[COLLECT] Informacoes incompletas. Analisando contexto conversacional...")
         
         # STEP 6.1: Preparar conversation_history (recuperar do state.metadata)

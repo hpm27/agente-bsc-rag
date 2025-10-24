@@ -760,10 +760,10 @@ class CompanyInfo(BaseModel):
         """Permite porte em categorias (micro/pequena/média/grande) OU faixa numérica (ex: '50-100').
 
         Aceita sinônimos comuns no Brasil e normaliza para valores canônicos:
-        - "médio porte", "medio porte", "medio", "média empresa" → "média"
-        - "pequeno porte", "pequeno", "pequena empresa" → "pequena"
-        - "grande porte", "grande empresa" → "grande"
-        - "microempresa", "micro empresa" → "micro"
+        - "médio porte", "medio porte", "medio", "média empresa" -> "média"
+        - "pequeno porte", "pequeno", "pequena empresa" -> "pequena"
+        - "grande porte", "grande empresa" -> "grande"
+        - "microempresa", "micro empresa" -> "micro"
         """
         if not isinstance(v, str):
             raise ValueError("Porte da empresa deve ser texto")
@@ -775,7 +775,7 @@ class CompanyInfo(BaseModel):
         simplified = simplified.replace("-", " ").replace("_", " ")
         simplified = re.sub(r"\s+", " ", simplified).strip()
 
-        # Mapeamento de sinônimos comuns → valores canônicos
+        # Mapeamento de sinônimos comuns -> valores canônicos
         if any(tok in simplified for tok in ["medio", "médio", "media", "média"]):
             return "média"
         if any(tok in simplified for tok in ["pequeno", "pequena"]):
@@ -902,7 +902,7 @@ class EngagementState(BaseModel):
     e timestamps relevantes.
     
     Attributes:
-        current_phase: Fase atual do workflow (ONBOARDING → COMPLETED)
+        current_phase: Fase atual do workflow (ONBOARDING -> COMPLETED)
         started_at: Data/hora de início do engajamento
         last_interaction: Data/hora da última interação com o agente
         progress_percentage: Percentual de progresso (0-100%)
@@ -1217,8 +1217,8 @@ class Recommendation(BaseModel):
         """Valida lógica de priorização: HIGH impact + LOW effort = HIGH priority.
         
         Ajusta priority automaticamente se:
-        - HIGH impact + LOW effort → priority = HIGH (quick win)
-        - LOW impact + HIGH effort → priority = LOW (evitar)
+        - HIGH impact + LOW effort -> priority = HIGH (quick win)
+        - LOW impact + HIGH effort -> priority = LOW (evitar)
         """
         if self.impact == "HIGH" and self.effort == "LOW":
             if self.priority != "HIGH":
@@ -1371,7 +1371,7 @@ class CompleteDiagnostic(BaseModel):
         ...     learning=learning,
         ...     recommendations=[rec1],
         ...     cross_perspective_synergies=["ABC Costing melhora pricing (Financial) e reduz churn SMB (Customer)"],
-        ...     executive_summary="Empresa com crescimento forte mas margens comprimidas. Prioridades: (1) Implementar ABC Costing para visibilidade custos, (2) Customer Success SMB para reduzir churn 25→15%, (3) RPA para ganhar eficiência operacional. ROI esperado: +5pp margem em 12 meses.",
+        ...     executive_summary="Empresa com crescimento forte mas margens comprimidas. Prioridades: (1) Implementar ABC Costing para visibilidade custos, (2) Customer Success SMB para reduzir churn 25->15%, (3) RPA para ganhar eficiência operacional. ROI esperado: +5pp margem em 12 meses.",
         ...     next_phase="APPROVAL_PENDING"
         ... )
     """

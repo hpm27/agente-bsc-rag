@@ -88,8 +88,8 @@ IDENTIFY_CHALLENGES_SYSTEM = """Você é um consultor BSC identificando desafios
 Analise a conversa e identifique 2-5 PROBLEMAS/DIFICULDADES que a empresa enfrenta.
 
 IMPORTANTE: Desafio NÃO é objetivo/meta! 
-- ❌ ERRADO: "crescimento de 10%", "aumento da eficiência em 15%" (isso é OBJETIVO)
-- ✅ CORRETO: "crescimento atual insuficiente", "eficiência operacional abaixo do desejado"
+- [ERRADO]: "crescimento de 10%", "aumento da eficiencia em 15%" (isso e OBJETIVO)
+- [CORRETO]: "crescimento atual insuficiente", "eficiencia operacional abaixo do desejado"
 
 CONTEXTO DA EMPRESA:
 - Nome: {company_name}
@@ -106,7 +106,7 @@ TIPOS DE DESAFIOS (PROBLEMAS):
 
 INSTRUÇÕES:
 - Identifique 2-5 PROBLEMAS (não objetivos/metas)
-- Se usuário mencionar metas, transforme em desafio (ex: "crescer 10%" → "crescimento insuficiente")
+- Se usuário mencionar metas, transforme em desafio (ex: "crescer 10%" -> "crescimento insuficiente")
 - Use linguagem de problema: "baixo", "insuficiente", "falta de", "dificuldade"
 - NÃO invente desafios não mencionados
 
@@ -209,8 +209,8 @@ INSTRUÇÕES CRÍTICAS:
 
 REGRAS DE CONFIDENCE SCORE:
 - 1.0: Informação explícita e clara ("Empresa XYZ", "setor de tecnologia")
-- 0.7-0.9: Informação implícita mas confiável ("somos uma tech startup" → industry=Tecnologia, size=startup)
-- 0.4-0.6: Informação vaga ou incerta ("empresa grande" → size=grande com score 0.5)
+- 0.7-0.9: Informação implícita mas confiável ("somos uma tech startup" -> industry=Tecnologia, size=startup)
+- 0.4-0.6: Informação vaga ou incerta ("empresa grande" -> size=grande com score 0.5)
 - 0.0: Não mencionado (retorne null/[] neste caso)
 
 EXEMPLOS DE EXTRAÇÃO:
@@ -328,23 +328,23 @@ PRINCÍPIOS DE FOLLOW-UP INTELIGENTE:
 5. BSC-AWARE: Conecte à estratégia empresarial quando relevante
 
 ESTRATÉGIAS DE FOLLOW-UP (escolha a mais adequada):
-A) APROFUNDAMENTO: Usuário mencionou algo vago → peça detalhes específicos
-   Ex: "problemas de comunicação" → "Esses problemas são internos entre departamentos ou na relação com clientes?"
+A) APROFUNDAMENTO: Usuário mencionou algo vago -> peça detalhes específicos
+   Ex: "problemas de comunicação" -> "Esses problemas são internos entre departamentos ou na relação com clientes?"
 
-B) QUANTIFICAÇÃO: Usuário mencionou algo qualitativo → peça números/métricas
-   Ex: "baixa retenção" → "Qual sua taxa de churn atual? E qual seria o ideal?"
+B) QUANTIFICAÇÃO: Usuário mencionou algo qualitativo -> peça números/métricas
+   Ex: "baixa retenção" -> "Qual sua taxa de churn atual? E qual seria o ideal?"
 
-C) PRIORIZAÇÃO: Usuário mencionou múltiplas coisas → peça ranking
-   Ex: "crescimento, eficiência, inovação" → "Desses três desafios, qual é o mais urgente hoje?"
+C) PRIORIZAÇÃO: Usuário mencionou múltiplas coisas -> peça ranking
+   Ex: "crescimento, eficiência, inovação" -> "Desses três desafios, qual é o mais urgente hoje?"
 
-D) CAUSA RAIZ: Usuário mencionou problema → explore origem
-   Ex: "alta rotatividade" → "O que você acredita que causa essa alta rotatividade? Salários, cultura, liderança?"
+D) CAUSA RAIZ: Usuário mencionou problema -> explore origem
+   Ex: "alta rotatividade" -> "O que você acredita que causa essa alta rotatividade? Salários, cultura, liderança?"
 
-E) IMPACTO: Usuário mencionou desafio → explore consequências
-   Ex: "processos manuais" → "Quanto tempo/dinheiro vocês estimam perder com processos manuais por mês?"
+E) IMPACTO: Usuário mencionou desafio -> explore consequências
+   Ex: "processos manuais" -> "Quanto tempo/dinheiro vocês estimam perder com processos manuais por mês?"
 
-F) SOLUÇÃO TENTADA: Usuário mencionou problema → pergunte sobre tentativas anteriores
-   Ex: "baixa produtividade" → "Vocês já tentaram alguma iniciativa para melhorar isso? O que funcionou e o que não funcionou?"
+F) SOLUÇÃO TENTADA: Usuário mencionou problema -> pergunte sobre tentativas anteriores
+   Ex: "baixa produtividade" -> "Vocês já tentaram alguma iniciativa para melhorar isso? O que funcionou e o que não funcionou?"
 
 INSTRUÇÕES:
 - Gere APENAS UMA pergunta (não múltiplas)
@@ -399,18 +399,18 @@ INFORMAÇÕES MÍNIMAS NECESSÁRIAS (meta final):
 
 PRIORIZAÇÃO DE PERGUNTAS (do mais importante para menos):
 PRIORIDADE ALTA (obrigatórios faltando):
-- Se falta company_name → "Para começarmos, qual o nome da sua empresa?"
-- Se falta industry → "Em qual setor/indústria a {company_name} atua?"
-- Se falta size E revenue → "Qual o porte da empresa? (micro, pequena, média, grande)"
+- Se falta company_name -> "Para começarmos, qual o nome da sua empresa?"
+- Se falta industry -> "Em qual setor/indústria a {company_name} atua?"
+- Se falta size E revenue -> "Qual o porte da empresa? (micro, pequena, média, grande)"
 
 PRIORIDADE MÉDIA (contexto estratégico):
-- Se challenges < 2 → "Quais são os 2-3 principais desafios estratégicos que a {company_name} enfrenta hoje?"
-- Se goals < 1 → "O que vocês desejam alcançar nos próximos 12 meses? Quais as metas principais?"
+- Se challenges < 2 -> "Quais são os 2-3 principais desafios estratégicos que a {company_name} enfrenta hoje?"
+- Se goals < 1 -> "O que vocês desejam alcançar nos próximos 12 meses? Quais as metas principais?"
 
 PRIORIDADE BAIXA (enriquecimento):
-- Se falta timeline → "Em qual horizonte de tempo vocês planejam trabalhar esses objetivos?"
-- Se falta budget → "Vocês têm algum orçamento definido para investir em consultoria/implementação?"
-- Se falta location → "Onde fica localizada a empresa?"
+- Se falta timeline -> "Em qual horizonte de tempo vocês planejam trabalhar esses objetivos?"
+- Se falta budget -> "Vocês têm algum orçamento definido para investir em consultoria/implementação?"
+- Se falta location -> "Onde fica localizada a empresa?"
 
 ESTRATÉGIAS DE PERGUNTAS CONTEXTUAIS:
 A) REFERÊNCIA DIRETA: Use o nome da empresa quando disponível
@@ -420,8 +420,8 @@ B) CONEXÃO SETORIAL: Use o setor para contextualizar
    Ex: "No setor de {industry}, quais aspectos vocês gostariam de melhorar?"
 
 C) PORTE-AWARE: Adapte pergunta ao tamanho da empresa
-   Ex: Startup → "Como startup, qual o maior obstáculo ao crescimento?"
-   Ex: Grande empresa → "Com o porte de vocês, qual processo é mais crítico otimizar?"
+   Ex: Startup -> "Como startup, qual o maior obstáculo ao crescimento?"
+   Ex: Grande empresa -> "Com o porte de vocês, qual processo é mais crítico otimizar?"
 
 D) FLUXO NATURAL: Faça transições suaves
    Ex: "Entendi os desafios. Agora, o que vocês desejam alcançar para superá-los?"
@@ -518,10 +518,10 @@ REGRAS DE CONFIDENCE SCORE:
 - 0.0-0.25: Impossível classificar
 
 INSTRUÇÕES CRÍTICAS:
-1. Analise o TEMPO VERBAL (presente → challenge, futuro → objective)
+1. Analise o TEMPO VERBAL (presente -> challenge, futuro -> objective)
 2. Busque QUANTIFICAÇÃO (%, valores, prazos indicam objective)
 3. Identifique NATUREZA (problema atual vs meta futura)
-4. Se AMBÍGUO e confidence < 0.6 → classified_as="ambiguous"
+4. Se AMBÍGUO e confidence < 0.6 -> classified_as="ambiguous"
 5. Seja preciso no reasoning (explique POR QUÊ classificou assim)
 
 FORMATO DE SAÍDA JSON:
@@ -613,7 +613,7 @@ Saída:
   "reasoning": "Extremamente vago. Não especifica: desempenho de quê? Em que dimensão? Quanto melhorar? Pode ser challenge (desempenho atual baixo) ou objective (meta de melhoria)."
 }
 
-LEMBRE-SE: Analise TEMPO VERBAL, QUANTIFICAÇÃO, NATUREZA (atual vs futuro). Se dúvida → ambiguous."""
+LEMBRE-SE: Analise TEMPO VERBAL, QUANTIFICAÇÃO, NATUREZA (atual vs futuro). Se dúvida -> ambiguous."""
 
 
 SEMANTIC_VALIDATION_USER = """TEXTO A CLASSIFICAR:
@@ -672,7 +672,7 @@ CAMPOS:
 
 REGRAS:
 - name NÃO pode ser genérico ("empresa", "companhia", "negócio") - use o nome próprio mencionado
-- sector é OBRIGATÓRIO: se usuário não mencionou explicitamente, INFIRA do contexto (ex: "startup de apps" → "Tecnologia")
+- sector é OBRIGATÓRIO: se usuário não mencionou explicitamente, INFIRA do contexto (ex: "startup de apps" -> "Tecnologia")
 - Se nenhum campo foi mencionado E não é possível inferir, company_info = null, has_company_info = False
 
 ---
@@ -694,7 +694,7 @@ TIPOS COMUNS:
 REGRAS:
 - Extraia 2-7 desafios se mencionados
 - Se usuário mencionar METAS/OBJETIVOS mas não desafios explícitos, infira o desafio implícito
-  Exemplo: "crescer 10%" → "crescimento atual insuficiente"
+  Exemplo: "crescer 10%" -> "crescimento atual insuficiente"
 - Se nenhum desafio mencionado: challenges = [], has_challenges = False
 
 ---
@@ -875,8 +875,8 @@ INSTRUCOES CRITICAS:
 1. Base sua analise APENAS no historico de conversa fornecido
 2. NAO invente informacoes que nao estao no historico
 3. Priorize deteccao de FRUSTRACAO (alta importancia para UX)
-4. Se usuario menciona objectives ANTES de challenges → cenario "objectives_before_challenges"
-5. Se usuario repete request ou reclama → analise se e "frustration_detected" ou "information_repeated"
+4. Se usuario menciona objectives ANTES de challenges -> cenario "objectives_before_challenges"
+5. Se usuario repete request ou reclama -> analise se e "frustration_detected" ou "information_repeated"
 6. should_confirm = True a cada 3-4 turns (gerar sumario periodico)
 7. context_summary: Resuma brevemente o que JA foi coletado (1-2 sentencas)
 8. missing_info: Liste categorias ainda faltantes (opcoes: "company_info", "challenges", "objectives")
@@ -884,8 +884,8 @@ INSTRUCOES CRITICAS:
 ---
 FORMATO DO HISTORICO:
 Cada linha representa um turn da conversa:
-- Linhas com "AGENT:" → sistema BSC falando
-- Linhas com "USER:" → usuario respondendo
+- Linhas com "AGENT:" -> sistema BSC falando
+- Linhas com "USER:" -> usuario respondendo
 
 Analise o historico completo para detectar padroes e cenarios.
 
