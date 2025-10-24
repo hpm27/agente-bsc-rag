@@ -1,17 +1,28 @@
 # 📊 PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-10-24 (Sessão 24 - REFATORAÇÃO ONBOARDING 100% COMPLETA)  
-**Fase Atual**: FASE 3 RETOMADA - Diagnostic Tools (refatoração onboarding finalizada)  
+**Última Atualização**: 2025-10-24 (Sessão 24 - MERGE CONCLUÍDO ✅)  
+**Fase Atual**: FASE 3 RETOMADA - Diagnostic Tools (refatoração onboarding INTEGRADA AO MASTER)  
 **Sessao**: 24 de 15-20  
-**Progresso Geral**: 60.0% (30/50 tarefas - refatoração não altera baseline)
+**Progresso Geral**: 60.0% (30/50 tarefas - refatoração não altera baseline)  
+**Release**: v1.1.0 disponível - Onboarding Conversacional em produção
+
+### Atualização 2025-10-24 (Sessão 24 - MERGE CONCLUÍDO) ✅
+
+🎉 **REFATORAÇÃO ONBOARDING INTEGRADA AO MASTER**
+- **Merge commit**: 00ddbce (fast-forward)
+- **Tag release**: v1.1.0 (https://github.com/hpm27/agente-bsc-rag/releases/tag/v1.1.0)
+- **Arquivos integrados**: 161 (117.934 inserções, 12.258 deleções)
+- **Status final**: Code Review 4.8/5.0 (Excelente) + Merge bem-sucedido
+- **Branches**: Local e remota limpas
+- **Duração total**: 8h 15min (BLOCO 1+2: 8h, FINALIZAÇÃO: 30 min, Code Review + Merge: 1h 45min)
 
 ### Atualização 2025-10-24 (Sessão 24 - FINALIZAÇÃO)
 
 ✅ **REFATORAÇÃO ONBOARDING COMPLETA** (100%)
 - **Branch**: feature/onboarding-conversational-redesign
 - **Status**: PRONTO PARA MERGE (39/39 testes passando, 100%)
-- **Duração real**: 8h (MANHÃ: BLOCO 1, TARDE: BLOCO 2, FINALIZAÇÃO: 30 min)
-- **Próximo**: Retomar FASE 3.7 após merge
+- **Duração parcial**: 8h (MANHÃ: BLOCO 1, TARDE: BLOCO 2, FINALIZAÇÃO: 30 min)
+- **Próximo**: Code Review e Merge
 
 ### Atualização 2025-10-23 (Sessão 23 - BLOCOS 1+2)
 
