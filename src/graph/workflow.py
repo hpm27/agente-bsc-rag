@@ -9,19 +9,44 @@ Orquestra o fluxo completo:
 5. Refinamento iterativo (se necessário)
 6. Resposta final
 """
-from typing import Dict, Any, List, Literal
+from __future__ import annotations
+
 import time
-from langgraph.graph import StateGraph, END
+from typing import TYPE_CHECKING, Any, Literal
+
+import nest_asyncio
+import sys
+import warnings
+import asyncio
+
+from langgraph.graph import END, StateGraph
+from langgraph.graph.state import CompiledStateGraph
+from langgraph.checkpoint.memory import MemorySaver
 from loguru import logger
 
-from src.graph.states import (
-    BSCState,
-    PerspectiveType,
-    AgentResponse,
-    JudgeEvaluation
-)
-from src.agents.orchestrator import Orchestrator
+# CRÍTICO: Aplicar nest_asyncio para permitir asyncio.run() dentro de event loops
+# Necessário para Streamlit (já roda em event loop) chamar handlers async
+nest_asyncio.apply()
+
+# CRÍTICO: Configurar event loop policy para Windows (melhor gerenciamento SSL)
+# ProactorEventLoop gerencia conexões SSL/HTTP de forma mais eficiente no Windows
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+
+# Suprimir ResourceWarnings de SSL sockets/event loops (informativos, não críticos)
+# Root cause: LangGraph usa ThreadPoolExecutor internamente, cada thread cria seu próprio loop
+# Esses loops são gerenciados pelo LangGraph e fechados corretamente, mas warnings aparecem
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed.*ssl.SSLSocket')
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed transport')
+warnings.filterwarnings('ignore', category=ResourceWarning, message='unclosed event loop')
+
 from src.agents.judge_agent import JudgeAgent
+from src.agents.orchestrator import Orchestrator
+from src.graph.memory_nodes import load_client_memory, save_client_memory
+from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
+
+if TYPE_CHECKING:
+    from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 
 
 def extract_text_from_response(response: Any) -> str:
@@ -62,33 +87,74 @@ class BSCWorkflow:
         """Inicializa o workflow."""
         self.orchestrator = Orchestrator()
         self.judge = JudgeAgent()
+        
+        # FASE 2.10: Consulting orchestrator lazy loading (previne circular imports)
+        self._consulting_orchestrator_cached = None
+        
         self.graph = self._build_graph()
         
         logger.info("[OK] BSCWorkflow inicializado com grafo LangGraph")
     
-    def _build_graph(self) -> StateGraph:
+    def _build_graph(self) -> CompiledStateGraph:
         """
         Constrói o grafo de execução LangGraph.
         
         Fluxo:
-        START → analyze_query → execute_agents → synthesize_response 
-        → judge_validation → decide_next → [finalize OR execute_agents (refinement)]
-        → END
+        START → load_client_memory → analyze_query → execute_agents 
+        → synthesize_response → judge_validation → decide_next 
+        → [finalize OR execute_agents (refinement)] → save_client_memory → END
         """
         # Criar grafo com schema BSCState
         workflow = StateGraph(BSCState)
         
-        # Adicionar nós
+        # Adicionar nós (incluindo memória)
+        workflow.add_node("load_client_memory", load_client_memory)
+        
+        # FASE 2.10: Consulting nodes
+        workflow.add_node("onboarding", self.onboarding_handler)
+        workflow.add_node("discovery", self.discovery_handler)
+        workflow.add_node("approval", self.approval_handler)
+        
+        # RAG traditional nodes
         workflow.add_node("analyze_query", self.analyze_query)
         workflow.add_node("execute_agents", self.execute_agents)
         workflow.add_node("synthesize_response", self.synthesize_response)
-        workflow.add_node("judge_validation", self.judge_evaluation)  # Renomeado para evitar conflito com state key
+        workflow.add_node("judge_validation", self.judge_evaluation)
         workflow.add_node("finalize", self.finalize)
         
-        # Definir entry point
-        workflow.set_entry_point("analyze_query")
+        workflow.add_node("save_client_memory", save_client_memory)
         
-        # Definir edges (transições)
+        # Definir entry point (começa com load de memória)
+        workflow.set_entry_point("load_client_memory")
+        
+        # FASE 2.10: Routing condicional por fase consultiva
+        # load_client_memory → route_by_phase → {onboarding, discovery, analyze_query}
+        workflow.add_conditional_edges(
+            "load_client_memory",
+            self.route_by_phase,
+            {
+                "onboarding": "onboarding",
+                "discovery": "discovery",
+                "analyze_query": "analyze_query"
+            }
+        )
+        
+        # Consulting flows
+        # onboarding → save_client_memory → END (multi-turn stateless)
+        workflow.add_edge("onboarding", "save_client_memory")
+        
+        # discovery → approval → route_by_approval → {end, discovery}
+        workflow.add_edge("discovery", "approval")
+        workflow.add_conditional_edges(
+            "approval",
+            self.route_by_approval,
+            {
+                "end": "save_client_memory",
+                "discovery": "discovery"  # Refazer diagnóstico
+            }
+        )
+        
+        # RAG traditional flow (mantido intacto)
         workflow.add_edge("analyze_query", "execute_agents")
         workflow.add_edge("execute_agents", "synthesize_response")
         workflow.add_edge("synthesize_response", "judge_validation")
@@ -104,14 +170,21 @@ class BSCWorkflow:
             }
         )
         
-        # Edge final: finalize → END
-        workflow.add_edge("finalize", END)
+        # Edge final: finalize → save_client_memory → END
+        workflow.add_edge("finalize", "save_client_memory")
+        workflow.add_edge("save_client_memory", END)
         
-        logger.info("[OK] Grafo LangGraph construído com 5 nós + 1 edge condicional")
+        logger.info(
+            "[OK] Grafo LangGraph construído: "
+            "10 nodes (2 memória + 3 consulting + 5 RAG) + "
+            "3 conditional edges (route_by_phase, route_by_approval, decide_next_step)"
+        )
         
-        return workflow.compile()
+        # Adicionar checkpointer para persistir state entre turnos (CRITICAL para onboarding)
+        checkpointer = MemorySaver()
+        return workflow.compile(checkpointer=checkpointer)
     
-    def analyze_query(self, state: BSCState) -> Dict[str, Any]:
+    def analyze_query(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 1: Analisa a query e determina roteamento.
         
@@ -172,7 +245,7 @@ class BSCWorkflow:
                 "metadata": {"error": str(e)}
             }
     
-    def execute_agents(self, state: BSCState) -> Dict[str, Any]:
+    def execute_agents(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 2: Executa agentes especialistas em paralelo.
         
@@ -206,6 +279,20 @@ class BSCWorkflow:
                 for p in state.relevant_perspectives
                 if p in perspective_to_agent
             ]
+            
+            # Validação defensiva: Se nenhum agente relevante, retornar resposta padrão
+            if not agent_names:
+                logger.warning(
+                    f"[WARN] [execute_agents] Nenhuma perspectiva relevante identificada para query: '{state.query[:60]}...'"
+                )
+                elapsed_time = time.time() - start_time
+                return {
+                    "agent_responses": [],
+                    "metadata": {
+                        "execution_time": elapsed_time,
+                        "warning": "Nenhuma perspectiva BSC relevante para esta query"
+                    }
+                }
             
             # Invocar agentes usando Orchestrator
             chat_history = state.metadata.get("chat_history", None)
@@ -269,7 +356,7 @@ class BSCWorkflow:
                 }
             }
     
-    def synthesize_response(self, state: BSCState) -> Dict[str, Any]:
+    def synthesize_response(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 3: Sintetiza respostas dos agentes em uma resposta unificada.
         
@@ -297,7 +384,7 @@ class BSCWorkflow:
                 }
             
             # Converter AgentResponse para formato esperado pelo Orchestrator
-            agent_responses_dict = []
+            agent_responses_dict: list[dict[str, Any]] = []
             for agent_resp in state.agent_responses:
                 perspective_to_name = {
                     PerspectiveType.FINANCIAL: "Financial Agent",
@@ -353,7 +440,7 @@ class BSCWorkflow:
                 }
             }
     
-    def judge_evaluation(self, state: BSCState) -> Dict[str, Any]:
+    def judge_evaluation(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 4: Avalia qualidade da resposta com Judge Agent.
         
@@ -417,10 +504,18 @@ class BSCWorkflow:
                 f"Veredito: {judgment.verdict}"
             )
             
-            return {
+            # Preparar dict de retorno
+            result_dict = {
                 "judge_evaluation": judge_evaluation,
                 "needs_refinement": needs_refinement
             }
+            
+            # CRÍTICO: Incrementar contador de refinamento AQUI (nó retorna dict)
+            # NÃO em decide_next_step (edge não persiste mutações!)
+            if needs_refinement:
+                result_dict["refinement_iteration"] = state.refinement_iteration + 1
+            
+            return result_dict
             
         except Exception as e:
             logger.error(f"[ERRO] judge_evaluation: {e}")
@@ -463,14 +558,13 @@ class BSCWorkflow:
             
             # Se precisa refinamento e ainda há iterações disponíveis, refina
             if state.needs_refinement:
-                new_iteration = state.refinement_iteration + 1
-                if new_iteration <= state.max_refinement_iterations:
+                # Nota: O contador já foi incrementado em judge_evaluation()
+                # Aqui apenas verificamos se ainda há iterações disponíveis
+                if state.refinement_iteration <= state.max_refinement_iterations:
                     logger.info(
-                        f"[INFO] Decisão: REFINE (iteração {new_iteration}/"
+                        f"[INFO] Decisão: REFINE (iteração {state.refinement_iteration}/"
                         f"{state.max_refinement_iterations})"
                     )
-                    # Incrementa contador de refinamento
-                    state.refinement_iteration = new_iteration
                     return "refine"
                 else:
                     logger.warning(
@@ -487,7 +581,7 @@ class BSCWorkflow:
             logger.error(f"[ERRO] decide_next_step: {e}. Finalizando por segurança.")
             return "finalize"
     
-    def finalize(self, state: BSCState) -> Dict[str, Any]:
+    def finalize(self, state: BSCState) -> dict[str, Any]:
         """
         Nó 5: Finaliza o workflow e prepara resposta final.
         
@@ -539,19 +633,279 @@ class BSCWorkflow:
                     "finalize_error": str(e)
                 }
             }
+
+    def route_by_approval(self, state: BSCState) -> Literal["end", "discovery"]:
+        """
+        FASE 2.8: Routing condicional baseado em approval_status.
+
+        Decide próximo node baseado na decisão do cliente:
+        - APPROVED → END (ou SOLUTION_DESIGN futuro)
+        - REJECTED / MODIFIED / TIMEOUT → discovery (refazer)
+        - PENDING (fallback) → END
+
+        Args:
+            state: Estado com approval_status
+
+        Returns:
+            Nome do próximo node ("end" ou "discovery")
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ApprovalStatus
+
+        approval_status = state.approval_status
+
+        if approval_status == ApprovalStatus.APPROVED:
+            logger.info("[INFO] [ROUTING] Aprovação APPROVED → END")
+            return "end"
+        elif approval_status in (
+            ApprovalStatus.REJECTED,
+            ApprovalStatus.MODIFIED,
+            ApprovalStatus.TIMEOUT
+        ):
+            logger.info(
+                f"[INFO] [ROUTING] Aprovação {approval_status.value} → discovery (refazer)"
+            )
+            return "discovery"
+        else:
+            # PENDING (ou None) → END por design (fase futura pode reabrir)
+            logger.info(
+                f"[INFO] [ROUTING] Approval status PENDING/None detectado ({approval_status}). Encerrando por design."
+            )
+            return "end"
+
+    def approval_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.8: Handler para aprovação humana do diagnóstico BSC.
+
+        Processa aprovação/rejeição do diagnóstico pelo cliente.
+        Single-turn: Cliente vê diagnóstico completo, aprova ou rejeita de uma vez.
+
+        Args:
+            state: Estado atual com diagnostic e approval_status mockado
+
+        Returns:
+            Estado atualizado com approval_status e approval_feedback
+
+        Routing:
+            - APPROVED → END (ou SOLUTION_DESIGN futuro)
+            - REJECTED → discovery (refazer diagnóstico)
+            - MODIFIED → discovery (refazer com feedback)
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
+
+        try:
+            logger.info("[INFO] [APPROVAL] Handler iniciado")
+
+            # Validar se diagnostic existe
+            if not state.diagnostic:
+                logger.warning(
+                    "[WARN] [APPROVAL] Diagnostic ausente. "
+                    "Fallback para approval_status REJECTED"
+                )
+                return {
+                    "approval_status": ApprovalStatus.REJECTED,
+                    "approval_feedback": "Diagnóstico ausente ou incompleto. Por favor, execute a fase DISCOVERY novamente."
+                }
+
+            # FASE 2.8 MVP: Aprovação mockada via state (testes)
+            # Produção futura: interrupt() para input humano real
+            approval_status = state.approval_status or ApprovalStatus.PENDING
+            approval_feedback = state.approval_feedback or ""
+
+            logger.info(
+                f"[INFO] [APPROVAL] Status recebido: {approval_status.value} | "
+                f"Feedback: {approval_feedback[:50] if approval_feedback else 'N/A'}..."
+            )
+
+            # Persistir decisão (save_client_memory sincroniza)
+            return {
+                "approval_status": approval_status,
+                "approval_feedback": approval_feedback,
+                "current_phase": ConsultingPhase.APPROVAL_PENDING
+            }
+
+        except Exception as e:
+            logger.error(f"[ERROR] [APPROVAL] Erro no handler: {e}")
+            # Import aqui também para except
+            from src.graph.consulting_states import ApprovalStatus
+
+            return {
+                "approval_status": ApprovalStatus.REJECTED,
+                "approval_feedback": f"Erro durante aprovação: {str(e)}",
+                "metadata": {
+                    **state.metadata,
+                    "approval_error": str(e)
+                }
+            }
+
+    # ============ FASE 2.10: PROPERTIES LAZY LOADING ============
     
+    @property
+    def consulting_orchestrator(self):
+        """
+        Lazy loading do ConsultingOrchestrator (previne circular imports).
+        
+        Returns:
+            Instância cached do ConsultingOrchestrator
+        """
+        if self._consulting_orchestrator_cached is None:
+            # Import local evita circular (workflow → orchestrator → agentes → workflow)
+            from src.graph.consulting_orchestrator import ConsultingOrchestrator
+            self._consulting_orchestrator_cached = ConsultingOrchestrator()
+            logger.info("[OK] ConsultingOrchestrator lazy loaded")
+        return self._consulting_orchestrator_cached
+
+    # ============ FASE 2.10: CONSULTING HANDLERS ============
+    
+    def onboarding_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.10: Handler de onboarding multi-turn.
+        
+        Integra ConsultingOrchestrator.coordinate_onboarding() no LangGraph.
+        Gerencia sessões in-memory para workflow stateless.
+        
+        Args:
+            state: Estado atual com user_id, query (mensagem usuário)
+        
+        Returns:
+            Estado atualizado com onboarding_progress, client_profile (se completo)
+        
+        Routing:
+            - is_complete=True → Transição ONBOARDING → DISCOVERY
+            - is_complete=False → Aguarda próxima mensagem usuário
+        """
+        import asyncio
+        
+        try:
+            logger.info(
+                f"[INFO] [ONBOARDING] Handler iniciado | "
+                f"user_id={state.user_id} | query={state.query[:50]}..."
+            )
+            
+            # Chamar método async - Python 3.12 compatible
+            # Criar event loop se não existir (Streamlit ScriptRunner thread)
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            result = loop.run_until_complete(
+                self.consulting_orchestrator.coordinate_onboarding(state)
+            )
+            
+            logger.info(
+                f"[INFO] [ONBOARDING] Result: is_complete={result.get('is_complete', False)} | "
+                f"next_action={result.get('next_action', 'N/A')}"
+            )
+            logger.info(
+                "[ONBOARDING] ===== HANDLER RETORNANDO: current_phase=%s, previous_phase=%s, is_complete=%s =====",
+                result.get("current_phase"),
+                result.get("previous_phase"),
+                result.get("is_complete")
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"[ERROR] [ONBOARDING] Erro no handler: {e}")
+            return self.consulting_orchestrator.handle_error(state, e, "ONBOARDING")
+
+    def discovery_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 2.10: Handler de discovery (diagnóstico BSC).
+        
+        Integra ConsultingOrchestrator.coordinate_discovery() no LangGraph.
+        Executa DiagnosticAgent.run_diagnostic() single-turn.
+        
+        Args:
+            state: Estado atual com client_profile (obrigatório)
+        
+        Returns:
+            Estado atualizado com diagnostic (CompleteDiagnostic serializado)
+        
+        Routing:
+            - diagnostic completo → Transição DISCOVERY → APPROVAL_PENDING
+            - erro/profile ausente → Fallback para ONBOARDING
+        """
+        try:
+            logger.info(
+                f"[INFO] [DISCOVERY] Handler iniciado | "
+                f"user_id={state.user_id} | has_profile={state.client_profile is not None}"
+            )
+            
+            # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
+            # Python 3.12 compatible - criar loop se não existir
+            import asyncio
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+            
+            result = loop.run_until_complete(self.consulting_orchestrator.coordinate_discovery(state))
+            
+            logger.info(
+                f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "
+                f"next_phase={result.get('current_phase', 'N/A')}"
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"[ERROR] [DISCOVERY] Erro no handler: {e}")
+            return self.consulting_orchestrator.handle_error(state, e, "DISCOVERY")
+
+    def route_by_phase(self, state: BSCState) -> Literal["onboarding", "discovery", "analyze_query"]:
+        """
+        FASE 2.10: Routing function por fase consultiva.
+        
+        Decide próximo node baseado em current_phase:
+        - ONBOARDING → node 'onboarding' (processo multi-turn)
+        - DISCOVERY → node 'discovery' (diagnóstico BSC)
+        - Outros (COMPLETED, ERROR, etc) → node 'analyze_query' (RAG tradicional)
+        
+        Args:
+            state: Estado atual com current_phase
+        
+        Returns:
+            Nome do próximo node (string literal)
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ConsultingPhase
+        
+        phase = state.current_phase
+        
+        if phase == ConsultingPhase.ONBOARDING:
+            logger.info("[INFO] [ROUTING] current_phase=ONBOARDING → node='onboarding'")
+            return "onboarding"
+        
+        if phase == ConsultingPhase.DISCOVERY:
+            logger.info("[INFO] [ROUTING] current_phase=DISCOVERY → node='discovery'")
+            return "discovery"
+        
+        # Fallback: RAG tradicional (COMPLETED, ERROR, None, etc)
+        logger.info(
+            f"[INFO] [ROUTING] current_phase={phase.value if phase else 'None'} → "
+            f"node='analyze_query' (RAG tradicional)"
+        )
+        return "analyze_query"
+
     def run(
         self,
         query: str,
         session_id: str = None,
-        chat_history: List[Dict[str, str]] = None
-    ) -> Dict[str, Any]:
+        user_id: str = None,
+        chat_history: list[dict[str, str]] = None
+    ) -> dict[str, Any]:
         """
         Executa o workflow completo para uma query.
         
         Args:
             query: Pergunta do usuário
             session_id: ID da sessão (opcional)
+            user_id: ID do usuário/cliente para persistência de memória (opcional)
             chat_history: Histórico de conversa (opcional)
             
         Returns:
@@ -563,20 +917,89 @@ class BSCWorkflow:
             logger.info(f"[TIMING] [WORKFLOW] INICIADO para query: '{query[:60]}...'")
             logger.info(f"{'='*80}\n")
             
-            # Criar estado inicial
-            initial_state = BSCState(
-                query=query,
-                session_id=session_id,
-                metadata={"chat_history": chat_history} if chat_history else {}
-            )
+            # CRÍTICO: Configuração com thread_id para checkpointer
+            config = {"configurable": {"thread_id": session_id or "default"}}
             
-            # Executar grafo
-            final_state = self.graph.invoke(initial_state)
+            # Verificar se é primeira invocação ou turno subsequente
+            # Para multi-turn: apenas passar campos NOVOS (query), não state completo!
+            try:
+                # Tentar obter state existente do checkpoint
+                existing_state = self.graph.get_state(config)
+                
+                if existing_state and existing_state.values:
+                    # Turno subsequente: passar apenas updates (não sobrescrever checkpoint!)
+                    logger.info(
+                        "[CHECKPOINT] Turno subsequente detectado (checkpoint existe) | "
+                        "Atualizando apenas query e metadata"
+                    )
+                    
+                    # DEBUGGING: Log metadata do checkpoint
+                    existing_metadata = existing_state.values.get("metadata", {})
+                    logger.info(
+                        "[CHECKPOINT] Metadata EXISTENTE no checkpoint: partial_profile=%s",
+                        existing_metadata.get("partial_profile", "N/A")
+                    )
+                    
+                    # Update apenas campos necessários para merge com checkpoint
+                    update = {
+                        "query": query,
+                        "metadata": {
+                            **(existing_metadata),
+                            "chat_history": chat_history
+                        } if chat_history else existing_metadata
+                    }
+                    
+                    logger.info(
+                        "[CHECKPOINT] Update sendo enviado ao invoke: metadata keys=%s",
+                        list(update.get("metadata", {}).keys())
+                    )
+                    
+                    final_state = self.graph.invoke(update, config)
+                    
+                    # DEBUGGING: Log do state após invoke
+                    logger.info(
+                        "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
+                        final_state.get("current_phase") if isinstance(final_state, dict) else getattr(final_state, "current_phase", "N/A"),
+                        final_state.get("is_complete") if isinstance(final_state, dict) else getattr(final_state, "is_complete", "N/A"),
+                        (final_state.get("client_profile") is not None) if isinstance(final_state, dict) else (getattr(final_state, "client_profile", None) is not None)
+                    )
+                else:
+                    # Primeira invocação: criar state completo
+                    logger.info(
+                        "[CHECKPOINT] Primeira invocação (checkpoint vazio) | "
+                        "Criando state inicial completo"
+                    )
+                    
+                    initial_state = BSCState(
+                        query=query,
+                        session_id=session_id,
+                        user_id=user_id,
+                        metadata={"chat_history": chat_history} if chat_history else {}
+                    )
+                    
+                    final_state = self.graph.invoke(initial_state, config)
+                    
+            except Exception as e:
+                # Fallback: se get_state falhar, assumir primeira invocação
+                logger.warning(
+                    f"[CHECKPOINT] Erro ao verificar checkpoint existente: {e} | "
+                    "Assumindo primeira invocação"
+                )
+                
+                initial_state = BSCState(
+                    query=query,
+                    session_id=session_id,
+                    user_id=user_id,
+                    metadata={"chat_history": chat_history} if chat_history else {}
+                )
+                
+                final_state = self.graph.invoke(initial_state, config)
             
             # Extrair resultado
             result = {
                 "query": final_state["query"],
                 "final_response": final_state.get("final_response", ""),
+                "client_profile": final_state.get("client_profile"),
                 "perspectives": [
                     p.value for p in final_state.get("relevant_perspectives", [])
                 ],
@@ -584,9 +1007,16 @@ class BSCWorkflow:
                     {
                         "perspective": r.perspective.value,
                         "content": r.content,
-                        "confidence": r.confidence
+                        "confidence": r.confidence,
+                        "sources": r.sources  # Campo omitido - Streamlit precisa!
                     }
                     for r in final_state.get("agent_responses", [])
+                ],
+                # Agregar retrieved_documents de todas as respostas dos agentes
+                "retrieved_documents": [
+                    doc
+                    for r in final_state.get("agent_responses", [])
+                    for doc in r.sources
                 ],
                 "judge_evaluation": (
                     final_state["judge_evaluation"].model_dump()
@@ -599,6 +1029,13 @@ class BSCWorkflow:
             # Adicionar judge_approved ao metadata top-level para E2E tests
             if final_state.get("judge_evaluation"):
                 result["metadata"]["judge_approved"] = final_state["judge_evaluation"].approved
+            
+            # FASE 2.10: Adicionar current_phase, diagnostic e metadados consultivos
+            result["current_phase"] = final_state.get("current_phase")
+            result["diagnostic"] = final_state.get("diagnostic")
+            result["previous_phase"] = final_state.get("previous_phase")
+            result["phase_history"] = final_state.get("phase_history", [])
+            result["is_complete"] = final_state.get("is_complete")
             
             workflow_elapsed_time = time.time() - workflow_start_time
             logger.info(f"\n{'='*80}")
@@ -630,9 +1067,12 @@ class BSCWorkflow:
             String com estrutura do grafo
         """
         viz = """
-BSC LangGraph Workflow:
+BSC LangGraph Workflow (com Memória Persistente):
 
 START
+  |
+  v
+load_client_memory (Carrega perfil do cliente do Mem0)
   |
   v
 analyze_query (Analisa query e determina perspectivas relevantes)
@@ -653,9 +1093,13 @@ decide_next_step (Decisao condicional)
   |-- [default] --> finalize
        |
        v
+save_client_memory (Salva atualizações do perfil no Mem0)
+       |
+       v
      END
 
 Caracteristicas:
+- Memoria persistente com Mem0 Platform (ClientProfile)
 - Refinamento iterativo (max 2 iteracoes)
 - Execucao paralela de agentes
 - Validacao rigorosa com Judge

@@ -284,3 +284,33 @@ Com esta arquitetura, esperamos:
 5. **Fine-tuning de Embeddings**
 6. **Avaliação de Qualidade (RAGAS)**
 7. **Deployment em Produção**
+
+---
+
+## Documentação Arquitetural Relacionada
+
+Para informações mais detalhadas sobre a arquitetura do sistema, consulte:
+
+### Data Flow Diagrams
+**Arquivo:** `docs/architecture/DATA_FLOW_DIAGRAMS.md`
+
+Visualização de fluxos de dados críticos através de 5 diagramas Mermaid:
+- **ClientProfile Lifecycle**: Criação, persistência Mem0, recuperação
+- **Diagnostic Workflow**: Estado DISCOVERY, análise paralela AsyncIO das 4 perspectivas BSC
+- **Schema Dependencies**: Relações Pydantic entre ClientProfile, BSCState, DiagnosticResult
+- **Agent Interactions**: Comunicação entre OnboardingAgent, ClientProfileAgent, DiagnosticAgent
+- **State Transitions**: Estados LangGraph (ONBOARDING → DISCOVERY → APPROVAL_PENDING)
+
+**Quando consultar:** Implementando features que interagem com workflow existente, debugando fluxos de dados ou transições de estado.
+
+### API Contracts
+**Arquivo:** `docs/architecture/API_CONTRACTS.md`
+
+Contratos API completos de todos os agentes do sistema (1200+ linhas):
+- **8 agentes documentados**: ClientProfileAgent, OnboardingAgent, DiagnosticAgent, Specialist Agents (4), ConsultingOrchestrator, JudgeAgent
+- **23 métodos públicos**: Assinaturas completas com type hints, parâmetros, retornos, exceções esperadas
+- **7 schemas Pydantic**: CompanyInfo, StrategicContext, ClientProfile, BSCState, DiagnosticResult, Recommendation, CompleteDiagnostic
+- **Changelog e Versioning**: v1.0.0 baseline (FASE 2) + v1.1.0 planejado (FASE 3)
+- **Exemplos de uso**: Code snippets mínimos testáveis para cada método
+
+**Quando consultar:** Chamando métodos de outros agentes, criando testes, precisando saber tipos de retorno e exceções.

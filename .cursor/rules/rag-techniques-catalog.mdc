@@ -68,7 +68,7 @@ Técnicas que transformam/melhoram a query antes do retrieval.
 
 **Complexidade:** ⭐⭐ (Simples)  
 **Tempo:** 4 dias (implementação + testes + docs)  
-**Custo:** ~$0.0001 por query (GPT-4o-mini)
+**Custo:** ~$0.0001 por query (GPT-5 mini)
 
 **Componentes:**
 
@@ -80,7 +80,7 @@ Técnicas que transformam/melhoram a query antes do retrieval.
 
 - ✅ RRF já implementado (multilíngue)
 - ✅ BSCRetriever funcional
-- ✅ GPT-4o-mini configurado
+- ✅ GPT-5 mini configurado
 
 **Métricas:**
 
@@ -113,7 +113,7 @@ if should:
 **Lições-Chave:**
 
 1. Heurísticas simples >80% accuracy (word boundaries críticos!)
-2. GPT-4o-mini suficiente (não precisa GPT-4o)
+2. GPT-5 mini suficiente (não precisa GPT-4o)
 3. RRF reutilização economizou 1 dia
 4. Ground truth precisa campo `source` em metadata Qdrant
 
@@ -264,7 +264,7 @@ results = strategy.execute(query, retriever, k=5)
 ```bash
 ENABLE_QUERY_ROUTER=True
 ROUTER_USE_LLM_FALLBACK=True
-ROUTER_LLM_MODEL=gpt-4o-mini
+ROUTER_LLM_MODEL=gpt-5-mini-2025-08-07
 ROUTER_LOG_DECISIONS=True
 SIMPLE_QUERY_MAX_WORDS=30
 RELATIONAL_KEYWORDS=relação,impacto,causa,efeito
@@ -374,7 +374,7 @@ Retrieval simples falha em capturar todas nuances de queries complexas:
 **Solução:**
 
 1. Detectar queries complexas (heurísticas: score ≥1)
-2. Decompor em 2-4 sub-queries (LLM GPT-4o-mini)
+2. Decompor em 2-4 sub-queries (LLM GPT-5 mini)
 3. Retrieval paralelo (asyncio.gather)
 4. Fusão com RRF (k=60)
 5. Re-ranking top-10 com Cohere
@@ -421,7 +421,7 @@ Retrieval simples falha em capturar todas nuances de queries complexas:
 ENABLE_QUERY_DECOMPOSITION=True
 DECOMPOSITION_MIN_QUERY_LENGTH=30
 DECOMPOSITION_SCORE_THRESHOLD=1
-DECOMPOSITION_LLM=gpt-4o-mini
+DECOMPOSITION_LLM=gpt-5-mini-2025-08-07
 ```
 
 **Lições Aprendidas:**
@@ -610,7 +610,7 @@ keywords: "relação", "impacto", "causa", "efeito", "depende"
 ```bash
 ENABLE_QUERY_ROUTER=True
 ROUTER_USE_LLM_FALLBACK=True
-ROUTER_LLM_MODEL=gpt-4o-mini
+ROUTER_LLM_MODEL=gpt-5-mini-2025-08-07
 ROUTER_CONFIDENCE_THRESHOLD=0.8
 ROUTER_LOG_DECISIONS=True
 ROUTER_LOG_FILE=logs/routing_decisions.jsonl
@@ -788,7 +788,7 @@ Use esta matriz para decidir qual técnica implementar:
 
 - ✅ RRF implementado (multilíngue)
 - ✅ BSCRetriever com retrieve_async()
-- ✅ LLM configurado (GPT-4o-mini)
+- ✅ LLM configurado (GPT-5 mini)
 
 ### TECH-002 (Adaptive Re-ranking)
 
@@ -805,7 +805,7 @@ Use esta matriz para decidir qual técnica implementar:
 ### TECH-004 (Self-RAG) - Planejado
 
 - ⏸️ Judge Agent existente (pode ser adaptado)
-- ⏸️ LLM para grading (GPT-4o-mini)
+- ⏸️ LLM para grading (GPT-5 mini)
 - ⏸️ Benchmark com queries propensas a alucinação
 
 ### TECH-005 (CRAG) - Planejado
@@ -836,7 +836,7 @@ Use esta matriz para decidir qual técnica implementar:
 
 **Causas Possíveis:**
 
-1. LLM model muito pesado (GPT-4o vs GPT-4o-mini)
+1. LLM model muito pesado (GPT-4o vs GPT-5 mini)
 2. Retrieval não está em cache
 3. Decomposição/Grading não está paralelo
 
@@ -844,7 +844,7 @@ Use esta matriz para decidir qual técnica implementar:
 
 ```bash
 # 1. Usar modelo menor
-DECOMPOSITION_LLM=gpt-4o-mini  # Não gpt-4o
+DECOMPOSITION_LLM=gpt-5-mini-2025-08-07  # Não gpt-4o
 
 # 2. Habilitar cache agressivo
 ENABLE_EMBEDDING_CACHE=True

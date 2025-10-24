@@ -276,7 +276,11 @@ class TestPerformanceOptimizations:
         assert embeddings_manager.cache_hits == 1
         
         # Embeddings devem ser idênticos
-        assert embedding1 == embedding2
+        import numpy as np
+        if isinstance(embedding1, np.ndarray):
+            np.testing.assert_array_equal(embedding1, embedding2)
+        else:
+            assert embedding1 == embedding2
         
         logger.info(
             f"[TEST OK] Cache funcionando: "
@@ -303,17 +307,18 @@ class TestPerformanceOptimizations:
         capacitação organizacional segundo framework Kaplan Norton BSC."""
         
         # Primeira execução - sem cache (cache miss garantido por UUID)
-        start = time.time()
+        start = time.perf_counter()
         embeddings_manager.embed_text(unique_text)
-        time_without_cache = time.time() - start
+        time_without_cache = time.perf_counter() - start
         
         # Segunda execução - com cache (cache hit)
-        start = time.time()
+        start = time.perf_counter()
         embeddings_manager.embed_text(unique_text)
-        time_with_cache = time.time() - start
+        time_with_cache = time.perf_counter() - start
         
         # Cache deve ser significativamente mais rápido (pelo menos 10x)
-        speedup = time_without_cache / time_with_cache if time_with_cache > 0 else 0
+        # Usa max(time_with_cache, 1e-9) para evitar divisão por zero
+        speedup = time_without_cache / max(time_with_cache, 1e-9)
         
         logger.info(
             f"[TEST CACHE SPEEDUP] "

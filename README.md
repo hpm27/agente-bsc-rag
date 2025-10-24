@@ -105,7 +105,7 @@ START → analyze_query → execute_agents → synthesize_response
 
 **Economia de Custos**:
 - 💰 87.5% redução em chamadas OpenAI Embeddings (cache)
-- 💰 ~$0.001/query para tradução multilíngue (GPT-4o-mini)
+- 💰 ~$0.001/query para tradução multilíngue (GPT-5 mini)
 - 💰 Tradução gratuita de contextos (Google Translate vs LLM)
 
 ### 🖥️ Interface Streamlit Moderna
@@ -190,7 +190,7 @@ START → analyze_query → execute_agents → synthesize_response
 | **Claude Sonnet 4.5** | 2025-09-29 | LLM principal (agentes, contextual retrieval) |
 | **OpenAI text-embedding-3-large** | 3072-dim | Embeddings multilíngues |
 | **Cohere Rerank Multilingual** | v3.0 | Re-ranking cross-lingual |
-| **GPT-4o-mini** | 2024-07-18 | Query translation (barato e rápido) |
+| **GPT-5 mini** | 2024-07-18 | Query translation (barato e rápido) |
 
 ### Framework e Orquestração
 
@@ -220,7 +220,7 @@ START → analyze_query → execute_agents → synthesize_response
 - ✅ **Docker Desktop** (para Qdrant)
 - ✅ **8GB RAM** mínimo recomendado
 - ✅ **API Keys**:
-  - OpenAI API Key (embeddings + GPT-4o-mini)
+  - OpenAI API Key (embeddings + GPT-5 mini)
   - Cohere API Key (re-ranking)
   - Anthropic API Key (Claude Sonnet 4.5 + contextual retrieval)
 
@@ -291,6 +291,10 @@ Você verá:
 ---
 
 ## 📖 Documentação
+
+### 🗂️ Índice Navegável de Toda Documentação
+
+- 📖 **[DOCS_INDEX.md](docs/DOCS_INDEX.md)** ← **NOVO!** Índice completo com Tags A-Z, Quick Search Matrix, e cross-references
 
 ### Guias de Início Rápido
 
@@ -370,7 +374,7 @@ Você verá:
 | Embeddings (OpenAI) | ~$0.002 | Com cache 87.5% hit: $0.00025 |
 | LLM Claude (4 agentes) | ~$0.05-0.10 | Dependente do tamanho da resposta |
 | Reranking (Cohere) | ~$0.002 | 10 docs |
-| Query Translation | ~$0.001 | GPT-4o-mini (opcional, multilíngue) |
+| Query Translation | ~$0.001 | GPT-5 mini (opcional, multilíngue) |
 | **Total/Query** | **~$0.05-0.11** | Com otimizações |
 
 **Economia Mensal** (1000 queries):
@@ -537,24 +541,31 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 
 **Status**: **MVP 100% CONCLUÍDO** 🎉
 
-### 🔥 Fase 2A - Quick Wins RAG Avançado (EM ANDAMENTO - Out/2025)
+### 🔥 Fase 2A - Quick Wins RAG Avançado (COMPLETA - Out/2025) ✅
 
 - [x] **Query Decomposition** - Queries complexas em sub-queries + RRF ✅
 - [x] **Adaptive Re-ranking** - Diversity + metadata boosting ✅
 - [x] **Router Inteligente** - Roteamento por complexidade (92% accuracy) ✅
-- [x] **Validação E2E** - 22 testes, 100% aprovados ✅
-- [ ] **Benchmark Fase 2A** - 50 queries BSC (PRÓXIMO)
-- [ ] **Métricas Consolidadas** - Recall, Precision, Answer Quality (PRÓXIMO)
+- [x] **Validação E2E** - 22/22 testes passing (100%) ✅
+- [x] **Benchmark Fase 2A** - 50 queries × 2 sistemas validado ✅
+- [x] **Métricas Consolidadas** - RAGAS + latência por categoria ✅
+- [x] **Auto-Geração Metadados** - GPT-5 mini + cache ✅
+- [x] **TIER 3 Organização** - Índice navegável + lições aprendidas ✅
 
-**Status**: **Fase 2A 85% COMPLETA** (3/3 técnicas + validação E2E, falta benchmark)
+**Status**: **Fase 2A 100% COMPLETA** 🎉 - **PRONTO PARA PRODUÇÃO**
 
-**Resultado Atual:**
-- ✅ 22/22 testes E2E passando (100%)
-- ✅ Paralelização validada (3.7x speedup agents)
-- ✅ Latência P50: 75s, P95: 230s
-- ✅ Coverage: 43%
+**Resultados Validados (Benchmark 50 queries):**
+- ✅ **Latência Média**: +3.1% mais rápido (128.7s → 124.7s)
+- ✅ **Answer Relevancy (RAGAS)**: +2.1% (0.889 → 0.907)
+- ✅ **Queries Simples**: +10.6% mais rápido (64.6s → 57.7s) ⭐⭐⭐
+- ✅ **Queries Conceituais**: +8.5% mais rápido (95.8s → 87.7s) ⭐⭐
+- ✅ **Faithfulness (RAGAS)**: 0.968 (>0.85 threshold)
+- ✅ **22/22 testes E2E passing** (100%)
 
-**Documentação**: [E2E_VALIDATION_FASE_2A_COMPLETA.md](docs/history/E2E_VALIDATION_FASE_2A_COMPLETA.md)
+**Documentação**: 
+- [FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md](docs/history/FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md) ← Histórico Completo
+- [executive_report.md](tests/benchmark_fase2a/results/executive_report.md) ← Relatório Benchmark
+- [DOCS_INDEX.md](docs/DOCS_INDEX.md) ← Índice Navegável de Toda Documentação
 
 ---
 

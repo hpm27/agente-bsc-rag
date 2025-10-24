@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
 from loguru import logger
 
-from config.settings import settings, get_llm
+from config.settings import get_llm, settings
 
 
 class JudgmentResult(BaseModel):

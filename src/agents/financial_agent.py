@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.tools import Tool
 from loguru import logger
 
-from config.settings import settings, get_llm
+from config.settings import get_llm, settings
 from src.tools.rag_tools import get_tools_for_agent
 
 

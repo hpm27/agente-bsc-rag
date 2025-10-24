@@ -136,7 +136,7 @@ query = "Diferenças entre BSC em manufatura versus serviços?"
 ┌─────────────────────────────────────────────────────────────────┐
 │                QueryDecomposer.decompose()                       │
 │                                                                   │
-│  LLM: gpt-4o-mini                                                │
+│  LLM: GPT-5 mini                                                │
 │  Output: 2-4 sub-queries independentes                           │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
@@ -519,7 +519,7 @@ python tests/benchmark_query_decomposition.py --queries 10  # Teste rápido
 2. **Latência Acima do Target:** +4.25s vs target de <3s. Aceitável para proof-of-concept, mas otimização necessária para produção:
    - Usar caching de decomposições comuns
    - Paralelizar melhor retrieval
-   - Considerar modelo mais rápido (gpt-4o-mini já é otimizado)
+   - Considerar modelo mais rápido (GPT-5 mini já é otimizado)
 
 3. **Validação Manual Necessária:** Answer quality (+30-50% esperado) requer avaliação manual ou LLM Judge.
 

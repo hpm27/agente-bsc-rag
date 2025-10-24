@@ -1031,7 +1031,7 @@ async def query_bsc(query: str):
 - ❌ LLMs (Claude/GPT): **Requerem internet** (API externas)
 - ✅ Qdrant: **Funciona offline** (local)
 - ✅ Cache embeddings: **Funciona offline** (disco local)
-- ⚠️ Query translation: Requer internet (GPT-4o-mini)
+- ⚠️ Query translation: Requer internet (GPT-5 mini)
 
 **Para 100% offline**: Use LLaMA local (Ollama) + embeddings locais.
 

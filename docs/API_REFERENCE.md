@@ -564,7 +564,7 @@ results = retriever.retrieve(
 **Performance**:
 - +106% precisão top-1 (vs busca monolíngue)
 - +70% recall (query expansion)
-- +200-300ms latência (tradução GPT-4o-mini)
+- +200-300ms latência (tradução GPT-5 mini)
 
 ---
 
@@ -630,7 +630,7 @@ translation = translator.translate(
 
 **Cache**:
 - ✅ Cache in-memory automático
-- ✅ LLM: GPT-4o-mini (rápido e barato: ~$0.001/query)
+- ✅ LLM: GPT-5 mini (rápido e barato: ~$0.001/query)
 
 ---
 

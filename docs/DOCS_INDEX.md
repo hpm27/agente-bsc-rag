@@ -1,8 +1,8 @@
 # 📇 ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.0  
-**Última Atualização:** 2025-10-14  
-**Total de Documentos:** 37 (33 docs/ + 4 rules/)
+**Versão:** 1.4  
+**Última Atualização:** 2025-10-19  
+**Total de Documentos:** 50 (44 docs/ + 4 rules/ + 2 tool docs) - +1 lesson + 1 tool session 20!
 
 ---
 
@@ -41,9 +41,14 @@
 - `docs/API_REFERENCE.md` - Referência completa da API
 - `src/rag/*.py` - 16 módulos RAG
 
-**architecture** (Docs: 2)
+**api-contracts** (Docs: 1)
+- `docs/architecture/API_CONTRACTS.md` - Contratos API completos (8 agentes, 23 métodos, 7 schemas Pydantic)
+
+**architecture** (Docs: 4)
 - `docs/ARCHITECTURE.md` - Visão geral arquitetural
 - `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (fluxos dados)
+- `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
 
 **asyncio** (Docs: 3)
 - `docs/history/MULTILINGUAL_OPTIMIZATION_SUMMARY.md` - AsyncIO 3.34x speedup
@@ -99,6 +104,9 @@
 **deployment** (Docs: 2)
 - `docs/DEPLOYMENT.md` - Guia de deploy
 - `docker-compose.yml` - Configuração Docker
+
+**diagrams** (Docs: 1)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (ClientProfile Lifecycle, Diagnostic Workflow, Schema Dependencies, Agent Interactions, State Transitions)
 
 **diversity** (Docs: 2)
 - `docs/techniques/ADAPTIVE_RERANKING.md` - MMR algorithm
@@ -194,16 +202,27 @@
 - `src/graph/workflow.py` - Código
 - `src/graph/states.py` - Estados
 
-**lessons** (Docs: 1 + 4 a criar)
-- `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections
-- [TIER 3] `lesson-query-decomposition-2025-10-14.md` (a criar)
-- [TIER 3] `lesson-adaptive-reranking-2025-10-14.md` (a criar)
-- [TIER 3] `lesson-router-2025-10-14.md` (a criar)
-- [TIER 3] `antipadrões-rag.md` (a criar)
+**lessons** (Docs: 10 - Todas criadas!)
+- `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections (validado)
+- `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-5 mini)
+- `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` - Adaptive Re-ranking (626 linhas, TDD)
+- `docs/lessons/lesson-router-2025-10-14.md` - Router Inteligente (786 linhas, 10x speedup)
+- `docs/lessons/antipadrões-rag.md` - 32 antipadrões catalogados (903 linhas)
+- `docs/lessons/lesson-memory-hierarchy-2025-10-14.md` - Hierarquia Mem0 (700+ linhas)
+- `docs/lessons/lesson-test-debugging-methodology-2025-10-15.md` - Test Debug (FASE 2.4, 5 erros)
+- `docs/lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` - Test Methodology (FASE 2.5, 7 erros, 1.100+ linhas)
+- `docs/lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` - E2E Workflow Tests (FASE 2.6, 4 problemas, 11.900+ linhas, checklist 12 pontos)
+- `docs/lessons/lesson-swot-testing-methodology-2025-10-19.md` - Implementation-First Testing (FASE 3.1, APIs desconhecidas, 700+ linhas, 30-40 min economizados)
+- `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` - 5 Whys Root Cause Debugging (FASE 3.4, mock múltiplas chamadas, itertools.cycle, 950+ linhas, 15-20 min economizados)
+- `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
+- `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` - Streamlit UI & Debugging Complexo (FASE 2.7, 7 problemas, Sequential Thinking, Brightdata research, prompt schema alignment, UI best practices, 800+ linhas, ROI 50-67% debugging)
 
 ---
 
 ### M
+
+**mermaid** (Docs: 1)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid v11.1.0+ (sequenceDiagram, flowchart TD, classDiagram, stateDiagram-v2)
 
 **metadata** (Docs: 3)
 - `data/README.md` - Metadados index.json + auto-geração
@@ -435,15 +454,23 @@
 
 ---
 
-### 📚 Lessons - Lições Aprendidas (1 + 4 a criar)
+### 📚 Lessons - Lições Aprendidas (10 completas)
 
 | Lição | Técnica | ROI Observado | Status |
 |-------|---------|---------------|--------|
 | **E2E Validation Corrections** | `lessons/lesson-e2e-validation-corrections-2025-10-14.md` | 3 correções críticas | ✅ |
-| **Query Decomposition** | [TIER 3] `lesson-query-decomposition-2025-10-14.md` | Heurística 100%, 91% coverage | 🔥 A criar |
-| **Adaptive Re-ranking** | [TIER 3] `lesson-adaptive-reranking-2025-10-14.md` | 100% coverage, MMR validado | 🔥 A criar |
-| **Router Inteligente** | [TIER 3] `lesson-router-2025-10-14.md` | 10x mais rápido, 92% accuracy | 🔥 A criar |
-| **Antipadrões RAG** | [TIER 3] `antipadrões-rag.md` | 5-10 evitados | 🔥 A criar |
+| **Query Decomposition** | `lessons/lesson-query-decomposition-2025-10-14.md` (545L) | $9.90/dia, heurística 100%, 91% coverage | ✅ |
+| **Adaptive Re-ranking** | `lessons/lesson-adaptive-reranking-2025-10-14.md` (626L) | TDD -93% bugs, 100% coverage, MMR validado | ✅ |
+| **Router Inteligente** | `lessons/lesson-router-2025-10-14.md` (786L) | 10x speedup, 92% accuracy, 70% reuso | ✅ |
+| **Antipadrões RAG** | `lessons/antipadrões-rag.md` (903L) | 32 antipadrões, 2-8h economizadas/antipadrão | ✅ |
+| **Memory Hierarchy** | `lessons/lesson-memory-hierarchy-2025-10-14.md` (700+L) | Hierarquia Mem0, persistência, factory pattern | ✅ |
+| **Test Debugging (FASE 2.4)** | `lessons/lesson-test-debugging-methodology-2025-10-15.md` | 5 erros, 40 min, ClientProfileAgent | ✅ |
+| **Test Methodology (FASE 2.5)** | `lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (1.100+L) | 7 erros, 38 min economizados, checklist 8 pontos | ✅ |
+| **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | ✅ |
+| **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | ✅ |
+| **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | ✅ |
+| **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | ✅ |
+| **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | ✅ |
 
 ---
 
@@ -510,11 +537,17 @@
 | **Melhorar diversidade docs** | adaptive-reranking, diversity | `techniques/ADAPTIVE_RERANKING.md` | `src/rag/reranker.py` |
 | **Otimizar estratégia por query** | query-router, strategies | `techniques/ROUTER.md` | `src/rag/query_router.py` |
 | **Entender workflow LangGraph** | langgraph, workflow, agents | `LANGGRAPH_WORKFLOW.md` | `src/graph/workflow.py` |
+| **Entender fluxos de dados** | diagrams, mermaid, architecture | `architecture/DATA_FLOW_DIAGRAMS.md` | - |
+| **Workflow dos agentes (DISCOVERY)** | mermaid, agents, discovery | `architecture/AGENTS_WORKFLOW.md` | `src/agents/diagnostic_agent.py` |
+| **Chamar métodos de agentes** | api-contracts, agents, architecture | `architecture/API_CONTRACTS.md` | `src/agents/*.py` |
 | **Setup inicial do projeto** | quickstart, setup | `QUICKSTART.md` | `setup.ps1` |
 | **Configurar vector store** | qdrant, vector-store | `VECTOR_STORE_MIGRATION_GUIDE.md` | `src/rag/qdrant_vector_store.py` |
 | **Criar testes E2E** | e2e-tests, testing | `TESTING_GUIDE.md`, `E2E_TESTS_IMPLEMENTATION_SUMMARY.md` | `tests/integration/test_e2e.py` |
 | **Deploy em produção** | deployment, docker | `DEPLOYMENT.md` | `docker-compose.yml` |
 | **Usar interface Streamlit** | streamlit, ui | `STREAMLIT_GUIDE.md` | `app/main.py` |
+| **Formatar UI Streamlit (cards, badges)** | streamlit-ui, cards, layout, best-practices | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 400-600) | `app/components/results.py` |
+| **Debuggar loop infinito LLM** | debugging, sequential-thinking, loop-infinito | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 1-200) | - |
+| **Alinhar prompt com schema Pydantic** | prompt-schema, validation-error, pydantic | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 200-400) | `src/prompts/*.py` |
 | **Adicionar metadados docs** | metadata, index-json | `data/README.md` (Auto-Geração seção) | `scripts/build_knowledge_base.py` |
 | **Entender lições aprendidas** | lessons, antipadrões | `lessons/` directory | - |
 | **Ver progresso histórico** | history, mvp | `history/MVP_100_COMPLETO.md` | - |
@@ -534,10 +567,10 @@
 | **Rules** | 4 docs | 11% |
 | **Tests/Benchmarks** | 4 docs | 11% |
 | **Patterns** | 1 doc | 3% |
-| **Lessons** | 1 doc (+ 4 a criar) | 3% |
+| **Lessons** | 10 docs (6.400+ linhas) | 27% |
 | **Vector Stores** | 2 docs | 5% |
 
-**Total:** 37 documentos
+**Total:** 47 documentos
 
 ---
 
@@ -613,7 +646,29 @@
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Próximo:** Criar lições aprendidas (docs/lessons/)
+### v1.2 - 2025-10-16 (Lições Aprendidas)
+
+**Adicionado:**
+- ✅ 9 lições completas em docs/lessons/
+- ✅ Antipadrões RAG catalogados
+
+---
+
+### v1.3 - 2025-10-19 (Architecture Docs)
+
+**Adicionado:**
+- ✅ `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
+- ✅ `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes
+- ✅ 3 novas tags: diagrams, api-contracts, mermaid
+- ✅ 2 novos cenários Quick Search Matrix
+- ✅ Estatísticas atualizadas: 44→46 docs
+
+**ROI:**
+- ~1h economizada por task (consulta diagrams/contracts vs leitura código)
+
+---
+
+**Última Atualização:** 2025-10-19  
+**Próximo:** FASE 3.1 SWOT Analysis Tool
 
 

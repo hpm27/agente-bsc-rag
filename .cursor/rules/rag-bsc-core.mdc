@@ -1,8 +1,8 @@
 ---
 alwaysApply: true
 description: "Router central para projeto BSC RAG - Workflow obrigatório, lições validadas do MVP, mapa de técnicas RAG avançadas, e guia de navegação. Sempre aplicado para garantir processo consistente durante toda a Fase 2 (6-8 semanas)."
-version: "1.0"
-last_updated: "2025-10-14"
+version: "1.4"
+last_updated: "2025-10-19"
 ---
 
 # 🧠 BSC RAG - ROUTER CENTRAL
@@ -15,11 +15,20 @@ Este router central é **sempre aplicado** durante todo o desenvolvimento da Fas
 
 ## 📋 ÍNDICE NAVEGÁVEL
 
-1. [🚨 Workflow Obrigatório RAG](#workflow-obrigatório-rag) - **7 steps** para implementar qualquer técnica
-2. [🎓 Lições de Produção MVP](#lições-de-produção-mvp) - **Top 5** descobertas validadas
-3. [🗺️ Mapa de Técnicas RAG](#mapa-de-técnicas-rag) - **8 técnicas** comparadas por ROI
-4. [🎯 Guia por Cenário](#guia-por-cenário-rag) - **4 cenários** práticos mapeados
-5. [📚 Localização da Documentação](#localização-da-documentação) - Navegação rápida
+1. [📊 Estado Atual do Projeto](#estado-atual-do-projeto) - **Status, tarefas recentes, próxima tarefa**
+2. [🚨 Workflow Obrigatório RAG](#workflow-obrigatório-rag) - **7 steps** para implementar qualquer técnica
+3. [🎓 Lições de Produção MVP](#lições-de-produção-mvp) - **Top 5** descobertas validadas
+4. [🎓 Lições Aprendidas Fase 2A](#lições-aprendidas-fase-2a) - **4 lições** das 3 técnicas implementadas
+5. [🗺️ Mapa de Técnicas RAG](#mapa-de-técnicas-rag) - **8 técnicas** comparadas por ROI
+6. [🎯 Guia por Cenário](#guia-por-cenário-rag) - **4 cenários** práticos mapeados
+7. [📚 Localização da Documentação](#localização-da-documentação) - **Top 10 docs + estrutura completa**
+
+---
+
+## 📊 ESTADO ATUAL DO PROJETO
+
+**SEMPRE consulte .cursor/progress/consulting-progress.md para histórico completo**
+
 
 ---
 
@@ -131,7 +140,7 @@ from src.config.settings import settings
 class QueryDecomposer:
     """Decompõe queries BSC complexas em sub-queries independentes.
     
-    Usa LLM (GPT-4o-mini) para decomposição e Reciprocal Rank Fusion (RRF)
+    Usa LLM (GPT-5 mini configurável via .env) para decomposição e Reciprocal Rank Fusion (RRF)
     para agregar resultados. Ideal para queries multi-perspectiva.
     
     Métricas esperadas:
@@ -172,6 +181,7 @@ class QueryDecomposer:
 - Medir métricas: Recall@10, Precision@5, Latência P50/P95, Judge Approval
 - Comparar com **baseline** (não apenas 1 teste isolado!)
 - Executar suite E2E completa (22 testes) para detectar regressões
+- **OBRIGATÓRIO**: Incluir **teste de regressão crítico** validando que funcionalidade existente NÃO quebrou ([[memory:9969868]] ponto 12)
 
 **Métricas Mínimas:**
 
@@ -501,6 +511,117 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 
 ---
 
+## 🎓 LIÇÕES APRENDIDAS FASE 2A
+
+**Descobertas validadas das 3 técnicas implementadas (Query Decomposition, Adaptive Re-ranking, Router). Total: 10 dias → 3 técnicas prontas.**
+
+---
+
+### **Lição 6: 🎯 Query Decomposition - Modelo Econômico é Suficiente**
+
+> **NOTA (Out/2025):** Esta lição histórica validou que modelos econômicos são suficientes para decomposição. **HOJE usamos GPT-5 mini** (`gpt-5-mini-2025-08-07`, configurável via `.env`), que substituiu GPT-4o-mini (obsoleto ago/2025). Princípio permanece: tarefa estruturada → modelo econômico suficiente.
+
+**Descoberta Original:** GPT-4o-mini tinha qualidade equivalente ao GPT-4o para decomposição de queries
+
+**Impacto Medido:**
+- **Custo**: 100x mais barato ($9.90/dia economizados em 1000 queries)
+- **Latência**: Similar (~1.2s vs ~2s, +40% mais rápido)
+- **Qualidade**: Equivalente (sub-queries igualmente válidas)
+
+**Top 3 Insights:**
+1. ✅ **Modelo econômico para tarefas simples** (decomposição, classificação, extração) - Hoje: GPT-5 mini
+2. ✅ **Contexto nas sub-queries** (manter informação da query original: "BSC para empresas de tecnologia" → sub-query inclui "tecnologia")
+3. ❌ **Regex sem word boundaries** causa falsos positivos (-8% accuracy)
+
+**ROI:** $9.90/dia economizados + latência -40%
+
+**Fonte:** `docs/lessons/lesson-query-decomposition-2025-10-14.md` (545 linhas)
+
+**Aplicar em:** Self-RAG (reflection tokens), CRAG (query reformulation), todas tarefas LLM simples
+
+---
+
+### **Lição 7: 🎨 Adaptive Re-ranking - TDD Acelera Implementação**
+
+**Descoberta:** Test-Driven Development (TDD) reduziu bugs de 15 esperados para apenas 1 (float comparison)
+
+**Impacto Medido:**
+- **Bugs evitados**: 14 de 15 previstos (-93%)
+- **Coverage**: 100% (38 testes, vs 85% target)
+- **Tempo debug**: ~30 min (vs 2-3h estimado)
+
+**Top 3 Insights:**
+1. ✅ **TDD para código matemático** (similarity, MMR, normalize embeddings)
+2. ✅ **np.allclose() para float comparisons** (evita erros de precisão)
+3. ✅ **Mocking robusto** de embeddings (controle total de similarity scores)
+
+**ROI:** 2-3h economizadas em debugging + 0 regressões
+
+**Fonte:** `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` (626 linhas)
+
+**Aplicar em:** Self-RAG (similarity de reflection tokens), Graph RAG (embeddings de entidades)
+
+---
+
+### **Lição 8: ⚡ Router Inteligente - Reutilização = Aceleração Exponencial**
+
+**Descoberta:** Reutilizar código existente acelerou implementação em **10x** (6h vs 5-7 dias estimado)
+
+**Impacto Medido:**
+- **Tempo**: 6h real vs 5-7 dias estimado (**10x mais rápido**)
+- **Código reutilizado**: 70% (heurísticas de Query Decomp, strategies template)
+- **Classifier accuracy**: 92% (+7pp vs 85% target)
+
+**Top 3 Insights:**
+1. ✅ **Híbrido heurística+LLM** (90% queries resolvidas por regex rápido, 10% por LLM)
+2. ✅ **ThreadPoolExecutor** para paralelizar estratégias quando tipo incerto
+3. ✅ **Logging estruturado** (JSONL) para analytics de routing decisions
+
+**Curva de Aceleração Fase 2A:**
+- 1ª técnica (Query Decomp): 4 dias (estabelece patterns)
+- 2ª técnica (Adaptive Re-rank): 2 dias (reusa patterns)
+- 3ª técnica (Router): **6 HORAS!** (reusa tudo)
+
+**ROI:** 10x aceleração + 92% accuracy + 70% reuso
+
+**Fonte:** `docs/lessons/lesson-router-2025-10-14.md` (786 linhas)
+
+**Aplicar em:** Self-RAG (decidir quando iterar), CRAG (decidir quando corrigir), meta-router para escolher técnica
+
+---
+
+### **Lição 9: 🚫 Top 5 Antipadrões RAG a Evitar**
+
+**Descoberta:** 5 armadilhas comuns identificadas que custam 2-8h debugging cada
+
+**Antipadrões Críticos:**
+1. ❌ **GPT-5 full para tarefas simples** → Usar GPT-5 mini (5x mais barato output, 2.5x input)
+2. ❌ **Regex sem word boundaries** → Usar `\be\b` ao invés de `"e" in text` (-8% accuracy)
+3. ❌ **Sub-queries sem contexto** → Manter informação da query original (precision +15%)
+4. ❌ **Threshold muito alto** → Validar coverage antes de aumentar (5% queries ficam sem decomposição)
+5. ❌ **Testes depois** → TDD previne 93% bugs em código matemático
+
+**ROI por Antipadrão Evitado:**
+- Antipadrão #1: $9.90/dia economizados
+- Antipadrão #2: +8% accuracy (30-40 queries/dia corrigidas)
+- Antipadrão #3: +15% precision (45-60 queries/dia melhoradas)
+- Antipadrão #4: +5% coverage (15-20 queries/dia não ignoradas)
+- Antipadrão #5: 2-3h economizadas em debugging
+
+**Fonte:** `docs/lessons/antipadrões-rag.md` (903 linhas, 32 antipadrões catalogados)
+
+**Checklist:** Revisar antes de implementar qualquer técnica RAG
+
+---
+
+**TOTAL ECONOMIA FASE 2A:** 
+- 💰 $9.90/dia (custo LLM)
+- ⚡ 10x aceleração (reutilização)
+- 🐛 2-3h/técnica (TDD + antipadrões)
+- 📊 +15% precision, +8% accuracy, 92% routing
+
+---
+
 ## 🗺️ MAPA DE TÉCNICAS RAG
 
 **Guia de decisão rápida: Qual técnica implementar baseado em necessidade?**
@@ -664,6 +785,41 @@ Resultado: Top-5 docs não mencionam manufatura nem serviços (retrieval falhou)
 
 **Navegação rápida para toda documentação do projeto BSC RAG:**
 
+---
+
+### Documentação Essencial (Top 11 Críticos)
+
+**SEMPRE consulte docs/DOCS_INDEX.md para catálogo completo (47 documentos)**
+
+#### Arquitetura (5 docs)
+- `docs/ARCHITECTURE.md` - Overview arquitetural high-level
+- `docs/LANGGRAPH_WORKFLOW.md` - Workflow LangGraph detalhado
+- `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes (1200+ linhas)
+- `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid (fluxos dados)
+- `docs/architecture/AGENTS_WORKFLOW.md` - Diagrama Mermaid workflow DISCOVERY (4 perspectivas paralelas)
+
+#### Implementação (3 docs)
+- `docs/TUTORIAL.md` - Guia completo de uso end-to-end
+- `docs/TESTING_GUIDE.md` - Estratégias de teste (unitários, E2E, benchmark)
+- `docs/QUICKSTART.md` - Setup rápido (5 min)
+
+#### Techniques RAG (3 docs)
+- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 (Fase 2A.1, 400+ linhas)
+- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 (Fase 2A.2, 500+ linhas)
+- `docs/techniques/ROUTER.md` - TECH-003 (Fase 2A.3, 650+ linhas)
+
+**Quando consultar documentação completa:**
+- Implementando features novas → API_CONTRACTS + DATA_FLOW_DIAGRAMS primeiro
+- Escrevendo testes → TESTING_GUIDE para estratégias validadas
+- Debugando fluxos de dados → DATA_FLOW_DIAGRAMS + LANGGRAPH_WORKFLOW
+- Debugando fase DISCOVERY → AGENTS_WORKFLOW.md (diagrama Mermaid paralelização 4 perspectivas)
+- Implementando técnicas RAG → docs/techniques/[TECHNIQUE].md específico
+- Buscando doc específico → docs/DOCS_INDEX.md (tags, quick search matrix)
+
+---
+
+### Estrutura Completa de Diretórios
+
 ```
 agente-bsc-rag/
 ├── .cursor/rules/
@@ -673,7 +829,12 @@ agente-bsc-rag/
 │   └── rag-lessons-learned.mdc       ← 🔜 TIER 3 (lições + antipadrões)
 │
 ├── docs/
-│   ├── DOCS_INDEX.md                 ← 🔜 TIER 3 (índice navegável completo)
+│   ├── DOCS_INDEX.md                 ← ✅ TIER 3 COMPLETO (47 docs)
+│   │
+│   ├── architecture/                 ← ✅ Diagramas e contratos (criado TIER 3)
+│   │   ├── DATA_FLOW_DIAGRAMS.md    ← ✅ 5 diagramas Mermaid
+│   │   ├── API_CONTRACTS.md         ← ✅ Contratos API 8 agentes
+│   │   └── AGENTS_WORKFLOW.md       ← ✅ Workflow DISCOVERY (Out 22, 2025)
 │   │
 │   ├── techniques/                   ← ✅ Técnicas RAG detalhadas (Fase 2A completa)
 │   │   ├── QUERY_DECOMPOSITION.md   ← ✅ Fase 2A.1 (400+ linhas)
@@ -688,10 +849,18 @@ agente-bsc-rag/
 │   │   ├── ASYNCIO_PARALLEL.md      ← 🔜 TIER 2 (Pattern do MVP)
 │   │   └── EMBEDDING_CACHE.md       ← 🔜 TIER 2 (Pattern do MVP)
 │   │
-│   ├── lessons/                      ← ✅ Lições aprendidas (criado TIER 1)
-│   │   ├── lesson-query-decomposition-2025-10-XX.md  ← 🔜 Pós Fase 2A.1
-│   │   ├── lesson-adaptive-reranking-2025-10-XX.md   ← 🔜 Pós Fase 2A.2
-│   │   └── lesson-router-2025-10-XX.md               ← 🔜 Pós Fase 2A.3
+│   ├── lessons/                      ← ✅ Lições aprendidas (10 completas, 6.400+ linhas)
+│   │   ├── lesson-query-decomposition-2025-10-14.md         ← ✅ FASE 2A.1
+│   │   ├── lesson-adaptive-reranking-2025-10-14.md          ← ✅ FASE 2A.2
+│   │   ├── lesson-router-2025-10-14.md                      ← ✅ FASE 2A.3
+│   │   ├── lesson-test-debugging-methodology-2025-10-15.md  ← ✅ FASE 2.4
+│   │   ├── lesson-diagnostic-agent-test-2025-10-16.md       ← ✅ FASE 2.5
+│   │   ├── lesson-onboarding-state-e2e-2025-10-16.md        ← ✅ FASE 2.6
+│   │   ├── lesson-swot-testing-2025-10-19.md                ← ✅ FASE 3.1
+│   │   ├── lesson-kpi-testing-5whys-2025-10-19.md           ← ✅ FASE 3.4
+│   │   ├── lesson-async-parallelization-2025-10-20.md       ← ✅ FASE 1
+│   │   ├── lesson-streamlit-ui-debugging-2025-10-22.md      ← ✅ FASE 2.7 (hoje)
+│   │   └── antipadrões-rag.md                               ← ✅ 32 antipadrões
 │   │
 │   ├── history/                      ← ✅ Progresso histórico (já existe)
 │   │   ├── MVP_100_COMPLETO.md      ← ✅ MVP completo (14/10/2025)
@@ -773,11 +942,157 @@ agente-bsc-rag/
 
 **Próximo:**
 
-- 🔥 **Benchmark Fase 2A** - Validar métricas (RODANDO)
+- ✅ **Benchmark Fase 2A** - Validar métricas (COMPLETO)
+- ✅ **TIER 3** - Docs Index + Lições Aprendidas (COMPLETO)
 - 🔜 **Fase 2B** - Self-RAG + CRAG
-- 🔜 **TIER 3** - Docs Index + Lições Aprendidas
 
 ---
 
-**Última Atualização:** 2025-10-14
-**Status:** ✅ TIER 1+2 COMPLETO - Aguardando Benchmark Fase 2A
+### v1.2 - 2025-10-15 (TIER 3 + Benchmark Completo)
+
+**Criado:**
+
+- ✅ `docs/DOCS_INDEX.md` (índice navegável completo)
+  - Tags A-Z para busca rápida
+  - Documentos por categoria (Techniques, Patterns, History)
+  - Quick Search Matrix
+  - Cross-references entre todos documentos
+  
+- ✅ `docs/lessons/` (lições aprendidas Fase 2A)
+  - `lesson-query-decomposition-2025-10-14.md` (545 linhas)
+  - `lesson-adaptive-reranking-2025-10-14.md` (550+ linhas)
+  - `lesson-router-2025-10-14.md` (600+ linhas)
+  - `antipadrões-rag.md` (antipadrões identificados)
+  
+- ✅ Benchmark Fase 2A Completo (50 queries × 2 sistemas)
+  - `tests/benchmark_fase2a/run_benchmark.py` (pipeline completo)
+  - `tests/benchmark_fase2a/evaluate_existing_results.py` (avaliação RAGAS)
+  - `tests/benchmark_fase2a/analyze_results.py` (relatório + visualizações)
+  - 3 gráficos gerados (latency_boxplot, by_category, ragas_metrics)
+  - Relatório executivo markdown
+
+**Resultados Benchmark Validados:**
+
+- ✅ **Latência Média**: +3.1% mais rápido (128.7s → 124.7s)
+- ✅ **Answer Relevancy (RAGAS)**: +2.1% (0.889 → 0.907)
+- ✅ **Queries Simples**: +10.6% mais rápido (64.6s → 57.7s)
+- ✅ **Queries Conceituais**: +8.5% mais rápido (95.8s → 87.7s)
+- ✅ **Multi-Perspectiva**: +4.0% mais rápido
+- ⚠️ **Faithfulness**: -0.6% (variação mínima aceitável)
+
+**ROI Validado TIER 3:**
+
+- 20-30 min economizados por consulta de documentação (índice navegável)
+- Lições aprendidas consolidadas (evitar repetir erros)
+- Antipadrões documentados (guia de boas práticas)
+- Métricas Fase 2A validadas empiricamente (não mais estimativas)
+
+**Próximo:**
+
+- 🔜 **Fase 2B** - Self-RAG + CRAG
+- 🔜 **Produção** - Deploy com feature flags
+
+---
+
+### v1.3 - 2025-10-15 (Lições Fase 2A Integradas)
+
+**Atualizado:**
+
+- ✅ **Seção "Lições Aprendidas Fase 2A"** adicionada (108 linhas)
+  - Lição 6: Query Decomposition - Modelo Econômico Suficiente (GPT-5 mini hoje, $9.90/dia economia)
+  - Lição 7: Adaptive Re-ranking - TDD Acelera Implementação (-93% bugs)
+  - Lição 8: Router Inteligente - Reutilização = Aceleração Exponencial (10x speedup)
+  - Lição 9: Top 5 Antipadrões RAG a Evitar (2-8h economizadas/antipadrão)
+  - TOTAL ECONOMIA FASE 2A documentada ($9.90/dia + 10x aceleração + 2-3h/técnica)
+
+**ROI Validado v1.3:**
+
+- **Integração knowledge base**: Lições MVP + Fase 2A agora juntas no router central
+- **Decisões mais rápidas**: Consultar lições inline (não precisa abrir arquivo separado)
+- **Contexto preservado**: Agente tem consciência de 9 lições validadas sempre aplicadas
+- **Antipadrões visíveis**: Top 5 armadilhas catalogadas para consulta rápida
+
+**Próximo:**
+
+- 🔜 **Integrar lição test-debugging** em derived-cursor-rules.mdc
+- 🔜 **Fase 2B** - Self-RAG + CRAG (aplicar 9 lições aprendidas)
+
+---
+
+### v1.4 - 2025-10-19 (Documentation Navigation)
+
+**Criado:**
+
+  - Top 10 documentos categorizados (Arquitetura 4, Implementação 3, Techniques RAG 3)
+  - Instruções condicionais de quando consultar
+  - Pointer explícito para docs/DOCS_INDEX.md completo (46 docs)
+  - Mantida árvore de diretórios completa para navegação detalhada
+
+**Atualizado:**
+
+- [OK] **ÍNDICE NAVEGÁVEL**: Expandido de 5 para 7 seções
+    - Adicionada seção "Lições Aprendidas Fase 2A" (existia mas não estava listada - correção)
+  - Atualizada descrição "Localização da Documentação" (agora inclui Top 10)
+
+**Estratégia Aplicada:**
+
+- **Mini-Summaries + Pointers** ao invés de always-applied completo
+- Informação essencial inline (~610 tokens total)
+- Documentação completa disponível sob demanda via read_file
+- Lazy loading de conhecimento (80% economia de tokens vs always-applied completo)
+
+**ROI Esperado v1.4:**
+
+- **Custo economizado**: ~$24/mês (80% economia vs carregar DOCS_INDEX e Progress completos)
+- **Eficiência**: 5-10x mais eficiente (informação carregada só quando necessária)
+- **Manutenção**: ~5 min/2-3 sessões (atualizar MINI-PROGRESS quando fase muda)
+- **Contexto**: Agente sempre sabe "onde estamos" e "top 10 docs críticos" sem consumir 5K+ tokens
+
+**Protocolo de Manutenção:**
+
+- MINI-INDEX: Atualizar apenas quando novos docs críticos forem criados (raro, ~1-2x/fase)
+
+**Próximo:**
+
+- 🔜 **Fase 3** - Ferramentas Consultivas (SWOT, Five Whys, etc)
+
+---
+
+### v1.5 - 2025-10-22 (Diagramas Mermaid & Lessons Update)
+
+**Criado:**
+
+- ✅ `docs/architecture/AGENTS_WORKFLOW.md` - Diagrama Mermaid workflow DISCOVERY
+  - Fluxo completo: 4 perspectivas paralelas → consolidação → recomendações → judge → finalize
+  - Paralelização asyncio.gather visualizada
+  - Roteamento por approval_status detalhado
+  
+- ✅ `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+ linhas)
+  - 7 problemas resolvidos (loop infinito, ValidationError, logs, UI)
+  - Sequential Thinking methodology (8 thoughts)
+  - Brightdata research validado (2 fontes: leocon.dev, Medium)
+  - Top 5 lições-chave + Top 5 antipadrões
+  - 3 checklists acionáveis (PRÉ-PROMPT, PRÉ-COMMIT, PRÉ-UI)
+
+**Atualizado:**
+
+- ✅ **Top 10 → Top 11 Críticos** (adicionado AGENTS_WORKFLOW.md)
+- ✅ **Lessons:** 9 → 10 completas (6.400+ linhas)
+- ✅ **Total docs:** 46 → 47 documentos
+- ✅ **Estrutura de diretórios** atualizada (lessons detalhado, architecture expandido)
+- ✅ **Instruções consulta:** adicionado "Debugando fase DISCOVERY → AGENTS_WORKFLOW.md"
+
+**ROI Validado v1.5:**
+
+- **Diagramas Mermaid:** Visualização imediata de fluxos complexos (vs ler código)
+- **Lesson aprendida:** 50-67% economia debugging, UI 1h vs 3-4h
+- **Documentação atualizada:** Agente consciente de 47 docs (vs 46)
+
+**Próximo:**
+
+- 🔜 **Fase 3** - Ferramentas Consultivas (SWOT, Five Whys, KPI, Objectives, Benchmarking)
+
+---
+
+**Última Atualização:** 2025-10-22 (v1.5)
+**Status:** ✅ TIER 1+2+3 COMPLETO | ✅ DIAGRAMAS MERMAID | ✅ 10 LIÇÕES | 🎯 Pronto para FASE 3

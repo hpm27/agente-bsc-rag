@@ -2,7 +2,7 @@
 Módulo de tradução e expansão de queries para busca multilíngue.
 
 Implementa:
-- Tradução PT-BR <-> EN usando OpenAI GPT-4o-mini
+- Tradução PT-BR <-> EN usando OpenAI GPT-5 mini
 - Cache de traduções para otimização
 - Detecção automática de idioma
 """
@@ -22,7 +22,7 @@ class QueryTranslator:
     def __init__(self):
         """Inicializa o tradutor."""
         self.client = OpenAI(api_key=settings.openai_api_key)
-        self.model = "gpt-4o-mini"  # Barato e rápido para tradução
+        self.model = settings.translation_llm_model  # Configurável via .env
         self._cache: Dict[str, str] = {}
         logger.info(f"[INIT] Query Translator inicializado (modelo: {self.model})")
     
@@ -142,8 +142,8 @@ class QueryTranslator:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": query}
                 ],
-                temperature=0.3,
-                max_tokens=200
+                temperature=1.0,  # GPT-5 mini requer temperature=1.0 (unico valor aceito)
+                max_completion_tokens=settings.gpt5_max_completion_tokens  # usar máximo suportado
             )
             
             translated = response.choices[0].message.content.strip()
