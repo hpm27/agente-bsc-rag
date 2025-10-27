@@ -5,7 +5,7 @@ informações de clientes e engajamentos de consultoria BSC no Mem0.
 """
 
 from datetime import datetime, timezone
-from typing import List, Literal, Optional
+from typing import Any, List, Literal, Optional
 import re
 from uuid import uuid4
 
@@ -2583,6 +2583,468 @@ class ConversationContext(BaseModel):
                 "completeness": 0.65,
                 "should_confirm": False,
                 "context_summary": "Ja temos: TechCorp (tecnologia, media), 2 objectives estrategicos"
+            }
+        }
+    )
+
+
+# ============================================================================
+# TOOL SELECTION (Tool Routing - FASE 3.7)
+# ============================================================================
+
+
+class ToolSelection(BaseModel):
+    """Resultado da selecao inteligente de ferramenta consultiva BSC.
+    
+    Este schema e usado pelo ConsultingOrchestrator para sugerir qual
+    ferramenta consultiva (SWOT, Five Whys, Issue Tree, KPI, Strategic 
+    Objectives, Benchmarking) e mais adequada baseado no contexto do cliente.
+    
+    A selecao usa abordagem hibrida:
+    - Heuristica (keywords/regex) para casos obvios (90%)
+    - LLM Classifier (GPT-5 mini) para casos ambiguos (10%)
+    
+    Attributes:
+        tool_name: Nome da ferramenta selecionada (6 opcoes validas)
+        confidence: Score de confianca da selecao (0.0-1.0)
+        reasoning: Justificativa da selecao (minimo 20 caracteres)
+        alternative_tools: Lista opcional de ferramentas alternativas (ranking)
+    
+    Added: 2025-10-27 (FASE 3.7)
+    
+    Example:
+        >>> selection = ToolSelection(
+        ...     tool_name="FIVE_WHYS",
+        ...     confidence=0.92,
+        ...     reasoning="Cliente mencionou 'causa raiz' e 'investigar problema' - Five Whys e ideal para root cause analysis",
+        ...     alternative_tools=["ISSUE_TREE"]
+        ... )
+    """
+    
+    tool_name: Literal[
+        "SWOT",
+        "FIVE_WHYS",
+        "ISSUE_TREE",
+        "KPI_DEFINER",
+        "STRATEGIC_OBJECTIVES",
+        "BENCHMARKING"
+    ] = Field(
+        description="Nome da ferramenta consultiva BSC selecionada"
+    )
+    
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Score de confianca da selecao (0.0 = baixa, 1.0 = alta)"
+    )
+    
+    reasoning: str = Field(
+        min_length=20,
+        description="Justificativa da selecao baseada no contexto do cliente"
+    )
+    
+    alternative_tools: List[str] = Field(
+        default_factory=list,
+        description="Lista opcional de ferramentas alternativas (em ordem de relevancia)"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "tool_name": "FIVE_WHYS",
+                "confidence": 0.92,
+                "reasoning": "Cliente mencionou 'causa raiz' e problema especifico de baixas vendas - Five Whys e ideal para investigacao profunda",
+                "alternative_tools": ["ISSUE_TREE", "SWOT"]
+            }
+        }
+    )
+
+
+# ============================================================================
+# ACTION PLAN SCHEMAS (FASE 3.11)
+# ============================================================================
+
+
+class ActionItem(BaseModel):
+    """Item individual de ação em plano de implementação BSC.
+    
+    Representa uma ação específica, mensurável e acionável necessária
+    para implementar estratégia BSC baseada em diagnóstico realizado.
+    
+    Segue 7 Best Practices para Action Planning (SME Strategy 2025):
+    1. Align actions with goals
+    2. Prioritize based on importance and time sensitivity
+    3. Be specific rather than general
+    4. Set deadlines & assign owners
+    5. Ask for volunteers or delegate tasks
+    6. Develop action plan for implementation
+    7. Track and monitor progress
+    
+    Attributes:
+        action_title: Título específico da ação (não genérico)
+        description: Descrição detalhada da ação
+        perspective: Perspectiva BSC à qual a ação pertence
+        priority: Prioridade da ação (HIGH/MEDIUM/LOW)
+        effort: Esforço estimado para executar (HIGH/MEDIUM/LOW)
+        responsible: Pessoa/equipe responsável pela execução
+        start_date: Data de início da ação
+        due_date: Data limite para conclusão
+        resources_needed: Lista de recursos necessários
+        success_criteria: Critérios para medir sucesso
+        dependencies: Lista de ações dependentes
+    
+    Example:
+        >>> action = ActionItem(
+        ...     action_title="Implementar sistema de coleta de feedback de clientes",
+        ...     description="Configurar plataforma online para coleta sistemática...",
+        ...     perspective="Clientes",
+        ...     priority="HIGH",
+        ...     effort="MEDIUM",
+        ...     responsible="Equipe de Marketing",
+        ...     start_date="2025-11-01",
+        ...     due_date="2025-12-15",
+        ...     resources_needed=["Plataforma CRM", "Treinamento equipe"],
+        ...     success_criteria="80% dos clientes respondendo surveys mensais",
+        ...     dependencies=["Definir métricas de satisfação"]
+        ... )
+    """
+    
+    action_title: str = Field(
+        min_length=10,
+        max_length=200,
+        description="Título específico e acionável da ação (não genérico)"
+    )
+    
+    description: str = Field(
+        min_length=20,
+        max_length=1000,
+        description="Descrição detalhada da ação a ser executada"
+    )
+    
+    perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"] = Field(
+        description="Perspectiva BSC à qual esta ação pertence"
+    )
+    
+    priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Prioridade da ação baseada em importância e urgência"
+    )
+    
+    effort: Literal["HIGH", "MEDIUM", "LOW"] = Field(
+        description="Esforço estimado para executar esta ação"
+    )
+    
+    responsible: str = Field(
+        min_length=3,
+        max_length=100,
+        description="Pessoa ou equipe responsável pela execução"
+    )
+    
+    start_date: str = Field(
+        description="Data de início da ação (formato YYYY-MM-DD)"
+    )
+    
+    due_date: str = Field(
+        description="Data limite para conclusão da ação (formato YYYY-MM-DD)"
+    )
+    
+    resources_needed: List[str] = Field(
+        default_factory=list,
+        description="Lista de recursos necessários para executar a ação"
+    )
+    
+    success_criteria: str = Field(
+        min_length=10,
+        max_length=500,
+        description="Critérios específicos para medir sucesso da ação"
+    )
+    
+    dependencies: List[str] = Field(
+        default_factory=list,
+        description="Lista de outras ações que devem ser concluídas antes desta"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "action_title": "Implementar sistema de coleta de feedback de clientes",
+                "description": "Configurar plataforma online para coleta sistemática de feedback de clientes sobre produtos e serviços, incluindo integração com CRM existente",
+                "perspective": "Clientes",
+                "priority": "HIGH",
+                "effort": "MEDIUM",
+                "responsible": "Equipe de Marketing",
+                "start_date": "2025-11-01",
+                "due_date": "2025-12-15",
+                "resources_needed": ["Plataforma CRM", "Treinamento equipe", "Orçamento R$ 5.000"],
+                "success_criteria": "80% dos clientes respondendo surveys mensais com NPS > 8",
+                "dependencies": ["Definir métricas de satisfação", "Aprovar orçamento"]
+            }
+        }
+    )
+    
+    def is_high_priority(self) -> bool:
+        """Verifica se ação é de alta prioridade.
+        
+        Returns:
+            True se priority == "HIGH", False caso contrário
+        """
+        return self.priority == "HIGH"
+    
+    def is_high_effort(self) -> bool:
+        """Verifica se ação requer alto esforço.
+        
+        Returns:
+            True se effort == "HIGH", False caso contrário
+        """
+        return self.effort == "HIGH"
+    
+    def has_dependencies(self) -> bool:
+        """Verifica se ação possui dependências.
+        
+        Returns:
+            True se tem dependências, False caso contrário
+        """
+        return len(self.dependencies) > 0
+
+
+class ActionPlan(BaseModel):
+    """Plano de ação estruturado para implementação BSC.
+    
+    Consolida todas as ações necessárias para implementar estratégia BSC
+    baseada em diagnóstico realizado, organizadas por perspectiva e prioridade.
+    
+    Segue estrutura BSC (Mooncamp 2025) - Step 3: "Define actions to achieve 
+    the strategic goals" com 7 Best Practices para Action Planning.
+    
+    Attributes:
+        action_items: Lista de todas as ações do plano
+        total_actions: Número total de ações
+        high_priority_count: Quantidade de ações de alta prioridade
+        by_perspective: Dicionário de ações agrupadas por perspectiva BSC
+        summary: Resumo executivo do plano
+        timeline_summary: Resumo do cronograma de execução
+    
+    Example:
+        >>> plan = ActionPlan(
+        ...     action_items=[
+        ...         ActionItem(action_title="Ação 1", ...),
+        ...         ActionItem(action_title="Ação 2", ...)
+        ...     ]
+        ... )
+        >>> plan.by_perspective("Clientes")  # Retorna ações da perspectiva Clientes
+    """
+    
+    action_items: List[ActionItem] = Field(
+        min_length=3,
+        max_length=50,
+        description="Lista de ações específicas para implementação BSC"
+    )
+    
+    total_actions: int = Field(
+        description="Número total de ações no plano"
+    )
+    
+    high_priority_count: int = Field(
+        description="Quantidade de ações de alta prioridade"
+    )
+    
+    by_perspective: dict = Field(
+        description="Dicionário com ações agrupadas por perspectiva BSC"
+    )
+    
+    summary: str = Field(
+        min_length=50,
+        max_length=2000,
+        description="Resumo executivo do plano de ação"
+    )
+    
+    timeline_summary: str = Field(
+        min_length=30,
+        max_length=1000,
+        description="Resumo do cronograma de execução"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "action_items": [
+                    {
+                        "action_title": "Implementar sistema de coleta de feedback",
+                        "description": "Configurar plataforma online...",
+                        "perspective": "Clientes",
+                        "priority": "HIGH",
+                        "effort": "MEDIUM",
+                        "responsible": "Equipe de Marketing",
+                        "start_date": "2025-11-01",
+                        "due_date": "2025-12-15",
+                        "resources_needed": ["Plataforma CRM"],
+                        "success_criteria": "80% clientes respondendo surveys",
+                        "dependencies": ["Definir métricas"]
+                    }
+                ],
+                "total_actions": 1,
+                "high_priority_count": 1,
+                "by_perspective": {
+                    "Clientes": 1,
+                    "Financeira": 0,
+                    "Processos Internos": 0,
+                    "Aprendizado e Crescimento": 0
+                },
+                "summary": "Plano de ação focado em melhorar satisfação de clientes através de sistema de feedback estruturado...",
+                "timeline_summary": "Execução em 3 fases: Nov-Dez 2025 (alta prioridade), Jan-Mar 2026 (média prioridade)..."
+            }
+        }
+    )
+    
+    def get_actions_by_perspective(self, perspective: str) -> List[ActionItem]:
+        """Retorna ações filtradas por perspectiva BSC.
+        
+        Args:
+            perspective: Perspectiva BSC ("Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento")
+            
+        Returns:
+            Lista de ActionItem da perspectiva especificada
+            
+        Example:
+            >>> plan.get_actions_by_perspective("Clientes")
+            [ActionItem(...), ActionItem(...)]
+        """
+        return [action for action in self.action_items if action.perspective == perspective]
+    
+    def get_high_priority_actions(self) -> List[ActionItem]:
+        """Retorna apenas ações de alta prioridade.
+        
+        Returns:
+            Lista de ActionItem com priority == "HIGH"
+        """
+        return [action for action in self.action_items if action.is_high_priority()]
+    
+    def get_actions_by_effort(self, effort: str) -> List[ActionItem]:
+        """Retorna ações filtradas por nível de esforço.
+        
+        Args:
+            effort: Nível de esforço ("HIGH", "MEDIUM", "LOW")
+            
+        Returns:
+            Lista de ActionItem com o esforço especificado
+        """
+        return [action for action in self.action_items if action.effort == effort]
+    
+    def is_balanced(self, min_actions_per_perspective: int = 1) -> bool:
+        """Verifica se plano está balanceado entre as 4 perspectivas BSC.
+        
+        Args:
+            min_actions_per_perspective: Mínimo de ações por perspectiva (default: 1)
+            
+        Returns:
+            True se todas as perspectivas têm >= min_actions_per_perspective, False caso contrário
+        """
+        perspectives = ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+        return all(
+            len(self.get_actions_by_perspective(perspective)) >= min_actions_per_perspective
+            for perspective in perspectives
+        )
+    
+    def quality_score(self, target_actions: int = 12) -> float:
+        """Calcula score de qualidade do plano de ação.
+        
+        Score varia de 0.0 (pouco acionável) a 1.0 (excelente) baseado em:
+        - Quantidade de ações (target: 12 ações)
+        - Balanceamento entre perspectivas
+        - Distribuição de prioridades
+        
+        Args:
+            target_actions: Número ideal de ações (default: 12)
+            
+        Returns:
+            Float entre 0.0 e 1.0 representando qualidade do plano
+        """
+        # Score por quantidade (40% do peso)
+        quantity_score = min(len(self.action_items) / target_actions, 1.0)
+        
+        # Score por balanceamento (30% do peso)
+        balance_score = 1.0 if self.is_balanced() else 0.5
+        
+        # Score por distribuição de prioridades (30% do peso)
+        high_priority_ratio = self.high_priority_count / len(self.action_items) if self.action_items else 0
+        priority_score = 1.0 if 0.2 <= high_priority_ratio <= 0.6 else 0.7  # Ideal: 20-60% alta prioridade
+        
+        return (quantity_score * 0.4) + (balance_score * 0.3) + (priority_score * 0.3)
+
+
+# ============================================================================
+# TOOL OUTPUT PERSISTENCE (FASE 3.9 - Persist Tool Outputs)
+# ============================================================================
+
+
+class ToolOutput(BaseModel):
+    """Wrapper genérico para persistir outputs de ferramentas consultivas BSC no Mem0.
+    
+    Este schema encapsula qualquer output de ferramenta consultiva (SWOT, Five Whys,
+    Issue Tree, KPI, Strategic Objectives, Benchmarking) para salvamento unificado
+    no sistema de memória Mem0.
+    
+    Pattern de persistência:
+    - tool_name: Identifica qual ferramenta gerou o output (Literal type-safe)
+    - tool_output_data: Dados serializados do output (Any - suporta todos schemas)
+    - created_at: Timestamp do output
+    - client_context: Contexto opcional do cliente para busca semântica
+    
+    Estratégia Mem0:
+    - Usa metadata.tool_output_data para armazenar dados estruturados (JSON)
+    - Usa messages contextuais para busca semântica futura
+    - Suporta deleção/atualização de outputs antigos (1 output por ferramenta por client_id)
+    
+    Added: 2025-10-27 (FASE 3.9)
+    
+    Example:
+        >>> swot_output = SWOTAnalysis(strengths=["A"], weaknesses=["B"], ...)
+        >>> tool_output = ToolOutput(
+        ...     tool_name="SWOT",
+        ...     tool_output_data=swot_output.model_dump(),
+        ...     created_at=datetime.now(timezone.utc),
+        ...     client_context="TechCorp - Empresa de tecnologia, medio porte, setor SaaS"
+        ... )
+        >>> mem0_client.save_tool_output("cliente_123", tool_output)
+    """
+    
+    tool_name: Literal[
+        "SWOT",
+        "FIVE_WHYS",
+        "ISSUE_TREE",
+        "KPI_DEFINER",
+        "STRATEGIC_OBJECTIVES",
+        "BENCHMARKING",
+        "ACTION_PLAN"
+    ] = Field(
+        description="Nome da ferramenta consultiva que gerou este output"
+    )
+    
+    tool_output_data: Any = Field(
+        description="Dados serializados do output da ferramenta (dict ou objeto Pydantic convertido)"
+    )
+    
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp de quando o output foi gerado"
+    )
+    
+    client_context: Optional[str] = Field(
+        None,
+        description="Contexto opcional do cliente para busca semântica futura"
+    )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "tool_name": "SWOT",
+                "tool_output_data": {
+                    "strengths": ["Equipe qualificada", "Marca forte"],
+                    "weaknesses": ["Processos manuais"],
+                    "opportunities": ["Expansão digital"],
+                    "threats": ["Concorrência intensa"]
+                },
+                "created_at": "2025-10-27T12:30:00Z",
+                "client_context": "TechCorp - Empresa de tecnologia, medio porte, setor SaaS"
             }
         }
     )

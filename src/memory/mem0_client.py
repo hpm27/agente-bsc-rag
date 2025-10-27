@@ -736,4 +736,222 @@ class Mem0ClientWrapper:
         except Exception as e:
             logger.error("[ERRO] Falha ao carregar benchmark report: %s", e)
             raise Mem0ClientError(f"Erro ao carregar benchmark report: {e!s}") from e
+    
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+        reraise=True,
+    )
+    def save_tool_output(self, client_id: str, tool_output: Any) -> str:
+        """Salva ToolOutput de ferramenta consultiva no Mem0.
+        
+        Persiste o output de qualquer ferramenta consultiva (SWOT, Five Whys,
+        Issue Tree, KPI, Strategic Objectives, Benchmarking) no Mem0 Platform.
+        
+        Usa metadata.tool_output_data para armazenar dados estruturados e messages
+        contextuais para busca semântica futura.
+        
+        Args:
+            client_id: ID do cliente
+            tool_output: ToolOutput a ser salvo (já serializado)
+        
+        Returns:
+            str: client_id do output salvo
+        
+        Raises:
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Example:
+            >>> client = Mem0ClientWrapper()
+            >>> tool_output = ToolOutput(
+            ...     tool_name="SWOT",
+            ...     tool_output_data=swot_analysis.model_dump(),
+            ...     client_context="TechCorp - empresa de tecnologia"
+            ... )
+            >>> client.save_tool_output("cliente_123", tool_output)
+        """
+        try:
+            # Valida que tool_output é ToolOutput válido
+            if not hasattr(tool_output, 'tool_name') or not hasattr(tool_output, 'tool_output_data'):
+                raise ValueError("tool_output deve ser uma instância de ToolOutput")
+            
+            # Serializa dados
+            tool_data = tool_output.tool_output_data if not isinstance(tool_output.tool_output_data, dict) else tool_output.tool_output_data
+            client_context = tool_output.client_context or ""
+            
+            # Cria mensagens contextuais para Mem0
+            messages = [
+                {
+                    "role": "user",
+                    "content": (
+                        f"Realizei análise com ferramenta consultiva '{tool_output.tool_name}'. "
+                        f"{'Contexto: ' + client_context + '. ' if client_context else ''}"
+                        f"Results serializados para uso futuro."
+                    )
+                },
+                {
+                    "role": "assistant",
+                    "content": (
+                        f"Entendido! Registrei output da ferramenta '{tool_output.tool_name}' "
+                        f"com dados estruturados. Vou guardar para análises futuras e referência."
+                    )
+                }
+            ]
+            
+            # Deleta outputs antigos da mesma ferramenta (garante 1 output atualizado)
+            try:
+                filters = {"AND": [{"user_id": client_id}]}
+                all_memories = self.client.get_all(filters=filters)
+                for memory in (all_memories if isinstance(all_memories, list) else [all_memories]):
+                    try:
+                        if isinstance(memory, dict) and 'metadata' in memory:
+                            metadata = memory['metadata']
+                        elif hasattr(memory, 'metadata'):
+                            metadata = memory.metadata
+                        else:
+                            continue
+                        
+                        # Verifica se é output desta ferramenta
+                        if 'tool_output_data' in metadata:
+                            tool_name_in_memory = metadata.get('tool_name', '')
+                            if tool_name_in_memory == tool_output.tool_name:
+                                # Encontrou output antigo desta ferramenta, deletar
+                                memory_id = memory.get('id') if isinstance(memory, dict) else getattr(memory, 'id', None)
+                                if memory_id:
+                                    self.client.delete(memory_id=memory_id)
+                                    logger.debug(
+                                        "[CLEANUP] Tool output antigo deletado (client_id=%r, tool=%r)",
+                                        client_id,
+                                        tool_output.tool_name
+                                    )
+                    except Exception as e:
+                        logger.debug(
+                            "[CLEANUP] Erro ao processar memória (ignorando): %s",
+                            e
+                        )
+                        continue
+            except Exception as delete_error:
+                logger.debug(
+                    "[CLEANUP] Nenhum tool output para deletar (client_id=%r, tool=%r): %s",
+                    client_id,
+                    tool_output.tool_name,
+                    delete_error
+                )
+            
+            # Salva novo tool output
+            self.client.add(
+                messages=messages,
+                user_id=client_id,
+                metadata={
+                    "tool_output_data": tool_data,
+                    "tool_name": tool_output.tool_name,
+                    "report_type": f"tool_output_{tool_output.tool_name.lower()}",
+                    "created_at": tool_output.created_at.isoformat() if hasattr(tool_output.created_at, 'isoformat') else str(tool_output.created_at)
+                }
+            )
+            
+            logger.info(
+                "[OK] Tool output salvo para client_id=%r (tool=%r)",
+                client_id,
+                tool_output.tool_name
+            )
+            
+            return client_id
+        
+        except (ConnectionError, TimeoutError) as e:
+            logger.warning("[RETRY] Falha de rede ao salvar tool output: %s", e)
+            raise
+        except Exception as e:
+            logger.error("[ERRO] Falha ao salvar tool output: %s", e)
+            raise Mem0ClientError(f"Erro ao salvar tool output: {e!s}") from e
+    
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+        reraise=True,
+    )
+    def get_tool_output(self, client_id: str, tool_name: str) -> Any | None:
+        """Carrega ToolOutput específico do Mem0.
+        
+        Recupera o output de uma ferramenta consultiva específica do Mem0 Platform.
+        
+        Args:
+            client_id: ID do cliente
+            tool_name: Nome da ferramenta (SWOT, FIVE_WHYS, ISSUE_TREE, etc)
+        
+        Returns:
+            dict com dados do ToolOutput, ou None se não encontrado
+        
+        Raises:
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Example:
+            >>> client = Mem0ClientWrapper()
+            >>> swot_data = client.get_tool_output("cliente_123", "SWOT")
+            >>> if swot_data:
+            ...     from src.memory.schemas import ToolOutput
+            ...     tool_output = ToolOutput(**swot_data)
+        """
+        try:
+            # WORKAROUND: Usar filtro mínimo obrigatório da API v2 (issue #3284)
+            # A API v2 exige filtros, mas os filtros de metadata não funcionam corretamente
+            # Usamos filtro básico por user_id e filtramos manualmente depois
+            filters = {"AND": [{"user_id": client_id}]}
+            memories = self.client.get_all(filters=filters)
+            
+            # Mem0 retorna {'results': [...]} ao invés de lista direta
+            if isinstance(memories, dict) and 'results' in memories:
+                memories_list = memories['results']
+            elif isinstance(memories, list):
+                memories_list = memories
+            else:
+                memories_list = [memories] if memories else []
+            
+            if not memories_list:
+                logger.debug("[INFO] Nenhuma memória encontrada para client_id=%r", client_id)
+                return None
+            
+            # Procura memória com tool_output_data e tool_name correspondente
+            for memory in memories_list:
+                try:
+                    if isinstance(memory, dict) and 'metadata' in memory:
+                        metadata = memory['metadata']
+                    elif hasattr(memory, 'metadata'):
+                        metadata = memory.metadata
+                    else:
+                        continue
+                    
+                    # Verifica se é output da ferramenta solicitada
+                    if 'tool_output_data' in metadata and metadata.get('tool_name') == tool_name:
+                        output_data = metadata['tool_output_data']
+                        logger.info(
+                            "[OK] Tool output carregado para client_id=%r (tool=%r)",
+                            client_id,
+                            tool_name
+                        )
+                        return output_data
+                
+                except Exception as e:
+                    logger.warning(
+                        "[WARN] Erro ao processar memória (ignorando): %s",
+                        e
+                    )
+                    continue
+            
+            # Nenhum output encontrado
+            logger.debug(
+                "[INFO] Nenhum tool output encontrado para client_id=%r (tool=%r)",
+                client_id,
+                tool_name
+            )
+            return None
+        
+        except (ConnectionError, TimeoutError) as e:
+            logger.warning("[RETRY] Falha de rede ao carregar tool output: %s", e)
+            raise
+        except Exception as e:
+            logger.error("[ERRO] Falha ao carregar tool output: %s", e)
+            raise Mem0ClientError(f"Erro ao carregar tool output: {e!s}") from e
 

@@ -31,6 +31,7 @@ from src.agents.learning_agent import LearningAgent
 from src.agents.process_agent import ProcessAgent
 from src.graph.states import BSCState
 from src.memory.schemas import (
+    ActionPlan,
     ClientProfile,
     CompleteDiagnostic,
     ConsolidatedAnalysis,
@@ -92,13 +93,28 @@ class DiagnosticAgent:
         """
         self.llm = llm or ChatOpenAI(
             model=settings.diagnostic_llm_model,  # Configurável via .env (default: gpt-5-2025-08-07)
-            temperature=1.0,  # GPT-5 requer temperature=1.0
             api_key=settings.openai_api_key,  # type: ignore
             request_timeout=120,  # Timeout de 2 minutos por request (previne travamentos)
             max_retries=2,  # Máximo 2 retries automáticos
             max_completion_tokens=settings.gpt5_max_completion_tokens,  # GPT-5 usa max_completion_tokens (128K máx), NÃO max_tokens!
             reasoning_effort=settings.gpt5_reasoning_effort,
         )
+        
+        # Log para identificar temperatura do LLM
+        if hasattr(self.llm, 'temperature'):
+            logger.info(f"[DIAGNOSTIC] LLM temperatura: {self.llm.temperature}")
+        else:
+            logger.warning("[DIAGNOSTIC] LLM não tem atributo 'temperature'")
+        
+        # Log para identificar modelo do LLM
+        if hasattr(self.llm, 'model'):
+            logger.info(f"[DIAGNOSTIC] LLM modelo: {self.llm.model}")
+        elif hasattr(self.llm, 'model_name'):
+            logger.info(f"[DIAGNOSTIC] LLM modelo: {self.llm.model_name}")
+        else:
+            logger.info("[DIAGNOSTIC] LLM tipo: %s", type(self.llm).__name__)
+        
+        logger.info(f"[DIAGNOSTIC] LLM configurado: model={settings.diagnostic_llm_model}, timeout=120s")
         
         # Agentes BSC especializados (já existentes)
         self.financial_agent = FinancialAgent()
@@ -989,6 +1005,95 @@ ANÁLISES POR PERSPECTIVA:
             logger.info("[DIAGNOSTIC] SWOT completo e validado!")
         
         return swot
+
+    async def generate_action_plan(
+        self,
+        client_profile: ClientProfile,
+        diagnostic_result: CompleteDiagnostic | None = None,
+        use_rag: bool = True,
+    ):
+        """Gera plano de ação estruturado para implementação BSC.
+        
+        Utiliza ActionPlanTool para facilitar criação de plano de ação contextualizado
+        com conhecimento BSC (via RAG) e baseado em diagnóstico realizado.
+        
+        Workflow:
+        1. Valida contexto da empresa e diagnóstico disponível
+        2. Chama ActionPlanTool.facilitate() para criar plano inicial
+        3. Valida qualidade e balanceamento do plano gerado
+        
+        Args:
+            client_profile: ClientProfile com contexto da empresa
+            diagnostic_result: CompleteDiagnostic para base do plano (recomendado)
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+            
+        Returns:
+            ActionPlan: Objeto Pydantic validado com ações específicas e acionáveis
+            
+        Raises:
+            ValueError: Se client_profile.company ausente
+            ValueError: Se diagnostic_result=None (recomendado ter diagnóstico)
+            
+        Example:
+            >>> # Action Plan baseado em diagnóstico
+            >>> diagnostic = await agent.run_diagnostic(state)
+            >>> action_plan = await agent.generate_action_plan(
+            ...     profile, 
+            ...     diagnostic_result=diagnostic
+            ... )
+            >>> print(f"Plano criado: {action_plan.total_actions} ações")
+            >>> print(f"Score qualidade: {action_plan.quality_score():.1%}")
+        """
+        from src.tools.action_plan import ActionPlanTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando Action Plan para {client_profile.company.name} "
+            f"(use_rag={use_rag}, diagnostic={'disponível' if diagnostic_result else 'ausente'})"
+        )
+        
+        # Validações
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para Action Plan.")
+        
+        if not diagnostic_result:
+            logger.warning(
+                "[DIAGNOSTIC] diagnostic_result=None. "
+                "Recomendado executar diagnóstico completo antes de criar Action Plan."
+            )
+        
+        # Instanciar ActionPlanTool
+        action_plan_tool = ActionPlanTool(llm=self.llm)
+        
+        # STEP 1: Facilitar Action Plan
+        action_plan = await action_plan_tool.facilitate(
+            client_profile=client_profile,
+            financial_agent=self.financial_agent if use_rag else None,
+            customer_agent=self.customer_agent if use_rag else None,
+            process_agent=self.process_agent if use_rag else None,
+            learning_agent=self.learning_agent if use_rag else None,
+            diagnostic_results=diagnostic_result,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] Action Plan gerado: {action_plan.total_actions} ações "
+            f"(score: {action_plan.quality_score():.1%}, balanceado: {action_plan.is_balanced()})"
+        )
+        
+        # Validar qualidade
+        if action_plan.quality_score() < 0.5:
+            logger.warning(
+                f"[DIAGNOSTIC] Action Plan com score baixo: {action_plan.quality_score():.1%}. "
+                "Considere refinar com mais contexto ou diagnóstico."
+            )
+        
+        if not action_plan.is_balanced():
+            logger.warning(
+                "[DIAGNOSTIC] Action Plan não está balanceado entre as 4 perspectivas BSC. "
+                f"Distribuição: {action_plan.by_perspective}"
+            )
+        
+        logger.info("[DIAGNOSTIC] Action Plan criado e validado!")
+        return action_plan
     
     def generate_five_whys_analysis(
         self,
