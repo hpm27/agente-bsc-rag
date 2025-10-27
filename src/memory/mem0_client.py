@@ -206,28 +206,73 @@ class Mem0ClientWrapper:
                     delete_error
                 )
 
-            # Sanitizar metadata para ficar < 2000 chars (limite Mem0)
+            # [CORREÇÃO] Sanitizar metadata para ficar < 2000 chars (limite Mem0)
+            # BEST PRACTICE: Metadata deve conter apenas campos searchable/filterable
+            # Profile completo já está armazenado em messages, não precisa duplicar
             import json as _json
+            
             def _truncate(text: str, max_len: int) -> str:
+                """Trunca texto garantindo que não ultrapasse max_len."""
                 return text if len(text) <= max_len else text[: max_len - 3] + "..."
-
-            # Compactar profile_data (minified JSON) e cortar se necessário
-            profile_data_str = _json.dumps(data, separators=(",", ":"), ensure_ascii=False)
-            # Reservar espaço p/ campos fixos (~200-300 chars)
-            max_profile_data_len = 1600
-            if len(profile_data_str) > max_profile_data_len:
-                profile_data_str = profile_data_str[: max_profile_data_len]
-
-            company_name = _truncate(profile.company.name or "", 120)
-            sector = _truncate(profile.company.sector or "", 120)
-            phase = _truncate(profile.engagement.current_phase or "", 60)
-
+            
+            def _calculate_metadata_size(metadata: dict) -> int:
+                """Calcula tamanho real do metadata JSON serializado."""
+                return len(_json.dumps(metadata, separators=(",", ":"), ensure_ascii=False))
+            
+            # Campos essenciais para busca/filtro (não dados completos)
+            company_name = _truncate(profile.company.name or "", 150)
+            sector = _truncate(profile.company.sector or "", 150)
+            industry = _truncate(profile.company.industry or "", 150)
+            phase = _truncate(profile.engagement.current_phase or "", 80)
+            
+            # ESTRATÉGIA 1: Tentar metadata sem profile_data (recomendado Mem0)
+            # Profile completo já está em messages, metadata apenas para busca
             metadata_compact = {
-                "profile_data": profile_data_str,
                 "company_name": company_name,
                 "sector": sector,
+                "industry": industry,
                 "phase": phase,
             }
+            
+            metadata_size = _calculate_metadata_size(metadata_compact)
+            
+            # ESTRATÉGIA 2: Se ainda > 2000 (improvável), truncar fields progressivamente
+            if metadata_size > 2000:
+                logger.warning(
+                    "[WARN] Metadata essencial > 2000 chars (%d). Truncando fields...",
+                    metadata_size
+                )
+                # Reduzir fields pela metade
+                company_name = _truncate(company_name, 75)
+                sector = _truncate(sector, 75)
+                industry = _truncate(industry, 75)
+                phase = _truncate(phase, 40)
+                
+                metadata_compact = {
+                    "company_name": company_name,
+                    "sector": sector,
+                    "industry": industry,
+                    "phase": phase,
+                }
+                
+                metadata_size = _calculate_metadata_size(metadata_compact)
+                
+                if metadata_size > 2000:
+                    # Último recurso: apenas company e sector
+                    metadata_compact = {
+                        "company_name": _truncate(company_name, 100),
+                        "sector": _truncate(sector, 100),
+                    }
+                    metadata_size = _calculate_metadata_size(metadata_compact)
+                    logger.warning(
+                        "[WARN] Metadata reduzido para campos mínimos (size: %d)",
+                        metadata_size
+                    )
+            
+            logger.debug(
+                "[OK] Metadata sanitizado: %d chars (limit: 2000)",
+                metadata_size
+            )
 
             # Agora salva no Mem0 usando user_id como chave
             self.client.add(
