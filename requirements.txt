@@ -42,6 +42,12 @@ pytesseract==0.3.10
 # FASE 4.2 - Reports & Exports (PDF Generation)
 weasyprint==62.3  # HTML → PDF conversion (Python 3.12 compatible)
 
+# FASE 4.3 - Integration APIs (REST API Enterprise)
+fastapi==0.115.0  # Modern async web framework
+uvicorn[standard]==0.32.0  # ASGI server with WebSockets
+slowapi==0.1.9  # Rate limiting for FastAPI
+redis==5.2.0  # Redis client for rate limiting + caching
+
 # Chunking & Text Processing
 tiktoken>=0.7,<1
 nltk==3.8.1

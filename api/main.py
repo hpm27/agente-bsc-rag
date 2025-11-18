@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     # Startup
     logger.info("[API] Iniciando BSC RAG Consultant API...")
     logger.info(f"[API] Versão: {app.version}")
-    logger.info(f"[API] Ambiente: {'PROD' if not settings.DEBUG else 'DEV'}")
+    logger.info(f"[API] Ambiente: {'PROD' if not settings.debug else 'DEV'}")
     
     # TODO: Conectar Redis para rate limiting
     # TODO: Verificar Mem0 connection
@@ -98,7 +98,7 @@ origins = [
     "http://localhost:3000",  # Frontend local típico
 ]
 
-if not settings.DEBUG:
+if not settings.debug:
     # Produção: adicionar domínios confiáveis
     origins.append("https://app.engelar.eng.br")
 
@@ -121,7 +121,7 @@ async def health_check():
     return {
         "status": "ok",
         "version": app.version,
-        "environment": "production" if not settings.DEBUG else "development"
+        "environment": "production" if not settings.debug else "development"
     }
 
 
@@ -164,9 +164,17 @@ async def internal_error_handler(request, exc):
     )
 
 
-# TODO: Registrar routers
-# from api.routers import clients, diagnostics, tools, reports, webhooks
-# app.include_router(clients.router, prefix="/api/v1/clients", tags=["clients"])
+# Registrar routers
+from api.routers import clients
+
+# TODO: Configurar rate limit handler (testar API básica primeiro)
+# from api.utils.rate_limit import limiter, rate_limit_exceeded_handler
+# from slowapi.errors import RateLimitExceeded
+# app.state.limiter = limiter
+# app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+
+# Routers
+app.include_router(clients.router, prefix="/api/v1/clients", tags=["clients"])
 # app.include_router(diagnostics.router, prefix="/api/v1/diagnostics", tags=["diagnostics"])
 # app.include_router(tools.router, prefix="/api/v1/tools", tags=["tools"])
 # app.include_router(reports.router, prefix="/api/v1/reports", tags=["reports"])
@@ -180,6 +188,6 @@ if __name__ == "__main__":
         "api.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=settings.DEBUG
+        reload=settings.debug
     )
 
