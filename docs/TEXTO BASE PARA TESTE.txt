@@ -1,0 +1,19 @@
+
+
+
+Meu nome é Hugo Moreira, sou fundador e diretor da empresa Engelar. A engelar é uma industria de perfis de aço, galvanizados, formados a frio (conhecido como light steel frame (LSF)). Nosso principal produto hj são estruturas de coberturas de casas populares, atendemos construtoras de casas populares de todo o Brasil. Tbm atendemos coberturas e blocos de prédios, tbm de apartamentos de unidades populares. Nosso diferencial perante a concorrencia é que entregamos os materiais separados por casa, facilitando o processo de movimentação no canteiro de obras, auxilidando as equipes de montagem em ter mais produtividades. Tbm entregamos os materiais cortados e identificados conforme projeto desenvolvido por nós.
+
+
+capacidade produtiva, custo do aço, e encontrar parceiros para montagem das estruturas (a mão de obra é por conta da construtora, mas ela sempre conta conosco para indicações e gestão dessas equipes)
+
+ETAPA 3: Implementação e Governança
+
+Opção A: Detalhar ROADMAP DE IMPLEMENTAÇÃO (cronograma detalhado, dependências, recursos)
+
+Opção B: Criar MODELO DE GOVERNANÇA BSC (reuniões de revisão, responsabilidades, ciclo de gestão)
+
+Opção C: Desenvolver DASHBOARDS EXECUTIVOS (visualização KPIs por perspectiva com drill-down)
+
+Opção D: Preparar PLANO DE COMUNICAÇÃO E CHANGE MANAGEMENT (cascata, treinamento, engajamento, resistências)
+
+Opção D: Preparar Apresentação Executiva para aprovação do Board (20-30 slides)

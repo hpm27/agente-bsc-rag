@@ -141,11 +141,8 @@ class OnboardingAgent:
                 "followup_counts": {1: 0, 2: 0, 3: 0},
             }
 
-        # Gerar primeira pergunta
-        welcome_message = (
-            "Olá! Sou o Agente Consultor BSC e vou ajudá-lo a estruturar sua estratégia empresarial. "
-            "Primeiro, preciso conhecer melhor sua empresa.\n\n"
-        )
+        # Gerar primeira pergunta (TOM: Entrevista casual, não reunião formal)
+        welcome_message = "Oi! Que bom ter você aqui. Antes de começarmos, quero te conhecer melhor.\n\n"
 
         initial_question = self._generate_initial_question(OnboardingStep.COMPANY_INFO)
         full_message = welcome_message + initial_question
@@ -340,6 +337,7 @@ class OnboardingAgent:
             CONTEXT_AWARE_QUESTION_USER,
         )
         
+        print(f"[DEBUG COLLECT] ===== METODO CHAMADO ===== | user_id={user_id} | message_length={len(user_message)}", flush=True)
         logger.info(
             "[COLLECT] Coletando informações do cliente user_id=%s (length=%d chars)",
             user_id,
@@ -347,7 +345,16 @@ class OnboardingAgent:
         )
         
         # STEP 1: Extrair entidades da mensagem atual
+        print(f"[DEBUG COLLECT] Chamando _extract_all_entities...", flush=True)
         extraction_result = await self._extract_all_entities(user_message)
+        print(
+            f"[DEBUG COLLECT] Extração completa: "
+            f"has_company_info={extraction_result.has_company_info}, "
+            f"company_name={extraction_result.company_info.name if extraction_result.company_info else None}, "
+            f"challenges={len(extraction_result.challenges)}, "
+            f"objectives={len(extraction_result.objectives)}",
+            flush=True
+        )
         
         # Adapter: Converter ExtractedEntities para formato antigo dict (compatibilidade temporaria)
         # TODO (FASE 2): Refatorar metodo inteiro para trabalhar direto com ExtractedEntities
@@ -377,6 +384,7 @@ class OnboardingAgent:
         
         # STEP 2: Inicializar partial_profile se não existir (usar metadata dict)
         if "partial_profile" not in state.metadata:
+            print(f"[DEBUG COLLECT] INICIALIZANDO partial_profile (PRIMEIRA VEZ)", flush=True)
             logger.info("[COLLECT] INICIALIZANDO partial_profile (PRIMEIRA VEZ)")
             state.metadata["partial_profile"] = {
                 "company_name": None,
@@ -390,6 +398,12 @@ class OnboardingAgent:
                 "location": None,
             }
         else:
+            print(
+                f"[DEBUG COLLECT] CARREGANDO partial_profile EXISTENTE: "
+                f"company_name={state.metadata['partial_profile'].get('company_name')}, "
+                f"challenges={len(state.metadata['partial_profile'].get('challenges', []))}", 
+                flush=True
+            )
             logger.info(
                 "[COLLECT] CARREGANDO partial_profile EXISTENTE: challenges=%d, company_name=%s",
                 len(state.metadata["partial_profile"].get("challenges", [])),
@@ -425,6 +439,15 @@ class OnboardingAgent:
         state.metadata["partial_profile"] = partial_profile
         
         # DEBUGGING: Log completo do partial_profile
+        print(
+            f"[DEBUG COLLECT] Perfil acumulado: "
+            f"company_name={partial_profile.get('company_name')}, "
+            f"industry={partial_profile.get('industry')}, "
+            f"size={partial_profile.get('size')}, "
+            f"challenges={len(partial_profile.get('challenges', []))}, "
+            f"goals={len(partial_profile.get('goals', []))}",
+            flush=True
+        )
         logger.info(
             "[COLLECT] Perfil acumulado COMPLETO: %s",
             partial_profile
@@ -445,69 +468,177 @@ class OnboardingAgent:
             or partial_profile.get("revenue") is not None
         )
         has_min_challenges = len(partial_profile.get("challenges", [])) >= 2
+        has_min_objectives = len(partial_profile.get("goals", [])) >= 3  # CRÍTICO: exigir 3+ objectives
         
         minimum_info_complete = (
             has_company_name
             and has_industry
             and has_size_or_revenue
             and has_min_challenges
+            and has_min_objectives  # NOVO: objectives obrigatórios para diagnóstico confiável
         )
         
         # STEP 5: Decidir próxima ação
         if minimum_info_complete:
-            # Onboarding completo! Atualizar ClientProfile e transicionar
-            logger.info("[COLLECT] ===== INFORMAÇÕES MÍNIMAS COMPLETAS! =====")
-            logger.info(
-                "[COLLECT] company_name=%s | industry=%s | size=%s | revenue=%s | challenges=%d",
-                partial_profile.get("company_name"),
-                partial_profile.get("industry"),
-                partial_profile.get("size"),
-                partial_profile.get("revenue"),
-                len(partial_profile.get("challenges", []))
-            )
-            logger.info("[COLLECT] Finalizando onboarding e transicionando para DISCOVERY.")
+            # Informações completas! Verificar se já pedimos confirmação
+            awaiting_confirmation = state.metadata.get("awaiting_confirmation", False)
             
-            # Atualizar ClientProfile no state
-            if state.client_profile is None:
-                from src.memory.schemas import ClientProfile
-                state.client_profile = ClientProfile()
+            if not awaiting_confirmation:
+                # PRIMEIRA VEZ que informações estão completas -> pedir confirmação
+                logger.info("[COLLECT] ===== INFORMAÇÕES COMPLETAS! Pedindo confirmação... =====")
+                logger.info(
+                    "[COLLECT] company_name=%s | industry=%s | size=%s | challenges=%d | objectives=%d",
+                    partial_profile.get("company_name"),
+                    partial_profile.get("industry"),
+                    partial_profile.get("size"),
+                    len(partial_profile.get("challenges", [])),
+                    len(partial_profile.get("goals", []))
+                )
+                
+                # Construir mensagem de confirmação com resumo
+                company_name = partial_profile.get("company_name", "sua empresa")
+                sector = partial_profile.get("industry", "N/A")
+                size = partial_profile.get("size", "N/A")
+                challenges = partial_profile.get("challenges", [])
+                goals = partial_profile.get("goals", [])
+                
+                # Formatar listas
+                challenges_text = "\n".join([f"  • {c}" for c in challenges[:5]])  # Max 5 para brevidade
+                goals_text = "\n".join([f"  • {g}" for g in goals[:5]])  # Max 5
+                
+                confirmation_message = f"""Perfeito! Deixa eu confirmar as informações antes de seguirmos:
+
+**Empresa:** {company_name}
+**Setor:** {sector}
+**Porte:** {size}
+
+**Desafios identificados ({len(challenges)}):**
+{challenges_text}
+
+**Objetivos estratégicos ({len(goals)}):**
+{goals_text}
+
+Está tudo certinho? Posso seguir para o diagnóstico BSC? 
+
+_(Responda "sim" para continuar ou "não" se quiser corrigir algo)_"""
+                
+                # Setar flag de aguardando confirmação
+                state.metadata["awaiting_confirmation"] = True
+                state.metadata["partial_profile"] = partial_profile
+                
+                logger.info("[COLLECT] Aguardando confirmação do usuário...")
+                
+                return {
+                    "question": confirmation_message,
+                    "is_complete": False,  # Ainda não completo até confirmar!
+                    "extracted_entities": extracted_entities,
+                    "accumulated_profile": partial_profile,
+                    "metadata": {
+                        "partial_profile": partial_profile,
+                        "awaiting_confirmation": True,
+                        "conversation_history": state.metadata.get("conversation_history", [])
+                    },
+                }
             
-            # Copiar dados do partial_profile para ClientProfile
-            if partial_profile.get("company_name"):
-                state.client_profile.company.name = partial_profile["company_name"]
-            if partial_profile.get("industry"):
-                state.client_profile.company.sector = partial_profile["industry"]
-            if partial_profile.get("size"):
-                state.client_profile.company.size = partial_profile["size"]
-            if partial_profile.get("challenges"):
-                state.client_profile.context.current_challenges = partial_profile["challenges"]
-            if partial_profile.get("goals"):
-                state.client_profile.context.strategic_objectives = partial_profile["goals"]
-            
-            # Transição para DISCOVERY
-            state.current_phase = ConsultingPhase.DISCOVERY
-            logger.info("[COLLECT] ===== STATE.CURRENT_PHASE ATUALIZADO PARA: %s =====", state.current_phase)
-            
-            # Mensagem de conclusão
-            company_name = partial_profile.get("company_name", "sua empresa")
-            num_challenges = len(partial_profile.get("challenges", []))
-            
-            completion_message = (
-                f"Perfeito, {company_name}! Tenho as informações essenciais:\n\n"
-                f"- Setor: {partial_profile.get('industry')}\n"
-                f"- Porte: {partial_profile.get('size', 'Não informado')}\n"
-                f"- Desafios principais: {num_challenges} identificados\n\n"
-                "Agora vamos aprofundar a análise estratégica usando ferramentas consultivas. "
-                "Preparado para a próxima etapa?"
-            )
-            
-            return {
-                "question": completion_message,
-                "is_complete": True,
-                "extracted_entities": extracted_entities,
-                "accumulated_profile": partial_profile,
-                "metadata": {"partial_profile": partial_profile},  # CRÍTICO: LangGraph precisa do return para aplicar reducer
-            }
+            else:
+                # JÁ pedimos confirmação anteriormente -> verificar resposta do usuário
+                logger.info("[COLLECT] Verificando confirmação do usuário...")
+                
+                # Detectar confirmação (sim/yes/confirmo/ok/correto etc)
+                user_message_lower = user_message.lower().strip()
+                confirmacao_keywords = ["sim", "yes", "confirmo", "ok", "correto", "certinho", "pode seguir", "vamos", "seguir"]
+                negacao_keywords = ["não", "no", "nao", "errado", "corrigir", "mudar", "alterar"]
+                
+                is_confirmation = any(keyword in user_message_lower for keyword in confirmacao_keywords)
+                is_negation = any(keyword in user_message_lower for keyword in negacao_keywords)
+                
+                if is_confirmation and not is_negation:
+                    # CONFIRMADO! Atualizar ClientProfile e transicionar para DISCOVERY
+                    logger.info("[COLLECT] ===== CONFIRMAÇÃO RECEBIDA! Transicionando para DISCOVERY =====")
+                    
+                    # Atualizar ClientProfile no state
+                    if state.client_profile is None:
+                        from src.memory.schemas import ClientProfile
+                        state.client_profile = ClientProfile()
+                    
+                    # Copiar dados do partial_profile para ClientProfile
+                    if partial_profile.get("company_name"):
+                        state.client_profile.company.name = partial_profile["company_name"]
+                    if partial_profile.get("industry"):
+                        state.client_profile.company.sector = partial_profile["industry"]
+                    if partial_profile.get("size"):
+                        state.client_profile.company.size = partial_profile["size"]
+                    if partial_profile.get("challenges"):
+                        state.client_profile.context.current_challenges = partial_profile["challenges"]
+                    if partial_profile.get("goals"):
+                        state.client_profile.context.strategic_objectives = partial_profile["goals"]
+                    
+                    # Transição para DISCOVERY
+                    state.current_phase = ConsultingPhase.DISCOVERY
+                    logger.info("[COLLECT] ===== STATE.CURRENT_PHASE ATUALIZADO PARA: %s =====", state.current_phase)
+                    
+                    # Limpar flag de confirmação
+                    state.metadata["awaiting_confirmation"] = False
+                    
+                    completion_message = (
+                        f"Show! Vamos lá então. Iniciando diagnóstico BSC completo para {partial_profile.get('company_name')}...\n\n"
+                        "_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas do BSC._"
+                    )
+                    
+                    return {
+                        "question": completion_message,
+                        "is_complete": True,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": False
+                        },
+                    }
+                
+                elif is_negation:
+                    # NEGADO! Limpar flag e permitir correções
+                    logger.info("[COLLECT] Usuário quer corrigir informações. Voltando ao fluxo normal.")
+                    
+                    state.metadata["awaiting_confirmation"] = False
+                    
+                    correction_message = (
+                        "Sem problemas! O que você gostaria de corrigir? "
+                        "Pode me dizer qual informação está errada e eu atualizo."
+                    )
+                    
+                    return {
+                        "question": correction_message,
+                        "is_complete": False,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": False,
+                            "conversation_history": state.metadata.get("conversation_history", [])
+                        },
+                    }
+                
+                else:
+                    # Resposta ambígua -> pedir clarificação
+                    logger.info("[COLLECT] Resposta ambígua do usuário. Pedindo clarificação.")
+                    
+                    clarification_message = (
+                        "Desculpa, não entendi bem. As informações estão corretas?\n\n"
+                        "_(Por favor responda 'sim' para continuar ou 'não' se quiser corrigir)_"
+                    )
+                    
+                    return {
+                        "question": clarification_message,
+                        "is_complete": False,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": True,  # Manter aguardando
+                            "conversation_history": state.metadata.get("conversation_history", [])
+                        },
+                    }
         
         # STEP 6: Informacoes incompletas -> analisar contexto e gerar resposta adaptativa (BLOCO 2)
         logger.info("[COLLECT] Informacoes incompletas. Analisando contexto conversacional...")
@@ -532,10 +663,12 @@ class OnboardingAgent:
             )
             
             # STEP 6.3: Gerar resposta contextual adaptativa (BLOCO 1 - ETAPA 5)
+            # CRÍTICO: Passar partial_profile (acumulado) ao invés de extraction_result (só turno atual)
             next_question = await self._generate_contextual_response(
                 context=context,
                 user_message=user_message,
-                extracted_entities=extraction_result
+                extracted_entities=extraction_result,
+                partial_profile=partial_profile  # NOVO: dados acumulados
             )
             
             logger.info("[COLLECT] Resposta contextual gerada (length=%d chars)", len(next_question))
@@ -543,6 +676,12 @@ class OnboardingAgent:
             # STEP 6.4: Atualizar conversation_history no state.metadata
             conversation_history.append({"role": "assistant", "content": next_question})
             state.metadata["conversation_history"] = conversation_history
+            
+            print(
+                f"[DEBUG COLLECT] RETORNANDO (dados incompletos): "
+                f"partial_profile incluído na metadata com company_name={partial_profile.get('company_name')}",
+                flush=True
+            )
             
             return {
                 "question": next_question,
@@ -560,8 +699,8 @@ class OnboardingAgent:
             logger.error("[COLLECT] Erro ao analisar contexto ou gerar resposta: %s", str(e))
             logger.info("[COLLECT] Usando fallback _get_fallback_response()...")
             
-            # Fallback: usar metodo helper (BLOCO 1)
-            fallback_question = self._get_fallback_response(extraction_result)
+            # Fallback: usar metodo helper (BLOCO 1) com partial_profile
+            fallback_question = self._get_fallback_response(context, extraction_result, partial_profile)
             
             # Atualizar conversation_history mesmo em fallback
             conversation_history.append({"role": "assistant", "content": fallback_question})
@@ -613,27 +752,11 @@ class OnboardingAgent:
         Returns:
             str: Pergunta conversacional adequada ao step
         """
+        # TOM: Entrevista casual - Uma pergunta por vez (progressive disclosure)
         questions = {
-            OnboardingStep.COMPANY_INFO: (
-                "**Sobre sua empresa:**\n"
-                "Por favor, me conte:\n"
-                "- Qual o nome da empresa?\n"
-                "- Em qual setor/indústria vocês atuam?\n"
-                "- Qual o tamanho aproximado (número de funcionários)?"
-            ),
-            OnboardingStep.CHALLENGES: (
-                "**Desafios Estratégicos:**\n"
-                "Quais são os **3 principais desafios estratégicos** que sua empresa enfrenta atualmente? "
-                "Pode ser relacionado a crescimento, competição, eficiência operacional, qualidade, etc."
-            ),
-            OnboardingStep.OBJECTIVES: (
-                "**Objetivos Estratégicos (4 Perspectivas BSC):**\n"
-                "Vamos definir seus objetivos usando o Balanced Scorecard:\n"
-                "- **Financeira**: Quais metas financeiras (receita, lucro, EBITDA)?\n"
-                "- **Clientes**: O que querem alcançar com clientes (satisfação, retenção, NPS)?\n"
-                "- **Processos Internos**: Melhorias operacionais desejadas?\n"
-                "- **Aprendizado e Crescimento**: Desenvolvimento de pessoas e cultura?"
-            ),
+            OnboardingStep.COMPANY_INFO: "Me conta um pouquinho: como se chama sua empresa?",
+            OnboardingStep.CHALLENGES: "E ai, quais os principais perrengues que voces enfrentam hoje?",
+            OnboardingStep.OBJECTIVES: "Legal! Agora me conta: o que voces querem alcancar nos proximos meses?",
         }
 
         return questions.get(step, "")
@@ -858,9 +981,10 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
             completeness = self._calculate_completeness(extracted_entities)
             missing_info = self._calculate_missing_info(extracted_entities)
             
-            # STEP 2: Determinar should_confirm (a cada ~3 turns do usuario)
-            # conversation_history alterna user/assistant, entao a cada 6 mensagens = ~3 turns
-            should_confirm = len(conversation_history) >= 6 and len(conversation_history) % 6 == 0
+            # STEP 2: Determinar should_confirm
+            # CRÍTICO: Só confirmar quando dados estiverem COMPLETOS (completeness >= 1.0)
+            # Confirmação prematura causa loop infinito!
+            should_confirm = completeness >= 1.0
             
             # STEP 3: Formatar historico para o prompt (formato "USER: ...\nAGENT: ...")
             formatted_history = self._format_conversation_history(conversation_history)
@@ -973,6 +1097,11 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
         
         Formula: 35% company_info + 30% challenges + 35% objectives = 100%
         
+        REGRAS (alinhadas com minimum_info_complete):
+        - Company info: name + sector presentes
+        - Challenges: mínimo 2 desafios
+        - Objectives: mínimo 3 objetivos
+        
         Args:
             entities: Entidades extraidas
         
@@ -985,13 +1114,18 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
         if entities.has_company_info and entities.company_info is not None:
             completeness += 0.35
         
-        # Challenges: 30%
-        if entities.has_challenges and len(entities.challenges) >= 1:
+        # Challenges: 30% (precisa >=2 para completude total)
+        if entities.has_challenges and len(entities.challenges) >= 2:
             completeness += 0.30
+        elif entities.has_challenges and len(entities.challenges) == 1:
+            completeness += 0.15  # Parcial se só 1 challenge
         
-        # Objectives: 35%
-        if entities.has_objectives and len(entities.objectives) >= 1:
+        # Objectives: 35% (precisa >=3 para completude total)
+        if entities.has_objectives and len(entities.objectives) >= 3:
             completeness += 0.35
+        elif entities.has_objectives and len(entities.objectives) >= 1:
+            # Parcial: 1-2 objectives = proporcional
+            completeness += 0.35 * (len(entities.objectives) / 3.0)
         
         return round(completeness, 2)
     
@@ -1048,7 +1182,8 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
         self,
         context: ConversationContext,
         user_message: str,
-        extracted_entities: ExtractedEntities
+        extracted_entities: ExtractedEntities,
+        partial_profile: dict[str, Any] | None = None
     ) -> str:
         """Gera resposta contextual adaptativa baseada no estado da conversa.
         
@@ -1104,26 +1239,43 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
             )
             
             # STEP 1: Preparar variaveis para o prompt
-            company_name = (
-                extracted_entities.company_info.name 
-                if extracted_entities.company_info else "N/A"
-            )
-            sector = (
-                extracted_entities.company_info.sector 
-                if extracted_entities.company_info else "N/A"
-            )
-            size = (
-                extracted_entities.company_info.size
-                if extracted_entities.company_info else "N/A"
-            )
-            challenges_list = (
-                ", ".join(extracted_entities.challenges[:3])  # Max 3 para brevidade
-                if extracted_entities.challenges else "Nenhum ainda"
-            )
-            objectives_list = (
-                ", ".join(extracted_entities.objectives[:3])  # Max 3 para brevidade
-                if extracted_entities.objectives else "Nenhum ainda"
-            )
+            # CRÍTICO: Usar partial_profile (ACUMULADO) prioritariamente, fallback para extracted_entities (turno atual)
+            if partial_profile:
+                # Usar dados acumulados (preserva contexto entre turnos)
+                company_name = partial_profile.get("company_name") or "N/A"
+                sector = partial_profile.get("industry") or "N/A"
+                size = partial_profile.get("size") or "N/A"
+                challenges_list = (
+                    ", ".join(partial_profile.get("challenges", [])[:3])
+                    if partial_profile.get("challenges") else "Nenhum ainda"
+                )
+                objectives_list = (
+                    ", ".join(partial_profile.get("goals", [])[:3])
+                    if partial_profile.get("goals") else "Nenhum ainda"
+                )
+            else:
+                # Fallback: usar extracted_entities do turno atual (primeira vez)
+                company_name = (
+                    extracted_entities.company_info.name 
+                    if extracted_entities.company_info else "N/A"
+                )
+                sector = (
+                    extracted_entities.company_info.sector 
+                    if extracted_entities.company_info else "N/A"
+                )
+                size = (
+                    extracted_entities.company_info.size
+                    if extracted_entities.company_info else "N/A"
+                )
+                challenges_list = (
+                    ", ".join(extracted_entities.challenges[:3])  # Max 3 para brevidade
+                    if extracted_entities.challenges else "Nenhum ainda"
+                )
+                objectives_list = (
+                    ", ".join(extracted_entities.objectives[:3])  # Max 3 para brevidade
+                    if extracted_entities.objectives else "Nenhum ainda"
+                )
+            
             missing_info_str = ", ".join(context.missing_info) if context.missing_info else "Nenhuma"
             
             # STEP 2: Construir prompt com todas variaveis
@@ -1166,7 +1318,7 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
                     f"[GENERATE_RESPONSE] Resposta muito curta ({len(generated_text)} chars), "
                     f"usando fallback"
                 )
-                return self._get_fallback_response(context, extracted_entities)
+                return self._get_fallback_response(context, extracted_entities, partial_profile)
             
             logger.info(
                 f"[GENERATE_RESPONSE] Resposta gerada com sucesso | "
@@ -1177,32 +1329,39 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
             
         except asyncio.TimeoutError:
             logger.error("[GENERATE_RESPONSE] Timeout ao gerar resposta (>120s)")
-            return self._get_fallback_response(context, extracted_entities)
+            return self._get_fallback_response(context, extracted_entities, partial_profile)
             
         except Exception as e:
             logger.error(f"[GENERATE_RESPONSE] Erro ao gerar resposta: {e}", exc_info=True)
-            return self._get_fallback_response(context, extracted_entities)
+            return self._get_fallback_response(context, extracted_entities, partial_profile)
     
     def _get_fallback_response(
         self, 
         context: ConversationContext, 
-        entities: ExtractedEntities
+        entities: ExtractedEntities,
+        partial_profile: dict[str, Any] | None = None
     ) -> str:
         """Gera resposta fallback generica quando LLM falha.
         
         Resposta segura baseada em missing_info (proxima informacao faltante).
+        Usa partial_profile quando disponível para personalizar perguntas.
         
         Args:
             context: ConversationContext atual
             entities: Entidades extraidas
+            partial_profile: Perfil acumulado (opcional)
         
         Returns:
             str: Resposta fallback contextual
         """
+        # Extrair company_name do partial_profile (se disponível)
+        company_name = partial_profile.get("company_name") if partial_profile else None
+        
         # Se completeness 100%, pedir confirmacao
         if context.completeness >= 1.0:
+            name_part = f" da {company_name}" if company_name else ""
             return (
-                "Parece que temos todas as informacoes basicas. "
+                f"Parece que temos todas as informacoes{name_part}. "
                 "Posso confirmar se esta tudo correto antes de prosseguirmos?"
             )
         
@@ -1213,13 +1372,15 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
                 "registradas corretamente. Pode me contar o que falta?"
             )
         
-        # Default: Perguntar proxima info faltante
+        # Default: Perguntar proxima info faltante (usando company_name se disponível)
         if "company_info" in context.missing_info:
             return "Para comecar, pode me contar o nome da empresa e o setor de atuacao?"
         elif "challenges" in context.missing_info:
-            return "Quais sao os principais desafios que sua empresa enfrenta atualmente?"
+            name_part = f" na {company_name}" if company_name else ""
+            return f"Quais sao os principais desafios{name_part} que voces enfrentam atualmente?"
         elif "objectives" in context.missing_info:
-            return "Quais sao os principais objetivos estrategicos da empresa?"
+            name_part = f" da {company_name}" if company_name else ""
+            return f"Quais sao os principais objetivos estrategicos{name_part}?"
         else:
             return "Entendi. Pode me contar mais?"
 

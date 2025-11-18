@@ -853,6 +853,30 @@ class BSCWorkflow:
             
             return result
             
+        except RuntimeError as e:
+            # ERRO CRÍTICO: ThreadPoolExecutor shutdown (comum em Streamlit)
+            # Evitar crash completo do workflow - fallback para ONBOARDING
+            error_msg = str(e)
+            logger.error(
+                f"[ERROR] [DISCOVERY] RuntimeError (ThreadPoolExecutor shutdown): {error_msg} | "
+                f"Fallback para ONBOARDING (permitir save_client_memory antes de retry)"
+            )
+            
+            # Retornar para ONBOARDING para salvar profile (se existir)
+            # Na próxima interação, usuário pode tentar discovery novamente
+            return {
+                "final_response": (
+                    "Seu perfil foi criado com sucesso, mas não consegui completar o diagnóstico agora.\n\n"
+                    "Por favor, faça uma nova pergunta sobre BSC para continuar."
+                ),
+                "current_phase": self._get_consulting_phase("ONBOARDING"),
+                "metadata": {
+                    **state.metadata,
+                    "discovery_error": error_msg,
+                    "discovery_error_type": "RuntimeError_ThreadPoolExecutor"
+                }
+            }
+            
         except Exception as e:
             logger.error(f"[ERROR] [DISCOVERY] Erro no handler: {e}")
             return self.consulting_orchestrator.handle_error(state, e, "DISCOVERY")

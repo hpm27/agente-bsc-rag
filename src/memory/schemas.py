@@ -1067,6 +1067,10 @@ class ClientProfile(BaseModel):
         Reconstrói o schema Pydantic a partir de um dicionário,
         incluindo validação automática de todos os campos.
         
+        IMPORTANTE: Usa model_construct() ao invés de model_validate() para
+        evitar que default_factory de created_at/updated_at sobrescreva valores
+        fornecidos no dict. Nested schemas são deserializados manualmente.
+        
         Args:
             data: Dicionário retornado do Mem0
         
@@ -1082,7 +1086,27 @@ class ClientProfile(BaseModel):
             >>> isinstance(profile, ClientProfile)
             True
         """
-        return cls.model_validate(data)
+        # Deserializar nested schemas manualmente
+        data_copy = data.copy()
+        
+        # CompanyInfo
+        if 'company' in data_copy and isinstance(data_copy['company'], dict):
+            data_copy['company'] = CompanyInfo(**data_copy['company'])
+        
+        # StrategicContext
+        if 'context' in data_copy and isinstance(data_copy['context'], dict):
+            data_copy['context'] = StrategicContext(**data_copy['context'])
+        
+        # EngagementState
+        if 'engagement' in data_copy and isinstance(data_copy['engagement'], dict):
+            data_copy['engagement'] = EngagementState(**data_copy['engagement'])
+        
+        # DiagnosticData (opcional)
+        if 'diagnostics' in data_copy and isinstance(data_copy['diagnostics'], dict):
+            data_copy['diagnostics'] = DiagnosticData(**data_copy['diagnostics'])
+        
+        # Usa model_construct para evitar default_factory sobrescrever valores
+        return cls.model_construct(**data_copy)
 
 
 # ============================================================================
@@ -3014,7 +3038,8 @@ class ToolOutput(BaseModel):
         "KPI_DEFINER",
         "STRATEGIC_OBJECTIVES",
         "BENCHMARKING",
-        "ACTION_PLAN"
+        "ACTION_PLAN",
+        "PRIORITIZATION_MATRIX"
     ] = Field(
         description="Nome da ferramenta consultiva que gerou este output"
     )
@@ -3045,6 +3070,463 @@ class ToolOutput(BaseModel):
                 },
                 "created_at": "2025-10-27T12:30:00Z",
                 "client_context": "TechCorp - Empresa de tecnologia, medio porte, setor SaaS"
+            }
+        }
+    )
+
+
+# ============================================================================
+# PRIORITIZATION MATRIX (FASE 3.12 - Strategic Objectives/Actions Prioritization)
+# ============================================================================
+
+
+class PrioritizationCriteria(BaseModel):
+    """Critérios de avaliação para priorização de objetivos/ações estratégicas BSC.
+    
+    Framework híbrido adaptado de:
+    - Impact/Effort Matrix 2x2 (Mirorim 2025, McKinsey)
+    - RICE Scoring (Intercom - Sean McBride)
+    - BSC-Specific Criteria (Kaplan & Norton)
+    
+    4 critérios principais (0-100 scale):
+    1. Strategic Impact: Potencial contribuição para objetivos estratégicos BSC
+    2. Implementation Effort: Recursos necessários (tempo, pessoas, orçamento) [INVERTIDO no score]
+    3. Urgency: Time sensitivity e impacto timing
+    4. Strategic Alignment: Alinhamento com 4 perspectivas BSC e visão empresa
+    
+    Pesos padrão no cálculo de score:
+    - Strategic Impact: 40%
+    - Implementation Effort: 30% (invertido: 100 - effort)
+    - Urgency: 15%
+    - Strategic Alignment: 15%
+    
+    Added: 2025-10-27 (FASE 3.12)
+    
+    Example:
+        >>> criteria = PrioritizationCriteria(
+        ...     strategic_impact=85.0,
+        ...     implementation_effort=30.0,
+        ...     urgency=70.0,
+        ...     strategic_alignment=90.0
+        ... )
+        >>> criteria.calculate_score()
+        79.0  # (85*0.4) + ((100-30)*0.3) + (70*0.15) + (90*0.15)
+    """
+    
+    strategic_impact: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Potencial contribuição para objetivos estratégicos BSC (0-100%)"
+    )
+    
+    implementation_effort: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Recursos necessários para implementação - tempo, pessoas, orçamento (0-100%)"
+    )
+    
+    urgency: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Time sensitivity e impacto de timing (0-100%)"
+    )
+    
+    strategic_alignment: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Alinhamento com 4 perspectivas BSC e visão empresa (0-100%)"
+    )
+    
+    def calculate_score(
+        self,
+        impact_weight: float = 0.40,
+        effort_weight: float = 0.30,
+        urgency_weight: float = 0.15,
+        alignment_weight: float = 0.15
+    ) -> float:
+        """Calcula score final de priorização baseado nos 4 critérios.
+        
+        Formula: score = (impact * w1) + ((100 - effort) * w2) + (urgency * w3) + (alignment * w4)
+        
+        Nota: Effort é invertido (100 - effort) porque menor esforço = maior score.
+        
+        Args:
+            impact_weight: Peso strategic_impact (default: 0.40 = 40%)
+            effort_weight: Peso implementation_effort (default: 0.30 = 30%)
+            urgency_weight: Peso urgency (default: 0.15 = 15%)
+            alignment_weight: Peso strategic_alignment (default: 0.15 = 15%)
+            
+        Returns:
+            Float entre 0.0 e 100.0 representando score de priorização
+        """
+        # Validar que pesos somam 1.0 (100%)
+        total_weight = impact_weight + effort_weight + urgency_weight + alignment_weight
+        if not (0.99 <= total_weight <= 1.01):  # Tolerância para arredondamento
+            raise ValueError(f"Pesos devem somar 1.0 (100%), atual: {total_weight}")
+        
+        # Calcular score (effort invertido)
+        score = (
+            (self.strategic_impact * impact_weight) +
+            ((100 - self.implementation_effort) * effort_weight) +
+            (self.urgency * urgency_weight) +
+            (self.strategic_alignment * alignment_weight)
+        )
+        
+        return round(score, 2)
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "strategic_impact": 85.0,
+                "implementation_effort": 30.0,
+                "urgency": 70.0,
+                "strategic_alignment": 90.0
+            }
+        }
+    )
+
+
+class PrioritizedItem(BaseModel):
+    """Item (objetivo/ação estratégica) priorizado com critérios, score e rank.
+    
+    Encapsula:
+    - item_id: Identificador único do item
+    - item_type: Tipo ("strategic_objective", "action_item", "initiative")
+    - title: Nome/título do item
+    - description: Descrição detalhada
+    - perspective: Perspectiva BSC associada
+    - criteria: PrioritizationCriteria avaliados
+    - final_score: Score calculado (0-100)
+    - priority_level: Nível de prioridade baseado no score
+    - rank: Posição relativa na lista priorizada (1 = mais prioritário)
+    
+    4 níveis de prioridade (baseado no score final):
+    - CRITICAL (75-100): Quick wins + strategic imperatives
+    - HIGH (50-74): Important projects
+    - MEDIUM (25-49): Nice-to-have improvements
+    - LOW (0-24): Deprioritize or eliminate
+    
+    Added: 2025-10-27 (FASE 3.12)
+    
+    Example:
+        >>> item = PrioritizedItem(
+        ...     item_id="obj_001",
+        ...     item_type="strategic_objective",
+        ...     title="Aumentar NPS em 20 pontos",
+        ...     description="...",
+        ...     perspective="Clientes",
+        ...     criteria=PrioritizationCriteria(strategic_impact=85, ...),
+        ...     final_score=79.0,
+        ...     rank=1
+        ... )
+        >>> item.priority_level
+        "HIGH"
+    """
+    
+    item_id: str = Field(
+        description="Identificador único do item"
+    )
+    
+    item_type: Literal["strategic_objective", "action_item", "initiative", "project"] = Field(
+        description="Tipo do item sendo priorizado"
+    )
+    
+    title: str = Field(
+        min_length=10,
+        max_length=200,
+        description="Título/nome do item (10-200 caracteres)"
+    )
+    
+    description: str = Field(
+        min_length=20,
+        description="Descrição detalhada do item (mínimo 20 caracteres)"
+    )
+    
+    perspective: Literal[
+        "Financeira",
+        "Clientes",
+        "Processos Internos",
+        "Aprendizado e Crescimento",
+        "Cross-Perspective"
+    ] = Field(
+        description="Perspectiva BSC associada ao item"
+    )
+    
+    criteria: PrioritizationCriteria = Field(
+        description="Critérios de avaliação do item"
+    )
+    
+    final_score: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Score final calculado (0-100)"
+    )
+    
+    priority_level: Literal["CRITICAL", "HIGH", "MEDIUM", "LOW"] = Field(
+        description="Nível de prioridade baseado no score (CRITICAL: 75-100, HIGH: 50-74, MEDIUM: 25-49, LOW: 0-24)"
+    )
+    
+    rank: int = Field(
+        ge=1,
+        description="Posição relativa na lista priorizada (1 = mais prioritário)"
+    )
+    
+    @field_validator("title", "description", mode="after")
+    @classmethod
+    def validate_non_empty_after_strip(cls, v: str) -> str:
+        """Valida que campos texto não são vazios após strip."""
+        if not v.strip():
+            raise ValueError("Campo não pode ser vazio após strip")
+        return v
+    
+    @model_validator(mode="after")
+    def validate_priority_level_matches_score(self) -> "PrioritizedItem":
+        """Valida que priority_level está alinhado com final_score.
+        
+        Raises:
+            ValueError: Se priority_level não corresponde ao range de final_score
+        """
+        score = self.final_score
+        level = self.priority_level
+        
+        # Validar alinhamento score ↔ priority_level
+        if 75 <= score <= 100 and level != "CRITICAL":
+            raise ValueError(f"Score {score} deve ter priority_level='CRITICAL', encontrado '{level}'")
+        elif 50 <= score < 75 and level != "HIGH":
+            raise ValueError(f"Score {score} deve ter priority_level='HIGH', encontrado '{level}'")
+        elif 25 <= score < 50 and level != "MEDIUM":
+            raise ValueError(f"Score {score} deve ter priority_level='MEDIUM', encontrado '{level}'")
+        elif 0 <= score < 25 and level != "LOW":
+            raise ValueError(f"Score {score} deve ter priority_level='LOW', encontrado '{level}'")
+        
+        return self
+    
+    def is_critical(self) -> bool:
+        """Retorna True se item é CRITICAL priority."""
+        return self.priority_level == "CRITICAL"
+    
+    def is_high_or_critical(self) -> bool:
+        """Retorna True se item é HIGH ou CRITICAL priority."""
+        return self.priority_level in ["CRITICAL", "HIGH"]
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "item_id": "obj_001",
+                "item_type": "strategic_objective",
+                "title": "Aumentar NPS em 20 pontos até Q4 2025",
+                "description": "Melhorar experiência do cliente através de pesquisas trimestrais e implementação de melhorias baseadas em feedback",
+                "perspective": "Clientes",
+                "criteria": {
+                    "strategic_impact": 85.0,
+                    "implementation_effort": 30.0,
+                    "urgency": 70.0,
+                    "strategic_alignment": 90.0
+                },
+                "final_score": 79.0,
+                "priority_level": "HIGH",
+                "rank": 1
+            }
+        }
+    )
+
+
+class PrioritizationMatrix(BaseModel):
+    """Matriz de priorização completa com lista de items, análise e métodos úteis.
+    
+    Encapsula resultado completo da priorização de múltiplos objetivos/ações estratégicas
+    BSC usando framework híbrido (Impact/Effort + RICE + BSC-specific).
+    
+    Métodos úteis:
+    - .top_n(n): Retorna top N items mais prioritários
+    - .by_priority_level(level): Filtra items por nível de prioridade
+    - .by_perspective(perspective): Filtra items por perspectiva BSC
+    - .summary(): Gera resumo executivo da matriz
+    - .is_balanced(): Verifica balanceamento entre perspectivas
+    
+    Added: 2025-10-27 (FASE 3.12)
+    
+    Example:
+        >>> matrix = PrioritizationMatrix(
+        ...     items=[item1, item2, item3],
+        ...     prioritization_context="Priorização objetivos estratégicos Q1 2025",
+        ...     weights_config={"impact_weight": 0.40, ...}
+        ... )
+        >>> matrix.top_n(3)
+        [item1, item2, item3]  # Ordenados por rank
+        >>> matrix.summary()
+        "Matriz de 10 items priorizados: 3 CRITICAL, 4 HIGH, 2 MEDIUM, 1 LOW..."
+    """
+    
+    items: List[PrioritizedItem] = Field(
+        min_length=1,
+        description="Lista de items priorizados (mínimo 1 item)"
+    )
+    
+    prioritization_context: str = Field(
+        min_length=20,
+        description="Contexto da priorização (ex: 'Objetivos estratégicos Q1 2025', 'Ações plano de ação BSC')"
+    )
+    
+    weights_config: dict[str, float] = Field(
+        default={
+            "impact_weight": 0.40,
+            "effort_weight": 0.30,
+            "urgency_weight": 0.15,
+            "alignment_weight": 0.15
+        },
+        description="Configuração de pesos usados no cálculo dos scores"
+    )
+    
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp de quando a matriz foi criada"
+    )
+    
+    @field_validator("prioritization_context", mode="after")
+    @classmethod
+    def validate_non_empty_context(cls, v: str) -> str:
+        """Valida que contexto não é vazio após strip."""
+        if not v.strip():
+            raise ValueError("Contexto não pode ser vazio após strip")
+        return v
+    
+    @model_validator(mode="after")
+    def validate_unique_ranks(self) -> "PrioritizationMatrix":
+        """Valida que ranks são únicos e sequenciais (1, 2, 3, ..., N).
+        
+        Raises:
+            ValueError: Se ranks não são únicos ou não são sequenciais
+        """
+        ranks = [item.rank for item in self.items]
+        expected_ranks = list(range(1, len(self.items) + 1))
+        
+        if sorted(ranks) != expected_ranks:
+            raise ValueError(f"Ranks devem ser únicos e sequenciais 1..{len(self.items)}, encontrado: {sorted(ranks)}")
+        
+        return self
+    
+    @property
+    def total_items(self) -> int:
+        """Retorna total de items na matriz."""
+        return len(self.items)
+    
+    @property
+    def critical_count(self) -> int:
+        """Retorna contagem de items CRITICAL."""
+        return sum(1 for item in self.items if item.priority_level == "CRITICAL")
+    
+    @property
+    def high_count(self) -> int:
+        """Retorna contagem de items HIGH priority."""
+        return sum(1 for item in self.items if item.priority_level == "HIGH")
+    
+    @property
+    def medium_count(self) -> int:
+        """Retorna contagem de items MEDIUM priority."""
+        return sum(1 for item in self.items if item.priority_level == "MEDIUM")
+    
+    @property
+    def low_count(self) -> int:
+        """Retorna contagem de items LOW priority."""
+        return sum(1 for item in self.items if item.priority_level == "LOW")
+    
+    def top_n(self, n: int) -> List[PrioritizedItem]:
+        """Retorna top N items mais prioritários (ordenados por rank).
+        
+        Args:
+            n: Número de items a retornar
+            
+        Returns:
+            Lista de até N items com menor rank (mais prioritários)
+        """
+        sorted_items = sorted(self.items, key=lambda x: x.rank)
+        return sorted_items[:n]
+    
+    def by_priority_level(self, level: str) -> List[PrioritizedItem]:
+        """Retorna items filtrados por nível de prioridade.
+        
+        Args:
+            level: Nível de prioridade ("CRITICAL", "HIGH", "MEDIUM", "LOW")
+            
+        Returns:
+            Lista de PrioritizedItem com o nível especificado
+        """
+        return [item for item in self.items if item.priority_level == level]
+    
+    def by_perspective(self, perspective: str) -> List[PrioritizedItem]:
+        """Retorna items filtrados por perspectiva BSC.
+        
+        Args:
+            perspective: Perspectiva BSC ("Financeira", "Clientes", etc)
+            
+        Returns:
+            Lista de PrioritizedItem da perspectiva especificada
+        """
+        return [item for item in self.items if item.perspective == perspective]
+    
+    def is_balanced(self, min_items_per_perspective: int = 1) -> bool:
+        """Verifica se matriz está balanceada entre as 4 perspectivas BSC.
+        
+        Args:
+            min_items_per_perspective: Mínimo de items por perspectiva (default: 1)
+            
+        Returns:
+            True se todas as 4 perspectivas principais têm >= min_items_per_perspective, False caso contrário
+        """
+        perspectives = ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+        return all(
+            len(self.by_perspective(perspective)) >= min_items_per_perspective
+            for perspective in perspectives
+        )
+    
+    def summary(self) -> str:
+        """Gera resumo executivo da matriz de priorização.
+        
+        Returns:
+            String com resumo estruturado (total items, distribuição prioridades, perspectivas, top 3)
+        """
+        top_3 = self.top_n(3)
+        top_3_titles = ", ".join([f"{i+1}. {item.title}" for i, item in enumerate(top_3)])
+        
+        # Calcular distribuição por perspectiva
+        perspective_counts = {
+            "Financeira": len(self.by_perspective("Financeira")),
+            "Clientes": len(self.by_perspective("Clientes")),
+            "Processos Internos": len(self.by_perspective("Processos Internos")),
+            "Aprendizado e Crescimento": len(self.by_perspective("Aprendizado e Crescimento")),
+            "Cross-Perspective": len(self.by_perspective("Cross-Perspective"))
+        }
+        
+        return (
+            f"Matriz de Priorização: {self.total_items} items priorizados\n"
+            f"Distribuição Prioridades: {self.critical_count} CRITICAL, {self.high_count} HIGH, "
+            f"{self.medium_count} MEDIUM, {self.low_count} LOW\n"
+            f"Distribuição Perspectivas: Financeira ({perspective_counts['Financeira']}), "
+            f"Clientes ({perspective_counts['Clientes']}), Processos ({perspective_counts['Processos Internos']}), "
+            f"Aprendizado ({perspective_counts['Aprendizado e Crescimento']}), Cross-Perspective ({perspective_counts['Cross-Perspective']})\n"
+            f"Top 3 Prioridades: {top_3_titles}\n"
+            f"Balanceamento: {'Sim' if self.is_balanced() else 'Não'} (mínimo 1 item/perspectiva)"
+        )
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "items": [
+                    {
+                        "item_id": "obj_001",
+                        "item_type": "strategic_objective",
+                        "title": "Aumentar NPS em 20 pontos",
+                        "description": "...",
+                        "perspective": "Clientes",
+                        "criteria": {"strategic_impact": 85, "implementation_effort": 30, "urgency": 70, "strategic_alignment": 90},
+                        "final_score": 79.0,
+                        "priority_level": "HIGH",
+                        "rank": 1
+                    }
+                ],
+                "prioritization_context": "Priorização objetivos estratégicos Q1 2025 - TechCorp",
+                "weights_config": {"impact_weight": 0.40, "effort_weight": 0.30, "urgency_weight": 0.15, "alignment_weight": 0.15}
             }
         }
     )

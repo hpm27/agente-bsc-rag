@@ -6,14 +6,27 @@ import streamlit as st
 from app.utils import get_default_config, clear_chat_history
 
 
-def render_sidebar() -> None:
+def render_sidebar() -> str:
     """
     Renderiza sidebar com configuracoes e controles.
+    
+    Returns:
+        str: Página selecionada ("Chat BSC" ou "Dashboard Multi-Cliente")
     """
     with st.sidebar:
         # Logo e titulo
         st.title("Agente BSC RAG")
         st.markdown("**Consultor IA em Balanced Scorecard**")
+        st.markdown("---")
+        
+        # Navegacao de paginas
+        st.subheader("Navegação")
+        selected_page = st.radio(
+            "Selecione a página:",
+            options=["Chat BSC", "Dashboard Multi-Cliente"],
+            index=0,
+            key="page_selector"
+        )
         st.markdown("---")
 
         # Secao: Perspectivas BSC
@@ -163,6 +176,8 @@ def render_sidebar() -> None:
         st.caption("**Links Uteis**")
         st.caption("[Documentacao](docs/QUICKSTART.md)")
         st.caption("[GitHub](https://github.com/seu-usuario/agente-bsc-rag)")
+    
+    return selected_page
 
 
 def get_active_perspectives() -> list[str]:

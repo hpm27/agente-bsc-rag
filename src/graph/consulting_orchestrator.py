@@ -476,6 +476,7 @@ class ConsultingOrchestrator:
             # Configurar LLM para CoT (GPT-5 mini para eficiência)
             llm = ChatOpenAI(
                 model=settings.router_llm_model,  # GPT-5 mini
+                temperature=1.0,  # GPT-5 family exige temperature=1.0
                 max_completion_tokens=4000,  # Espaço para Chain of Thought completo
                 reasoning_effort="medium"  # Raciocínio balanceado
             )

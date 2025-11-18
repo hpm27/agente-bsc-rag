@@ -231,6 +231,11 @@ def init_session_state() -> None:
 
     if "workflow_initialized" not in st.session_state:
         st.session_state.workflow_initialized = False
+    
+    # Inicializar Mem0ClientWrapper para Dashboard Multi-Cliente
+    if "mem0_client" not in st.session_state:
+        from src.memory.mem0_client import Mem0ClientWrapper
+        st.session_state.mem0_client = Mem0ClientWrapper()
 
 
 def clear_chat_history() -> None:

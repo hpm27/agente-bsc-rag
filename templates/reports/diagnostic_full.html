@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Diagnóstico BSC Completo - {{ profile.company.name }}{% endblock %}
+
+{% block header_title %}Diagnóstico BSC Completo{% endblock %}
+
+{% block content %}
+<!-- Executive Summary -->
+<section class="executive-summary">
+    <h2 style="margin-top: 0; border-bottom: none; color: #1e40af;">Executive Summary</h2>
+    <p>{{ diagnostic.executive_summary }}</p>
+</section>
+
+<!-- Perspectivas BSC -->
+<section>
+    <h2>Análise por Perspectiva</h2>
+    
+    <!-- Perspectiva Financeira -->
+    <div class="perspective">
+        <div class="perspective-header">
+            <h3 style="margin: 0;">{{ diagnostic.financial.perspective }}</h3>
+            <span class="badge {{ diagnostic.financial.priority | lower | priority_badge }}">
+                Prioridade: {{ diagnostic.financial.priority }}
+            </span>
+        </div>
+        
+        <h4>Estado Atual</h4>
+        <p>{{ diagnostic.financial.current_state }}</p>
+        
+        {% if diagnostic.financial.gaps %}
+        <h4>Gaps Identificados</h4>
+        <ul>
+            {% for gap in diagnostic.financial.gaps %}
+            <li>{{ gap }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if diagnostic.financial.opportunities %}
+        <h4>Oportunidades</h4>
+        <ul>
+            {% for opp in diagnostic.financial.opportunities %}
+            <li>{{ opp }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    
+    <!-- Perspectiva Clientes -->
+    <div class="perspective">
+        <div class="perspective-header">
+            <h3 style="margin: 0;">{{ diagnostic.customer.perspective }}</h3>
+            <span class="badge {{ diagnostic.customer.priority | lower | priority_badge }}">
+                Prioridade: {{ diagnostic.customer.priority }}
+            </span>
+        </div>
+        
+        <h4>Estado Atual</h4>
+        <p>{{ diagnostic.customer.current_state }}</p>
+        
+        {% if diagnostic.customer.gaps %}
+        <h4>Gaps Identificados</h4>
+        <ul>
+            {% for gap in diagnostic.customer.gaps %}
+            <li>{{ gap }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if diagnostic.customer.opportunities %}
+        <h4>Oportunidades</h4>
+        <ul>
+            {% for opp in diagnostic.customer.opportunities %}
+            <li>{{ opp }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    
+    <!-- Perspectiva Processos Internos -->
+    <div class="perspective">
+        <div class="perspective-header">
+            <h3 style="margin: 0;">{{ diagnostic.process.perspective }}</h3>
+            <span class="badge {{ diagnostic.process.priority | lower | priority_badge }}">
+                Prioridade: {{ diagnostic.process.priority }}
+            </span>
+        </div>
+        
+        <h4>Estado Atual</h4>
+        <p>{{ diagnostic.process.current_state }}</p>
+        
+        {% if diagnostic.process.gaps %}
+        <h4>Gaps Identificados</h4>
+        <ul>
+            {% for gap in diagnostic.process.gaps %}
+            <li>{{ gap }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if diagnostic.process.opportunities %}
+        <h4>Oportunidades</h4>
+        <ul>
+            {% for opp in diagnostic.process.opportunities %}
+            <li>{{ opp }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    
+    <!-- Perspectiva Aprendizado e Crescimento -->
+    <div class="perspective">
+        <div class="perspective-header">
+            <h3 style="margin: 0;">{{ diagnostic.learning.perspective }}</h3>
+            <span class="badge {{ diagnostic.learning.priority | lower | priority_badge }}">
+                Prioridade: {{ diagnostic.learning.priority }}
+            </span>
+        </div>
+        
+        <h4>Estado Atual</h4>
+        <p>{{ diagnostic.learning.current_state }}</p>
+        
+        {% if diagnostic.learning.gaps %}
+        <h4>Gaps Identificados</h4>
+        <ul>
+            {% for gap in diagnostic.learning.gaps %}
+            <li>{{ gap }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if diagnostic.learning.opportunities %}
+        <h4>Oportunidades</h4>
+        <ul>
+            {% for opp in diagnostic.learning.opportunities %}
+            <li>{{ opp }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Page Break -->
+<div class="page-break"></div>
+
+<!-- Recomendações Priorizadas -->
+<section>
+    <h2>Recomendações Priorizadas</h2>
+    <p><strong>Total:</strong> {{ diagnostic.recommendations | length }} recomendações identificadas</p>
+    
+    {% for rec in diagnostic.recommendations %}
+    <div class="recommendation">
+        <h4>{{ loop.index }}. {{ rec.title }}</h4>
+        
+        <div class="recommendation-meta">
+            <span class="badge {{ rec.impact | lower | priority_badge }}">
+                Impacto: {{ rec.impact }}
+            </span>
+            <span class="badge {{ rec.effort | lower | priority_badge }}">
+                Esforço: {{ rec.effort }}
+            </span>
+            <span class="badge {{ rec.priority | lower | priority_badge }}">
+                Prioridade: {{ rec.priority }}
+            </span>
+            {% if rec.quick_win %}
+            <span class="badge badge-high">Quick Win</span>
+            {% endif %}
+        </div>
+        
+        <p><strong>Descrição:</strong></p>
+        <p>{{ rec.description }}</p>
+        
+        <p><strong>Timeframe:</strong> {{ rec.timeframe }}</p>
+        
+        {% if rec.expected_outcomes %}
+        <p><strong>Resultados Esperados:</strong></p>
+        <ul>
+            {% for outcome in rec.expected_outcomes %}
+            <li>{{ outcome }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+</section>
+
+<!-- Sinergias Cross-Perspective -->
+{% if diagnostic.cross_perspective_synergies %}
+<section>
+    <h2>Sinergias Cross-Perspective</h2>
+    <p>Oportunidades identificadas que geram impacto em múltiplas perspectivas:</p>
+    <ul>
+        {% for synergy in diagnostic.cross_perspective_synergies %}
+        <li>{{ synergy }}</li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
+
+<!-- Próximos Passos -->
+<section>
+    <h2>Próximos Passos</h2>
+    <p><strong>Fase Recomendada:</strong> {{ diagnostic.next_phase }}</p>
+    
+    <ol>
+        <li>Validar diagnóstico com liderança executiva</li>
+        <li>Priorizar iniciativas por impacto vs esforço</li>
+        <li>Definir roadmap de implementação (3-6-12 meses)</li>
+        <li>Estabelecer KPIs e métricas de acompanhamento</li>
+        <li>Criar plano de ação detalhado por perspectiva</li>
+    </ol>
+</section>
+
+<!-- Metadados do Relatório -->
+<section style="margin-top: 15mm; padding-top: 5mm; border-top: 1px solid #e5e7eb;">
+    <p style="font-size: 9pt; color: #6b7280; text-align: center;">
+        <strong>Documento Confidencial</strong><br>
+        Este diagnóstico foi gerado especificamente para {{ profile.company.name }} em {{ generated_at }}.<br>
+        Todas as análises e recomendações são baseadas nas informações fornecidas durante o processo de onboarding.<br>
+        Para revisões ou esclarecimentos, entre em contato com sua equipe de consultoria BSC.
+    </p>
+</section>
+{% endblock %}
+

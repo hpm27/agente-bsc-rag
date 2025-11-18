@@ -56,9 +56,10 @@ class JudgeAgent:
         """Inicializa o Judge Agent."""
         self.name = "Judge Agent"
         
-        # LLM com temperatura 0 para consistência (usa factory)
+        # LLM para avaliação (usa factory)
+        # GPT-5 exige temperature=1.0 (determinismo via reasoning_effort)
         self.llm = get_llm(
-            temperature=0.0,  # Máxima consistência
+            temperature=1.0,  # GPT-5 só aceita temperature=1.0
             max_tokens=16384  # Limite alto para avaliacoes detalhadas
         )
         

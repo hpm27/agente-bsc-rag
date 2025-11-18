@@ -63,7 +63,8 @@ class Orchestrator:
         self.name = "Orchestrator"
         
         # LLM para routing e synthesis (usa factory)
-        self.llm = get_llm(temperature=0.3)
+        # GPT-5 exige temperature=1.0 (único valor suportado)
+        self.llm = get_llm(temperature=1.0)
         
         # Agentes especialistas
         self.agents = {

@@ -281,8 +281,14 @@ class Mem0ClientWrapper:
                 metadata=metadata_compact
             )
 
+            # ⏱️ CRÍTICO: Aguardar add() completar (eventual consistency)
+            # API Mem0 usa eventual consistency, pode demorar até 10 minutos
+            # (fonte: Auth0 community, Brightdata Oct/2025)
+            # Sleep 2s para garantir disponibilidade para read subsequente
+            time.sleep(2)
+
             logger.info(
-                "[OK] Profile salvo para client_id=%r (empresa: %s)",
+                "[OK] Profile salvo para client_id=%r (empresa: %s) | Sleep 2s após add (eventual consistency)",
                 profile.client_id,
                 profile.company.name,
             )
@@ -554,6 +560,250 @@ class Mem0ClientWrapper:
         except Exception as e:
             logger.error("[ERRO] Falha ao buscar profiles: %s", e)
             raise Mem0ClientError(f"Erro ao buscar profiles: {e!s}") from e
+
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+        reraise=True,
+    )
+    def list_all_profiles(
+        self,
+        limit: int = 100,
+        include_archived: bool = False
+    ) -> list:
+        """Lista todos os ClientProfiles armazenados no Mem0.
+        
+        Busca todos os perfis de clientes sem filtro de user_id específico,
+        ideal para dashboard multi-client. Usa retry logic para falhas
+        transientes de rede (3 tentativas).
+        
+        Args:
+            limit: Número máximo de perfis a retornar (default: 100)
+            include_archived: Se True, inclui perfis arquivados (default: False)
+        
+        Returns:
+            list[ClientProfile]: Lista de todos os perfis encontrados
+                (ordenados por updated_at decrescente)
+        
+        Raises:
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Examples:
+            >>> client = Mem0ClientWrapper()
+            >>> all_profiles = client.list_all_profiles(limit=50)
+            >>> print(f"Total de clientes: {len(all_profiles)}")
+            >>> for profile in all_profiles:
+            ...     print(f"{profile.company.name} - {profile.engagement.current_phase}")
+        """
+        try:
+            # Mem0 API v2 - WORKAROUND para listar todos profiles
+            # API não tem método oficial "list all", precisa de filtros ou search
+            # ORDEM INVERTIDA (Out/2025): get_all é mais confiável que search
+            
+            results = None
+            last_error = None
+            
+            # TENTATIVA 1: get_all com filtro wildcard (MAIS CONFIÁVEL)
+            # Documentação oficial: https://docs.mem0.ai/platform/features/v2-memory-filters
+            # Wildcard "*" matcha qualquer valor não-nulo
+            try:
+                # Filtro que matcha qualquer user_id não-nulo
+                # Wildcards ("*") match any non-null value (docs oficiais Mem0 v2)
+                filters = {"AND": [{"user_id": "*"}]}
+                results = self.client.get_all(filters=filters, page=1, page_size=limit)
+                logger.debug("[OK] get_all(filters=user_id:*) retornou %d resultados", 
+                           len(results) if results else 0)
+            except Exception as e:
+                last_error = e
+                logger.debug("[TENTATIVA 1] get_all(filters=user_id:*) falhou: %s", e)
+            
+            # TENTATIVA 2: search com query genérica + wildcard filter (fallback)
+            # Documentação oficial: search() EXIGE filters mesmo para busca aberta
+            if not results:
+                try:
+                    results = self.client.search(
+                        query="empresa",  # Query genérica
+                        filters={"AND": [{"user_id": "*"}]},  # ✅ OBRIGATÓRIO na API v2!
+                        limit=limit
+                    )
+                    logger.debug("[OK] search(query='empresa', filters=*) retornou %d resultados", 
+                               len(results) if results else 0)
+                except Exception as e:
+                    last_error = e
+                    logger.debug("[TENTATIVA 2] search(query='empresa', filters=*) falhou: %s", e)
+            
+            # TENTATIVA 3: search com query vazia + wildcard filter (último fallback)
+            if not results:
+                try:
+                    results = self.client.search(
+                        query="",  # Query vazia
+                        filters={"AND": [{"user_id": "*"}]},  # ✅ OBRIGATÓRIO na API v2!
+                        limit=limit
+                    )
+                    logger.debug("[OK] search(query='', filters=*) retornou %d resultados", 
+                               len(results) if results else 0)
+                except Exception as e:
+                    last_error = e
+                    logger.debug("[TENTATIVA 3] search(query='', filters=*) falhou: %s", e)
+            
+            # Se todas tentativas falharam, lançar erro do último fallback
+            if not results:
+                raise Mem0ClientError(
+                    f"Não foi possível listar profiles. Mem0 API v2 exige filtros específicos. "
+                    f"Último erro: {last_error}"
+                )
+            
+            if not results:
+                logger.info("[OK] Nenhum profile encontrado no Mem0")
+                return []
+            
+            # Parsear estrutura de resposta (pode ser dict ou lista)
+            if isinstance(results, dict) and 'results' in results:
+                results_list = results['results']
+            elif isinstance(results, list):
+                results_list = results
+            else:
+                results_list = [results] if results else []
+            
+            # Extrai profiles dos resultados
+            profiles = []
+            for result in results_list:
+                try:
+                    # Extrai metadata com profile_data
+                    if hasattr(result, 'metadata') and 'profile_data' in result.metadata:
+                        profile_data = result.metadata['profile_data']
+                        user_id = result.metadata.get('user_id', 'unknown')
+                        archived = result.metadata.get('archived', False)
+                    elif isinstance(result, dict):
+                        metadata = result.get('metadata', {})
+                        profile_data = metadata.get('profile_data')
+                        user_id = result.get('user_id', metadata.get('user_id', 'unknown'))
+                        archived = metadata.get('archived', False)
+                    else:
+                        continue  # Pula resultado sem profile_data
+                    
+                    # Filtrar arquivados se necessário
+                    if not include_archived and archived:
+                        continue
+                    
+                    # Deserializa
+                    if profile_data:
+                        profile = self._deserialize_profile(user_id, profile_data)
+                        profiles.append(profile)
+                
+                except (ValidationError, ProfileValidationError) as e:
+                    # Log mas não falha toda listagem por 1 resultado corrompido
+                    logger.warning("[WARN] Profile corrompido ignorado na listagem: %s", e)
+                    continue
+            
+            # Ordenar por updated_at decrescente (mais recentes primeiro)
+            profiles.sort(key=lambda p: p.updated_at, reverse=True)
+            
+            logger.info(
+                "[OK] Listagem retornou %d profiles (limit=%d, archived=%s)",
+                len(profiles),
+                limit,
+                include_archived
+            )
+            
+            return profiles
+        
+        except (ConnectionError, TimeoutError) as e:
+            logger.warning("[RETRY] Falha de rede ao listar profiles: %s", e)
+            raise  # Retry automático via decorator
+        except Exception as e:
+            logger.error("[ERRO] Falha ao listar profiles: %s", e)
+            raise Mem0ClientError(f"Erro ao listar profiles: {e!s}") from e
+    
+    def get_client_summary(self, client_id: str) -> dict:
+        """Retorna resumo executivo de um cliente para dashboard.
+        
+        Busca informações essenciais de um ClientProfile e retorna
+        dict com campos otimizados para exibição em dashboard multi-client.
+        NÃO usa retry (chamada rápida, não crítica).
+        
+        Args:
+            client_id: ID do cliente
+        
+        Returns:
+            dict com:
+                - client_id: str
+                - company_name: str
+                - sector: str
+                - size: str
+                - current_phase: str (ONBOARDING, DISCOVERY, etc)
+                - last_updated: datetime
+                - total_tools_used: int (SWOT, Five Whys, etc)
+                - has_diagnostic: bool
+                - approval_status: str | None
+        
+        Raises:
+            ProfileNotFoundError: Se cliente não existir
+            Mem0ClientError: Erros de comunicação ou API
+        
+        Examples:
+            >>> client = Mem0ClientWrapper()
+            >>> summary = client.get_client_summary("cliente_123")
+            >>> print(f"{summary['company_name']} está em {summary['current_phase']}")
+        """
+        try:
+            # Carrega profile completo
+            profile = self.load_profile(client_id)
+            
+            # Conta tools usadas (verifica metadata keys)
+            tools_used = 0
+            tools_keys = [
+                'swot_analysis_data',
+                'five_whys_data',
+                'issue_tree_data',
+                'kpi_framework_data',
+                'strategic_objectives_data',
+                'benchmark_report_data',
+                'action_plan_data',
+                'prioritization_matrix_data'
+            ]
+            
+            # Busca metadata do Mem0 para contar tools
+            filters = {"AND": [{"user_id": client_id}]}
+            memories = self.client.get_all(filters=filters)
+            
+            if memories:
+                memory_list = memories if isinstance(memories, list) else [memories]
+                for memory in memory_list:
+                    metadata = (memory.metadata if hasattr(memory, 'metadata') 
+                               else memory.get('metadata', {}))
+                    for key in tools_keys:
+                        if key in metadata:
+                            tools_used += 1
+            
+            # Monta resumo
+            summary = {
+                'client_id': profile.client_id,
+                'company_name': profile.company.name,
+                'sector': profile.company.sector,
+                'size': profile.company.size,
+                'current_phase': profile.engagement.current_phase,
+                'last_updated': profile.updated_at,
+                'total_tools_used': tools_used,
+                'has_diagnostic': profile.complete_diagnostic is not None,
+                'approval_status': profile.metadata.get('approval_status')
+            }
+            
+            logger.debug(
+                "[OK] Summary gerado para client_id=%r (phase=%s, tools=%d)",
+                client_id,
+                summary['current_phase'],
+                tools_used
+            )
+            
+            return summary
+        
+        except ProfileNotFoundError:
+            raise  # Re-lança
+        except Exception as e:
+            logger.error("[ERRO] Falha ao gerar summary para %r: %s", client_id, e)
+            raise Mem0ClientError(f"Erro ao gerar summary: {e!s}") from e
 
     @retry(
         stop=stop_after_attempt(3),

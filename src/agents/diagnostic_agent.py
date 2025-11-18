@@ -94,6 +94,7 @@ class DiagnosticAgent:
         self.llm = llm or ChatOpenAI(
             model=settings.diagnostic_llm_model,  # Configurável via .env (default: gpt-5-2025-08-07)
             api_key=settings.openai_api_key,  # type: ignore
+            temperature=1.0,  # GPT-5 exige temperature=1.0 (único valor suportado)
             request_timeout=120,  # Timeout de 2 minutos por request (previne travamentos)
             max_retries=2,  # Máximo 2 retries automáticos
             max_completion_tokens=settings.gpt5_max_completion_tokens,  # GPT-5 usa max_completion_tokens (128K máx), NÃO max_tokens!
@@ -829,6 +830,93 @@ ANÁLISES POR PERSPECTIVA:
             except Exception as conv_err:
                 logger.warning(f"[DIAGNOSTIC] Falha ao normalizar nested dicts: {conv_err}")
         
+        # VALIDAÇÃO CRÍTICA: Dados completos necessários para diagnóstico confiável
+        logger.info("[DIAGNOSTIC] Validando completude dos dados do cliente...")
+        
+        validation_errors = []
+        
+        # Validar company info
+        if not hasattr(client_profile, 'company') or not client_profile.company:
+            validation_errors.append("Informações da empresa (company) ausentes")
+        else:
+            if not client_profile.company.name or len(client_profile.company.name.strip()) < 2:
+                validation_errors.append("Nome da empresa não informado")
+            if not client_profile.company.sector or len(client_profile.company.sector.strip()) < 3:
+                validation_errors.append("Setor de atuação não informado")
+        
+        # Validar context (strategic)
+        if not hasattr(client_profile, 'context') or not client_profile.context:
+            validation_errors.append("Contexto estratégico (context) ausente")
+        else:
+            # Validar challenges (mínimo 2)
+            challenges = getattr(client_profile.context, 'current_challenges', None) or []
+            if len(challenges) < 2:
+                validation_errors.append(f"Desafios estratégicos insuficientes (fornecidos: {len(challenges)}, mínimo: 2)")
+            
+            # Validar objectives (mínimo 3)
+            objectives = getattr(client_profile.context, 'strategic_objectives', None) or []
+            if len(objectives) < 3:
+                validation_errors.append(f"Objetivos estratégicos insuficientes (fornecidos: {len(objectives)}, mínimo: 3)")
+        
+        # Se há erros de validação, retornar diagnóstico com mensagem explicativa
+        if validation_errors:
+            logger.warning(
+                f"[DIAGNOSTIC] Dados insuficientes para diagnóstico confiável: {len(validation_errors)} problemas identificados"
+            )
+            logger.warning(f"[DIAGNOSTIC] Problemas: {validation_errors}")
+            
+            # Construir mensagem explicativa
+            error_list = "\n".join([f"  • {err}" for err in validation_errors])
+            
+            insufficient_data_message = f"""**Diagnóstico BSC Indisponível - Dados Insuficientes**
+
+Para realizar um diagnóstico BSC confiável e personalizado, preciso de informações mais completas sobre sua empresa.
+
+**Problemas identificados:**
+{error_list}
+
+**O que preciso:**
+• Nome da empresa e setor de atuação (para contextualizar)
+• Pelo menos 2 desafios estratégicos específicos que você enfrenta
+• Pelo menos 3 objetivos estratégicos que deseja alcançar
+
+**Por que isso é importante:**
+Um diagnóstico BSC genérico baseado apenas em "melhores práticas" não teria valor real para você. Preciso entender seus desafios e objetivos específicos para:
+1. Identificar gaps relevantes para seu contexto
+2. Priorizar as 4 perspectivas BSC de acordo com sua situação
+3. Gerar recomendações acionáveis e personalizadas
+
+**Próximo passo:**
+Por favor, volte ao onboarding e forneça as informações faltantes. Depois podemos fazer um diagnóstico rico e útil!"""
+            
+            # Retornar diagnostic vazio com mensagem
+            from src.memory.schemas import DiagnosticResult
+            
+            empty_result = DiagnosticResult(
+                perspective="Geral",
+                current_state="Diagnóstico não realizado devido a dados insuficientes",
+                gaps=[],
+                opportunities=[],
+                priority="MEDIUM",
+                key_insights=[]
+            )
+            
+            incomplete_diagnostic = CompleteDiagnostic(
+                financial=empty_result,
+                customer=empty_result,
+                process=empty_result,
+                learning=empty_result,
+                recommendations=[],
+                cross_perspective_synergies=[],
+                executive_summary=insufficient_data_message,
+                next_phase="ONBOARDING"  # Voltar para onboarding para completar dados
+            )
+            
+            logger.info("[DIAGNOSTIC] Retornando diagnóstico de dados insuficientes (sem chamar LLM)")
+            return incomplete_diagnostic
+        
+        logger.info("[DIAGNOSTIC] Validação OK - Dados completos para diagnóstico confiável")
+        
         # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
         logger.info("[DIAGNOSTIC v3.1 LOG] ETAPA 1/4: Iniciando run_parallel_analysis()...")
         logger.info("[DIAGNOSTIC v3.1] ETAPA 1/4: Análise paralela das 4 perspectivas BSC...")
@@ -1094,6 +1182,130 @@ ANÁLISES POR PERSPECTIVA:
         
         logger.info("[DIAGNOSTIC] Action Plan criado e validado!")
         return action_plan
+    
+    async def generate_prioritization_matrix(
+        self,
+        items_to_prioritize: list[dict],
+        client_profile: ClientProfile,
+        prioritization_context: str,
+        use_rag: bool = True,
+        weights_config: dict[str, float] | None = None,
+    ):
+        """Gera matriz de priorização para objetivos/ações estratégicas BSC.
+        
+        Utiliza PrioritizationMatrixTool para facilitar avaliação e ranking de items
+        estratégicos usando framework híbrido (Impact/Effort + RICE + BSC-specific).
+        
+        Framework de Priorização (4 critérios, 0-100 scale):
+        - Strategic Impact (40% peso): Potencial contribuição objetivos BSC
+        - Implementation Effort (30% peso, invertido): Recursos necessários
+        - Urgency (15% peso): Time sensitivity
+        - Strategic Alignment (15% peso): Alinhamento com 4 perspectivas BSC
+        
+        4 Níveis de Prioridade (baseado no score final):
+        - CRITICAL (75-100): Quick wins + strategic imperatives
+        - HIGH (50-74): Important projects
+        - MEDIUM (25-49): Nice-to-have improvements
+        - LOW (0-24): Deprioritize or eliminate
+        
+        Workflow:
+        1. Valida items a priorizar e contexto da empresa
+        2. Chama PrioritizationMatrixTool.prioritize() com RAG opcional
+        3. Valida qualidade e balanceamento da matriz gerada
+        
+        Args:
+            items_to_prioritize: Lista de items a priorizar. Cada item deve ser dict com:
+                - id (str, opcional): Identificador único
+                - type (str, opcional): "strategic_objective", "action_item", "initiative", "project"
+                - title (str, obrigatório): Nome do item (10-200 caracteres)
+                - description (str, obrigatório): Descrição detalhada (20+ caracteres)
+                - perspective (str, obrigatório): Perspectiva BSC ("Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento")
+            client_profile: ClientProfile com contexto da empresa
+            prioritization_context: Contexto da priorização (ex: "Objetivos estratégicos Q1 2025 - TechCorp")
+            use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
+            weights_config: Configuração customizada de pesos (opcional). Default: impact 40%, effort 30%, urgency 15%, alignment 15%
+            
+        Returns:
+            PrioritizationMatrix: Objeto Pydantic validado com items priorizados, scores e ranks
+            
+        Raises:
+            ValueError: Se client_profile.company ausente ou items_to_prioritize vazio/inválido
+            ValidationError: Se LLM retornar dados inválidos
+            
+        Example:
+            >>> items = [
+            ...     {"id": "obj_001", "title": "Aumentar NPS em 20 pontos", 
+            ...      "description": "Melhorar experiência cliente...", "perspective": "Clientes"},
+            ...     {"id": "obj_002", "title": "Reduzir custos operacionais 15%",
+            ...      "description": "Otimizar processos...", "perspective": "Financeira"}
+            ... ]
+            >>> matrix = await agent.generate_prioritization_matrix(
+            ...     items_to_prioritize=items,
+            ...     client_profile=profile,
+            ...     prioritization_context="Objetivos estratégicos Q1 2025 - TechCorp"
+            ... )
+            >>> print(f"Matriz criada: {matrix.total_items} items priorizados")
+            >>> print(f"Top 3: {[item.title for item in matrix.top_n(3)]}")
+            >>> print(f"Distribuição: {matrix.critical_count} CRITICAL, {matrix.high_count} HIGH")
+        """
+        from src.tools.prioritization_matrix import PrioritizationMatrixTool
+        
+        logger.info(
+            f"[DIAGNOSTIC] Gerando Prioritization Matrix para {client_profile.company.name} "
+            f"(items={len(items_to_prioritize)}, use_rag={use_rag})"
+        )
+        
+        # Validações
+        if not client_profile.company:
+            raise ValueError("ClientProfile.company ausente. Dados insuficientes para Prioritization Matrix.")
+        
+        if not items_to_prioritize:
+            raise ValueError("items_to_prioritize não pode ser vazio. Forneça ao menos 1 item para priorizar.")
+        
+        if not prioritization_context or not prioritization_context.strip():
+            raise ValueError("prioritization_context não pode ser vazio. Forneça contexto da priorização.")
+        
+        # Instanciar PrioritizationMatrixTool
+        prioritization_tool = PrioritizationMatrixTool(llm=self.llm)
+        
+        # STEP 1: Priorizar items
+        matrix = await prioritization_tool.prioritize(
+            items_to_prioritize=items_to_prioritize,
+            client_profile=client_profile,
+            prioritization_context=prioritization_context,
+            financial_agent=self.financial_agent if use_rag else None,
+            customer_agent=self.customer_agent if use_rag else None,
+            process_agent=self.process_agent if use_rag else None,
+            learning_agent=self.learning_agent if use_rag else None,
+            weights_config=weights_config,
+        )
+        
+        logger.info(
+            f"[DIAGNOSTIC] Prioritization Matrix gerada: {matrix.total_items} items "
+            f"({matrix.critical_count} CRITICAL, {matrix.high_count} HIGH, "
+            f"{matrix.medium_count} MEDIUM, {matrix.low_count} LOW)"
+        )
+        
+        # Validar qualidade
+        if matrix.total_items >= 3:
+            critical_ratio = matrix.critical_count / matrix.total_items
+            if critical_ratio > 0.5:
+                logger.warning(
+                    f"[DIAGNOSTIC] Prioritization Matrix com muitos items CRITICAL: {critical_ratio:.1%}. "
+                    "Considere revisar critérios de avaliação (possível inflação de scores)."
+                )
+        
+        if matrix.total_items >= 4 and not matrix.is_balanced():
+            logger.warning(
+                "[DIAGNOSTIC] Prioritization Matrix não está balanceada entre as 4 perspectivas BSC. "
+                "Considere adicionar mais items de perspectivas sub-representadas."
+            )
+        
+        logger.info(
+            f"[DIAGNOSTIC] Prioritization Matrix criada e validada! "
+            f"(balanceada: {matrix.is_balanced()})"
+        )
+        return matrix
     
     def generate_five_whys_analysis(
         self,

@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}{{ perspective_name }} - {{ profile.company.name }}{% endblock %}
+
+{% block header_title %}Análise BSC: {{ perspective_name }}{% endblock %}
+
+{% block content %}
+<!-- Perspective Overview -->
+<section>
+    <div class="perspective-header" style="margin-bottom: 6mm;">
+        <h2 style="margin: 0; border-bottom: none;">{{ perspective.perspective }}</h2>
+        <span class="badge {{ perspective.priority | lower | priority_badge }}" style="font-size: 11pt;">
+            Prioridade: {{ perspective.priority }}
+        </span>
+    </div>
+    
+    <p style="font-size: 12pt; color: #6b7280; margin-bottom: 8mm;">
+        Análise detalhada da perspectiva <strong>{{ perspective_name }}</strong> 
+        para {{ profile.company.name }} ({{ profile.company.sector }}).
+    </p>
+</section>
+
+<!-- Estado Atual -->
+<section>
+    <h2>Estado Atual</h2>
+    <div style="background: #f9fafb; border-left: 4px solid #3b82f6; padding: 5mm; border-radius: 2mm;">
+        <p style="margin: 0; font-size: 11pt; line-height: 1.7;">
+            {{ perspective.current_state }}
+        </p>
+    </div>
+</section>
+
+<!-- Gaps Identificados -->
+{% if perspective.gaps %}
+<section>
+    <h2>Gaps Identificados</h2>
+    <p>Lacunas e deficiências identificadas na perspectiva {{ perspective_name }}:</p>
+    
+    <ul style="list-style: none; padding-left: 0;">
+        {% for gap in perspective.gaps %}
+        <li style="background: #fef2f2; border-left: 3px solid #ef4444; padding: 3mm; margin-bottom: 3mm; border-radius: 2mm;">
+            <strong style="color: #991b1b;">Gap {{ loop.index }}:</strong> {{ gap }}
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <p style="margin-top: 5mm; padding: 4mm; background: #fffbeb; border-left: 3px solid #f59e0b; border-radius: 2mm;">
+        <strong style="color: #92400e;">Total de gaps identificados:</strong> {{ perspective.gaps | length }}
+    </p>
+</section>
+{% endif %}
+
+<!-- Oportunidades -->
+{% if perspective.opportunities %}
+<section>
+    <h2>Oportunidades de Melhoria</h2>
+    <p>Oportunidades estratégicas identificadas para alavancar a perspectiva {{ perspective_name }}:</p>
+    
+    <ul style="list-style: none; padding-left: 0;">
+        {% for opp in perspective.opportunities %}
+        <li style="background: #f0fdf4; border-left: 3px solid #10b981; padding: 3mm; margin-bottom: 3mm; border-radius: 2mm;">
+            <strong style="color: #065f46;">Oportunidade {{ loop.index }}:</strong> {{ opp }}
+        </li>
+        {% endfor %}
+    </ul>
+    
+    <p style="margin-top: 5mm; padding: 4mm; background: #ecfdf5; border-left: 3px solid #10b981; border-radius: 2mm;">
+        <strong style="color: #065f46;">Total de oportunidades identificadas:</strong> {{ perspective.opportunities | length }}
+    </p>
+</section>
+{% endif %}
+
+<!-- Recomendações do Diagnóstico -->
+<section>
+    <h2>Recomendações Prioritárias</h2>
+    <p>Top recomendações do diagnóstico completo (todas as perspectivas):</p>
+    
+    {% for rec in diagnostic.recommendations[:3] %}
+    <div class="recommendation">
+        <h4>{{ loop.index }}. {{ rec.title }}</h4>
+        
+        <div class="recommendation-meta">
+            <span class="badge {{ rec.impact | lower | priority_badge }}">
+                Impacto: {{ rec.impact }}
+            </span>
+            <span class="badge {{ rec.effort | lower | priority_badge }}">
+                Esforço: {{ rec.effort }}
+            </span>
+            <span class="badge {{ rec.priority | lower | priority_badge }}">
+                Prioridade: {{ rec.priority }}
+            </span>
+            {% if rec.quick_win %}
+            <span class="badge badge-high">Quick Win</span>
+            {% endif %}
+        </div>
+        
+        <p><strong>Descrição:</strong></p>
+        <p>{{ rec.description }}</p>
+        
+        <p><strong>Timeframe:</strong> {{ rec.timeframe }}</p>
+    </div>
+    {% endfor %}
+    
+    <p style="margin-top: 5mm; font-size: 10pt; color: #6b7280;">
+        <strong>Nota:</strong> Para consultar todas as {{ diagnostic.recommendations | length }} recomendações 
+        do diagnóstico completo (4 perspectivas), solicite o relatório BSC completo.
+    </p>
+</section>
+
+<!-- Contexto da Empresa -->
+<section style="margin-top: 10mm; padding-top: 5mm; border-top: 2px solid #e5e7eb;">
+    <h2>Contexto Empresarial</h2>
+    
+    <table>
+        <tr>
+            <th style="width: 30%;">Empresa</th>
+            <td>{{ profile.company.name }}</td>
+        </tr>
+        <tr>
+            <th>Setor</th>
+            <td>{{ profile.company.sector }}</td>
+        </tr>
+        <tr>
+            <th>Porte</th>
+            <td>{{ profile.company.size }}</td>
+        </tr>
+        {% if profile.context and profile.context.challenges %}
+        <tr>
+            <th>Desafios Estratégicos</th>
+            <td>{{ profile.context.challenges | length }} desafios identificados</td>
+        </tr>
+        {% endif %}
+        {% if profile.context and profile.context.objectives %}
+        <tr>
+            <th>Objetivos Estratégicos</th>
+            <td>{{ profile.context.objectives | length }} objetivos definidos</td>
+        </tr>
+        {% endif %}
+    </table>
+</section>
+
+<!-- Próximos Passos -->
+<section>
+    <h2>Próximos Passos Recomendados</h2>
+    
+    <ol>
+        <li>Validar análise da perspectiva {{ perspective_name }} com stakeholders relevantes</li>
+        <li>Priorizar gaps por criticidade e urgência</li>
+        <li>Definir KPIs específicos para monitorar progresso nesta perspectiva</li>
+        <li>Elaborar plano de ação detalhado com responsáveis e prazos</li>
+        <li>Integrar com análise das demais perspectivas (visão holística BSC)</li>
+    </ol>
+</section>
+
+<!-- Footer do Relatório -->
+<section style="margin-top: 15mm; padding-top: 5mm; border-top: 1px solid #e5e7eb;">
+    <p style="font-size: 9pt; color: #6b7280; text-align: center;">
+        <strong>Documento Confidencial</strong><br>
+        Análise da perspectiva {{ perspective_name }} gerada para {{ profile.company.name }} em {{ generated_at }}.<br>
+        Este documento faz parte de um diagnóstico BSC completo com 4 perspectivas.<br>
+        Para consultar o diagnóstico completo ou outras perspectivas, entre em contato com sua equipe de consultoria.
+    </p>
+</section>
+{% endblock %}
+

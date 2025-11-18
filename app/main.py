@@ -32,6 +32,7 @@ from app.utils import (
 )
 from app.components.sidebar import render_sidebar, get_active_perspectives
 from app.components.results import render_results
+from app.components.dashboard import render_dashboard
 
 
 # ============================================================================
@@ -317,16 +318,8 @@ def render_welcome_message() -> None:
 # Interface Principal
 # ============================================================================
 
-def main() -> None:
-    """
-    Funcao principal da aplicacao.
-    """
-    # Inicializar aplicacao
-    initialize_app()
-
-    # Renderizar sidebar
-    render_sidebar()
-
+def render_chat_page() -> None:
+    """Renderiza pagina de chat BSC RAG."""
     # Header principal
     st.title("Agente BSC RAG")
     st.caption("Consultor Inteligente em Balanced Scorecard")
@@ -383,6 +376,23 @@ def main() -> None:
 
                     # Salvar erro no historico
                     save_message("assistant", error_msg)
+
+
+def main() -> None:
+    """
+    Funcao principal da aplicacao.
+    """
+    # Inicializar aplicacao
+    initialize_app()
+
+    # Renderizar sidebar e capturar pagina selecionada
+    selected_page = render_sidebar()
+    
+    # Renderizar pagina baseado na selecao
+    if selected_page == "Dashboard Multi-Cliente":
+        render_dashboard()
+    else:  # "Chat BSC" (default)
+        render_chat_page()
 
 
 # ============================================================================

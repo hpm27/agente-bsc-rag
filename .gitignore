@@ -88,3 +88,9 @@ venv/
 
 # Cursor Progress (arquivos temporários)
 .cursor/progress/
+
+# FASE 4.2 - Exports (PDFs e CSVs gerados)
+exports/pdf/*.pdf
+exports/csv/*.csv
+!exports/pdf/.gitkeep
+!exports/csv/.gitkeep
