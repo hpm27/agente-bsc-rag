@@ -7,13 +7,13 @@ Fase: 4.3 - Integration APIs
 
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse
 
 from api.dependencies import verify_api_key
 from api.schemas.requests import CreateClientRequest, UpdateClientRequest
 from api.schemas.responses import ClientResponse, ClientListResponse, ClientSummaryResponse
-# from api.utils.rate_limit import limiter, LIMIT_READ, LIMIT_WRITE
+from api.utils.rate_limit import limiter, LIMIT_READ, LIMIT_WRITE, LIMIT_ADMIN
 
 from src.memory.mem0_client import Mem0ClientWrapper
 from src.memory.schemas import ClientProfile, CompanyInfo, StrategicContext
@@ -34,9 +34,11 @@ router = APIRouter()
     summary="Criar novo cliente BSC",
     description="Cria perfil de cliente com informações básicas (company, challenges, objectives)."
 )
-# @limiter.limit(LIMIT_WRITE)  # TODO: Re-adicionar rate limiting após teste básico
+@limiter.limit(LIMIT_WRITE)
 async def create_client(
-    request: CreateClientRequest,
+    request: Request,
+    response: Response,
+    body: CreateClientRequest,
     auth: dict = Depends(verify_api_key)
 ):
     """Cria novo cliente BSC via API.
@@ -44,7 +46,7 @@ async def create_client(
     Requer API key válida com permissão 'write'.
     """
     logger.info(
-        f"[API] create_client | company={request.company_name} | "
+        f"[API] create_client | company={body.company_name} | "
         f"api_key_client={auth.get('client_id')}"
     )
     
@@ -55,14 +57,14 @@ async def create_client(
         # Construir ClientProfile
         profile = ClientProfile(
             company=CompanyInfo(
-                name=request.company_name,
-                sector=request.sector,
-                size=request.size or "não informado",
-                revenue=request.revenue
+                name=body.company_name,
+                sector=body.sector,
+                size=body.size or "não informado",
+                revenue=body.revenue
             ),
             context=StrategicContext(
-                current_challenges=request.challenges,
-                strategic_objectives=request.objectives
+                current_challenges=body.challenges,
+                strategic_objectives=body.objectives
             )
         )
         
@@ -96,8 +98,10 @@ async def create_client(
     summary="Listar clientes",
     description="Lista todos os clientes com paginação e filtros opcionais."
 )
-# @limiter.limit(LIMIT_READ)  # TODO: Re-adicionar rate limiting
+@limiter.limit(LIMIT_READ)
 async def list_clients(
+    request: Request,
+    response: Response,
     page: int = Query(1, ge=1, description="Número da página"),
     page_size: int = Query(50, ge=1, le=100, description="Items por página"),
     sector: str | None = Query(None, description="Filtrar por setor"),
@@ -171,8 +175,10 @@ async def list_clients(
     summary="Obter cliente por ID",
     description="Retorna detalhes completos de um cliente específico."
 )
-# @limiter.limit(LIMIT_READ)  # TODO: Re-adicionar rate limiting
+@limiter.limit(LIMIT_READ)
 async def get_client(
+    request: Request,
+    response: Response,
     client_id: str,
     auth: dict = Depends(verify_api_key)
 ):
@@ -212,8 +218,10 @@ async def get_client(
     summary="Resumo executivo do cliente",
     description="Retorna resumo enxuto para dashboard."
 )
-# @limiter.limit(LIMIT_READ)  # TODO: Re-adicionar rate limiting
+@limiter.limit(LIMIT_READ)
 async def get_client_summary(
+    request: Request,
+    response: Response,
     client_id: str,
     auth: dict = Depends(verify_api_key)
 ):

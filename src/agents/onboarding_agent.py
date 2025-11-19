@@ -25,6 +25,7 @@ from src.graph.consulting_states import ConsultingPhase
 from src.graph.states import BSCState
 from src.memory.mem0_client import Mem0ClientWrapper
 from src.memory.schemas import ExtractedEntities, ConversationContext
+from api.middleware.performance import track_llm_tokens
 
 logger = logging.getLogger(__name__)
 
@@ -855,6 +856,18 @@ Retorne JSON estruturado conforme schema ExtractedEntities.""")
         )
         
         try:
+            # FASE 4.9: Testar raw LLM para capturar tokens (performance monitoring)
+            raw_test = await asyncio.wait_for(self.llm.ainvoke(messages), timeout=120)
+            if hasattr(raw_test, 'response_metadata'):
+                metadata = raw_test.response_metadata
+                token_usage = metadata.get('token_usage', {})
+                if token_usage:
+                    model_name = metadata.get('model_name', 'gpt-5-mini-2025-08-07')
+                    tokens_in = token_usage.get('prompt_tokens', 0)
+                    tokens_out = token_usage.get('completion_tokens', 0)
+                    track_llm_tokens(tokens_in, tokens_out, model_name)
+                    logger.debug(f"[PERFORMANCE] [ONBOARDING] Tokens capturados: {model_name} in={tokens_in} out={tokens_out}")
+            
             result = await asyncio.wait_for(
                 structured_llm.ainvoke(messages),
                 timeout=120

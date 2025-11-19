@@ -8,9 +8,8 @@ Responsável por:
 - Relação entre estratégia e resultados financeiros
 """
 from typing import List, Dict, Any
-from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.tools import Tool
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from loguru import logger
 
 from config.settings import get_llm, settings
@@ -34,22 +33,10 @@ class FinancialAgent:
         # Prompt especializado
         self.prompt = self._create_prompt()
         
-        # Agent executor (tool calling - compatible com Claude/OpenAI/Gemini)
-        self.agent = create_tool_calling_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt
-        )
+        # LLM with tools (pattern moderno LangChain v1.0 - sem AgentExecutor deprecated)
+        self.llm_with_tools = self.llm.bind_tools(self.tools)
         
-        self.executor = AgentExecutor(
-            agent=self.agent,
-            tools=self.tools,
-            verbose=True,
-            max_iterations=settings.max_iterations,
-            return_intermediate_steps=True
-        )
-        
-        logger.info(f"[OK] {self.name} inicializado")
+        logger.info(f"[OK] {self.name} inicializado (LangChain v1.0 compatible)")
     
     def _create_prompt(self) -> ChatPromptTemplate:
         """Cria o prompt especializado para perspectiva financeira."""
@@ -92,13 +79,32 @@ Seja objetivo, técnico e baseie suas respostas nas melhores práticas da litera
         try:
             logger.info(f"[FIN] {self.name} processando: '{query[:50]}...'")
             
-            result = self.executor.invoke({
-                "input": query,
-                "chat_history": chat_history or []
-            })
+            # Construir mensagens (pattern LangChain v1.0)
+            messages = [
+                SystemMessage(content=self.prompt.messages[0].prompt.template)
+            ]
+            
+            # Adicionar histórico se existir
+            if chat_history:
+                for msg in chat_history:
+                    if msg.get("role") == "user":
+                        messages.append(HumanMessage(content=msg["content"]))
+                    elif msg.get("role") == "assistant":
+                        messages.append(AIMessage(content=msg["content"]))
+            
+            # Adicionar query atual
+            messages.append(HumanMessage(content=query))
+            
+            # Invocar LLM com tools
+            response = self.llm_with_tools.invoke(messages)
             
             logger.info(f"[OK] {self.name} completou processamento")
-            return result
+            
+            # Retornar formato compatível (mantém interface)
+            return {
+                "output": response.content if hasattr(response, 'content') else str(response),
+                "intermediate_steps": []
+            }
             
         except Exception as e:
             logger.error(f"[ERRO] Erro no {self.name}: {e}")
@@ -121,13 +127,32 @@ Seja objetivo, técnico e baseie suas respostas nas melhores práticas da litera
         try:
             logger.info(f"[FIN] {self.name} processando (async): '{query[:50]}...'")
             
-            result = await self.executor.ainvoke({
-                "input": query,
-                "chat_history": chat_history or []
-            })
+            # Construir mensagens (pattern LangChain v1.0)
+            messages = [
+                SystemMessage(content=self.prompt.messages[0].prompt.template)
+            ]
+            
+            # Adicionar histórico se existir
+            if chat_history:
+                for msg in chat_history:
+                    if msg.get("role") == "user":
+                        messages.append(HumanMessage(content=msg["content"]))
+                    elif msg.get("role") == "assistant":
+                        messages.append(AIMessage(content=msg["content"]))
+            
+            # Adicionar query atual
+            messages.append(HumanMessage(content=query))
+            
+            # Invocar LLM com tools (async)
+            response = await self.llm_with_tools.ainvoke(messages)
             
             logger.info(f"[OK] {self.name} completou processamento (async)")
-            return result
+            
+            # Retornar formato compatível (mantém interface)
+            return {
+                "output": response.content if hasattr(response, 'content') else str(response),
+                "intermediate_steps": []
+            }
             
         except Exception as e:
             logger.error(f"[ERRO] Erro no {self.name} (async): {e}")

@@ -8,8 +8,8 @@ Responsável por:
 - Experiência do cliente e jornada
 """
 from typing import List, Dict, Any
-from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from loguru import logger
 
 from config.settings import get_llm, settings
@@ -33,22 +33,10 @@ class CustomerAgent:
         # Prompt especializado
         self.prompt = self._create_prompt()
         
-        # Agent executor (tool calling - compatible com Claude/OpenAI/Gemini)
-        self.agent = create_tool_calling_agent(
-            llm=self.llm,
-            tools=self.tools,
-            prompt=self.prompt
-        )
+        # LLM com tools (pattern moderno LangChain v1.0, sem AgentExecutor deprecated)
+        self.llm_with_tools = self.llm.bind_tools(self.tools)
         
-        self.executor = AgentExecutor(
-            agent=self.agent,
-            tools=self.tools,
-            verbose=True,
-            max_iterations=settings.max_iterations,
-            return_intermediate_steps=True
-        )
-        
-        logger.info(f"[OK] {self.name} inicializado")
+        logger.info(f"[OK] {self.name} inicializado (LangChain v1.0 pattern)")
     
     def _create_prompt(self) -> ChatPromptTemplate:
         """Cria o prompt especializado para perspectiva do cliente."""
@@ -92,13 +80,20 @@ Seja objetivo, focado em valor para o cliente, e baseie suas respostas na litera
         try:
             logger.info(f"[CUST] {self.name} processando: '{query[:50]}...'")
             
-            result = self.executor.invoke({
-                "input": query,
-                "chat_history": chat_history or []
-            })
+            # Construir mensagens para LLM
+            messages = [
+                SystemMessage(content=self.prompt.messages[0].prompt.template),
+                HumanMessage(content=query)
+            ]
+            
+            # Invocar LLM com tools
+            response = self.llm_with_tools.invoke(messages)
             
             logger.info(f"[OK] {self.name} completou processamento")
-            return result
+            return {
+                "output": response.content if hasattr(response, 'content') else str(response),
+                "intermediate_steps": []
+            }
             
         except Exception as e:
             logger.error(f"[ERRO] Erro no {self.name}: {e}")
@@ -121,13 +116,20 @@ Seja objetivo, focado em valor para o cliente, e baseie suas respostas na litera
         try:
             logger.info(f"[CUST] {self.name} processando (async): '{query[:50]}...'")
             
-            result = await self.executor.ainvoke({
-                "input": query,
-                "chat_history": chat_history or []
-            })
+            # Construir mensagens para LLM
+            messages = [
+                SystemMessage(content=self.prompt.messages[0].prompt.template),
+                HumanMessage(content=query)
+            ]
+            
+            # Invocar LLM com tools (async)
+            response = await self.llm_with_tools.ainvoke(messages)
             
             logger.info(f"[OK] {self.name} completou processamento (async)")
-            return result
+            return {
+                "output": response.content if hasattr(response, 'content') else str(response),
+                "intermediate_steps": []
+            }
             
         except Exception as e:
             logger.error(f"[ERRO] Erro no {self.name} (async): {e}")

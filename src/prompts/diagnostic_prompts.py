@@ -4,6 +4,7 @@ Este módulo contém todos os prompts usados pelo DiagnosticAgent para:
 1. Analisar cada uma das 4 perspectivas BSC individualmente
 2. Consolidar análises cross-perspective
 3. Gerar recomendações priorizadas
+4. Refinar diagnóstico baseado em feedback do usuário (FASE 4.6)
 
 Padrão: Few-shot examples + structured output + anti-hallucination
 """
@@ -387,5 +388,127 @@ RETORNE uma lista de objetos JSON seguindo EXATAMENTE este schema:
     }},
     ...
 ]
+"""
+
+
+# ============================================================================
+# REFINEMENT LOGIC (FASE 4.6)
+# ============================================================================
+
+
+REFINE_DIAGNOSTIC_PROMPT = """Você é um consultor BSC especializado em refinar diagnósticos baseado em feedback específico do usuário.
+
+Sua tarefa: Analisar feedback do usuário e refinar o diagnóstico existente mantendo insights válidos e melhorando áreas específicas mencionadas.
+
+FEEDBACK DO USUÁRIO:
+{feedback}
+
+DIAGNÓSTICO EXISTENTE (CompleteDiagnostic):
+{diagnostic_json}
+
+CONTEXTO DO CLIENTE:
+{client_context}
+
+INSTRUÇÕES:
+1. Analise o feedback e identifique áreas específicas de melhoria:
+   - Perspectivas afetadas (Financeira, Clientes, Processos, Aprendizado)
+   - Recomendações que precisam ser ajustadas
+   - Executive summary que precisa ser atualizado
+   - Synergies que podem ser melhoradas
+
+2. Decida estratégia de refinement:
+   - TARGETED: Refinar apenas perspectivas/recomendações específicas mencionadas no feedback (eficiente, mantém insights válidos)
+   - FULL: Refazer diagnóstico completo (se feedback muito amplo ou genérico, ex: "não reflete realidade")
+   - RECOMMENDATIONS_ONLY: Refinar apenas recomendações (se feedback foca em ações práticas)
+
+3. Execute refinement baseado na estratégia escolhida:
+   - TARGETED: Refine apenas partes específicas, mantenha resto intacto
+   - FULL: Re-execute análise completa considerando feedback como contexto adicional
+   - RECOMMENDATIONS_ONLY: Refine apenas lista de recomendações, mantenha perspectivas intactas
+
+4. Valide diagnóstico refinado:
+   - Melhorias aplicadas conforme feedback
+   - Insights válidos do diagnóstico original preservados
+   - Schema CompleteDiagnostic válido (todas perspectivas presentes)
+   - Executive summary atualizado refletindo melhorias
+
+ANTI-HALLUCINATION:
+- NÃO invente informações não mencionadas no feedback ou contexto
+- NÃO remova insights válidos do diagnóstico original sem justificativa
+- Se feedback é ambíguo, prefira TARGETED refinement sobre perspectivas mais prováveis
+- Mantenha estrutura e qualidade do diagnóstico original
+
+FEW-SHOT EXAMPLES:
+
+EXEMPLO 1 - Feedback específico sobre SWOT/Opportunities:
+Feedback: "SWOT precisa mais Opportunities relacionadas ao mercado enterprise"
+Estratégia: TARGETED (refinar apenas perspectiva relevante)
+Ação: Adicionar 2-3 Opportunities específicas sobre mercado enterprise na perspectiva apropriada (geralmente Clientes ou Processos)
+
+EXEMPLO 2 - Feedback sobre recomendações genéricas:
+Feedback: "Recomendações sobre KPIs financeiros estão muito genéricas, preciso de ações mais práticas"
+Estratégia: RECOMMENDATIONS_ONLY
+Ação: Refinar recomendações financeiras com next_steps mais detalhados e específicos
+
+EXEMPLO 3 - Feedback amplo:
+Feedback: "Diagnóstico não reflete realidade da empresa, preciso de análise mais profunda"
+Estratégia: FULL
+Ação: Re-executar análise completa usando feedback como contexto adicional para análise mais profunda
+
+RETORNE um objeto JSON seguindo EXATAMENTE o schema CompleteDiagnostic:
+{{
+    "financial": {{
+        "perspective": "Financeira",
+        "current_state": "string",
+        "gaps": ["string", ...],
+        "opportunities": ["string", ...],
+        "priority": "LOW" | "MEDIUM" | "HIGH",
+        "key_insights": ["string", ...]
+    }},
+    "customer": {{
+        "perspective": "Clientes",
+        "current_state": "string",
+        "gaps": ["string", ...],
+        "opportunities": ["string", ...],
+        "priority": "LOW" | "MEDIUM" | "HIGH",
+        "key_insights": ["string", ...]
+    }},
+    "process": {{
+        "perspective": "Processos Internos",
+        "current_state": "string",
+        "gaps": ["string", ...],
+        "opportunities": ["string", ...],
+        "priority": "LOW" | "MEDIUM" | "HIGH",
+        "key_insights": ["string", ...]
+    }},
+    "learning": {{
+        "perspective": "Aprendizado e Crescimento",
+        "current_state": "string",
+        "gaps": ["string", ...],
+        "opportunities": ["string", ...],
+        "priority": "LOW" | "MEDIUM" | "HIGH",
+        "key_insights": ["string", ...]
+    }},
+    "recommendations": [
+        {{
+            "title": "string",
+            "description": "string",
+            "impact": "LOW" | "MEDIUM" | "HIGH",
+            "effort": "LOW" | "MEDIUM" | "HIGH",
+            "priority": "LOW" | "MEDIUM" | "HIGH",
+            "timeframe": "string",
+            "next_steps": ["string", ...]
+        }},
+        ...
+    ],
+    "cross_perspective_synergies": ["string", ...],
+    "executive_summary": "string (200-500 palavras)",
+    "next_phase": "APPROVAL_PENDING" | "DESIGN" | "IMPLEMENTATION"
+}}
+
+IMPORTANTE: 
+- Se estratégia é TARGETED ou RECOMMENDATIONS_ONLY, mantenha perspectivas não afetadas IDÊNTICAS ao diagnóstico original
+- Se estratégia é FULL, re-execute análise completa mas incorpore feedback como contexto adicional
+- Sempre atualize executive_summary para refletir melhorias aplicadas
 """
 

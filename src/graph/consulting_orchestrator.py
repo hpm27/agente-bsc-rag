@@ -26,6 +26,7 @@ from src.memory.factory import MemoryFactory
 if TYPE_CHECKING:
     from src.agents.client_profile_agent import ClientProfileAgent
     from src.agents.diagnostic_agent import DiagnosticAgent
+    from src.agents.judge_agent import JudgeAgent
     from src.agents.onboarding_agent import OnboardingAgent
     from src.graph.consulting_states import ConsultingPhase
 
@@ -46,6 +47,7 @@ class ConsultingOrchestrator:
         self._client_profile_agent = None
         self._onboarding_agent = None
         self._diagnostic_agent = None
+        self._judge_agent = None
         
         logger.info("[OK] ConsultingOrchestrator inicializado")
     
@@ -112,6 +114,18 @@ class ConsultingOrchestrator:
         logger.info(f"[ORCHESTRATOR v3.8-20251022-15:00] DiagnosticAgent module: {self._diagnostic_agent.__module__}")
         
         return self._diagnostic_agent
+    
+    @property
+    def judge_agent(self) -> JudgeAgent:
+        """Lazy loading JudgeAgent."""
+        if self._judge_agent is None:
+            from src.agents.judge_agent import JudgeAgent
+            
+            # JudgeAgent cria próprio LLM (GPT-5 com temperature=1.0)
+            self._judge_agent = JudgeAgent()
+            logger.info("[LOAD] JudgeAgent carregado")
+        
+        return self._judge_agent
     
     async def coordinate_onboarding(self, state: BSCState) -> dict[str, Any]:
         """
@@ -293,8 +307,72 @@ class ConsultingOrchestrator:
                 f"Transição → APPROVAL_PENDING"
             )
             
+            # AVALIACAO JUDGE: Validar qualidade do diagnostico ANTES de enviar para aprovacao
+            logger.info("[JUDGE] Avaliando qualidade do diagnostico BSC...")
+            
+            try:
+                # Formatar diagnostico para avaliacao
+                diagnostic_formatted = self._format_diagnostic_for_judge(complete_diagnostic)
+                
+                # Avaliar com Judge (context='DIAGNOSTIC': relaxa criterios de fontes)
+                judge_result = self.judge_agent.evaluate(
+                    original_query=(
+                        f"Diagnostico BSC para {state.client_profile.company.name} "
+                        f"(setor: {state.client_profile.company.sector})"
+                    ),
+                    agent_response=diagnostic_formatted,
+                    retrieved_documents="[Perfil cliente coletado no onboarding]",
+                    agent_name="Diagnostic Agent",
+                    evaluation_context="DIAGNOSTIC"
+                )
+                
+                # Log resultado Judge
+                logger.info(
+                    f"[JUDGE] Avaliacao concluida | "
+                    f"Score: {judge_result.quality_score:.2f} | "
+                    f"Verdict: {judge_result.verdict} | "
+                    f"Is_grounded: {judge_result.is_grounded} | "
+                    f"Is_complete: {judge_result.is_complete}"
+                )
+                
+                # Armazenar avaliacao Judge em metadata
+                judge_evaluation = {
+                    "quality_score": judge_result.quality_score,
+                    "verdict": judge_result.verdict,
+                    "is_grounded": judge_result.is_grounded,
+                    "is_complete": judge_result.is_complete,
+                    "has_sources": judge_result.has_sources,
+                    "reasoning": judge_result.reasoning,
+                    "suggestions": judge_result.suggestions,
+                    "evaluated_at": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Warning se score baixo (mas permitir prosseguir)
+                if judge_result.quality_score < 0.7:
+                    logger.warning(
+                        f"[JUDGE] [WARN] Score abaixo de 0.7 detectado! | "
+                        f"Score: {judge_result.quality_score:.2f} | "
+                        f"Sugestoes: {judge_result.suggestions} | "
+                        f"Diagnostico sera enviado para aprovacao mas requer atencao humana"
+                    )
+                
+            except Exception as judge_err:
+                logger.error(f"[JUDGE] [ERRO] Falha ao avaliar diagnostico: {judge_err}")
+                # Fallback: continuar sem avaliacao Judge
+                judge_evaluation = {
+                    "quality_score": None,
+                    "verdict": "evaluation_failed",
+                    "error": str(judge_err),
+                    "evaluated_at": datetime.now(timezone.utc).isoformat()
+                }
+            
             # Serializar CompleteDiagnostic (BSCState aceita dict)
             diagnostic_dict = complete_diagnostic.model_dump()
+            
+            # Adicionar judge_evaluation em metadata do diagnostic_dict
+            if "metadata" not in diagnostic_dict:
+                diagnostic_dict["metadata"] = {}
+            diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
             
             # Gerar resumo para resposta
             summary = self._generate_diagnostic_summary(complete_diagnostic)
@@ -316,6 +394,95 @@ class ConsultingOrchestrator:
             # Log detalhado com traceback
             logger.exception("[ERROR] [ORCHESTRATOR] coordinate_discovery falhou com exceção")
             return self.handle_error(error=e, state=state, phase="DISCOVERY")
+    
+    async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
+        """
+        FASE 4.6: Coordena refinement de diagnóstico baseado em feedback do usuário.
+        
+        Quando approval_status é REJECTED ou MODIFIED, este método refina o diagnóstico
+        existente ao invés de recriar do zero, usando approval_feedback como guia.
+        
+        Args:
+            state: Estado com diagnostic existente, approval_status e approval_feedback
+            
+        Returns:
+            Estado atualizado com diagnostic refinado e current_phase = APPROVAL_PENDING
+        """
+        try:
+            logger.info("[INFO] [ORCHESTRATOR] [REFINEMENT] coordinate_refinement iniciado")
+            
+            # Validar inputs
+            if not state.diagnostic:
+                logger.warning(
+                    "[WARN] [ORCHESTRATOR] [REFINEMENT] Diagnostic ausente. "
+                    "Fallback para coordinate_discovery (criar novo diagnóstico)"
+                )
+                return await self.coordinate_discovery(state)
+            
+            if not state.approval_feedback or not state.approval_feedback.strip():
+                logger.warning(
+                    "[WARN] [ORCHESTRATOR] [REFINEMENT] Approval feedback ausente. "
+                    "Fallback para coordinate_discovery (criar novo diagnóstico)"
+                )
+                return await self.coordinate_discovery(state)
+            
+            # Converter diagnostic de dict para CompleteDiagnostic se necessário
+            diagnostic_raw = state.diagnostic
+            if isinstance(diagnostic_raw, dict):
+                logger.debug("[ORCHESTRATOR] [REFINEMENT] Convertendo diagnostic de dict para CompleteDiagnostic")
+                from src.memory.schemas import CompleteDiagnostic
+                existing_diagnostic = CompleteDiagnostic(**diagnostic_raw)
+            else:
+                existing_diagnostic = diagnostic_raw
+            
+            logger.info(
+                f"[ORCHESTRATOR] [REFINEMENT] Refinando diagnóstico existente | "
+                f"Feedback: {state.approval_feedback[:100]}... | "
+                f"Recommendations originais: {len(existing_diagnostic.recommendations)}"
+            )
+            
+            # Executar refinement
+            refined_diagnostic = await self.diagnostic_agent.refine_diagnostic(
+                existing_diagnostic=existing_diagnostic,
+                feedback=state.approval_feedback.strip(),
+                state=state
+            )
+            
+            logger.info(
+                f"[OK] [ORCHESTRATOR] [REFINEMENT] Refinement concluído | "
+                f"Recommendations refinadas: {len(refined_diagnostic.recommendations)} | "
+                f"Transição → APPROVAL_PENDING"
+            )
+            
+            # Serializar diagnóstico refinado
+            diagnostic_dict = refined_diagnostic.model_dump()
+            
+            # Gerar resumo para resposta
+            summary = self._generate_diagnostic_summary(refined_diagnostic)
+            
+            transition_data = self._prepare_phase_transition(
+                state=state,
+                to_phase=self._get_consulting_phase("APPROVAL_PENDING"),
+                trigger="diagnostic_refined"
+            )
+            
+            return {
+                "diagnostic": diagnostic_dict,
+                "final_response": summary + "\n\n[REFINED] Diagnóstico refinado baseado em seu feedback.",
+                "is_complete": True,
+                "metadata": {
+                    **state.metadata,
+                    "refinement_applied": True,
+                    "refinement_feedback": state.approval_feedback
+                },
+                **transition_data
+            }
+            
+        except Exception as e:
+            logger.exception("[ERROR] [ORCHESTRATOR] [REFINEMENT] coordinate_refinement falhou")
+            logger.warning("[ORCHESTRATOR] [REFINEMENT] Fallback para coordinate_discovery")
+            # Fallback: criar novo diagnóstico se refinement falhar
+            return await self.coordinate_discovery(state)
     
     def validate_transition(
         self,
@@ -580,6 +747,57 @@ class ConsultingOrchestrator:
             summary_parts.append("\n(Nenhuma recomendação gerada)\n")
         
         return "".join(summary_parts)
+    
+    def _format_diagnostic_for_judge(self, diagnostic: Any) -> str:
+        """
+        Formata diagnostico para avaliacao do Judge Agent.
+        
+        Args:
+            diagnostic: CompleteDiagnostic Pydantic
+            
+        Returns:
+            String formatada com conteudo essencial para Judge avaliar qualidade
+        """
+        # Executive summary
+        output_parts = [
+            "[DIAGNOSTICO BSC]\n\n",
+            f"EXECUTIVE SUMMARY:\n{diagnostic.executive_summary}\n\n"
+        ]
+        
+        # Top insights por perspectiva (2-3 por perspectiva)
+        perspectives_data = {
+            "FINANCEIRA": diagnostic.financial_perspective,
+            "CLIENTES": diagnostic.customer_perspective,
+            "PROCESSOS": diagnostic.process_perspective,
+            "APRENDIZADO": diagnostic.learning_perspective
+        }
+        
+        output_parts.append("INSIGHTS PRINCIPAIS POR PERSPECTIVA:\n\n")
+        
+        for persp_name, persp_data in perspectives_data.items():
+            if persp_data and persp_data.insights:
+                output_parts.append(f"[{persp_name}]\n")
+                # Top 3 insights
+                for insight in persp_data.insights[:3]:
+                    output_parts.append(f"- {insight}\n")
+                output_parts.append("\n")
+        
+        # Top 5 recomendacoes HIGH priority
+        high_priority_recs = [
+            rec for rec in diagnostic.recommendations
+            if rec.priority == "HIGH"
+        ][:5]
+        
+        if high_priority_recs:
+            output_parts.append("RECOMENDACOES PRIORITARIAS:\n\n")
+            for i, rec in enumerate(high_priority_recs, 1):
+                output_parts.append(
+                    f"{i}. [{rec.priority}] {rec.title}\n"
+                    f"   Impacto: {rec.impact}\n"
+                    f"   Descricao: {rec.description}\n\n"
+                )
+        
+        return "".join(output_parts)
     
     def _get_consulting_phase(self, phase_str: str):
         """Helper para obter ConsultingPhase enum."""

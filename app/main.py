@@ -33,6 +33,7 @@ from app.utils import (
 from app.components.sidebar import render_sidebar, get_active_perspectives
 from app.components.results import render_results
 from app.components.dashboard import render_dashboard
+from app.components.analytics import render_analytics_dashboard
 
 
 # ============================================================================
@@ -391,6 +392,8 @@ def main() -> None:
     # Renderizar pagina baseado na selecao
     if selected_page == "Dashboard Multi-Cliente":
         render_dashboard()
+    elif selected_page == "Analytics Dashboard":
+        render_analytics_dashboard()
     else:  # "Chat BSC" (default)
         render_chat_page()
 

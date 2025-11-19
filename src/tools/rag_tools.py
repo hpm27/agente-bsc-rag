@@ -6,7 +6,7 @@ permitindo que os agentes especializados busquem informações relevantes
 na base de conhecimento BSC.
 """
 from typing import List, Dict, Any, Optional
-from langchain.tools import Tool, StructuredTool
+from langchain_core.tools import StructuredTool
 from pydantic import BaseModel, Field
 from loguru import logger
 

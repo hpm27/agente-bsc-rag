@@ -23,6 +23,7 @@ from src.agents.process_agent import ProcessAgent
 from src.agents.learning_agent import LearningAgent
 from src.agents.judge_agent import JudgeAgent
 from src.rag.query_router import QueryRouter, QueryCategory, RoutingDecision as QueryRoutingDecision
+from api.middleware.performance import track_llm_tokens
 
 
 class RoutingDecision(BaseModel):
@@ -505,6 +506,26 @@ Calcule confidence baseado em:
                 f"**{resp['agent_name']} (Perspectiva {resp['perspective'].title()}):**\n{resp['response']}"
                 for resp in agent_responses
             ])
+            
+            # FASE 4.9: Capturar tokens para performance monitoring
+            # Testar raw LLM para obter metadata (synthesis_chain esconde metadata)
+            try:
+                raw_messages = self.synthesis_prompt.format_messages(
+                    original_query=original_query,
+                    agent_responses=formatted_responses
+                )
+                raw_test = self.llm.invoke(raw_messages)
+                if hasattr(raw_test, 'response_metadata'):
+                    metadata = raw_test.response_metadata
+                    token_usage = metadata.get('token_usage', {})
+                    if token_usage:
+                        model_name = metadata.get('model_name', settings.orchestrator_llm_model)
+                        tokens_in = token_usage.get('prompt_tokens', 0)
+                        tokens_out = token_usage.get('completion_tokens', 0)
+                        track_llm_tokens(tokens_in, tokens_out, model_name)
+                        logger.debug(f"[PERFORMANCE] [SYNTHESIS] Tokens capturados: {model_name} in={tokens_in} out={tokens_out}")
+            except Exception as e:
+                logger.warning(f"[PERFORMANCE] [SYNTHESIS] Erro ao capturar tokens: {e}")
             
             synthesis = self.synthesis_chain.invoke({
                 "original_query": original_query,

@@ -11,7 +11,7 @@ def render_sidebar() -> str:
     Renderiza sidebar com configuracoes e controles.
     
     Returns:
-        str: Página selecionada ("Chat BSC" ou "Dashboard Multi-Cliente")
+        str: Página selecionada ("Chat BSC", "Dashboard Multi-Cliente" ou "Analytics Dashboard")
     """
     with st.sidebar:
         # Logo e titulo
@@ -23,7 +23,7 @@ def render_sidebar() -> str:
         st.subheader("Navegação")
         selected_page = st.radio(
             "Selecione a página:",
-            options=["Chat BSC", "Dashboard Multi-Cliente"],
+            options=["Chat BSC", "Dashboard Multi-Cliente", "Analytics Dashboard"],
             index=0,
             key="page_selector"
         )

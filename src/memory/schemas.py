@@ -5,8 +5,9 @@ informações de clientes e engajamentos de consultoria BSC no Mem0.
 """
 
 from datetime import datetime, timezone
-from typing import Any, List, Literal, Optional
+from typing import Any, List, Literal, Optional, Dict
 import re
+import secrets
 from uuid import uuid4
 
 from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
@@ -3527,6 +3528,476 @@ class PrioritizationMatrix(BaseModel):
                 ],
                 "prioritization_context": "Priorização objetivos estratégicos Q1 2025 - TechCorp",
                 "weights_config": {"impact_weight": 0.40, "effort_weight": 0.30, "urgency_weight": 0.15, "alignment_weight": 0.15}
+            }
+        }
+    )
+
+
+# ============================================================================
+# FEEDBACK SCHEMA (FASE 4.5)
+# ============================================================================
+
+
+class Feedback(BaseModel):
+    """Schema para feedback de usuários sobre diagnósticos BSC.
+    
+    Armazena avaliação estruturada (rating 1-5) e feedback textual opcional
+    sobre diagnósticos gerados pelo sistema. Usado para análise de qualidade
+    e melhoria contínua dos diagnósticos.
+    
+    Attributes:
+        rating: Avaliação numérica de 1-5 (1=muito insatisfeito, 5=muito satisfeito)
+        comment: Feedback textual opcional (máximo 1000 caracteres)
+        diagnostic_id: ID único do diagnóstico avaliado
+        user_id: ID do usuário que forneceu o feedback
+        phase: Fase do workflow quando feedback foi coletado
+        created_at: Timestamp de criação do feedback
+        metadata: Metadados adicionais (ex: ferramentas usadas, perspectivas abordadas)
+    
+    Example:
+        >>> feedback = Feedback(
+        ...     rating=5,
+        ...     comment="Diagnóstico muito completo e útil!",
+        ...     diagnostic_id="diag_123",
+        ...     user_id="user_456",
+        ...     phase="discovery"
+        ... )
+        >>> feedback.is_positive()
+        True
+    """
+    
+    rating: int = Field(
+        ge=1,
+        le=5,
+        description="Avaliação numérica de 1-5 (1=muito insatisfeito, 5=muito satisfeito)"
+    )
+    comment: Optional[str] = Field(
+        None,
+        max_length=1000,
+        description="Feedback textual opcional (máximo 1000 caracteres)"
+    )
+    diagnostic_id: str = Field(
+        description="ID único do diagnóstico avaliado"
+    )
+    user_id: str = Field(
+        description="ID do usuário que forneceu o feedback"
+    )
+    phase: str = Field(
+        description="Fase do workflow quando feedback foi coletado (ex: discovery, approval_pending)"
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp de criação do feedback"
+    )
+    metadata: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Metadados adicionais (ex: ferramentas usadas, perspectivas abordadas)"
+    )
+    
+    @field_validator("comment")
+    @classmethod
+    def validate_comment(cls, v: Optional[str]) -> Optional[str]:
+        """Valida que comment não é string vazia."""
+        if v is not None and len(v.strip()) == 0:
+            return None
+        return v
+    
+    def is_positive(self) -> bool:
+        """Verifica se feedback é positivo (rating >= 4).
+        
+        Returns:
+            True se rating >= 4, False caso contrário
+            
+        Example:
+            >>> feedback = Feedback(rating=5, diagnostic_id="diag_1", user_id="user_1", phase="discovery")
+            >>> feedback.is_positive()
+            True
+        """
+        return self.rating >= 4
+    
+    def is_negative(self) -> bool:
+        """Verifica se feedback é negativo (rating <= 2).
+        
+        Returns:
+            True se rating <= 2, False caso contrário
+            
+        Example:
+            >>> feedback = Feedback(rating=1, diagnostic_id="diag_1", user_id="user_1", phase="discovery")
+            >>> feedback.is_negative()
+            True
+        """
+        return self.rating <= 2
+    
+    def is_neutral(self) -> bool:
+        """Verifica se feedback é neutro (rating == 3).
+        
+        Returns:
+            True se rating == 3, False caso contrário
+            
+        Example:
+            >>> feedback = Feedback(rating=3, diagnostic_id="diag_1", user_id="user_1", phase="discovery")
+            >>> feedback.is_neutral()
+            True
+        """
+        return self.rating == 3
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Converte feedback para dicionário (útil para serialização).
+        
+        Returns:
+            Dicionário com todos os campos do feedback
+            
+        Example:
+            >>> feedback = Feedback(rating=5, diagnostic_id="diag_1", user_id="user_1", phase="discovery")
+            >>> feedback.to_dict()["rating"]
+            5
+        """
+        return {
+            "rating": self.rating,
+            "comment": self.comment,
+            "diagnostic_id": self.diagnostic_id,
+            "user_id": self.user_id,
+            "phase": self.phase,
+            "created_at": self.created_at.isoformat(),
+            "metadata": self.metadata
+        }
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "rating": 5,
+                "comment": "Diagnóstico muito completo e útil! Recomendações práticas e bem fundamentadas.",
+                "diagnostic_id": "diag_abc123",
+                "user_id": "user_xyz789",
+                "phase": "discovery",
+                "created_at": "2025-11-19T14:30:00Z",
+                "metadata": {
+                    "tools_used": ["swot", "five_whys"],
+                    "perspectives": ["financeira", "clientes"]
+                }
+            }
+        }
+    )
+
+
+# ============================================================================
+# NOTIFICATION SCHEMA (FASE 4.7)
+# ============================================================================
+
+
+class Notification(BaseModel):
+    """Schema para notificações do sistema sobre eventos importantes.
+    
+    Armazena notificações sobre eventos críticos do workflow BSC:
+    - diagnostic_completed: Diagnóstico pronto para aprovação
+    - refinement_completed: Refinamento baseado em feedback completo
+    - feedback_received: Feedback do usuário recebido com sucesso
+    - error_occurred: Erro crítico que requer atenção
+    
+    Notificações podem ser marcadas como lidas e filtradas por tipo/prioridade.
+    Usadas para comunicação assíncrona com usuários via API.
+    
+    Attributes:
+        id: Identificador único da notificação (gerado automaticamente)
+        type: Tipo de evento (diagnostic_completed, refinement_completed, etc)
+        user_id: ID do usuário que receberá a notificação
+        diagnostic_id: ID do diagnóstico relacionado (opcional)
+        title: Título resumido da notificação (5-100 caracteres)
+        message: Mensagem detalhada (10-500 caracteres)
+        status: Estado da notificação (unread, read)
+        priority: Nível de urgência (high, medium, low)
+        metadata: Dados adicionais estruturados sobre o evento
+        created_at: Timestamp de criação (UTC)
+        read_at: Timestamp de leitura (UTC, opcional)
+        
+    Examples:
+        >>> notification = Notification(
+        ...     type="diagnostic_completed",
+        ...     user_id="user_123",
+        ...     diagnostic_id="diag_abc",
+        ...     title="Diagnóstico BSC Pronto",
+        ...     message="Seu diagnóstico BSC completo está disponível para aprovação.",
+        ...     priority="high"
+        ... )
+        >>> notification.status
+        'unread'
+        >>> notification.mark_as_read()
+        >>> notification.status
+        'read'
+    """
+    
+    id: str = Field(
+        default_factory=lambda: f"notif_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{secrets.token_hex(4)}",
+        description="ID único da notificação (gerado automaticamente)"
+    )
+    
+    type: Literal[
+        "diagnostic_completed",
+        "refinement_completed", 
+        "feedback_received",
+        "error_occurred"
+    ] = Field(
+        ...,
+        description="Tipo de evento que gerou a notificação"
+    )
+    
+    user_id: str = Field(
+        ...,
+        min_length=3,
+        description="ID do usuário destinatário da notificação"
+    )
+    
+    diagnostic_id: Optional[str] = Field(
+        None,
+        description="ID do diagnóstico relacionado (se aplicável)"
+    )
+    
+    title: str = Field(
+        ...,
+        min_length=5,
+        max_length=100,
+        description="Título resumido da notificação"
+    )
+    
+    message: str = Field(
+        ...,
+        min_length=10,
+        max_length=500,
+        description="Mensagem detalhada sobre o evento"
+    )
+    
+    status: Literal["unread", "read"] = Field(
+        default="unread",
+        description="Estado de leitura da notificação"
+    )
+    
+    priority: Literal["high", "medium", "low"] = Field(
+        default="medium",
+        description="Nível de urgência da notificação"
+    )
+    
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Dados adicionais estruturados (JSON)"
+    )
+    
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp de criação (UTC)"
+    )
+    
+    read_at: Optional[datetime] = Field(
+        None,
+        description="Timestamp de leitura (UTC, None se não lida)"
+    )
+    
+    def mark_as_read(self) -> None:
+        """Marca notificação como lida e registra timestamp."""
+        self.status = "read"
+        self.read_at = datetime.now(timezone.utc)
+    
+    def to_dict(self) -> dict[str, Any]:
+        """Serializa para dict (útil para APIs)."""
+        return {
+            "id": self.id,
+            "type": self.type,
+            "user_id": self.user_id,
+            "diagnostic_id": self.diagnostic_id,
+            "title": self.title,
+            "message": self.message,
+            "status": self.status,
+            "priority": self.priority,
+            "metadata": self.metadata,
+            "created_at": self.created_at.isoformat(),
+            "read_at": self.read_at.isoformat() if self.read_at else None
+        }
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "id": "notif_20251119143000_a1b2c3d4",
+                "type": "diagnostic_completed",
+                "user_id": "user_xyz789",
+                "diagnostic_id": "diag_abc123",
+                "title": "Diagnóstico BSC Pronto",
+                "message": "Seu diagnóstico BSC completo está disponível para aprovação. Perspectivas: Financeira, Clientes, Processos, Aprendizado.",
+                "status": "unread",
+                "priority": "high",
+                "metadata": {
+                    "perspectives_count": 4,
+                    "recommendations_count": 12,
+                    "execution_time_seconds": 45.3
+                },
+                "created_at": "2025-11-19T14:30:00Z",
+                "read_at": None
+            }
+        }
+    )
+
+
+# ============================================================================
+# PERFORMANCE METRICS SCHEMA (FASE 4.8)
+# ============================================================================
+
+
+class PerformanceMetrics(BaseModel):
+    """Schema para métricas de performance do sistema BSC RAG Agent.
+    
+    Monitora performance de endpoints, LLM calls, e recursos:
+    - Latência de endpoints (P50, P95, Mean)
+    - Tokens consumidos (input/output por modelo LLM)
+    - Taxa de erro por endpoint
+    - Throughput (requests/min)
+    - Custo estimado (tokens * preço)
+    
+    Métricas são armazenadas no Mem0 para consulta histórica via API.
+    Usadas para observability, debugging, e otimização de performance.
+    
+    Atributos:
+        id (str): ID único da métrica (formato: metric_YYYYMMDDHHMMSS_hash)
+        timestamp (datetime): Timestamp UTC de quando a métrica foi capturada
+        endpoint (str): Rota do endpoint (ex: /api/v1/diagnostics)
+        method (str): Método HTTP (GET, POST, etc)
+        duration_ms (float): Latência da requisição em milissegundos
+        status_code (int): Código HTTP de resposta (200, 400, 500, etc)
+        user_id (Optional[str]): ID do usuário que fez a requisição
+        diagnostic_id (Optional[str]): ID do diagnóstico relacionado (se aplicável)
+        tokens_in (Optional[int]): Tokens de input consumidos por LLM calls
+        tokens_out (Optional[int]): Tokens de output gerados por LLM calls
+        model_name (Optional[str]): Modelo LLM usado (ex: gpt-5-mini-2025-08-07)
+        error_message (Optional[str]): Mensagem de erro se status_code >= 400
+        metadata (dict): Metadados adicionais (ex: query_length, response_size)
+    
+    Fase: 4.8 - Performance Monitoring
+    """
+    
+    id: str = Field(
+        default_factory=lambda: f"metric_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{secrets.token_hex(4)}",
+        description="ID único da métrica (metric_YYYYMMDDHHMMSS_hash)",
+        examples=["metric_20251119143045_a1b2c3d4"]
+    )
+    
+    timestamp: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp UTC de quando a métrica foi capturada"
+    )
+    
+    endpoint: str = Field(
+        min_length=5,
+        max_length=200,
+        description="Rota do endpoint (ex: /api/v1/diagnostics)",
+        examples=["/api/v1/diagnostics", "/api/v1/clients", "/api/v1/tools/swot"]
+    )
+    
+    method: Literal["GET", "POST", "PATCH", "DELETE", "PUT"] = Field(
+        description="Método HTTP da requisição",
+        examples=["POST", "GET"]
+    )
+    
+    duration_ms: float = Field(
+        ge=0,
+        le=600000,  # 10 minutos máximo
+        description="Latência da requisição em milissegundos (0-600000ms)",
+        examples=[1234.56, 5678.90]
+    )
+    
+    status_code: int = Field(
+        ge=100,
+        le=599,
+        description="Código HTTP de resposta (100-599)",
+        examples=[200, 201, 400, 500]
+    )
+    
+    user_id: Optional[str] = Field(
+        None,
+        min_length=3,
+        description="ID do usuário que fez a requisição (opcional)",
+        examples=["user_xyz789", "client_abc123"]
+    )
+    
+    diagnostic_id: Optional[str] = Field(
+        None,
+        min_length=5,
+        description="ID do diagnóstico relacionado, se aplicável (opcional)",
+        examples=["diag_abc123", "diag_def456"]
+    )
+    
+    tokens_in: Optional[int] = Field(
+        None,
+        ge=0,
+        le=1000000,  # 1M tokens máximo (context window + safety)
+        description="Tokens de input consumidos por LLM calls (opcional)",
+        examples=[1234, 5678]
+    )
+    
+    tokens_out: Optional[int] = Field(
+        None,
+        ge=0,
+        le=500000,  # 500K tokens máximo output
+        description="Tokens de output gerados por LLM calls (opcional)",
+        examples=[789, 2345]
+    )
+    
+    model_name: Optional[str] = Field(
+        None,
+        min_length=5,
+        max_length=100,
+        description="Modelo LLM usado (opcional)",
+        examples=["gpt-5-mini-2025-08-07", "gpt-5-2025-08-07", "claude-sonnet-4.5"]
+    )
+    
+    error_message: Optional[str] = Field(
+        None,
+        max_length=1000,
+        description="Mensagem de erro se status_code >= 400 (opcional)",
+        examples=["ValidationError: field 'company_name' is required", "Internal Server Error"]
+    )
+    
+    metadata: dict[str, Any] = Field(
+        default_factory=dict,
+        description="Metadados adicionais (query_length, response_size, etc)",
+        examples=[{"query_length": 150, "response_size": 5000, "cache_hit": True}]
+    )
+    
+    def to_dict(self) -> dict[str, Any]:
+        """Serializa para dict (útil para Mem0 storage)."""
+        return {
+            "id": self.id,
+            "timestamp": self.timestamp.isoformat(),
+            "endpoint": self.endpoint,
+            "method": self.method,
+            "duration_ms": self.duration_ms,
+            "status_code": self.status_code,
+            "user_id": self.user_id,
+            "diagnostic_id": self.diagnostic_id,
+            "tokens_in": self.tokens_in,
+            "tokens_out": self.tokens_out,
+            "model_name": self.model_name,
+            "error_message": self.error_message,
+            "metadata": self.metadata
+        }
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "id": "metric_20251119143045_a1b2c3d4",
+                "timestamp": "2025-11-19T14:30:45Z",
+                "endpoint": "/api/v1/diagnostics",
+                "method": "POST",
+                "duration_ms": 12345.67,
+                "status_code": 200,
+                "user_id": "user_xyz789",
+                "diagnostic_id": "diag_abc123",
+                "tokens_in": 5678,
+                "tokens_out": 2345,
+                "model_name": "gpt-5-mini-2025-08-07",
+                "error_message": None,
+                "metadata": {
+                    "query_length": 150,
+                    "response_size": 5000,
+                    "cache_hit": False,
+                    "perspectives_analyzed": 4
+                }
             }
         }
     )

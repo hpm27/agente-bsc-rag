@@ -13,7 +13,7 @@ Cobertura:
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, AsyncMock
 from pydantic import ValidationError
 
 from src.agents.diagnostic_agent import DiagnosticAgent
@@ -527,6 +527,55 @@ def test_diagnostic_result_validation():
         )
 
 
+@pytest.fixture
+def sample_complete_diagnostic(sample_perspective_results):
+    """CompleteDiagnostic de exemplo para testes de refinement."""
+    return CompleteDiagnostic(
+        financial=sample_perspective_results["Financeira"],
+        customer=sample_perspective_results["Clientes"],
+        process=sample_perspective_results["Processos Internos"],
+        learning=sample_perspective_results["Aprendizado e Crescimento"],
+        recommendations=[
+            Recommendation(
+                title="Implementar ABC Costing",
+                description="Descrição detalhada com mais de 50 caracteres conforme requerido pelo schema Pydantic",
+                impact="HIGH",
+                effort="MEDIUM",
+                priority="HIGH",
+                timeframe="médio prazo (3-6 meses)",
+                next_steps=["Mapear processos", "Identificar cost drivers"],
+            ),
+            Recommendation(
+                title="Programa Voice of Customer",
+                description="Outra descrição detalhada com mais de 50 caracteres para validação do schema",
+                impact="MEDIUM",
+                effort="LOW",
+                priority="MEDIUM",
+                timeframe="quick win (1-3 meses)",
+                next_steps=["Criar surveys", "Analisar feedback"],
+            ),
+            Recommendation(
+                title="Automatização de Processos Críticos",
+                description="Terceira recomendação detalhada com mais de 50 caracteres para atender ao requisito mínimo de 3 recomendações do schema CompleteDiagnostic",
+                impact="HIGH",
+                effort="HIGH",
+                priority="HIGH",
+                timeframe="longo prazo (6-12 meses)",
+                next_steps=["Mapear processos manuais", "Identificar oportunidades de automação", "Implementar RPA"],
+            ),
+        ],
+        cross_perspective_synergies=[
+            "Processos manuais (Processos) → custos altos (Financeira) + erros frequentes (Clientes)"
+        ],
+        executive_summary=(
+            "Executive summary com 250 caracteres mínimo para validar constraint Pydantic do campo "
+            "executive_summary que requer entre 200 e 2000 caracteres. Este texto possui conteúdo "
+            "suficiente para passar na validação do schema CompleteDiagnostic."
+        ),
+        next_phase="APPROVAL_PENDING",
+    )
+
+
 def test_recommendation_validation():
     """Testa validações do schema Recommendation."""
     # Valid recommendation
@@ -547,7 +596,7 @@ def test_recommendation_validation():
             title="Short",  # < 10 chars
             description="Description with more than 50 characters required",
             perspective="Financeira",
-            expected_impact="HIGH",
+            impact="HIGH",
             effort="LOW",
             priority="HIGH",
             timeframe="quick win",
@@ -645,4 +694,200 @@ def test_generate_recommendations_retry_behavior(diagnostic_agent, sample_perspe
             sample_perspective_results,
             mock_consolidated,
         )
+
+
+# ============================================================================
+# TESTES: REFINEMENT LOGIC (FASE 4.6)
+# ============================================================================
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_validates_feedback_empty(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve validar que feedback não é vazio."""
+    with pytest.raises(ValueError, match="Feedback não pode ser vazio"):
+        await diagnostic_agent.refine_diagnostic(
+            existing_diagnostic=sample_complete_diagnostic,
+            feedback="",  # Feedback vazio
+            state=sample_bsc_state
+        )
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_validates_diagnostic_none(diagnostic_agent, sample_bsc_state):
+    """refine_diagnostic deve validar que diagnóstico não é None."""
+    with pytest.raises(ValueError, match="Diagnóstico existente não pode ser None"):
+        await diagnostic_agent.refine_diagnostic(
+            existing_diagnostic=None,  # Diagnóstico None
+            feedback="SWOT precisa mais Opportunities",
+            state=sample_bsc_state
+        )
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_validates_client_profile(diagnostic_agent, sample_complete_diagnostic):
+    """refine_diagnostic deve validar que state tem client_profile."""
+    state = BSCState(
+        query="Como implementar BSC?",
+        conversation_history=[],
+        # client_profile ausente propositalmente
+    )
+    
+    with pytest.raises(ValueError, match="client_profile ausente"):
+        await diagnostic_agent.refine_diagnostic(
+            existing_diagnostic=sample_complete_diagnostic,
+            feedback="SWOT precisa mais Opportunities",
+            state=state
+        )
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_returns_refined_diagnostic(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve retornar CompleteDiagnostic refinado."""
+    # Mock LLM structured output
+    refined_diagnostic_mock = CompleteDiagnostic(
+        financial=sample_complete_diagnostic.financial,
+        customer=sample_complete_diagnostic.customer,
+        process=sample_complete_diagnostic.process,
+        learning=sample_complete_diagnostic.learning,
+        recommendations=[
+            Recommendation(
+                title="Nova Recomendação Refinada",
+                description="Descrição detalhada com mais de 50 caracteres conforme requerido pelo schema Pydantic para validação",
+                impact="HIGH",
+                effort="LOW",
+                priority="HIGH",
+                timeframe="quick win (1-3 meses)",
+                next_steps=["Step refinado 1", "Step refinado 2"],
+            ),
+        ] + sample_complete_diagnostic.recommendations,
+        cross_perspective_synergies=sample_complete_diagnostic.cross_perspective_synergies,
+        executive_summary="Executive summary refinado com melhorias aplicadas baseadas no feedback do usuário. " * 10,
+        next_phase="APPROVAL_PENDING",
+    )
+    
+    # Mock structured LLM (usar AsyncMock para ainvoke)
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=refined_diagnostic_mock)
+    diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Executar refinement
+    refined = await diagnostic_agent.refine_diagnostic(
+        existing_diagnostic=sample_complete_diagnostic,
+        feedback="SWOT precisa mais Opportunities relacionadas ao mercado enterprise",
+        state=sample_bsc_state
+    )
+    
+    # Validar resultado
+    assert isinstance(refined, CompleteDiagnostic)
+    assert len(refined.recommendations) >= len(sample_complete_diagnostic.recommendations)
+    assert refined.executive_summary != sample_complete_diagnostic.executive_summary
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_fallback_on_timeout(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve retornar diagnóstico original se timeout."""
+    import asyncio
+    
+    # Mock LLM que demora muito (timeout)
+    async def slow_llm(*args, **kwargs):
+        await asyncio.sleep(400)  # Mais que timeout de 300s
+        return sample_complete_diagnostic
+    
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = slow_llm
+    diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Executar refinement (deve timeout e retornar original)
+    refined = await diagnostic_agent.refine_diagnostic(
+        existing_diagnostic=sample_complete_diagnostic,
+        feedback="SWOT precisa mais Opportunities",
+        state=sample_bsc_state
+    )
+    
+    # Deve retornar diagnóstico original (fallback)
+    assert refined == sample_complete_diagnostic
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_fallback_on_error(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve retornar diagnóstico original se erro."""
+    # Mock LLM que lança exceção
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = Mock(side_effect=Exception("LLM error"))
+    diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Executar refinement (deve capturar erro e retornar original)
+    refined = await diagnostic_agent.refine_diagnostic(
+        existing_diagnostic=sample_complete_diagnostic,
+        feedback="SWOT precisa mais Opportunities",
+        state=sample_bsc_state
+    )
+    
+    # Deve retornar diagnóstico original (fallback)
+    assert refined == sample_complete_diagnostic
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_preserves_valid_insights(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve preservar insights válidos do diagnóstico original."""
+    # Mock LLM que retorna diagnóstico refinado mantendo perspectivas
+    refined_diagnostic_mock = CompleteDiagnostic(
+        financial=sample_complete_diagnostic.financial,  # Mantém original
+        customer=sample_complete_diagnostic.customer,  # Mantém original
+        process=sample_complete_diagnostic.process,  # Mantém original
+        learning=sample_complete_diagnostic.learning,  # Mantém original
+        recommendations=sample_complete_diagnostic.recommendations + [
+            Recommendation(
+                title="Nova Recomendação Adicionada",
+                description="Descrição detalhada com mais de 50 caracteres conforme requerido pelo schema Pydantic para validação completa",
+                impact="MEDIUM",
+                effort="LOW",
+                priority="MEDIUM",
+                timeframe="quick win (1-3 meses)",
+                next_steps=["Novo step"],
+            ),
+        ],
+        cross_perspective_synergies=sample_complete_diagnostic.cross_perspective_synergies,
+        executive_summary="Executive summary atualizado refletindo melhorias aplicadas. " * 10,
+        next_phase="APPROVAL_PENDING",
+    )
+    
+    # Mock structured LLM (usar AsyncMock para ainvoke)
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = AsyncMock(return_value=refined_diagnostic_mock)
+    diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Executar refinement
+    refined = await diagnostic_agent.refine_diagnostic(
+        existing_diagnostic=sample_complete_diagnostic,
+        feedback="Adicionar mais recomendações práticas",
+        state=sample_bsc_state
+    )
+    
+    # Validar que perspectivas foram preservadas
+    assert refined.financial == sample_complete_diagnostic.financial
+    assert refined.customer == sample_complete_diagnostic.customer
+    assert refined.process == sample_complete_diagnostic.process
+    assert refined.learning == sample_complete_diagnostic.learning
+    # Recomendações devem ter aumentado
+    assert len(refined.recommendations) > len(sample_complete_diagnostic.recommendations)
+
+
+@pytest.mark.asyncio
+async def test_refine_diagnostic_handles_llm_none_response(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+    """refine_diagnostic deve retornar diagnóstico original se LLM retorna None."""
+    # Mock LLM que retorna None
+    mock_structured_llm = Mock()
+    mock_structured_llm.ainvoke = Mock(return_value=None)
+    diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
+    
+    # Executar refinement
+    refined = await diagnostic_agent.refine_diagnostic(
+        existing_diagnostic=sample_complete_diagnostic,
+        feedback="SWOT precisa mais Opportunities",
+        state=sample_bsc_state
+    )
+    
+    # Deve retornar diagnóstico original (fallback)
+    assert refined == sample_complete_diagnostic
 

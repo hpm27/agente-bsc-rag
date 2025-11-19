@@ -87,6 +87,14 @@ app = FastAPI(
         {
             "name": "admin",
             "description": "Endpoints administrativos (API keys, metrics)"
+        },
+        {
+            "name": "analytics",
+            "description": "Analytics e métricas da API (FASE 4.4)"
+        },
+        {
+            "name": "feedback",
+            "description": "Coleta e análise de feedback sobre diagnósticos BSC (FASE 4.5)"
         }
     ]
 )
@@ -109,6 +117,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Middleware de Analytics (FASE 4.4)
+from api.middleware import AnalyticsMiddleware
+from api.middleware.performance import PerformanceMiddleware
+app.add_middleware(AnalyticsMiddleware)
+app.add_middleware(PerformanceMiddleware)
 
 
 # Health check endpoint (sem autenticação)
@@ -140,7 +154,21 @@ async def root():
 # Error handlers globais
 @app.exception_handler(404)
 async def not_found_handler(request, exc):
-    """Handler para 404 Not Found."""
+    """Handler para 404 Not Found.
+    
+    Preserva formato detail quando HTTPException é lançada explicitamente.
+    Retorna formato customizado apenas para 404s genéricos (rota não encontrada).
+    """
+    from fastapi import HTTPException
+    
+    # Se é HTTPException com detail customizado, preservar formato padrão
+    if isinstance(exc, HTTPException) and hasattr(exc, 'detail'):
+        return JSONResponse(
+            status_code=404,
+            content={"detail": exc.detail}
+        )
+    
+    # 404 genérico (rota não encontrada)
     return JSONResponse(
         status_code=404,
         content={
@@ -165,20 +193,25 @@ async def internal_error_handler(request, exc):
 
 
 # Registrar routers
-from api.routers import clients
+from api.routers import clients, diagnostics, tools, reports, webhooks, analytics, feedback, notifications, metrics
 
-# TODO: Configurar rate limit handler (testar API básica primeiro)
-# from api.utils.rate_limit import limiter, rate_limit_exceeded_handler
-# from slowapi.errors import RateLimitExceeded
-# app.state.limiter = limiter
-# app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+# Configurar rate limiting (SlowAPI + Redis)
+from api.utils.rate_limit import limiter, rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
 
 # Routers
 app.include_router(clients.router, prefix="/api/v1/clients", tags=["clients"])
-# app.include_router(diagnostics.router, prefix="/api/v1/diagnostics", tags=["diagnostics"])
-# app.include_router(tools.router, prefix="/api/v1/tools", tags=["tools"])
-# app.include_router(reports.router, prefix="/api/v1/reports", tags=["reports"])
-# app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["webhooks"])
+app.include_router(diagnostics.router, prefix="/api/v1/diagnostics", tags=["diagnostics"])
+app.include_router(tools.router, prefix="/api/v1/tools", tags=["tools"])
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["reports"])
+app.include_router(webhooks.router, prefix="/api/v1/webhooks", tags=["webhooks"])
+app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
+app.include_router(feedback.router, prefix="/api/v1/feedback", tags=["feedback"])
+app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["notifications"])
+app.include_router(metrics.router, prefix="/api/v1/metrics", tags=["metrics"])
 
 
 if __name__ == "__main__":

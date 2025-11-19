@@ -28,6 +28,7 @@ from config.settings import settings
 from src.agents.customer_agent import CustomerAgent
 from src.agents.financial_agent import FinancialAgent
 from src.agents.learning_agent import LearningAgent
+from api.middleware.performance import track_llm_tokens
 from src.agents.process_agent import ProcessAgent
 from src.graph.states import BSCState
 from src.memory.schemas import (
@@ -46,6 +47,7 @@ from src.prompts.diagnostic_prompts import (
     ANALYZE_PROCESS_PERSPECTIVE_PROMPT,
     CONSOLIDATE_DIAGNOSTIC_PROMPT,
     GENERATE_RECOMMENDATIONS_PROMPT,
+    REFINE_DIAGNOSTIC_PROMPT,
 )
 
 # Setup logger
@@ -214,6 +216,15 @@ class DiagnosticAgent:
                 logger.info(f"[DIAGNOSTIC v3.0 LOG] [{perspective}] Raw finish_reason: {finish_reason}")
                 logger.warning(f"[DIAGNOSTIC] [{perspective}] Response metadata: finish_reason={finish_reason}, finish_message={finish_message[:100]}")
                 logger.info(f"[CHECKPOINT v3.5] [{perspective}] APÓS log finish_reason - continuando...")
+                
+                # FASE 4.9: Instrumentar LLM tokens para performance monitoring
+                token_usage = metadata.get('token_usage', {})
+                if token_usage:
+                    model_name = metadata.get('model_name', settings.diagnostic_llm_model)
+                    tokens_in = token_usage.get('prompt_tokens', 0)
+                    tokens_out = token_usage.get('completion_tokens', 0)
+                    track_llm_tokens(tokens_in, tokens_out, model_name)
+                    logger.debug(f"[PERFORMANCE] [{perspective}] Tokens capturados: {model_name} in={tokens_in} out={tokens_out}")
                 
                 if finish_reason == 'MALFORMED_FUNCTION_CALL':
                     logger.error(f"[DIAGNOSTIC] [{perspective}] CRITICO: MALFORMED_FUNCTION_CALL detectado! Message: {finish_message}")
@@ -565,6 +576,12 @@ class DiagnosticAgent:
                 logger.info(f"[DIAGNOSTIC v3.2 LOG] TOKEN USAGE: input={prompt_tokens}, output={completion_tokens}, total={total_tokens}")
                 logger.info(f"[DIAGNOSTIC v3.2 LOG] MAX ALLOWED: max_completion_tokens={settings.gpt5_max_completion_tokens}")
                 
+                # FASE 4.9: Instrumentar LLM tokens para performance monitoring
+                if token_usage:
+                    model_name = metadata.get('model_name', settings.diagnostic_llm_model)
+                    track_llm_tokens(prompt_tokens, completion_tokens, model_name)
+                    logger.debug(f"[PERFORMANCE] [CONSOLIDATION] Tokens capturados: {model_name} in={prompt_tokens} out={completion_tokens}")
+                
                 logger.info(f"[DIAGNOSTIC v3.2] Raw LLM finish_reason: {finish_reason}")
                 logger.info(f"[DIAGNOSTIC v3.2] TOKEN USAGE: prompt={prompt_tokens}, completion={completion_tokens}, total={total_tokens}")
                 logger.info(f"[DIAGNOSTIC v3.2] MAX CONFIG: max_completion_tokens={settings.gpt5_max_completion_tokens}")
@@ -717,6 +734,12 @@ ANÁLISES POR PERSPECTIVA:
                 logger.info(f"[CHECKPOINT v3.7] TOKEN USAGE: input={prompt_tokens}, output={completion_tokens}, total={total_tokens}")
                 logger.info(f"[CHECKPOINT v3.7] MAX ALLOWED: max_completion_tokens=64000")
                 logger.info(f"[CHECKPOINT v3.7] OUTPUT TOKEN USAGE: {(completion_tokens/64000)*100:.1f}% do limite ({completion_tokens}/64000)")
+                
+                # FASE 4.9: Instrumentar LLM tokens para performance monitoring
+                if token_usage:
+                    model_name = metadata.get('model_name', settings.diagnostic_llm_model)
+                    track_llm_tokens(prompt_tokens, completion_tokens, model_name)
+                    logger.debug(f"[PERFORMANCE] [RECOMMENDATIONS] Tokens capturados: {model_name} in={prompt_tokens} out={completion_tokens}")
                 
                 if finish_reason == 'length':
                     logger.error(f"[DIAGNOSTIC] ERRO: finish_reason=length! LLM truncado ao gerar recomendações.")
@@ -985,6 +1008,145 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
                 f"[DIAGNOSTIC] Timeout global ({global_timeout_sec}s) no diagnóstico completo"
             )
             raise ValueError("Timeout global no diagnóstico BSC") from e
+    
+    async def refine_diagnostic(
+        self,
+        existing_diagnostic: CompleteDiagnostic,
+        feedback: str,
+        state: BSCState,
+    ) -> CompleteDiagnostic:
+        """
+        FASE 4.6: Refina diagnóstico existente baseado em feedback do usuário.
+        
+        Quando um diagnóstico é rejeitado ou modificado (approval_status REJECTED/MODIFIED),
+        este método usa o approval_feedback para melhorar o diagnóstico ao invés de recriar do zero.
+        
+        Estratégias de refinement:
+        - TARGETED: Refina apenas perspectivas/recomendações específicas mencionadas no feedback
+        - FULL: Refaz diagnóstico completo (se feedback muito amplo)
+        - RECOMMENDATIONS_ONLY: Refina apenas recomendações (se feedback foca em ações)
+        
+        Args:
+            existing_diagnostic: Diagnóstico original a ser refinado
+            feedback: Feedback textual do usuário sobre o que melhorar
+            state: Estado atual com client_profile e contexto
+            
+        Returns:
+            CompleteDiagnostic refinado
+            
+        Raises:
+            ValueError: Se feedback vazio, diagnóstico inválido, ou state sem client_profile
+            
+        Example:
+            >>> diagnostic = await agent.run_diagnostic(state)
+            >>> refined = await agent.refine_diagnostic(
+            ...     diagnostic,
+            ...     "SWOT precisa mais Opportunities relacionadas ao mercado enterprise",
+            ...     state
+            ... )
+            >>> len(refined.recommendations) >= len(diagnostic.recommendations)
+            True
+        """
+        logger.info("[DIAGNOSTIC] [REFINEMENT] ========== INICIANDO REFINEMENT ==========")
+        logger.info(f"[DIAGNOSTIC] [REFINEMENT] Feedback recebido: {feedback[:100]}...")
+        
+        # Validações
+        if not feedback or not feedback.strip():
+            raise ValueError("Feedback não pode ser vazio. Forneça feedback específico sobre o que melhorar.")
+        
+        if not existing_diagnostic:
+            raise ValueError("Diagnóstico existente não pode ser None.")
+        
+        if not state.client_profile:
+            raise ValueError("client_profile ausente no state. Execute onboarding primeiro.")
+        
+        # Converter client_profile se necessário
+        client_profile_raw = state.client_profile
+        if isinstance(client_profile_raw, dict):
+            logger.debug("[DIAGNOSTIC] [REFINEMENT] Convertendo client_profile de dict para ClientProfile")
+            from src.memory.schemas import ClientProfile, StrategicContext, CompanyInfo
+            
+            if 'context' in client_profile_raw and isinstance(client_profile_raw['context'], dict):
+                client_profile_raw['context'] = StrategicContext(**client_profile_raw['context'])
+            if 'company' in client_profile_raw and isinstance(client_profile_raw['company'], dict):
+                client_profile_raw['company'] = CompanyInfo(**client_profile_raw['company'])
+            
+            client_profile = ClientProfile(**client_profile_raw)
+        else:
+            client_profile = client_profile_raw
+        
+        # Formatar contexto do cliente
+        company = client_profile.company
+        context = client_profile.context
+        challenges_text = ", ".join(context.current_challenges) if context.current_challenges else "Não informados"
+        objectives_text = ", ".join(context.strategic_objectives) if context.strategic_objectives else "Não informados"
+        
+        client_context = (
+            f"Empresa: {company.name}\n"
+            f"Setor: {company.sector}\n"
+            f"Porte: {company.size}\n"
+            f"Desafios: {challenges_text}\n"
+            f"Objetivos: {objectives_text}"
+        )
+        
+        # Converter diagnóstico existente para JSON
+        diagnostic_json = existing_diagnostic.model_dump_json(indent=2)
+        
+        # Formatar prompt
+        formatted_prompt = REFINE_DIAGNOSTIC_PROMPT.format(
+            feedback=feedback.strip(),
+            diagnostic_json=diagnostic_json,
+            client_context=client_context
+        )
+        
+        logger.info("[DIAGNOSTIC] [REFINEMENT] Chamando LLM para refinement...")
+        
+        # Criar structured LLM
+        structured_llm = self.llm.with_structured_output(
+            CompleteDiagnostic,
+            method="function_calling"
+        )
+        
+        messages = [
+            SystemMessage(content="Você é um consultor BSC especializado em refinar diagnósticos baseado em feedback específico."),
+            HumanMessage(content=formatted_prompt),
+        ]
+        
+        try:
+            # Chamar LLM com timeout
+            logger.info("[DIAGNOSTIC] [REFINEMENT] Aguardando resposta do LLM (timeout: 300s)...")
+            refined_diagnostic = await asyncio.wait_for(
+                structured_llm.ainvoke(messages),
+                timeout=300  # 5 minutos para refinement
+            )
+            
+            logger.info("[DIAGNOSTIC] [REFINEMENT] LLM retornou diagnóstico refinado")
+            
+            # Validar diagnóstico refinado
+            if not refined_diagnostic:
+                logger.warning("[DIAGNOSTIC] [REFINEMENT] LLM retornou None. Fallback: retornar diagnóstico original.")
+                return existing_diagnostic
+            
+            # Verificar se melhorias foram aplicadas (heurística simples)
+            if refined_diagnostic.executive_summary == existing_diagnostic.executive_summary:
+                logger.warning("[DIAGNOSTIC] [REFINEMENT] Executive summary não mudou. Pode indicar que refinement não foi aplicado.")
+            
+            logger.info(
+                f"[DIAGNOSTIC] [REFINEMENT] ========== REFINEMENT CONCLUÍDO ========== "
+                f"(Recommendations: {len(refined_diagnostic.recommendations)}, "
+                f"Executive Summary atualizado: {refined_diagnostic.executive_summary != existing_diagnostic.executive_summary})"
+            )
+            
+            return refined_diagnostic
+            
+        except asyncio.TimeoutError as e:
+            logger.error("[DIAGNOSTIC] [REFINEMENT] Timeout no refinement (300s)")
+            logger.warning("[DIAGNOSTIC] [REFINEMENT] Fallback: retornar diagnóstico original")
+            return existing_diagnostic
+        except Exception as e:
+            logger.error(f"[DIAGNOSTIC] [REFINEMENT] Erro durante refinement: {e}", exc_info=True)
+            logger.warning("[DIAGNOSTIC] [REFINEMENT] Fallback: retornar diagnóstico original")
+            return existing_diagnostic
     
     def generate_swot_analysis(
         self,

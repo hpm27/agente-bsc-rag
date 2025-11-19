@@ -717,6 +717,12 @@ class BSCWorkflow:
                 f"[INFO] [APPROVAL] Status recebido: {approval_status.value} | "
                 f"Feedback: {approval_feedback[:50] if approval_feedback else 'N/A'}..."
             )
+            
+            # FASE 4.5: Tentar coletar feedback opcional (não bloqueia workflow)
+            # Feedback é coletado quando diagnóstico está completo e usuário interage
+            # Por enquanto, feedback é coletado via API REST manualmente
+            # Futuro: Integrar UI Streamlit com prompt de feedback após diagnóstico
+            self._collect_feedback_after_diagnostic(state, approval_status)
 
             # Persistir decisão (save_client_memory sincroniza)
             return {
@@ -819,6 +825,8 @@ class BSCWorkflow:
         Integra ConsultingOrchestrator.coordinate_discovery() no LangGraph.
         Executa DiagnosticAgent.run_diagnostic() single-turn.
         
+        FASE 4.6: Suporta refinement quando approval_status é REJECTED/MODIFIED.
+        
         Args:
             state: Estado atual com client_profile (obrigatório)
         
@@ -828,6 +836,7 @@ class BSCWorkflow:
         Routing:
             - diagnostic completo → Transição DISCOVERY → APPROVAL_PENDING
             - erro/profile ausente → Fallback para ONBOARDING
+            - refinement necessário → Refina diagnóstico existente (FASE 4.6)
         """
         try:
             logger.info(
@@ -835,16 +844,43 @@ class BSCWorkflow:
                 f"user_id={state.user_id} | has_profile={state.client_profile is not None}"
             )
             
-            # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
-            # Python 3.12 compatible - criar loop se não existir
-            import asyncio
-            try:
-                loop = asyncio.get_running_loop()
-            except RuntimeError:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
+            # FASE 4.6: Detectar se refinement é necessário
+            from src.graph.consulting_states import ApprovalStatus
             
-            result = loop.run_until_complete(self.consulting_orchestrator.coordinate_discovery(state))
+            needs_refinement = (
+                state.diagnostic is not None and
+                state.approval_status in (ApprovalStatus.REJECTED, ApprovalStatus.MODIFIED) and
+                state.approval_feedback and
+                state.approval_feedback.strip()
+            )
+            
+            if needs_refinement:
+                logger.info(
+                    "[INFO] [DISCOVERY] [REFINEMENT] Refinement necessário baseado em feedback | "
+                    f"approval_status={state.approval_status.value if hasattr(state.approval_status, 'value') else state.approval_status}"
+                )
+                # Delegar para coordinate_refinement
+                import asyncio
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                
+                result = loop.run_until_complete(self.consulting_orchestrator.coordinate_refinement(state))
+            else:
+                # Discovery normal: criar diagnóstico novo
+                logger.info("[INFO] [DISCOVERY] Discovery normal (criar novo diagnóstico)")
+                # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
+                # Python 3.12 compatible - criar loop se não existir
+                import asyncio
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                
+                result = loop.run_until_complete(self.consulting_orchestrator.coordinate_discovery(state))
             
             logger.info(
                 f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "
@@ -880,6 +916,62 @@ class BSCWorkflow:
         except Exception as e:
             logger.error(f"[ERROR] [DISCOVERY] Erro no handler: {e}")
             return self.consulting_orchestrator.handle_error(state, e, "DISCOVERY")
+    
+    def _collect_feedback_after_diagnostic(
+        self,
+        state: BSCState,
+        approval_status: Any
+    ) -> None:
+        """
+        FASE 4.5: Coleta opcional de feedback após diagnóstico completo.
+        
+        Este método é chamado após diagnóstico ser apresentado ao usuário.
+        Feedback é opcional e não bloqueia o workflow se falhar.
+        
+        Por enquanto, feedback é coletado via API REST manualmente.
+        Futuro: Integrar UI Streamlit com prompt de feedback após diagnóstico.
+        
+        Args:
+            state: Estado atual com diagnostic completo
+            approval_status: Status de aprovação (APPROVED, REJECTED, etc)
+        """
+        try:
+            # Lazy import para evitar circular
+            from api.services.feedback_service import FeedbackService
+            from src.memory.schemas import Feedback
+            from src.graph.consulting_states import ApprovalStatus
+            
+            # Apenas tentar coletar feedback se diagnóstico existe e user_id disponível
+            if not state.diagnostic or not state.user_id:
+                logger.debug(
+                    "[FEEDBACK] Feedback não coletado: diagnostic ou user_id ausente"
+                )
+                return
+            
+            # Gerar diagnostic_id se não existir
+            diagnostic_id = state.metadata.get("diagnostic_id") or f"diag_{state.user_id}_{int(time.time())}"
+            
+            # Por enquanto, feedback é coletado via API REST manualmente
+            # Este método apenas prepara o sistema para coleta futura
+            # Futuro: Quando UI Streamlit integrar prompt de feedback,
+            # este método pode ser chamado automaticamente após diagnóstico
+            
+            logger.debug(
+                "[FEEDBACK] Sistema pronto para coleta de feedback: "
+                f"diagnostic_id={diagnostic_id}, user_id={state.user_id}, "
+                f"approval_status={approval_status.value if hasattr(approval_status, 'value') else approval_status}"
+            )
+            
+            # NOTA: Coleta real de feedback será feita via:
+            # 1. API REST POST /api/v1/feedback (manual)
+            # 2. UI Streamlit com prompt após diagnóstico (futuro)
+            # Este método apenas registra que sistema está pronto para feedback
+            
+        except Exception as e:
+            # Feedback é opcional - não falhar workflow se erro
+            logger.warning(
+                f"[WARN] [FEEDBACK] Erro ao preparar coleta de feedback (não crítico): {e}"
+            )
 
     def route_by_phase(self, state: BSCState) -> Literal["onboarding", "discovery", "analyze_query"]:
         """
