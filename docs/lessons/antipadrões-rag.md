@@ -1,25 +1,25 @@
-# ❌ ANTIPADRÕES RAG - BSC Project
+# [ERRO] ANTIPADRÕES RAG - BSC Project
 
-**Data:** 2025-10-14  
-**Fonte:** Lições aprendidas Fase 2A (Query Decomposition, Adaptive Re-ranking, Router)  
+**Data:** 2025-10-14
+**Fonte:** Lições aprendidas Fase 2A (Query Decomposition, Adaptive Re-ranking, Router)
 **Objetivo:** Documentar armadilhas evitadas para acelerar Fase 2B e projetos futuros
 
 ---
 
-## 🎯 COMO USAR ESTE DOCUMENTO
+## [EMOJI] COMO USAR ESTE DOCUMENTO
 
 **Checklist antes de implementar qualquer técnica RAG:**
 
-1. ✅ Revisar seção relevante (Query Enhancement, Retrieval, Re-ranking, Testing)
-2. ✅ Verificar se antipadrão se aplica à técnica
-3. ✅ Implementar solução recomendada
-4. ✅ Validar que antipadrão foi evitado
+1. [OK] Revisar seção relevante (Query Enhancement, Retrieval, Re-ranking, Testing)
+2. [OK] Verificar se antipadrão se aplica à técnica
+3. [OK] Implementar solução recomendada
+4. [OK] Validar que antipadrão foi evitado
 
 **ROI:** Evitar 1 antipadrão = economia de 2-8h debugging/refactoring
 
 ---
 
-## 📋 ÍNDICE DE ANTIPADRÕES
+## [EMOJI] ÍNDICE DE ANTIPADRÕES
 
 1. [Query Enhancement](#1-query-enhancement)
 2. [Retrieval e Busca](#2-retrieval-e-busca)
@@ -34,23 +34,23 @@
 
 ## 1. QUERY ENHANCEMENT
 
-### ❌ ANTIPADRÃO 1.1: Usar GPT-4o para Tarefas Simples
+### [ERRO] ANTIPADRÃO 1.1: Usar GPT-4o para Tarefas Simples
 
 **Problema:**
 - Usar GPT-4o/GPT-5 para decomposição, classificação, extração
 
 **Por quê é ruim:**
-- ❌ **Custo 100x maior** ($0.01 vs $0.0001 GPT-4o-mini)
-- ❌ **Latência +40%** (~2s vs ~1.2s)
-- ❌ **Qualidade similar** (não justifica custo)
+- [ERRO] **Custo 100x maior** ($0.01 vs $0.0001 GPT-4o-mini)
+- [ERRO] **Latência +40%** (~2s vs ~1.2s)
+- [ERRO] **Qualidade similar** (não justifica custo)
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 decomposer = QueryDecomposer(llm="gpt-4o")  # Caro!
 
-# ✅ USAR
+# [OK] USAR
 decomposer = QueryDecomposer(llm="gpt-4o-mini")  # 100x mais barato
 
 # Reservar GPT-4o/GPT-5 para:
@@ -65,24 +65,24 @@ decomposer = QueryDecomposer(llm="gpt-4o-mini")  # 100x mais barato
 
 ---
 
-### ❌ ANTIPADRÃO 1.2: Regex Sem Word Boundaries
+### [ERRO] ANTIPADRÃO 1.2: Regex Sem Word Boundaries
 
 **Problema:**
 - Regex `"e" in query` detecta falsos positivos ("é", "presente", "mente")
 
 **Por quê é ruim:**
-- ❌ **-8% accuracy** em classificação
-- ❌ **Falsos positivos** abundantes
-- ❌ **Heurística não-confiável**
+- [ERRO] **-8% accuracy** em classificação
+- [ERRO] **Falsos positivos** abundantes
+- [ERRO] **Heurística não-confiável**
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 if "e" in query.lower():
     score += 1  # Detecta "é", "presente", "mente"!
 
-# ✅ USAR
+# [OK] USAR
 import re
 if re.search(r'\be\b', query.lower()):  # Word boundaries!
     score += 1  # Só detecta " e " isolado
@@ -94,7 +94,7 @@ if re.search(r'\be\b', query.lower()):  # Word boundaries!
 
 ---
 
-### ❌ ANTIPADRÃO 1.3: Sub-Queries Sem Contexto
+### [ERRO] ANTIPADRÃO 1.3: Sub-Queries Sem Contexto
 
 **Problema:**
 - Sub-queries isoladas perdem especificidade da query original
@@ -102,13 +102,13 @@ if re.search(r'\be\b', query.lower()):  # Word boundaries!
 **Exemplo:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 Query original: "Como implementar BSC em manufatura?"
 Sub-queries isoladas:
-- "Quais KPIs financeiros?" ← Perdeu "manufatura"!
-- "Como medir processos?" ← Perdeu "manufatura"!
+- "Quais KPIs financeiros?" <- Perdeu "manufatura"!
+- "Como medir processos?" <- Perdeu "manufatura"!
 
-# ✅ USAR
+# [OK] USAR
 Sub-queries contextualizadas:
 - "Quais KPIs financeiros em manufatura?"
 - "Como medir processos em manufatura?"
@@ -120,7 +120,7 @@ Sub-queries contextualizadas:
 
 ---
 
-### ❌ ANTIPADRÃO 1.4: Thresholds Altos Sem Validação
+### [ERRO] ANTIPADRÃO 1.4: Thresholds Altos Sem Validação
 
 **Problema:**
 - Definir thresholds arbitrariamente sem testar com dataset
@@ -128,19 +128,19 @@ Sub-queries contextualizadas:
 **Exemplo:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 DECOMPOSITION_SCORE_THRESHOLD=2  # Arbitrário!
 # Resultado: Coverage 40% (queries válidas não decompostas)
 
-# ✅ USAR
+# [OK] USAR
 DECOMPOSITION_SCORE_THRESHOLD=1  # Testado com dataset
 # Resultado: Coverage 100%
 ```
 
 **Regra:**
-- ✅ Começar com thresholds **BAIXOS** e aumentar se necessário
-- ✅ Validar coverage com dataset variado (50+ queries)
-- ✅ A/B testing com thresholds diferentes
+- [OK] Começar com thresholds **BAIXOS** e aumentar se necessário
+- [OK] Validar coverage com dataset variado (50+ queries)
+- [OK] A/B testing com thresholds diferentes
 
 **Fonte:** lesson-query-decomposition (O Que Não Funcionou #4)
 
@@ -148,24 +148,24 @@ DECOMPOSITION_SCORE_THRESHOLD=1  # Testado com dataset
 
 ## 2. RETRIEVAL E BUSCA
 
-### ❌ ANTIPADRÃO 2.1: Reimplementar Funcionalidades Existentes
+### [ERRO] ANTIPADRÃO 2.1: Reimplementar Funcionalidades Existentes
 
 **Problema:**
 - Implementar RRF do zero quando já existe
 
 **Por quê é ruim:**
-- ❌ **+1 dia desenvolvimento** desnecessário
-- ❌ **Bugs novos** (não validado)
-- ❌ **Duplicação de código**
+- [ERRO] **+1 dia desenvolvimento** desnecessário
+- [ERRO] **Bugs novos** (não validado)
+- [ERRO] **Duplicação de código**
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 def my_own_rrf(results_list):  # Reimplementar RRF
     # ... 100 linhas de código novo (não testado)
 
-# ✅ USAR
+# [OK] USAR
 from src.rag.retriever import BSCRetriever
 
 retriever = BSCRetriever()
@@ -178,20 +178,20 @@ fused = retriever.reciprocal_rank_fusion(results_list)  # Reutilizar!
 
 ---
 
-### ❌ ANTIPADRÃO 2.2: Retrieval Sem Metadados
+### [ERRO] ANTIPADRÃO 2.2: Retrieval Sem Metadados
 
 **Problema:**
 - Não usar metadados (title, authors, year, perspectives) para ground truth e filtros
 
 **Por quê é ruim:**
-- ❌ **Métricas não-validáveis** (Recall/Precision 0%)
-- ❌ **Filtros avançados impossíveis**
-- ❌ **UI pobre** (filenames longos vs títulos)
+- [ERRO] **Métricas não-validáveis** (Recall/Precision 0%)
+- [ERRO] **Filtros avançados impossíveis**
+- [ERRO] **UI pobre** (filenames longos vs títulos)
 
 **Solução:**
 
 ```python
-# ✅ IMPLEMENTAR
+# [OK] IMPLEMENTAR
 # 1. Criar index.json com metadados
 # 2. Auto-geração com LLM para docs novos
 # 3. document_title SEMPRE presente
@@ -199,9 +199,9 @@ fused = retriever.reciprocal_rank_fusion(results_list)  # Reutilizar!
 ```
 
 **Benefícios:**
-- ✅ Ground truth validável
-- ✅ Filtros por autor/ano/tipo/perspectiva
-- ✅ UI profissional
+- [OK] Ground truth validável
+- [OK] Filtros por autor/ano/tipo/perspectiva
+- [OK] UI profissional
 
 **Fonte:** Seção "MELHORIAS DE INFRAESTRUTURA" do plano
 
@@ -209,23 +209,23 @@ fused = retriever.reciprocal_rank_fusion(results_list)  # Reutilizar!
 
 ## 3. RE-RANKING E DIVERSIDADE
 
-### ❌ ANTIPADRÃO 3.1: Embeddings Não-Normalizados
+### [ERRO] ANTIPADRÃO 3.1: Embeddings Não-Normalizados
 
 **Problema:**
 - Usar embeddings raw em MMR ou similaridade cosseno
 
 **Por quê é ruim:**
-- ❌ **Erros numéricos** (underflow, overflow)
-- ❌ **Similaridade incorreta** (valores fora de 0-1)
-- ❌ **MMR instável**
+- [ERRO] **Erros numéricos** (underflow, overflow)
+- [ERRO] **Similaridade incorreta** (valores fora de 0-1)
+- [ERRO] **MMR instável**
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 similarity = cosine_similarity(emb1, emb2)  # Embeddings raw
 
-# ✅ USAR
+# [OK] USAR
 emb1_norm = emb1 / np.linalg.norm(emb1)  # Normalizar!
 emb2_norm = emb2 / np.linalg.norm(emb2)
 similarity = cosine_similarity(emb1_norm, emb2_norm)
@@ -241,23 +241,23 @@ similarity = cosine_similarity([emb1], [emb2])[0][0]
 
 ---
 
-### ❌ ANTIPADRÃO 3.2: Float Comparisons com `==`
+### [ERRO] ANTIPADRÃO 3.2: Float Comparisons com `==`
 
 **Problema:**
 - Usar `assert similarity == 0.96` em testes
 
 **Por quê é ruim:**
-- ❌ **Falhas spurias** (0.9599999... ≠ 0.96)
-- ❌ **Testes não-determinísticos**
-- ❌ **Debugging frustrante**
+- [ERRO] **Falhas spurias** (0.9599999... ≠ 0.96)
+- [ERRO] **Testes não-determinísticos**
+- [ERRO] **Debugging frustrante**
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 assert similarity == 0.96  # Vai falhar!
 
-# ✅ USAR
+# [OK] USAR
 import numpy as np
 assert np.allclose(similarity, 0.96, atol=1e-6)
 
@@ -274,20 +274,20 @@ assert similarity == approx(0.96, abs=1e-6)
 
 ## 4. METADADOS E GROUND TRUTH
 
-### ❌ ANTIPADRÃO 4.1: Ground Truth Sem document_title
+### [ERRO] ANTIPADRÃO 4.1: Ground Truth Sem document_title
 
 **Problema:**
 - Criar benchmark sem campo rastreável (source, title, doc_id)
 
 **Por quê é ruim:**
-- ❌ **Recall@10 não-validável** (impossível saber se doc correto foi recuperado)
-- ❌ **Precision@5 não-validável**
-- ❌ **Benchmark inútil** (métricas 0%)
+- [ERRO] **Recall@10 não-validável** (impossível saber se doc correto foi recuperado)
+- [ERRO] **Precision@5 não-validável**
+- [ERRO] **Benchmark inútil** (métricas 0%)
 
 **Solução:**
 
 ```python
-# ✅ IMPLEMENTAR ANTES de benchmarks
+# [OK] IMPLEMENTAR ANTES de benchmarks
 # 1. Adicionar document_title ao Qdrant payload
 # 2. Ground truth usa document_title para match
 # 3. Validação objetiva funciona
@@ -308,20 +308,20 @@ assert similarity == approx(0.96, abs=1e-6)
 
 ---
 
-### ❌ ANTIPADRÃO 4.2: Metadados Manuais Apenas
+### [ERRO] ANTIPADRÃO 4.2: Metadados Manuais Apenas
 
 **Problema:**
 - Exigir edição manual de index.json para cada documento novo
 
 **Por quê é ruim:**
-- ❌ **5-10 min manutenção** por documento
-- ❌ **Erro humano** (esquecimento, typos)
-- ❌ **Barreira de entrada** (usuário não técnico não consegue)
+- [ERRO] **5-10 min manutenção** por documento
+- [ERRO] **Erro humano** (esquecimento, typos)
+- [ERRO] **Barreira de entrada** (usuário não técnico não consegue)
 
 **Solução:**
 
 ```python
-# ✅ IMPLEMENTAR auto-geração
+# [OK] IMPLEMENTAR auto-geração
 # 1. GPT-4o-mini extrai metadados automaticamente
 # 2. Salva em index.json (cache)
 # 3. Zero manutenção manual
@@ -338,31 +338,31 @@ assert similarity == approx(0.96, abs=1e-6)
 
 ## 5. TESTING E VALIDAÇÃO
 
-### ❌ ANTIPADRÃO 5.1: Testes Depois da Implementação
+### [ERRO] ANTIPADRÃO 5.1: Testes Depois da Implementação
 
 **Problema:**
 - Implementar funcionalidade completa, DEPOIS criar testes
 
 **Por quê é ruim:**
-- ❌ **Coverage baixa** (60-80% típico vs 100% TDD)
-- ❌ **Bugs descobertos tarde** (produção vs desenvolvimento)
-- ❌ **Design pobre** (código difícil de testar)
+- [ERRO] **Coverage baixa** (60-80% típico vs 100% TDD)
+- [ERRO] **Bugs descobertos tarde** (produção vs desenvolvimento)
+- [ERRO] **Design pobre** (código difícil de testar)
 
 **Solução:**
 
 ```python
-# ✅ TEST-DRIVEN DEVELOPMENT
+# [OK] TEST-DRIVEN DEVELOPMENT
 
 # 1. Escrever teste PRIMEIRO
 def test_calculate_similarity():
     vec1 = np.array([1.0, 0.0])
     vec2 = np.array([1.0, 0.0])
-    
+
     similarity = reranker._calculate_similarity(vec1, vec2)
-    
+
     assert np.allclose(similarity, 1.0)
 
-# 2. Implementar função (teste falha → implementa → teste passa)
+# 2. Implementar função (teste falha -> implementa -> teste passa)
 def _calculate_similarity(self, vec1, vec2):
     from sklearn.metrics.pairwise import cosine_similarity
     return cosine_similarity([vec1], [vec2])[0][0]
@@ -371,9 +371,9 @@ def _calculate_similarity(self, vec1, vec2):
 ```
 
 **Benefícios:**
-- ✅ **Coverage 90-100%** (vs 60-80% típico)
-- ✅ **Zero bugs** em produção (tudo validado)
-- ✅ **Design modular** (código testável)
+- [OK] **Coverage 90-100%** (vs 60-80% típico)
+- [OK] **Zero bugs** em produção (tudo validado)
+- [OK] **Design modular** (código testável)
 
 **ROI:** +4-6h economizadas (debugging evitado)
 
@@ -381,21 +381,21 @@ def _calculate_similarity(self, vec1, vec2):
 
 ---
 
-### ❌ ANTIPADRÃO 5.2: Testes Sem Mocking de APIs
+### [ERRO] ANTIPADRÃO 5.2: Testes Sem Mocking de APIs
 
 **Problema:**
 - Chamar Cohere API, OpenAI API, Qdrant real em testes
 
 **Por quê é ruim:**
-- ❌ **Testes lentos** (500ms-1s por API call)
-- ❌ **Custo $$$** (38 testes = $0.38 se usar API real)
-- ❌ **Dependência externa** (falha se API offline)
-- ❌ **Não-reprodutível** (resultados variam)
+- [ERRO] **Testes lentos** (500ms-1s por API call)
+- [ERRO] **Custo $$$** (38 testes = $0.38 se usar API real)
+- [ERRO] **Dependência externa** (falha se API offline)
+- [ERRO] **Não-reprodutível** (resultados variam)
 
 **Solução:**
 
 ```python
-# ✅ MOCKAR APIs externas
+# [OK] MOCKAR APIs externas
 
 from unittest.mock import Mock, patch
 
@@ -406,27 +406,27 @@ def test_rerank(mock_cohere_client):
     mock_response = Mock()
     mock_response.results = [Mock(index=0, relevance_score=0.95)]
     mock_client.rerank.return_value = mock_response
-    
+
     # Teste rápido! (~0.1s vs ~1s real)
     reranker = CohereReranker()
     results = reranker.rerank(query, docs)
-    
+
     assert len(results) > 0
 ```
 
 **Benefícios:**
-- ✅ **Testes 2-10x mais rápidos**
-- ✅ **Custo $0** (sem API calls)
-- ✅ **Reprodutível** (sempre mesmo resultado)
+- [OK] **Testes 2-10x mais rápidos**
+- [OK] **Custo $0** (sem API calls)
+- [OK] **Reprodutível** (sempre mesmo resultado)
 
 **Fonte:** lesson-adaptive-reranking (Aprendizado #4)
 
 ---
 
-### ❌ ANTIPADRÃO 5.3: Assumir Código Quebrado Antes de Verificar Testes
+### [ERRO] ANTIPADRÃO 5.3: Assumir Código Quebrado Antes de Verificar Testes
 
 **Problema:**
-- "Heurística não funciona!" → modificar código → ainda quebrado → debugging profundo
+- "Heurística não funciona!" -> modificar código -> ainda quebrado -> debugging profundo
 
 **Exemplo Real:**
 - should_decompose() reportava 0% accuracy
@@ -435,7 +435,7 @@ def test_rerank(mock_cohere_client):
 **Solução:**
 
 ```python
-# ✅ WORKFLOW CORRETO
+# [OK] WORKFLOW CORRETO
 
 # 1. Teste falha
 assert heuristic_accuracy == 100%  # Resultado: 0%
@@ -453,9 +453,9 @@ if should_decompose_decision:  # Correto!
 ```
 
 **Lição:**
-- ✅ **Sempre verificar testes PRIMEIRO** antes de modificar código
-- ✅ **Criar scripts de diagnóstico** (diagnose_heuristics.py)
-- ✅ **Type hints estritos** evitam bugs (tupla vs bool)
+- [OK] **Sempre verificar testes PRIMEIRO** antes de modificar código
+- [OK] **Criar scripts de diagnóstico** (diagnose_heuristics.py)
+- [OK] **Type hints estritos** evitam bugs (tupla vs bool)
 
 **Economia:** 2h de debugging evitadas
 
@@ -465,25 +465,25 @@ if should_decompose_decision:  # Correto!
 
 ## 6. PERFORMANCE E CUSTOS
 
-### ❌ ANTIPADRÃO 6.1: Retrieval Sequencial para Múltiplas Queries
+### [ERRO] ANTIPADRÃO 6.1: Retrieval Sequencial para Múltiplas Queries
 
 **Problema:**
 - Executar 4 sub-queries sequencialmente
 
 **Por quê é ruim:**
-- ❌ **Latência 4x maior** (4 × 3s = 12s vs 3-4s paralelo)
-- ❌ **Não aproveita concorrência**
+- [ERRO] **Latência 4x maior** (4 × 3s = 12s vs 3-4s paralelo)
+- [ERRO] **Não aproveita concorrência**
 
 **Solução:**
 
 ```python
-# ❌ EVITAR
+# [ERRO] EVITAR
 sub_results = []
 for sq in sub_queries:
     results = retriever.retrieve(sq)  # Sequencial!
     sub_results.append(results)
 
-# ✅ USAR
+# [OK] USAR
 sub_results = await asyncio.gather(*[
     retriever.retrieve_async(sq) for sq in sub_queries
 ])  # Paralelo!
@@ -495,28 +495,28 @@ sub_results = await asyncio.gather(*[
 
 ---
 
-### ❌ ANTIPADRÃO 6.2: LLM para Classificação Sempre
+### [ERRO] ANTIPADRÃO 6.2: LLM para Classificação Sempre
 
 **Problema:**
 - Usar LLM para classificar TODAS queries (não apenas ambíguas)
 
 **Por quê é ruim:**
-- ❌ **Custo:** $0.0001 × 1000 queries = $0.10/dia = **$3/mês desnecessários**
-- ❌ **Latência:** ~500ms todas queries vs ~50ms heurísticas
+- [ERRO] **Custo:** $0.0001 × 1000 queries = $0.10/dia = **$3/mês desnecessários**
+- [ERRO] **Latência:** ~500ms todas queries vs ~50ms heurísticas
 
 **Solução:**
 
 ```python
-# ✅ HÍBRIDO: Heurísticas (80%) + LLM Fallback (20%)
+# [OK] HÍBRIDO: Heurísticas (80%) + LLM Fallback (20%)
 
 def classify(self, query):
     # Tentar heurísticas PRIMEIRO
     category, confidence = self._heuristic_classify(query)
-    
+
     # SE confiança baixa (<0.8), usar LLM
     if confidence < 0.8:
         return self._llm_classify(query)  # 20% casos
-    
+
     return category  # 80% casos
 ```
 
@@ -528,32 +528,32 @@ def classify(self, query):
 
 ## 7. ARQUITETURA E INTEGRAÇÃO
 
-### ❌ ANTIPADRÃO 7.1: Integração Invasiva (Modificar MVP)
+### [ERRO] ANTIPADRÃO 7.1: Integração Invasiva (Modificar MVP)
 
 **Problema:**
 - Modificar métodos existentes do MVP para adicionar feature nova
 
 **Por quê é ruim:**
-- ❌ **Alto risco** de quebrar funcionalidade validada
-- ❌ **Rollback difícil** (código entrelaçado)
-- ❌ **Testing complexo** (não sabe se bug é MVP ou feature nova)
+- [ERRO] **Alto risco** de quebrar funcionalidade validada
+- [ERRO] **Rollback difícil** (código entrelaçado)
+- [ERRO] **Testing complexo** (não sabe se bug é MVP ou feature nova)
 
 **Solução:**
 
 ```python
-# ❌ EVITAR - Modificar método existente
+# [ERRO] EVITAR - Modificar método existente
 class Orchestrator:
     def invoke(self, state):  # Método MVP
-        # MODIFICAR código MVP aqui ← RISCO!
+        # MODIFICAR código MVP aqui <- RISCO!
         routing = self.router.route(...)  # Novo código misturado
         ...
 
-# ✅ USAR - Adicionar novo método
+# [OK] USAR - Adicionar novo método
 class Orchestrator:
     def invoke(self, state):  # Método MVP INTOCADO
         # MVP code inalterado
         ...
-    
+
     def get_retrieval_strategy_metadata(self):  # NOVO método
         # Feature nova isolada
         if self.router:
@@ -562,29 +562,29 @@ class Orchestrator:
 ```
 
 **Benefícios:**
-- ✅ **MVP preservado** 100%
-- ✅ **Rollback fácil** (desabilitar flag)
-- ✅ **Zero risco** de quebrar MVP
-- ✅ **Testing isolado**
+- [OK] **MVP preservado** 100%
+- [OK] **Rollback fácil** (desabilitar flag)
+- [OK] **Zero risco** de quebrar MVP
+- [OK] **Testing isolado**
 
 **Fonte:** lesson-router (O Que Funcionou #3)
 
 ---
 
-### ❌ ANTIPADRÃO 7.2: Feature Sem Feature Flag
+### [ERRO] ANTIPADRÃO 7.2: Feature Sem Feature Flag
 
 **Problema:**
 - Implementar feature nova sem toggle de habilitação/desabilitação
 
 **Por quê é ruim:**
-- ❌ **Rollback requer redeploy** (não pode desabilitar em produção)
-- ❌ **A/B testing impossível**
-- ❌ **Gradual rollout impossível** (0% ou 100%, não 10%→50%→100%)
+- [ERRO] **Rollback requer redeploy** (não pode desabilitar em produção)
+- [ERRO] **A/B testing impossível**
+- [ERRO] **Gradual rollout impossível** (0% ou 100%, não 10%->50%->100%)
 
 **Solução:**
 
 ```python
-# ✅ SEMPRE implementar feature flag
+# [OK] SEMPRE implementar feature flag
 
 # config/settings.py
 enable_query_router: bool = True
@@ -600,10 +600,10 @@ else:
 ```
 
 **Benefícios:**
-- ✅ Rollback instantâneo (mudar .env)
-- ✅ A/B testing (50% users com flag True)
-- ✅ Gradual rollout (10% → 100%)
-- ✅ Debugging (comparar com/sem feature)
+- [OK] Rollback instantâneo (mudar .env)
+- [OK] A/B testing (50% users com flag True)
+- [OK] Gradual rollout (10% -> 100%)
+- [OK] Debugging (comparar com/sem feature)
 
 **Fonte:** lesson-router (O Que Funcionou #4)
 
@@ -611,7 +611,7 @@ else:
 
 ## 8. LLMs E APIS
 
-### ❌ ANTIPADRÃO 8.1: AsyncIO Event Loop Duplo
+### [ERRO] ANTIPADRÃO 8.1: AsyncIO Event Loop Duplo
 
 **Problema:**
 - `asyncio.run()` dentro de event loop ativo (pytest-asyncio, Jupyter)
@@ -624,7 +624,7 @@ RuntimeError: asyncio.run() cannot be called from a running event loop
 **Solução:**
 
 ```python
-# ✅ DETECTAR loop e usar ThreadPoolExecutor
+# [OK] DETECTAR loop e usar ThreadPoolExecutor
 
 import asyncio
 import concurrent.futures
@@ -642,28 +642,28 @@ def execute_async_safely(coro):
 ```
 
 **Aplicação:**
-- ✅ DecompositionStrategy (resolvido)
-- ✅ Self-RAG (iterações assíncronas)
-- ✅ CRAG (re-retrieval assíncrono)
+- [OK] DecompositionStrategy (resolvido)
+- [OK] Self-RAG (iterações assíncronas)
+- [OK] CRAG (re-retrieval assíncrono)
 
 **Fonte:** lesson-router (O Que Funcionou #2, O Que Não Funcionou #2)
 
 ---
 
-### ❌ ANTIPADRÃO 8.2: Timeout Sem Fallback
+### [ERRO] ANTIPADRÃO 8.2: Timeout Sem Fallback
 
 **Problema:**
 - LLM call sem timeout ou sem fallback se timeout
 
 **Por quê é ruim:**
-- ❌ **Query travada** (aguarda forever)
-- ❌ **UX ruim** (loading infinito)
-- ❌ **Sistema quebrado** por 1 LLM lento
+- [ERRO] **Query travada** (aguarda forever)
+- [ERRO] **UX ruim** (loading infinito)
+- [ERRO] **Sistema quebrado** por 1 LLM lento
 
 **Solução:**
 
 ```python
-# ✅ TIMEOUT + FALLBACK
+# [OK] TIMEOUT + FALLBACK
 
 try:
     response = client.chat.completions.create(
@@ -678,9 +678,9 @@ except TimeoutError:
 ```
 
 **Regra:**
-- ✅ **Sempre timeout** em LLM calls (10-30s típico)
-- ✅ **Sempre fallback** (dict vazio, default, MVP)
-- ✅ **Graceful degradation** (sistema continua funcionando)
+- [OK] **Sempre timeout** em LLM calls (10-30s típico)
+- [OK] **Sempre fallback** (dict vazio, default, MVP)
+- [OK] **Graceful degradation** (sistema continua funcionando)
 
 **Fonte:** Auto-geração metadados (Error Handling)
 
@@ -688,57 +688,57 @@ except TimeoutError:
 
 ## 9. DOCUMENTAÇÃO E ORGANIZAÇÃO
 
-### ❌ ANTIPADRÃO 9.1: Documentar Tudo no Final
+### [ERRO] ANTIPADRÃO 9.1: Documentar Tudo no Final
 
 **Problema:**
-- Implementar 3 técnicas → Documentar tudo de uma vez
+- Implementar 3 técnicas -> Documentar tudo de uma vez
 
 **Por quê é ruim:**
-- ❌ **Esquece detalhes** (implementou há 2 semanas)
-- ❌ **Docs incompletas** (decisões arquiteturais perdidas)
-- ❌ **Bloqueio de tempo** (8h contínuas de docs)
+- [ERRO] **Esquece detalhes** (implementou há 2 semanas)
+- [ERRO] **Docs incompletas** (decisões arquiteturais perdidas)
+- [ERRO] **Bloqueio de tempo** (8h contínuas de docs)
 
 **Solução:**
 
 ```
-# ✅ DOCUMENTAÇÃO PARALELA
+# [OK] DOCUMENTAÇÃO PARALELA
 
 Implementação Router:
 ├─ Hora 1-2: Código core
-├─ Hora 2.5: Docs parciais (arquitetura, como funciona)  ← Paralelo!
+├─ Hora 2.5: Docs parciais (arquitetura, como funciona)  <- Paralelo!
 ├─ Hora 3-4: Strategies
-├─ Hora 4.5: Atualizar docs (strategies, exemplos)  ← Paralelo!
+├─ Hora 4.5: Atualizar docs (strategies, exemplos)  <- Paralelo!
 ├─ Hora 5-6: Testes + integration
-└─ Hora 6: Finalizar docs  ← Quick!
+└─ Hora 6: Finalizar docs  <- Quick!
 ```
 
 **Benefícios:**
-- ✅ **Código fresco** (fácil documentar)
-- ✅ **Docs precisas** (não esquece decisões)
-- ✅ **Economia -0.5 dias** vs doc big bang
+- [OK] **Código fresco** (fácil documentar)
+- [OK] **Docs precisas** (não esquece decisões)
+- [OK] **Economia -0.5 dias** vs doc big bang
 
 **Fonte:** lesson-router (O Que Funcionou #5)
 
 ---
 
-### ❌ ANTIPADRÃO 9.2: Sem Índice de Documentação
+### [ERRO] ANTIPADRÃO 9.2: Sem Índice de Documentação
 
 **Problema:**
 - 30+ documentos sem índice navegável
 
 **Por quê é ruim:**
-- ❌ **Busca lenta** (Ctrl+F em múltiplos arquivos)
-- ❌ **Descoberta difícil** ("onde está doc sobre X?")
-- ❌ **Duplicação** (não sabe que doc já existe)
+- [ERRO] **Busca lenta** (Ctrl+F em múltiplos arquivos)
+- [ERRO] **Descoberta difícil** ("onde está doc sobre X?")
+- [ERRO] **Duplicação** (não sabe que doc já existe)
 
 **Solução:**
 
 ```markdown
-# ✅ CRIAR DOCS_INDEX.md (TIER 3)
+# [OK] CRIAR DOCS_INDEX.md (TIER 3)
 
 - Tags A-Z (retrieval, reranking, agents, etc)
 - Docs por categoria (Techniques, Patterns, History)
-- Quick Search Matrix ("Preciso de X" → "Consulte Y")
+- Quick Search Matrix ("Preciso de X" -> "Consulte Y")
 ```
 
 **ROI:** 3-8 min economizados por busca × 15-25 buscas = **45-200 min**
@@ -749,25 +749,25 @@ Implementação Router:
 
 ## 10. PADRÕES GERAIS RAG
 
-### ❌ ANTIPADRÃO 10.1: Over-Engineering (Implementar Tudo)
+### [ERRO] ANTIPADRÃO 10.1: Over-Engineering (Implementar Tudo)
 
 **Problema:**
 - Implementar Graph RAG, Multi-modal RAG, HyDE sem validar necessidade
 
 **Por quê é ruim:**
-- ❌ **Weeks de trabalho** sem benefício
-- ❌ **Complexidade** sem ROI
-- ❌ **Manutenção** de código não-usado
+- [ERRO] **Weeks de trabalho** sem benefício
+- [ERRO] **Complexidade** sem ROI
+- [ERRO] **Manutenção** de código não-usado
 
 **Solução:**
 
 ```
-# ✅ DECISÃO DATA-DRIVEN
+# [OK] DECISÃO DATA-DRIVEN
 
 1. Benchmark baseline
 2. Identificar gap (recall <70%? hallucination >10%?)
-3. SE gap existe → implementar técnica específica
-4. SE não existe → SKIP (não implementar)
+3. SE gap existe -> implementar técnica específica
+4. SE não existe -> SKIP (não implementar)
 ```
 
 **Exemplo Validado:**
@@ -779,22 +779,22 @@ Implementação Router:
 
 ---
 
-### ❌ ANTIPADRÃO 10.2: Todas Queries Usam Mesma Estratégia
+### [ERRO] ANTIPADRÃO 10.2: Todas Queries Usam Mesma Estratégia
 
 **Problema:**
 - Query simples "O que é BSC?" usa workflow completo (4 agents + synthesis + judge)
 
 **Por quê é ruim:**
-- ❌ **Latência desnecessária** (70s vs <5s ideal)
-- ❌ **Custo desnecessário** ($0.05 vs $0.000015)
-- ❌ **UX ruim** (usuário espera 70s para resposta trivial)
+- [ERRO] **Latência desnecessária** (70s vs <5s ideal)
+- [ERRO] **Custo desnecessário** ($0.05 vs $0.000015)
+- [ERRO] **UX ruim** (usuário espera 70s para resposta trivial)
 
 **Solução:**
 
 ```python
-# ✅ QUERY ROUTER (TECH-003)
+# [OK] QUERY ROUTER (TECH-003)
 
-# Classify query → Choose optimal strategy
+# Classify query -> Choose optimal strategy
 if query_category == SIMPLE_FACTUAL:
     return DirectAnswerStrategy()  # <5s, cache
 elif query_category == COMPLEX_MULTI_PART:
@@ -804,15 +804,15 @@ else:
 ```
 
 **Benefícios:**
-- ✅ **-85% latência** queries simples (70s → 5s)
-- ✅ **-99.7% custo** queries simples ($0.05 → $0.000015)
-- ✅ **UX melhorado** (respostas rápidas para queries simples)
+- [OK] **-85% latência** queries simples (70s -> 5s)
+- [OK] **-99.7% custo** queries simples ($0.05 -> $0.000015)
+- [OK] **UX melhorado** (respostas rápidas para queries simples)
 
 **Fonte:** lesson-router (Descoberta Extraordinária)
 
 ---
 
-## 📊 RESUMO - ANTIPADRÕES EVITADOS
+## [EMOJI] RESUMO - ANTIPADRÕES EVITADOS
 
 ### Fase 2A Completa (3 Técnicas)
 
@@ -821,7 +821,7 @@ else:
 | **GPT-4o para tarefas simples** | $3/mês | Query Decomp |
 | **Regex sem word boundaries** | +8% accuracy | Query Decomp + Router |
 | **Sub-queries sem contexto** | +15% precision | Query Decomp |
-| **Thresholds altos** | Coverage 40% → 100% | Query Decomp |
+| **Thresholds altos** | Coverage 40% -> 100% | Query Decomp |
 | **Reimplementar RRF** | -8h (1 dia) | Query Decomp |
 | **Testes depois** | +4-6h (bugs evitados) | Adaptive Re-rank |
 | **Embeddings não-normalizados** | Estabilidade numérica | Adaptive Re-rank |
@@ -836,24 +836,24 @@ else:
 
 ---
 
-## 🎓 TOP 10 REGRAS DE OURO RAG
+## [EMOJI] TOP 10 REGRAS DE OURO RAG
 
 **Checklist antes de implementar qualquer técnica:**
 
-1. ✅ **Heurísticas PRIMEIRO, LLM fallback** (80% accuracy, custo $0)
-2. ✅ **Reutilizar componentes** agressivamente (70% reuso = -5 dias)
-3. ✅ **Test-Driven Development** (testes durante, não depois)
-4. ✅ **Mockar APIs externas** em testes (2-10x mais rápido)
-5. ✅ **Word boundaries em regex** (`\b` sempre)
-6. ✅ **AsyncIO paralelo** quando possível (3-4x speedup)
-7. ✅ **Feature flags** em todas features (rollback fácil)
-8. ✅ **Integração não-invasiva** (preservar MVP)
-9. ✅ **Documentação paralela** (durante implementação)
-10. ✅ **Decisão data-driven** (benchmark → implementar SE necessário)
+1. [OK] **Heurísticas PRIMEIRO, LLM fallback** (80% accuracy, custo $0)
+2. [OK] **Reutilizar componentes** agressivamente (70% reuso = -5 dias)
+3. [OK] **Test-Driven Development** (testes durante, não depois)
+4. [OK] **Mockar APIs externas** em testes (2-10x mais rápido)
+5. [OK] **Word boundaries em regex** (`\b` sempre)
+6. [OK] **AsyncIO paralelo** quando possível (3-4x speedup)
+7. [OK] **Feature flags** em todas features (rollback fácil)
+8. [OK] **Integração não-invasiva** (preservar MVP)
+9. [OK] **Documentação paralela** (durante implementação)
+10. [OK] **Decisão data-driven** (benchmark -> implementar SE necessário)
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Lições Aprendidas
 
@@ -879,13 +879,13 @@ else:
 
 ---
 
-## 📝 PRÓXIMOS PASSOS
+## [EMOJI] PRÓXIMOS PASSOS
 
 ### Usar em Fase 2B:
 
-1. ✅ Revisar este doc ANTES de implementar Self-RAG
-2. ✅ Checklist de antipadrões antes de merge
-3. ✅ Adicionar novos antipadrões descobertos (documento vivo)
+1. [OK] Revisar este doc ANTES de implementar Self-RAG
+2. [OK] Checklist de antipadrões antes de merge
+3. [OK] Adicionar novos antipadrões descobertos (documento vivo)
 
 ### Adicionar Futuramente:
 
@@ -895,8 +895,6 @@ else:
 
 ---
 
-**Criado:** 2025-10-14  
-**Autor:** Claude Sonnet 4.5 (via Cursor)  
+**Criado:** 2025-10-14
+**Autor:** Claude Sonnet 4.5 (via Cursor)
 **Tipo:** Documento Vivo (atualizar com novas descobertas)
-
-

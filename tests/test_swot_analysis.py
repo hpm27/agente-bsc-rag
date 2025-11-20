@@ -14,20 +14,19 @@ Coverage target: 90%+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
-from pydantic import ValidationError
 
-from src.tools.swot_analysis import SWOTAnalysisTool
 from src.memory.schemas import (
-    SWOTAnalysis,
     CompanyInfo,
     StrategicContext,
+    SWOTAnalysis,
 )
+from src.tools.swot_analysis import SWOTAnalysisTool
 
 if TYPE_CHECKING:
-    from langchain_core.language_models import BaseLLM
+    pass
 
 
 # ============================================================================
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
 def mock_llm() -> MagicMock:
     """Mock LLM que retorna SWOT estruturado válido."""
     llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
+
     # Simula structured output que retorna SWOTAnalysis direto
     mock_structured_llm = MagicMock()
     mock_structured_llm.invoke.return_value = SWOTAnalysis(
@@ -47,28 +46,28 @@ def mock_llm() -> MagicMock:
             "Equipe técnica altamente qualificada",
             "Marca consolidada no mercado",
             "Portfólio diversificado de produtos",
-            "Cultura organizacional forte"
+            "Cultura organizacional forte",
         ],
         weaknesses=[
             "Processos operacionais manuais",
             "Falta de ferramentas de BI",
             "Dependência de poucos clientes",
-            "Turnover elevado em áreas operacionais"
+            "Turnover elevado em áreas operacionais",
         ],
         opportunities=[
             "Expansão para mercado digital",
             "Demanda por transformação digital",
             "Parcerias estratégicas com players",
-            "Adoção de IA como diferencial"
+            "Adoção de IA como diferencial",
         ],
         threats=[
             "Concorrência internacional",
             "Obsolescência tecnológica",
             "Instabilidade econômica brasileira",
-            "Regulamentações LGPD aumentam compliance"
-        ]
+            "Regulamentações LGPD aumentam compliance",
+        ],
     )
-    
+
     llm.with_structured_output.return_value = mock_structured_llm
     return llm
 
@@ -120,7 +119,7 @@ def company_info() -> CompanyInfo:
         name="TechInova Solutions",
         sector="Tecnologia",
         size="média",
-        industry="Desenvolvimento de Software B2B"
+        industry="Desenvolvimento de Software B2B",
     )
 
 
@@ -134,13 +133,13 @@ def strategic_context() -> StrategicContext:
         strategic_objectives=[
             "Aumentar receita recorrente (ARR) em 40% em 2025",
             "Reduzir churn para <5% ao ano",
-            "Lançar 3 novos produtos no portfólio"
+            "Lançar 3 novos produtos no portfólio",
         ],
         current_challenges=[
             "Competir com grandes players internacionais",
             "Escalar operações mantendo qualidade",
-            "Reduzir churn de clientes"
-        ]
+            "Reduzir churn de clientes",
+        ],
     )
 
 
@@ -154,7 +153,7 @@ def test_swot_tool_creation(
     mock_financial_agent: MagicMock,
     mock_customer_agent: MagicMock,
     mock_process_agent: MagicMock,
-    mock_learning_agent: MagicMock
+    mock_learning_agent: MagicMock,
 ):
     """Testa criação básica da SWOTAnalysisTool."""
     tool = SWOTAnalysisTool(
@@ -162,9 +161,9 @@ def test_swot_tool_creation(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     assert tool is not None
     assert tool.llm == mock_llm
     assert tool.financial_agent == mock_financial_agent
@@ -185,7 +184,7 @@ def test_facilitate_swot_without_rag(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Testa facilitação SWOT básica sem RAG (apenas LLM)."""
     tool = SWOTAnalysisTool(
@@ -193,18 +192,16 @@ def test_facilitate_swot_without_rag(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     result = tool.facilitate_swot(
-        company_info=company_info,
-        strategic_context=strategic_context,
-        use_rag=False
+        company_info=company_info, strategic_context=strategic_context, use_rag=False
     )
-    
+
     # Valida tipo de retorno
     assert isinstance(result, SWOTAnalysis)
-    
+
     # Valida completude (mock retorna 4 itens por quadrante)
     assert result.is_complete()
     assert len(result.strengths) >= 2
@@ -220,7 +217,7 @@ def test_facilitate_swot_quality_score(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Testa quality_score do SWOT facilitado."""
     tool = SWOTAnalysisTool(
@@ -228,15 +225,13 @@ def test_facilitate_swot_quality_score(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     result = tool.facilitate_swot(
-        company_info=company_info,
-        strategic_context=strategic_context,
-        use_rag=False
+        company_info=company_info, strategic_context=strategic_context, use_rag=False
     )
-    
+
     # Quality score deve ser alto (mock retorna 4 itens/quadrante)
     score = result.quality_score()
     assert 0.0 <= score <= 1.0
@@ -250,7 +245,7 @@ def test_facilitate_swot_summary(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Testa método summary() do SWOT facilitado."""
     tool = SWOTAnalysisTool(
@@ -258,17 +253,15 @@ def test_facilitate_swot_summary(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     result = tool.facilitate_swot(
-        company_info=company_info,
-        strategic_context=strategic_context,
-        use_rag=False
+        company_info=company_info, strategic_context=strategic_context, use_rag=False
     )
-    
+
     summary = result.summary()
-    
+
     # Valida formato do summary (aceita formato "Strengths (Forças):")
     assert "Strengths" in summary and "Forças" in summary
     assert "Weaknesses" in summary and "Fraquezas" in summary
@@ -288,7 +281,7 @@ def test_facilitate_swot_with_rag(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Testa facilitação SWOT com RAG (specialist agents)."""
     tool = SWOTAnalysisTool(
@@ -296,21 +289,19 @@ def test_facilitate_swot_with_rag(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     result = tool.facilitate_swot(
-        company_info=company_info,
-        strategic_context=strategic_context,
-        use_rag=True
+        company_info=company_info, strategic_context=strategic_context, use_rag=True
     )
-    
+
     # Valida que specialist agents foram chamados
     assert mock_financial_agent.invoke.called
     assert mock_customer_agent.invoke.called
     assert mock_process_agent.invoke.called
     assert mock_learning_agent.invoke.called
-    
+
     # Valida resultado completo
     assert isinstance(result, SWOTAnalysis)
     assert result.is_complete()
@@ -328,28 +319,26 @@ def test_facilitate_swot_llm_failure_raises_error(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Testa que falha do LLM lança ValueError com mensagem clara."""
     # Configura LLM structured para falhar
     mock_structured = MagicMock()
     mock_structured.invoke.side_effect = Exception("LLM API timeout")
     mock_llm.with_structured_output.return_value = mock_structured
-    
+
     tool = SWOTAnalysisTool(
         llm=mock_llm,
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     # Deve lançar ValueError com mensagem clara
     with pytest.raises(ValueError, match="Falha ao facilitar SWOT"):
         tool.facilitate_swot(
-            company_info=company_info,
-            strategic_context=strategic_context,
-            use_rag=False
+            company_info=company_info, strategic_context=strategic_context, use_rag=False
         )
 
 
@@ -364,9 +353,9 @@ def test_swot_is_complete_true():
         strengths=["Força 1", "Força 2", "Força 3"],
         weaknesses=["Fraqueza 1", "Fraqueza 2"],
         opportunities=["Oportunidade 1", "Oportunidade 2", "Oportunidade 3"],
-        threats=["Ameaça 1", "Ameaça 2"]
+        threats=["Ameaça 1", "Ameaça 2"],
     )
-    
+
     assert swot.is_complete() is True
 
 
@@ -376,9 +365,9 @@ def test_swot_is_complete_false_missing_items():
         strengths=["Força 1"],  # Apenas 1 item
         weaknesses=["Fraqueza 1"],
         opportunities=[],  # Vazio
-        threats=["Ameaça 1"]
+        threats=["Ameaça 1"],
     )
-    
+
     assert swot.is_complete() is False
 
 
@@ -388,9 +377,9 @@ def test_swot_quality_score_perfect():
         strengths=["S1", "S2", "S3", "S4"],
         weaknesses=["W1", "W2", "W3", "W4"],
         opportunities=["O1", "O2", "O3", "O4"],
-        threats=["T1", "T2", "T3", "T4"]
+        threats=["T1", "T2", "T3", "T4"],
     )
-    
+
     score = swot.quality_score()
     assert score == 1.0  # Perfeito
 
@@ -398,7 +387,7 @@ def test_swot_quality_score_perfect():
 def test_swot_quality_score_empty():
     """Testa quality_score() com SWOT vazio."""
     swot = SWOTAnalysis()  # Vazio (default)
-    
+
     score = swot.quality_score()
     assert score == 0.0  # Zero
 
@@ -407,13 +396,13 @@ def test_swot_quality_score_partial():
     """Testa quality_score() com SWOT parcialmente preenchido."""
     swot = SWOTAnalysis(
         strengths=["S1", "S2"],  # 2/4
-        weaknesses=["W1"],       # 1/4
+        weaknesses=["W1"],  # 1/4
         opportunities=["O1", "O2", "O3"],  # 3/4
-        threats=[]  # 0/4
+        threats=[],  # 0/4
     )
-    
+
     score = swot.quality_score()
-    
+
     # Esperado: (2 + 1 + 3 + 0) / 16 = 6/16 = 0.375
     assert 0.35 <= score <= 0.40
 
@@ -424,11 +413,11 @@ def test_swot_summary_format():
         strengths=["Força A"],
         weaknesses=["Fraqueza B"],
         opportunities=["Oportunidade C"],
-        threats=["Ameaça D"]
+        threats=["Ameaça D"],
     )
-    
+
     summary = swot.summary()
-    
+
     assert "Strengths" in summary or "Forças" in summary
     assert "Força A" in summary
     assert "Fraqueza B" in summary
@@ -448,7 +437,7 @@ def test_swot_tool_complete_workflow(
     mock_process_agent: MagicMock,
     mock_learning_agent: MagicMock,
     company_info: CompanyInfo,
-    strategic_context: StrategicContext
+    strategic_context: StrategicContext,
 ):
     """Smoke test: workflow completo com RAG."""
     tool = SWOTAnalysisTool(
@@ -456,23 +445,21 @@ def test_swot_tool_complete_workflow(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     # Facilitar SWOT com RAG
     swot = tool.facilitate_swot(
-        company_info=company_info,
-        strategic_context=strategic_context,
-        use_rag=True
+        company_info=company_info, strategic_context=strategic_context, use_rag=True
     )
-    
+
     # Validações end-to-end
     assert swot.is_complete()
     assert swot.quality_score() >= 0.8
-    
+
     summary = swot.summary()
     assert len(summary) > 100  # Summary substancial
-    
+
     # Verificar que specialists foram chamados
     assert mock_financial_agent.invoke.called
     assert mock_customer_agent.invoke.called

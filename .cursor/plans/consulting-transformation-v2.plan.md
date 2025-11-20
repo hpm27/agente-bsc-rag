@@ -1,4 +1,4 @@
-# 🎯 PLANO: Transformação em Agente Consultor Empresarial BSC v2.0
+# [EMOJI] PLANO: Transformação em Agente Consultor Empresarial BSC v2.0
 
 **Data**: 2025-10-15
 
@@ -8,7 +8,7 @@
 
 ---
 
-## 📋 EXECUTIVE SUMMARY
+## [EMOJI] EXECUTIVE SUMMARY
 
 ### Objetivo
 
@@ -16,10 +16,10 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ### Decisões Estratégicas Confirmadas
 
-- ✅ **Memória**: Mem0 Platform (self-improving LLM memory, não Supabase inicialmente)
-- ✅ **Escopo MVP**: Foco BSC exclusivo (multi-domain pós-validação)
-- ✅ **Deploy**: Nuvem pós-validação (Fly.io free tier → Railway → Cloud Run)
-- ✅ **Frameworks**: 12-Factor Agents + Anthropic Patterns + OpenAI Best Practices
+- [OK] **Memória**: Mem0 Platform (self-improving LLM memory, não Supabase inicialmente)
+- [OK] **Escopo MVP**: Foco BSC exclusivo (multi-domain pós-validação)
+- [OK] **Deploy**: Nuvem pós-validação (Fly.io free tier -> Railway -> Cloud Run)
+- [OK] **Frameworks**: 12-Factor Agents + Anthropic Patterns + OpenAI Best Practices
 
 ### Esforço Estimado MVP
 
@@ -37,7 +37,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 🏗️ ARCHITECTURE OVERVIEW
+## [EMOJI] ARCHITECTURE OVERVIEW
 
 ### Stack Tecnológico MVP
 
@@ -63,7 +63,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 │                                                   │
 │  MCPs: Brightdata (benchmarks externos)          │
 │                                                   │
-│  Deploy: Local (dev) → Fly.io (prod)             │
+│  Deploy: Local (dev) -> Fly.io (prod)             │
 └───────────────────────────────────────────────────┘
 ```
 
@@ -95,7 +95,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 📊 FASES DO MVP (50 MICRO-TAREFAS)
+## [EMOJI] FASES DO MVP (50 MICRO-TAREFAS)
 
 ### FASE 1: FOUNDATION - Memória Persistente (8 tarefas, 5-7h, 2 sessões)
 
@@ -127,7 +127,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ### FASE 2: CONSULTING WORKFLOW - LangGraph Expansion (10 tarefas, 13-17h, 4-5 sessões)
 
-**Objetivo**: Workflow ONBOARDING → DISCOVERY → APPROVAL
+**Objetivo**: Workflow ONBOARDING -> DISCOVERY -> APPROVAL
 
 | ID | Tarefa | Duração | Entregável |
 
@@ -175,7 +175,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 | 3.2 | FiveWhysTool | 3-4h | five_whys.py (root cause analysis 3-7 iterations) |
 
-| 3.3 | IssueTree_Analyzer | 2h | issue_tree.py (problema → sub-problemas) |
+| 3.3 | IssueTree_Analyzer | 2h | issue_tree.py (problema -> sub-problemas) |
 
 | 3.4 | KPI_Definer | 2h | kpi_definer.py (template SMART) |
 
@@ -255,7 +255,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## ✅ VALIDAÇÃO CONTÍNUA (5 Checkpoints)
+## [OK] VALIDAÇÃO CONTÍNUA (5 Checkpoints)
 
 | Checkpoint | Quando | O Que Validar | Critério Sucesso |
 
@@ -280,7 +280,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 📂 SISTEMA DE PROGRESS TRACKING
+## [EMOJI] SISTEMA DE PROGRESS TRACKING
 
 ### Nível 1: Plano Mestre (Este Documento)
 
@@ -302,7 +302,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## ⚠️ RISCOS E MITIGAÇÕES
+## [WARN] RISCOS E MITIGAÇÕES
 
 | Risco | Probabilidade | Impacto | Mitigação | Contingência |
 
@@ -326,7 +326,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 💰 CUSTO OPERACIONAL
+## [EMOJI] CUSTO OPERACIONAL
 
 ### MVP (100 clientes/mês)
 
@@ -350,13 +350,13 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 - **Consultor humano**: R$ 8.000-32.000 por cliente (20-40h)
 - **Agente**: R$ 10-25 por cliente (custo marginal)
-- **ROI**: **320x a 3.200x** 🚀
+- **ROI**: **320x a 3.200x** [EMOJI]
 
 **Breakeven**: 1 cliente pagante/mês (R$ 500-1.000) cobre custos operacionais
 
 ---
 
-## 🚀 DEPLOYMENT STRATEGY
+## [EMOJI] DEPLOYMENT STRATEGY
 
 ### MVP (Local Development)
 
@@ -387,7 +387,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 🔮 EXPANSÕES FUTURAS (PÓS-VALIDAÇÃO MVP)
+## [EMOJI] EXPANSÕES FUTURAS (PÓS-VALIDAÇÃO MVP)
 
 ### FASE 6: Multi-Domain Knowledge (13-18h, 1-1.5 semanas)
 
@@ -417,7 +417,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 🎯 MÉTRICAS DE SUCESSO MVP
+## [EMOJI] MÉTRICAS DE SUCESSO MVP
 
 ### Técnicas (Objetivas)
 
@@ -441,36 +441,36 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 📋 APLICAÇÃO DOS 3 FRAMEWORKS
+## [EMOJI] APLICAÇÃO DOS 3 FRAMEWORKS
 
 ### 12-Factor Agents (5/12 aplicados - 42%)
 
-- ✅ #3: Config in Environment (MEM0_API_KEY, CONSULTING_MODE)
-- ✅ #4: Backing Services (Mem0 via factory, swappable)
-- ✅ #6: Stateless Processes (estado em Mem0, agente stateless)
-- ✅ #9: Human-in-the-Loop (approval workflow)
-- ✅ #11: Telemetry (structured logging, metrics collector)
+- [OK] #3: Config in Environment (MEM0_API_KEY, CONSULTING_MODE)
+- [OK] #4: Backing Services (Mem0 via factory, swappable)
+- [OK] #6: Stateless Processes (estado em Mem0, agente stateless)
+- [OK] #9: Human-in-the-Loop (approval workflow)
+- [OK] #11: Telemetry (structured logging, metrics collector)
 
 ### Anthropic Patterns (5/5 aplicados - 100%)
 
-- ✅ Workflows (ONBOARDING → DISCOVERY orquestrado)
-- ✅ Orchestrator-Workers (ConsultingOrchestrator + 10 agentes)
-- ✅ Parallelization (Parallel research AsyncIO)
-- ✅ Evaluator-Optimizer (ValidatorAgent + refinement loop)
-- ✅ Simplicidade Incremental (2 states MVP, não 5!)
+- [OK] Workflows (ONBOARDING -> DISCOVERY orquestrado)
+- [OK] Orchestrator-Workers (ConsultingOrchestrator + 10 agentes)
+- [OK] Parallelization (Parallel research AsyncIO)
+- [OK] Evaluator-Optimizer (ValidatorAgent + refinement loop)
+- [OK] Simplicidade Incremental (2 states MVP, não 5!)
 
 ### OpenAI Best Practices (6/7 aplicados - 86%)
 
-- ✅ Clear Instructions (prompts bem definidos)
-- ✅ Multi-Agent (10 agentes especializados)
-- ✅ Tool Use (8 ferramentas consultivas)
-- ✅ Evaluation-Driven (9 métricas, 5 checkpoints)
-- ✅ Human Handoff (approval workflow, feedback)
-- ✅ Planning/CoT (FacilitatorAgent raciocina antes)
+- [OK] Clear Instructions (prompts bem definidos)
+- [OK] Multi-Agent (10 agentes especializados)
+- [OK] Tool Use (8 ferramentas consultivas)
+- [OK] Evaluation-Driven (9 métricas, 5 checkpoints)
+- [OK] Human Handoff (approval workflow, feedback)
+- [OK] Planning/CoT (FacilitatorAgent raciocina antes)
 
 ---
 
-## 📚 LIÇÕES ARQUITETURAIS (Atualização Contínua)
+## [EMOJI] LIÇÕES ARQUITETURAIS (Atualização Contínua)
 
 **Objetivo**: Capturar decisões técnicas e patterns validados durante implementação para orientar fases futuras.
 
@@ -520,7 +520,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 - `from typing import TYPE_CHECKING` + imports dentro de `if TYPE_CHECKING:`
 - Lazy imports em properties/métodos com cache (`@property` + `if self._agent is None`)
 
-**Quando Aplicar**: Módulos interdependentes (workflow ↔ agents, agent A ↔ agent B)
+**Quando Aplicar**: Módulos interdependentes (workflow <-> agents, agent A <-> agent B)
 
 **ROI**: Zero circular imports, type hints completos, IDE autocomplete funciona
 
@@ -534,9 +534,9 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 **Solução Validada**:
 
-1. `grep "def " src/module/file.py` → Descobrir métodos disponíveis
-2. `grep "def method_name" src/module/file.py -A 15` → Ler signatures completas
-3. `grep "class Schema" src/memory/schemas.py -A 30` → Verificar schemas Pydantic
+1. `grep "def " src/module/file.py` -> Descobrir métodos disponíveis
+2. `grep "def method_name" src/module/file.py -A 15` -> Ler signatures completas
+3. `grep "class Schema" src/memory/schemas.py -A 30` -> Verificar schemas Pydantic
 4. Escrever testes alinhados com API real (não assunções)
 
 **Quando Aplicar**: APIs novas (tools consultivas FASE 3+), agentes novos, integrações complexas
@@ -561,7 +561,7 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 **Quando Aplicar**: Problemas complexos (circular imports, schemas P0, E2E workflows), debugging estruturado
 
-**ROI**: 2.5-4x economia tempo (40-60 min debugging → 15-20 min estruturado)
+**ROI**: 2.5-4x economia tempo (40-60 min debugging -> 15-20 min estruturado)
 
 **Referência**: `docs/lessons/lesson-discovery-state-circular-import-2025-10-16.md`
 
@@ -571,11 +571,11 @@ Transformar **Agente BSC RAG** (pergunta-resposta sobre literatura BSC) em **Age
 
 ---
 
-## 🎬 PRÓXIMOS PASSOS
+## [EMOJI] PRÓXIMOS PASSOS
 
 ### Decisão Imediata
 
-**Usuário aprova plano v2.0?** → SIM / NÃO / AJUSTES
+**Usuário aprova plano v2.0?** -> SIM / NÃO / AJUSTES
 
 ### Se Aprovado, Criar:
 

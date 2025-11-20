@@ -1,14 +1,14 @@
 # Strategic Objectives Tool - Documentação Técnica
 
-**Versão**: 1.0.0  
-**Data**: 2025-10-19  
-**Status**: ✅ PRODUÇÃO (FASE 3.5 completa)  
-**Coverage**: 88% (100 linhas tool) + 99% (81 linhas prompts)  
+**Versão**: 1.0.0
+**Data**: 2025-10-19
+**Status**: [OK] PRODUÇÃO (FASE 3.5 completa)
+**Coverage**: 88% (100 linhas tool) + 99% (81 linhas prompts)
 **Testes**: 12/12 passando (20.07s)
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 1. [Visão Geral](#visão-geral)
 2. [Schemas Pydantic](#schemas-pydantic)
@@ -23,35 +23,35 @@
 
 ---
 
-## 🎯 Visão Geral
+## [EMOJI] Visão Geral
 
 **Strategic Objectives Tool** define **objetivos estratégicos SMART** (Specific, Measurable, Achievable, Relevant, Time-bound) para as **4 perspectivas do Balanced Scorecard**, garantindo alinhamento com o diagnóstico organizacional e balanceamento entre perspectivas.
 
 ### Características Principais
 
-- ✅ **2-5 objetivos SMART** por perspectiva BSC (8-20 total)
-- ✅ **Alinhamento automático** com diagnóstico e desafios identificados
-- ✅ **Vinculação opcional** com KPIs existentes (relacionamento bidirecional)
-- ✅ **Validação de balanceamento** (distribuição equilibrada entre perspectivas)
-- ✅ **Integração RAG** opcional para best practices BSC (literatura Kaplan & Norton)
-- ✅ **LLM structured output** (JSON Schema validation automática)
+- [OK] **2-5 objetivos SMART** por perspectiva BSC (8-20 total)
+- [OK] **Alinhamento automático** com diagnóstico e desafios identificados
+- [OK] **Vinculação opcional** com KPIs existentes (relacionamento bidirecional)
+- [OK] **Validação de balanceamento** (distribuição equilibrada entre perspectivas)
+- [OK] **Integração RAG** opcional para best practices BSC (literatura Kaplan & Norton)
+- [OK] **LLM structured output** (JSON Schema validation automática)
 
 ### Quando Usar
 
 **Use Strategic Objectives Tool quando:**
-- ✅ Diagnóstico BSC completo já foi realizado (4 perspectivas)
-- ✅ Desafios e oportunidades identificados por perspectiva
-- ✅ KPIs já foram definidos (opcional, mas recomendado)
-- ✅ Empresa precisa traduzir diagnóstico em objetivos acionáveis
+- [OK] Diagnóstico BSC completo já foi realizado (4 perspectivas)
+- [OK] Desafios e oportunidades identificados por perspectiva
+- [OK] KPIs já foram definidos (opcional, mas recomendado)
+- [OK] Empresa precisa traduzir diagnóstico em objetivos acionáveis
 
 **NÃO use quando:**
-- ❌ Diagnóstico BSC ainda não foi completado
-- ❌ Empresa não tem clareza sobre estratégia de alto nível
-- ❌ Objetivos já foram definidos (use para revisão/validação apenas)
+- [ERRO] Diagnóstico BSC ainda não foi completado
+- [ERRO] Empresa não tem clareza sobre estratégia de alto nível
+- [ERRO] Objetivos já foram definidos (use para revisão/validação apenas)
 
 ---
 
-## 📐 Schemas Pydantic
+## [EMOJI] Schemas Pydantic
 
 ### StrategicObjective
 
@@ -63,7 +63,7 @@ from typing import Literal, Optional
 
 class StrategicObjective(BaseModel):
     """Objetivo estratégico SMART para uma perspectiva BSC.
-    
+
     SMART:
     - Specific (Específico): name + description detalhada
     - Measurable (Mensurável): success_criteria quantificáveis
@@ -71,51 +71,51 @@ class StrategicObjective(BaseModel):
     - Relevant (Relevante): alinhado com diagnóstico e desafios
     - Time-bound (Temporal): timeframe definido
     """
-    
+
     name: str = Field(
         min_length=10,
         max_length=100,
         description="Nome conciso do objetivo estratégico"
     )
-    
+
     description: str = Field(
         min_length=50,
         max_length=500,
         description="Descrição detalhada do objetivo e contexto"
     )
-    
+
     perspective: Literal[
         "Financeira",
         "Clientes",
         "Processos Internos",
         "Aprendizado e Crescimento"
     ] = Field(description="Perspectiva BSC do objetivo")
-    
+
     timeframe: str = Field(
         description="Prazo para atingir o objetivo (ex: '12-18 meses', 'Q4 2025')"
     )
-    
+
     success_criteria: list[str] = Field(
         min_length=1,
         max_length=5,
         description="Critérios MENSURÁVEIS de sucesso (2-5 critérios)"
     )
-    
+
     related_kpis: Optional[list[str]] = Field(
         default_factory=list,
         description="KPIs que medem progresso deste objetivo (relacionamento bidirecional)"
     )
-    
+
     priority: Optional[Literal["HIGH", "MEDIUM", "LOW"]] = Field(
         default="MEDIUM",
         description="Prioridade do objetivo (alinhada com diagnóstico)"
     )
-    
+
     dependencies: Optional[list[str]] = Field(
         default_factory=list,
         description="Dependências com outros objetivos (nomes)"
     )
-    
+
     @field_validator('name', 'description')
     @classmethod
     def validate_quality(cls, v: str, info) -> str:
@@ -124,16 +124,16 @@ class StrategicObjective(BaseModel):
             raise ValueError(
                 f"{info.field_name} deve ter pelo menos 3 palavras para ser descritivo"
             )
-        
+
         # Evitar placeholders
         placeholders = ["exemplo", "teste", "placeholder", "tbd", "a definir"]
         if any(p in v.lower() for p in placeholders):
             raise ValueError(
                 f"{info.field_name} contém placeholder - forneça conteúdo real"
             )
-        
+
         return v
-    
+
     @field_validator('success_criteria')
     @classmethod
     def validate_measurable_criteria(cls, v: list[str]) -> list[str]:
@@ -144,14 +144,14 @@ class StrategicObjective(BaseModel):
             "aumentar", "reduzir", "atingir", "manter", "melhorar",
             ">", "<", ">=", "<=", "entre", "mínimo", "máximo"
         ]
-        
+
         for criterion in v:
             if not any(keyword in criterion.lower() for keyword in measurable_keywords):
                 raise ValueError(
                     f"Critério '{criterion}' não parece mensurável. "
                     "Use números, percentuais, ou comparativos (>, <, aumentar, etc.)"
                 )
-        
+
         return v
 ```
 
@@ -191,37 +191,37 @@ from typing import Optional
 
 class StrategicObjectivesFramework(BaseModel):
     """Framework BSC completo com objetivos das 4 perspectivas.
-    
+
     Garante:
     - Balanceamento (distribuição entre perspectivas)
     - Alinhamento (objetivos coerentes com diagnóstico)
     - Consistência (sem conflitos entre perspectivas)
     """
-    
+
     financial_objectives: list[StrategicObjective] = Field(
         min_length=2,
         max_length=5,
         description="Objetivos da perspectiva Financeira (2-5)"
     )
-    
+
     customer_objectives: list[StrategicObjective] = Field(
         min_length=2,
         max_length=5,
         description="Objetivos da perspectiva Clientes (2-5)"
     )
-    
+
     process_objectives: list[StrategicObjective] = Field(
         min_length=2,
         max_length=5,
         description="Objetivos da perspectiva Processos Internos (2-5)"
     )
-    
+
     learning_objectives: list[StrategicObjective] = Field(
         min_length=2,
         max_length=5,
         description="Objetivos da perspectiva Aprendizado e Crescimento (2-5)"
     )
-    
+
     @model_validator(mode='after')
     def validate_cross_perspective_consistency(self) -> 'StrategicObjectivesFramework':
         """Valida consistência entre perspectivas."""
@@ -231,7 +231,7 @@ class StrategicObjectivesFramework(BaseModel):
             self.process_objectives +
             self.learning_objectives
         )
-        
+
         # Validar total de objetivos (8-20 recomendado)
         total = len(all_objectives)
         if total < 8:
@@ -245,7 +245,7 @@ class StrategicObjectivesFramework(BaseModel):
                 "Recomendado: 8-20 objetivos (2-5 por perspectiva). "
                 "Muitos objetivos diluem foco estratégico."
             )
-        
+
         # Validar nomes únicos (sem duplicatas)
         names = [obj.name for obj in all_objectives]
         duplicates = [name for name in names if names.count(name) > 1]
@@ -254,9 +254,9 @@ class StrategicObjectivesFramework(BaseModel):
                 f"Objetivos com nomes duplicados encontrados: {set(duplicates)}. "
                 "Cada objetivo deve ter nome único."
             )
-        
+
         return self
-    
+
     def total_objectives(self) -> int:
         """Retorna total de objetivos no framework."""
         return (
@@ -265,7 +265,7 @@ class StrategicObjectivesFramework(BaseModel):
             len(self.process_objectives) +
             len(self.learning_objectives)
         )
-    
+
     def by_perspective(self, perspective: str) -> list[StrategicObjective]:
         """Retorna objetivos de uma perspectiva específica."""
         mapping = {
@@ -275,7 +275,7 @@ class StrategicObjectivesFramework(BaseModel):
             "Aprendizado e Crescimento": self.learning_objectives
         }
         return mapping.get(perspective, [])
-    
+
     def by_priority(self, priority: str) -> list[StrategicObjective]:
         """Retorna objetivos de uma prioridade específica."""
         all_objectives = (
@@ -285,7 +285,7 @@ class StrategicObjectivesFramework(BaseModel):
             self.learning_objectives
         )
         return [obj for obj in all_objectives if obj.priority == priority]
-    
+
     def with_related_kpis(self) -> list[StrategicObjective]:
         """Retorna objetivos que possuem KPIs vinculados."""
         all_objectives = (
@@ -295,13 +295,13 @@ class StrategicObjectivesFramework(BaseModel):
             self.learning_objectives
         )
         return [obj for obj in all_objectives if obj.related_kpis and len(obj.related_kpis) > 0]
-    
+
     def summary(self) -> str:
         """Retorna resumo executivo do framework."""
         total = self.total_objectives()
         high_priority = len(self.by_priority("HIGH"))
         with_kpis = len(self.with_related_kpis())
-        
+
         summary_lines = [
             f"Framework BSC com {total} objetivos estratégicos distribuídos:",
             f"- Financeira: {len(self.financial_objectives)} objetivos",
@@ -314,13 +314,13 @@ class StrategicObjectivesFramework(BaseModel):
             f"{len(self.by_priority('LOW'))} LOW",
             f"Objetivos com KPIs vinculados: {with_kpis}/{total} ({int(with_kpis/total*100)}%)"
         ]
-        
+
         return "\n".join(summary_lines)
 ```
 
 ---
 
-## 🎯 Casos de Uso BSC
+## [EMOJI] Casos de Uso BSC
 
 ### Caso de Uso 1: Startup Tech SaaS B2B (Crescimento Acelerado)
 
@@ -478,7 +478,7 @@ class StrategicObjectivesFramework(BaseModel):
 2. Aumentar margem líquida para 12% através de eficiência operacional
 
 #### Clientes (3 objetivos)
-3. Reduzir lead time de entrega 40% (30 dias → 18 dias)
+3. Reduzir lead time de entrega 40% (30 dias -> 18 dias)
 4. Implementar portal self-service para 80% transações clientes
 5. Aumentar NPS de 45 para 65 pontos em 18 meses
 
@@ -514,7 +514,7 @@ class StrategicObjectivesFramework(BaseModel):
 6. Implementar prontuário eletrônico integrado 100% áreas
 
 #### Processos Internos (3 objetivos)
-7. Reduzir tempo cirurgia→alta 15% via protocolos lean
+7. Reduzir tempo cirurgia->alta 15% via protocolos lean
 8. Atingir taxa infecção hospitalar <= 2% (atual 4%)
 9. Obter acreditação ONA Nível 3 em 24 meses
 
@@ -557,7 +557,7 @@ class StrategicObjectivesFramework(BaseModel):
 
 ---
 
-## 🔄 Workflow Detalhado
+## [EMOJI] Workflow Detalhado
 
 ### Visão Geral do Workflow
 
@@ -620,13 +620,13 @@ def _validate_inputs(
     """Valida inputs obrigatórios antes de prosseguir."""
     if not company_info:
         raise ValueError("company_info obrigatório")
-    
+
     if not strategic_context or not strategic_context.strip():
         raise ValueError("strategic_context obrigatório e não pode ser vazio")
-    
+
     if not diagnostic_result:
         raise ValueError("diagnostic_result obrigatório")
-    
+
     # Validar que CompleteDiagnostic tem as 4 perspectivas
     if not all([
         diagnostic_result.financial,
@@ -667,7 +667,7 @@ def _define_perspective_objectives(
     existing_kpis: Optional[KPIFramework] = None
 ) -> list[StrategicObjective]:
     """Define objetivos SMART para uma perspectiva BSC específica."""
-    
+
     # 1. Extrair DiagnosticResult da perspectiva
     perspective_mapping = {
         "Financeira": diagnostic_result.financial,
@@ -676,7 +676,7 @@ def _define_perspective_objectives(
         "Aprendizado e Crescimento": diagnostic_result.learning
     }
     perspective_diagnostic = perspective_mapping[perspective]
-    
+
     # 2. Buscar conhecimento RAG (opcional)
     rag_knowledge = ""
     if self.use_rag and self.rag_agents:
@@ -684,13 +684,13 @@ def _define_perspective_objectives(
             perspective=perspective,
             strategic_context=strategic_context
         )
-    
+
     # 3. Montar contexto completo
     company_context = build_company_context(company_info)
     diagnostic_context = build_diagnostic_context(perspective_diagnostic)
     kpi_context = build_kpi_context(existing_kpis)
     kpi_linkage = build_kpi_linkage_instruction(existing_kpis)
-    
+
     # 4. Gerar prompt LLM
     prompt = FACILITATE_OBJECTIVES_DEFINITION_PROMPT.format(
         company_context=company_context,
@@ -701,7 +701,7 @@ def _define_perspective_objectives(
         kpi_context=kpi_context,
         kpi_linkage_instruction=kpi_linkage
     )
-    
+
     # 5. LLM structured output com JSON Schema
     structured_llm = self.llm.with_structured_output(
         method="json_schema",
@@ -747,28 +747,28 @@ def _define_perspective_objectives(
             }
         )
     )
-    
+
     result = structured_llm.invoke(prompt)
-    
+
     # 6. Converter para StrategicObjective Pydantic
     objectives = []
     objectives_data = (
         result["objectives"] if isinstance(result, dict)
         else result.objectives
     )
-    
+
     for obj_item in objectives_data:
         obj_dict = (
             obj_item if isinstance(obj_item, dict)
             else obj_item.dict() if hasattr(obj_item, 'dict')
             else dict(obj_item)
         )
-        
+
         # Garantir perspectiva correta (override se LLM errar)
         obj_dict["perspective"] = perspective
         obj = StrategicObjective(**obj_dict)
         objectives.append(obj)
-    
+
     return objectives
 ```
 
@@ -785,10 +785,10 @@ framework = StrategicObjectivesFramework(
 ```
 
 **Validações Automáticas (Pydantic `model_validator`):**
-- ✅ Total objetivos 8-20 (2-5 por perspectiva)
-- ✅ Nomes únicos (sem duplicatas)
-- ✅ Critérios sucesso mensuráveis (SMART)
-- ✅ Quality checks (min 3 palavras, sem placeholders)
+- [OK] Total objetivos 8-20 (2-5 por perspectiva)
+- [OK] Nomes únicos (sem duplicatas)
+- [OK] Critérios sucesso mensuráveis (SMART)
+- [OK] Quality checks (min 3 palavras, sem placeholders)
 
 #### Step 4: Validação de Balanceamento (Opcional)
 
@@ -800,22 +800,22 @@ def _validate_objectives_balance(
     diagnostic_result: CompleteDiagnostic
 ) -> dict:
     """Valida balanceamento entre perspectivas e alinhamento com diagnóstico."""
-    
+
     # Montar contexto resumido
     company_context = build_company_context(company_info)
     diagnostic_context = build_complete_diagnostic_context(diagnostic_result)
     objectives_summary = framework.summary()
-    
+
     # Prompt de validação
     prompt = VALIDATE_OBJECTIVES_BALANCE_PROMPT.format(
         company_context=company_context,
         diagnostic_context=diagnostic_context,
         objectives_summary=objectives_summary
     )
-    
+
     # LLM analisa balanceamento
     validation_result = self.llm.invoke(prompt)
-    
+
     return {
         "is_balanced": True,  # Parsear do LLM output
         "balance_analysis": "...",
@@ -829,7 +829,7 @@ def _validate_objectives_balance(
 
 ---
 
-## 🔧 Configuração e Uso
+## [EMOJI] Configuração e Uso
 
 ### Instalação
 
@@ -969,7 +969,7 @@ framework = objectives_tool.define_objectives(
     company_info=company_info,
     strategic_context=strategic_context,
     diagnostic_result=complete_diagnostic,
-    existing_kpis=kpi_framework  # 🔗 Vinculação automática
+    existing_kpis=kpi_framework  # [EMOJI] Vinculação automática
 )
 
 # 3. Verificar vinculação
@@ -1001,7 +1001,7 @@ objectives_framework = diagnostic_agent.generate_strategic_objectives(
 
 ---
 
-## 🔌 Integração RAG
+## [EMOJI] Integração RAG
 
 ### Como Funciona
 
@@ -1045,18 +1045,18 @@ rag_knowledge = financial_agent.invoke(query_financeira)
 | Satisfação usuário (1-5) | 4.1 | 4.6 | +0.5 |
 
 **Recomendação:** Use RAG quando:
-- ✅ Empresa quer objetivos alinhados com teoria BSC
-- ✅ Usuário é consultor BSC ou implementador avançado
-- ✅ Latência +20s é aceitável (não crítico)
+- [OK] Empresa quer objetivos alinhados com teoria BSC
+- [OK] Usuário é consultor BSC ou implementador avançado
+- [OK] Latência +20s é aceitável (não crítico)
 
 **NÃO use RAG quando:**
-- ❌ Velocidade é crítica (demos, protótipos)
-- ❌ Empresa tem contexto muito específico/nicho
-- ❌ Literatura BSC não é prioridade
+- [ERRO] Velocidade é crítica (demos, protótipos)
+- [ERRO] Empresa tem contexto muito específico/nicho
+- [ERRO] Literatura BSC não é prioridade
 
 ---
 
-## 🔧 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Problema 1: ValidationError - "String should have at least 10 characters"
 
@@ -1071,13 +1071,13 @@ name
 
 **Solução:**
 ```python
-# ❌ ERRADO
+# [ERRO] ERRADO
 objetivo = StrategicObjective(
     name="NPS",  # Muito curto!
     ...
 )
 
-# ✅ CORRETO
+# [OK] CORRETO
 objetivo = StrategicObjective(
     name="NPS Score (Net Promoter Score)",  # >= 10 caracteres
     ...
@@ -1099,14 +1099,14 @@ success_criteria
 
 **Solução:**
 ```python
-# ❌ ERRADO (critérios vagos)
+# [ERRO] ERRADO (critérios vagos)
 success_criteria=[
     "Melhorar satisfação",
     "Aumentar rentabilidade",
     "Reduzir custos"
 ]
 
-# ✅ CORRETO (critérios SMART mensuráveis)
+# [OK] CORRETO (critérios SMART mensuráveis)
 success_criteria=[
     "NPS >= 75 pontos (atual 60)",
     "Margem EBITDA >= 20% (atual 15%)",
@@ -1128,7 +1128,7 @@ pydantic_core._pydantic_core.ValidationError: 1 validation error for StrategicOb
 
 **Solução:**
 ```python
-# ❌ ERRADO (apenas 6 objetivos)
+# [ERRO] ERRADO (apenas 6 objetivos)
 framework = StrategicObjectivesFramework(
     financial_objectives=[obj1],  # 1 objetivo
     customer_objectives=[obj2],   # 1 objetivo
@@ -1136,7 +1136,7 @@ framework = StrategicObjectivesFramework(
     learning_objectives=[obj5, obj6]  # 2 objetivos
 )
 
-# ✅ CORRETO (12 objetivos)
+# [OK] CORRETO (12 objetivos)
 framework = StrategicObjectivesFramework(
     financial_objectives=[obj1, obj2, obj3],  # 3 objetivos
     customer_objectives=[obj4, obj5, obj6],   # 3 objetivos
@@ -1158,10 +1158,10 @@ AttributeError: 'CompleteDiagnostic' object has no attribute 'perspective'
 
 **Solução:**
 ```python
-# ❌ ERRADO
+# [ERRO] ERRADO
 diagnostic_context = build_diagnostic_context(complete_diagnostic)
 
-# ✅ CORRETO - Extrair DiagnosticResult específico
+# [OK] CORRETO - Extrair DiagnosticResult específico
 financial_diagnostic = complete_diagnostic.financial
 diagnostic_context = build_diagnostic_context(financial_diagnostic)
 
@@ -1183,10 +1183,10 @@ RuntimeError: Falha ao gerar objetivos para perspectiva Financeira: 'ObjectivesL
 **Solução:** Código já corrigido na tool (v1.0.0). Se encontrar:
 
 ```python
-# ❌ ERRADO
+# [ERRO] ERRADO
 objectives = result.get("objectives", [])
 
-# ✅ CORRETO - Tratar ambos casos
+# [OK] CORRETO - Tratar ambos casos
 objectives_data = (
     result["objectives"] if isinstance(result, dict)
     else result.objectives
@@ -1211,31 +1211,31 @@ obj = StrategicObjective(**obj_dict)
 
 ---
 
-## 📊 Métricas e Benchmarks
+## [EMOJI] Métricas e Benchmarks
 
 ### Métricas de Performance
 
 | Métrica | Target | Real (v1.0.0) | Status |
 |---|-----|-----|---|
-| **Testes passando** | 15+ | **12** | ✅ Acima |
-| **Coverage tool** | 70%+ | **88%** | ✅ +18pp |
-| **Coverage prompts** | 70%+ | **99%** | ✅ +29pp |
-| **Tempo execução testes** | <30s | **20.07s** | ✅ -33% |
-| **Latência tool (sem RAG)** | <25s | **~20s** | ✅ |
-| **Latência tool (com RAG)** | <50s | **~40s** | ✅ |
-| **Objetivos gerados** | 8-20 | **12** (típico) | ✅ |
-| **Taxa validação Pydantic** | 100% | **100%** | ✅ |
+| **Testes passando** | 15+ | **12** | [OK] Acima |
+| **Coverage tool** | 70%+ | **88%** | [OK] +18pp |
+| **Coverage prompts** | 70%+ | **99%** | [OK] +29pp |
+| **Tempo execução testes** | <30s | **20.07s** | [OK] -33% |
+| **Latência tool (sem RAG)** | <25s | **~20s** | [OK] |
+| **Latência tool (com RAG)** | <50s | **~40s** | [OK] |
+| **Objetivos gerados** | 8-20 | **12** (típico) | [OK] |
+| **Taxa validação Pydantic** | 100% | **100%** | [OK] |
 
 ### Métricas de Qualidade
 
 | Métrica | Target | Real | Status |
 |---|-----|-----|---|
-| **Objetivos SMART** | 100% | **100%** | ✅ |
-| **Critérios mensuráveis** | 100% | **100%** | ✅ |
-| **Alinhamento diagnóstico** | >85% | **92%** | ✅ |
-| **Balanceamento perspectivas** | >80% | **95%** | ✅ |
-| **Vinculação KPIs (quando fornecido)** | >70% | **85%** | ✅ |
-| **Objetivos "genéricos" (evitar)** | <15% | **8%** | ✅ |
+| **Objetivos SMART** | 100% | **100%** | [OK] |
+| **Critérios mensuráveis** | 100% | **100%** | [OK] |
+| **Alinhamento diagnóstico** | >85% | **92%** | [OK] |
+| **Balanceamento perspectivas** | >80% | **95%** | [OK] |
+| **Vinculação KPIs (quando fornecido)** | >70% | **85%** | [OK] |
+| **Objetivos "genéricos" (evitar)** | <15% | **8%** | [OK] |
 
 ### Benchmark vs Baseline (Manual)
 
@@ -1243,8 +1243,8 @@ Comparação **Strategic Objectives Tool (AI)** vs **Consultor BSC manual**:
 
 | Critério | Consultor Manual | Tool AI | Diferença |
 |---|-----|-----|---|
-| **Tempo definição** | 4-6h | **20-40s** | **-99%** 🚀 |
-| **Custo** | R$ 2.000-4.000 | **R$ 0.20-0.50** | **-99.99%** 💰 |
+| **Tempo definição** | 4-6h | **20-40s** | **-99%** [EMOJI] |
+| **Custo** | R$ 2.000-4.000 | **R$ 0.20-0.50** | **-99.99%** [EMOJI] |
 | **Objetivos gerados** | 8-15 | 12 (típico) | Similar |
 | **Alinhamento BSC teoria** | 90% (especialista) | 92% (com RAG) | +2pp |
 | **Consistência** | 75% (variação humana) | 100% (validação Pydantic) | +25pp |
@@ -1254,19 +1254,19 @@ Comparação **Strategic Objectives Tool (AI)** vs **Consultor BSC manual**:
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### Lição 1: 5 Whys Root Cause Analysis é Eficaz
 
 **Descoberta:** Aplicar metodologia 5 Whys sistematicamente identificou **6 Root Causes** em ~30 min vs 2-3h trial-and-error.
 
 **Root Causes Identificados:**
-1. DiagnosticResult usava `challenges` → Corrigir para `gaps`
-2. `build_company_context()` acessava campos inexistentes → Validar schema
-3. Tool passava `CompleteDiagnostic` mas função esperava `DiagnosticResult` → Extrair perspectiva específica
-4. LLM retorna Pydantic mas código usava `.get()` → Tratar ambos casos
-5. Validação balanceamento precisava das 4 perspectivas → Criar função dedicada
-6. KPI names curtos vs min_length=10 → Expandir nomes
+1. DiagnosticResult usava `challenges` -> Corrigir para `gaps`
+2. `build_company_context()` acessava campos inexistentes -> Validar schema
+3. Tool passava `CompleteDiagnostic` mas função esperava `DiagnosticResult` -> Extrair perspectiva específica
+4. LLM retorna Pydantic mas código usava `.get()` -> Tratar ambos casos
+5. Validação balanceamento precisava das 4 perspectivas -> Criar função dedicada
+6. KPI names curtos vs min_length=10 -> Expandir nomes
 
 **ROI:** 2-3h economizadas por debugging estruturado.
 
@@ -1279,9 +1279,9 @@ Comparação **Strategic Objectives Tool (AI)** vs **Consultor BSC manual**:
 **Descoberta:** Ler implementação ANTES de escrever testes economiza **30-40 min** vs assumir estrutura.
 
 **Pattern Aplicado:**
-1. `grep "def " src/module/file.py` → Descobrir métodos
-2. `grep "def method_name" src/module/file.py -A 15` → Ler signature completa
-3. `grep "class SchemaName" src/memory/schemas.py -A 30` → Verificar schemas Pydantic
+1. `grep "def " src/module/file.py` -> Descobrir métodos
+2. `grep "def method_name" src/module/file.py -A 15` -> Ler signature completa
+3. `grep "class SchemaName" src/memory/schemas.py -A 30` -> Verificar schemas Pydantic
 4. Escrever testes alinhados com API real
 
 **Validado:** Checklist 14 pontos (ponto 13) aplicado com sucesso.
@@ -1301,13 +1301,13 @@ from unittest.mock import MagicMock
 def mock_llm():
     """Mock LLM com cycle para 4 perspectivas BSC."""
     mock = MagicMock()
-    
+
     # Definir outputs diferentes para cada perspectiva
     financial_objs = [...]  # 3 objetivos Financeira
     customer_objs = [...]   # 3 objetivos Clientes
     process_objs = [...]    # 3 objetivos Processos
     learning_objs = [...]   # 3 objetivos Aprendizado
-    
+
     # Cycle retorna outputs sequencialmente
     outputs_cycle = cycle([
         {"objectives": financial_objs},
@@ -1315,12 +1315,12 @@ def mock_llm():
         {"objectives": process_objs},
         {"objectives": learning_objs}
     ])
-    
+
     # Mock side_effect com cycle
     mock.with_structured_output.return_value.invoke.side_effect = (
         lambda prompt: next(outputs_cycle)
     )
-    
+
     return mock
 ```
 
@@ -1335,11 +1335,11 @@ def mock_llm():
 **Descoberta:** Funções context builders (`build_company_context`, `build_diagnostic_context`, etc.) são **altamente reutilizáveis** entre tools.
 
 **Reutilização Validada:**
-- SWOT Analysis Tool → usa `build_company_context`
-- Five Whys Tool → usa `build_company_context`
-- Issue Tree Tool → usa `build_company_context`
-- KPI Definer Tool → usa `build_company_context` + `build_diagnostic_context`
-- **Strategic Objectives Tool** → usa TODOS (company, diagnostic, complete_diagnostic, kpi)
+- SWOT Analysis Tool -> usa `build_company_context`
+- Five Whys Tool -> usa `build_company_context`
+- Issue Tree Tool -> usa `build_company_context`
+- KPI Definer Tool -> usa `build_company_context` + `build_diagnostic_context`
+- **Strategic Objectives Tool** -> usa TODOS (company, diagnostic, complete_diagnostic, kpi)
 
 **ROI:** 50-80 linhas economizadas por tool (~10-15 min implementação).
 
@@ -1356,7 +1356,7 @@ def mock_llm():
 class DiagnosticAgent:
     def __init__(self):
         self._strategic_objectives_tool = None  # Lazy loading
-    
+
     @property
     def strategic_objectives_tool(self) -> StrategicObjectivesTool:
         """Lazy loading da tool."""
@@ -1367,7 +1367,7 @@ class DiagnosticAgent:
                 use_rag=False
             )
         return self._strategic_objectives_tool
-    
+
     def generate_strategic_objectives(self, ...):
         """Método público usando property lazy."""
         return self.strategic_objectives_tool.define_objectives(...)
@@ -1377,7 +1377,7 @@ class DiagnosticAgent:
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Papers e Artigos Acadêmicos
 
@@ -1385,7 +1385,7 @@ class DiagnosticAgent:
    - **Relevância**: Definição original do framework BSC e objetivos estratégicos
 
 2. **Kaplan, R. S., & Norton, D. P. (2004).** *Strategy Maps: Converting Intangible Assets into Tangible Outcomes*. Harvard Business School Press.
-   - **Relevância**: Linkagem objetivos → KPIs → iniciativas
+   - **Relevância**: Linkagem objetivos -> KPIs -> iniciativas
 
 3. **Niven, P. R. (2014).** *Balanced Scorecard Evolution: A Dynamic Approach to Strategy Execution*. Wiley.
    - **Relevância**: Best practices para definição de objetivos SMART no contexto BSC
@@ -1396,7 +1396,7 @@ class DiagnosticAgent:
    - **Relevância**: Uso de LLMs para gerar objetivos alinhados com diagnóstico
 
 5. **"SMART Goals vs SMARTER Goals: Evolution in Strategic Planning"** - MIT Sloan Management Review (Nov 2024)
-   - **Relevância**: Extensão SMART → SMARTER (Evaluated, Reviewed)
+   - **Relevância**: Extensão SMART -> SMARTER (Evaluated, Reviewed)
 
 ### Documentação Técnica
 
@@ -1421,11 +1421,11 @@ class DiagnosticAgent:
 
 ---
 
-## 📞 Suporte e Contribuições
+## [EMOJI] Suporte e Contribuições
 
-**Documentação Criada**: 2025-10-19  
-**Última Atualização**: 2025-10-19  
-**Versão**: 1.0.0  
+**Documentação Criada**: 2025-10-19
+**Última Atualização**: 2025-10-19
+**Versão**: 1.0.0
 **Maintainer**: Agente BSC RAG - Fase 3.5
 
 **Para suporte:**
@@ -1442,4 +1442,3 @@ class DiagnosticAgent:
 ---
 
 **FIM DA DOCUMENTAÇÃO TÉCNICA**
-

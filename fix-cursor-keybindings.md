@@ -6,11 +6,11 @@
 2. Pressione `Ctrl + Shift + P` (Command Palette)
 3. Digite: `Preferences: Open Keyboard Shortcuts`
 4. Procure por:
-   - `copy` → Deve estar mapeado para `Ctrl+C`
-   - `paste` → Deve estar mapeado para `Ctrl+V`
-   - `cut` → Deve estar mapeado para `Ctrl+X`
+   - `copy` -> Deve estar mapeado para `Ctrl+C`
+   - `paste` -> Deve estar mapeado para `Ctrl+V`
+   - `cut` -> Deve estar mapeado para `Ctrl+X`
 
-5. Se estiver diferente, clique com botão direito → `Reset Keybinding`
+5. Se estiver diferente, clique com botão direito -> `Reset Keybinding`
 
 ---
 
@@ -55,7 +55,7 @@
 ### Verificar configuração do Windows
 
 1. Pressione `Win + I` (Configurações)
-2. Vá em: **Acessibilidade** → **Teclado**
+2. Vá em: **Acessibilidade** -> **Teclado**
 3. Verifique se **"Teclas de Aderência"** está **DESATIVADA**
 4. Verifique se **"Teclas de Filtro"** está **DESATIVADA**
 
@@ -76,4 +76,3 @@ Se NADA resolver, pode ser:
 - Problema de hardware do teclado
 
 **Teste com outro teclado** (USB ou Bluetooth) para descartar hardware.
-

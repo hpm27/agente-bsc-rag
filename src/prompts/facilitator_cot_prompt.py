@@ -125,7 +125,7 @@ EXEMPLO DE CHAIN OF THOUGHT:
   2. Seleção de KPIs apropriados para cada perspectiva
   3. Estabelecimento de metas e targets
   4. Criação de sistema de monitoramento
-- Dependências: Objetivos → KPIs → Metas → Monitoramento
+- Dependências: Objetivos -> KPIs -> Metas -> Monitoramento
 - Priorização: 1. Objetivos, 2. KPIs, 3. Metas, 4. Monitoramento
 
 [continua com Steps 3-5...]
@@ -136,46 +136,50 @@ IMPORTANTE: Sempre siga esta estrutura de 5 steps para garantir raciocínio comp
 # CONTEXT BUILDERS PARA FACILITATOR COT
 # ============================================================================
 
+
 def build_company_context_for_cot(client_profile: Any) -> str:
     """
     Constrói contexto da empresa para Chain of Thought facilitation.
-    
+
     Args:
         client_profile: ClientProfile Pydantic com informações da empresa
-        
+
     Returns:
         String formatada com contexto empresarial
     """
     if not client_profile:
         return "Contexto da empresa não disponível"
-    
+
     context_parts = []
-    
+
     # Informações básicas
-    if hasattr(client_profile, 'company') and client_profile.company:
+    if hasattr(client_profile, "company") and client_profile.company:
         company = client_profile.company
         context_parts.append(f"Nome: {company.name}")
         context_parts.append(f"Setor: {company.sector}")
         context_parts.append(f"Porte: {company.size}")
-        if hasattr(company, 'industry') and company.industry:
+        if hasattr(company, "industry") and company.industry:
             context_parts.append(f"Indústria: {company.industry}")
-        if hasattr(company, 'founded_year') and company.founded_year:
+        if hasattr(company, "founded_year") and company.founded_year:
             context_parts.append(f"Ano de fundação: {company.founded_year}")
-    
+
     # Desafios e objetivos
-    if hasattr(client_profile, 'context') and client_profile.context:
+    if hasattr(client_profile, "context") and client_profile.context:
         context = client_profile.context
-        if hasattr(context, 'current_challenges') and context.current_challenges:
+        if hasattr(context, "current_challenges") and context.current_challenges:
             context_parts.append(f"Desafios atuais: {', '.join(context.current_challenges)}")
-        if hasattr(context, 'strategic_objectives') and context.strategic_objectives:
-            context_parts.append(f"Objetivos estratégicos: {', '.join(context.strategic_objectives)}")
-    
+        if hasattr(context, "strategic_objectives") and context.strategic_objectives:
+            context_parts.append(
+                f"Objetivos estratégicos: {', '.join(context.strategic_objectives)}"
+            )
+
     return "\n".join(context_parts) if context_parts else "Informações limitadas disponíveis"
+
 
 def build_bsc_knowledge_context() -> str:
     """
     Constrói contexto de conhecimento BSC para Chain of Thought.
-    
+
     Returns:
         String com princípios BSC relevantes para facilitation
     """
@@ -188,30 +192,32 @@ PRINCÍPIOS BSC FUNDAMENTAIS (Kaplan & Norton):
 4. **Perspectiva Aprendizado e Crescimento**: Capital humano, sistemas, cultura organizacional
 
 INTERCONEXÕES BSC:
-- Causa-efeito: Aprendizado → Processos → Cliente → Financeiro
-- Lead/Lag indicators: Drivers (lead) → Outcomes (lag)
+- Causa-efeito: Aprendizado -> Processos -> Cliente -> Financeiro
+- Lead/Lag indicators: Drivers (lead) -> Outcomes (lag)
 - Balanced: Equilíbrio entre perspectivas, não apenas financeiro
 
 IMPLEMENTAÇÃO BSC:
-- Top-down: Estratégia → Objetivos → KPIs → Metas → Ações
-- Cascata: BSC corporativo → BSC departamental → BSC individual
+- Top-down: Estratégia -> Objetivos -> KPIs -> Metas -> Ações
+- Cascata: BSC corporativo -> BSC departamental -> BSC individual
 - Monitoramento: Revisão regular, ajustes baseados em performance
 """
+
 
 def build_client_query_context(query: str) -> str:
     """
     Constrói contexto da consulta do cliente para Chain of Thought.
-    
+
     Args:
         query: Query/pergunta do cliente
-        
+
     Returns:
         String formatada com contexto da consulta
     """
     if not query:
         return "Consulta específica não fornecida - análise geral de implementação BSC"
-    
+
     return f"Consulta específica: {query}"
+
 
 # ============================================================================
 # FACILITATOR COT SYSTEM PROMPT

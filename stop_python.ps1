@@ -1,7 +1,7 @@
 # ===================================================================
 # SCRIPT: Parar TODOS os processos Python
 # ===================================================================
-# 
+#
 # USO: .\stop_python.ps1
 #
 # O que faz:
@@ -22,7 +22,7 @@ $pythonProcesses = Get-Process -Name python, python3, pythonw -ErrorAction Silen
 if ($pythonProcesses) {
     Write-Host "[INFO] Encontrados $($pythonProcesses.Count) processo(s) Python em execução" -ForegroundColor Cyan
     Write-Host ""
-    
+
     foreach ($process in $pythonProcesses) {
         $processId = $process.Id
         Write-Host "[KILL] Parando processo Python (PID: $processId)..." -ForegroundColor Red
@@ -46,10 +46,10 @@ if ($pythonProcesses) {
             }
         }
     }
-    
+
     Write-Host ""
     Write-Host "[SUCCESS] Todos os processos Python foram parados!" -ForegroundColor Green
-    
+
 } else {
     Write-Host "[INFO] Nenhum processo Python em execução" -ForegroundColor Gray
 }
@@ -59,4 +59,3 @@ Write-Host "========================================" -ForegroundColor Yellow
 Write-Host "  CONCLUÍDO" -ForegroundColor Yellow
 Write-Host "========================================" -ForegroundColor Yellow
 Write-Host ""
-

@@ -10,7 +10,7 @@
 
 ---
 
-## 📋 ÍNDICE NAVEGÁVEL
+## [EMOJI] ÍNDICE NAVEGÁVEL
 
 1. [Visão Geral](#visão-geral)
 2. [Análise do Problema](#análise-do-problema)
@@ -23,13 +23,13 @@
 
 ---
 
-## 🎯 VISÃO GERAL
+## [EMOJI] VISÃO GERAL
 
 ### Problema Identificado
 
 O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 
-1. **Rigidez de fluxo** - Segue script fixo (Empresa → Challenges → Objectives), não adaptável
+1. **Rigidez de fluxo** - Segue script fixo (Empresa -> Challenges -> Objectives), não adaptável
 2. **Falta de reconhecimento** - Não identifica informações já fornecidas, repete perguntas
 3. **Loops infinitos** - Não valida semanticamente, confunde objectives com challenges
 
@@ -64,29 +64,29 @@ O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 
 ---
 
-## 🔍 ANÁLISE DO PROBLEMA
+## [EMOJI] ANÁLISE DO PROBLEMA
 
 ### Root Cause Analysis (5 Whys)
 
 **Why 1:** Por que o agente não reconheceu os objectives?
 
-→ Esperava "challenges", recebeu "objectives" fora da ordem
+-> Esperava "challenges", recebeu "objectives" fora da ordem
 
 **Why 2:** Por que não adaptou quando recebeu informação diferente?
 
-→ Fluxo rígido baseado em `current_step` fixo
+-> Fluxo rígido baseado em `current_step` fixo
 
 **Why 3:** Por que o fluxo é rígido?
 
-→ `current_step` define mono-processamento (1 entidade por turn)
+-> `current_step` define mono-processamento (1 entidade por turn)
 
 **Why 4:** Por que mono-processamento?
 
-→ `_extract_information()` processa apenas step atual
+-> `_extract_information()` processa apenas step atual
 
 **Why 5 (ROOT CAUSE):** Por que design mono-step?
 
-→ **Design é "formulário sequencial" ao invés de "consultor conversacional"**
+-> **Design é "formulário sequencial" ao invés de "consultor conversacional"**
 
 ### Consequências Atuais
 
@@ -94,7 +94,7 @@ O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 
 |----------|-----------|------------|--------------|
 
-| Não reconhece informação já dada | 80% | CRÍTICO | "Como mencionado anteriormente" → ignorado |
+| Não reconhece informação já dada | 80% | CRÍTICO | "Como mencionado anteriormente" -> ignorado |
 
 | Confunde challenges/objectives | 60% | ALTO | Objectives classificados como challenges |
 
@@ -104,7 +104,7 @@ O `OnboardingAgent` atual apresenta **3 falhas críticas de UX**:
 
 ---
 
-## 🚀 ESTRATÉGIA DE IMPLEMENTAÇÃO
+## [EMOJI] ESTRATÉGIA DE IMPLEMENTAÇÃO
 
 ### FASE 1: Opportunistic Extraction (4h)
 
@@ -120,9 +120,9 @@ async def _extract_all_entities(
     user_message: str,
     conversation_history: List[Dict[str, str]]
 ) -> Dict[str, Any]:
-    """Extrai TODAS entidades possíveis (empresa, challenges, objectives) 
+    """Extrai TODAS entidades possíveis (empresa, challenges, objectives)
     de uma única mensagem do usuário.
-    
+
     Returns:
         {
             "company_info": CompanyInfo | None,
@@ -143,29 +143,29 @@ async def _extract_all_entities(
 ```python
 async def _extract_information(self, state: BSCState) -> BSCState:
     """Processa mensagem do usuário extraindo TODAS entidades possíveis."""
-    
+
     # 1. Extrair todas entidades
     entities = await self._extract_all_entities(
         state.user_message,
         state.onboarding_progress.get("conversation_history", [])
     )
-    
+
     # 2. Atualizar state incrementalmente
     if entities["has_company_info"] and not state.client_profile.company_info:
         state.client_profile.company_info = entities["company_info"]
-    
+
     if entities["has_challenges"]:
         state.client_profile.challenges.challenges.extend(entities["challenges"])
-    
+
     if entities["has_objectives"]:
         state.client_profile.objectives.objectives.extend(entities["objectives"])
-    
+
     # 3. Analisar contexto conversacional
     context = self._analyze_conversation_context(state, entities)
-    
+
     # 4. Gerar resposta contextual
     state.consultant_response = await self._generate_contextual_response(context)
-    
+
     return state
 ```
 
@@ -178,13 +178,13 @@ def _analyze_conversation_context(
     extracted_entities: Dict[str, Any]
 ) -> Dict[str, Any]:
     """Analisa o contexto da conversação para detectar situações especiais.
-    
+
     Detecta:
  - Objectives fornecidos ANTES de challenges
  - Frustração do usuário ("como mencionado", "já disse")
  - Informação repetida sendo ignorada
  - Confusão de conceitos
-    
+
     Returns:
         {
             "scenario": str,  # "objectives_before_challenges", "frustration_detected", etc.
@@ -204,15 +204,15 @@ async def _generate_contextual_response(
     context: Dict[str, Any]
 ) -> str:
     """Gera resposta adaptada ao contexto conversacional.
-    
+
     Exemplos:
- - Se objectives antes de challenges → reconhecer e adaptar fluxo
- - Se frustração detectada → empatia e sumário do que já temos
- - Se informação completa → confirmação e próxima etapa
+ - Se objectives antes de challenges -> reconhecer e adaptar fluxo
+ - Se frustração detectada -> empatia e sumário do que já temos
+ - Se informação completa -> confirmação e próxima etapa
     """
-    
+
     scenario = context["scenario"]
-    
+
     if scenario == "objectives_before_challenges":
         prompt = CONTEXTUAL_RESPONSE_OBJECTIVES_BEFORE_CHALLENGES
     elif scenario == "frustration_detected":
@@ -221,7 +221,7 @@ async def _generate_contextual_response(
         prompt = CONTEXTUAL_RESPONSE_CONFIRMATION
     else:
         prompt = CONTEXTUAL_RESPONSE_DEFAULT
-    
+
     # Gerar resposta usando LLM
     response = await self.llm.ainvoke(prompt.format(**context))
     return response.content
@@ -261,7 +261,7 @@ CONTEXTUAL_RESPONSE_OBJECTIVES_BEFORE_CHALLENGES = PromptTemplate(
 
 {objectives}
 
-Isso é excelente para começarmos. Agora, para eu conseguir criar uma estratégia BSC 
+Isso é excelente para começarmos. Agora, para eu conseguir criar uma estratégia BSC
 personalizada, preciso entender os desafios que você enfrenta atualmente.
 
 Quais são os principais desafios ou dificuldades que a empresa enfrenta hoje?
@@ -326,15 +326,15 @@ Retorne JSON: {{"is_frustrated": true/false, "confidence": 0.0-1.0}}
 
 **Benchmark (20 queries):**
 
-- 10 queries "fora de ordem" (objectives → challenges)
+- 10 queries "fora de ordem" (objectives -> challenges)
 - 5 queries "tudo de uma vez"
 - 5 queries "com frustração"
 
 **Métricas esperadas:**
 
-- Turns médios: 10-15 → 6-8 (-40%)
-- Taxa de reconhecimento: 60% → 100% (+67%)
-- Taxa de frustração não detectada: 100% → 20% (-80%)
+- Turns médios: 10-15 -> 6-8 (-40%)
+- Taxa de reconhecimento: 60% -> 100% (+67%)
+- Taxa de frustração não detectada: 100% -> 20% (-80%)
 
 ---
 
@@ -353,11 +353,11 @@ async def _validate_extraction(
     entity_type: str
 ) -> Dict[str, Any]:
     """Valida semanticamente se entidade corresponde ao tipo esperado.
-    
+
     Args:
         entity: Texto a validar (ex: "Aumentar vendas em 20%")
         entity_type: Tipo esperado ("challenge" ou "objective")
-    
+
     Returns:
         {
             "is_valid": bool,
@@ -366,7 +366,7 @@ async def _validate_extraction(
             "correction_suggestion": str | None
         }
     """
-    
+
     # Usar LLM para classificação semântica
     validation_result = await self.llm.ainvoke(
         SEMANTIC_VALIDATION_PROMPT.format(
@@ -374,17 +374,17 @@ async def _validate_extraction(
             entity_type=entity_type
         )
     )
-    
+
     result = json.loads(validation_result.content)
-    
-    # Se classificação diferente do tipo esperado → sugerir correção
+
+    # Se classificação diferente do tipo esperado -> sugerir correção
     if result["classified_as"] != entity_type and result["confidence"] > 0.7:
         result["is_valid"] = False
         result["correction_suggestion"] = (
             f"Isto parece ser um '{result['classified_as']}', "
             f"não um '{entity_type}'. Deseja reclassificar?"
         )
-    
+
     return result
 ```
 
@@ -468,7 +468,7 @@ for objective in extracted_objectives:
 **Métricas esperadas:**
 
 - Accuracy de classificação: > 90%
-- Confusões challenges/objectives: 60% → 0% (-100%)
+- Confusões challenges/objectives: 60% -> 0% (-100%)
 - Latência adicional: < 1s por validação
 - False positives: < 5%
 
@@ -485,7 +485,7 @@ for objective in extracted_objectives:
 ```python
 class BSCState(TypedDict, total=False):
     # ... campos existentes ...
-    
+
     onboarding_progress: Dict[str, Any]  # MODIFICAR
     # Estrutura expandida:
     # {
@@ -503,35 +503,35 @@ class BSCState(TypedDict, total=False):
 ```python
 def _should_generate_confirmation(self, state: BSCState) -> bool:
     """Decide se deve gerar confirmação periódica.
-    
+
     Heurísticas:
  1. A cada 3-4 turns de conversação
  2. Quando informação ambígua foi detectada
  3. Quando usuário mostrou frustração
  4. Quando 1 categoria completa (ex: empresa + challenges prontos)
     """
-    
+
     progress = state.onboarding_progress
     turn_count = progress.get("turn_count", 0)
     last_confirmation = progress.get("last_confirmation_turn", 0)
-    
+
     # Heurística 1: A cada 3-4 turns
     if turn_count - last_confirmation >= 3:
         return True
-    
+
     # Heurística 2: Informação ambígua
     if progress.get("has_ambiguity", False):
         return True
-    
+
     # Heurística 3: Frustração detectada
     if progress.get("frustration_detected", False):
         return True
-    
+
     # Heurística 4: Categoria completa
     profile = state.client_profile
     if profile.company_info and len(profile.challenges.challenges) >= 3:
         return True
-    
+
     return False
 ```
 
@@ -540,54 +540,54 @@ def _should_generate_confirmation(self, state: BSCState) -> bool:
 ```python
 async def _generate_confirmation_summary(self, state: BSCState) -> str:
     """Gera sumário estruturado das informações coletadas.
-    
+
     Formato:
     ---
     Deixe-me confirmar o que entendi até agora:
-    
+
     [EMPRESA]
  - Nome: ...
  - Setor: ...
  - Tamanho: ...
-    
+
     [DESAFIOS ATUAIS]
  - Desafio 1
  - Desafio 2
-    
+
     [OBJETIVOS]
  - Objetivo 1
  - Objetivo 2
-    
+
     Está correto? Falta alguma informação importante?
     ---
     """
-    
+
     profile = state.client_profile
     summary_parts = ["Deixe-me confirmar o que entendi até agora:\n"]
-    
+
     # Empresa
     if profile.company_info:
         summary_parts.append("[EMPRESA]")
         summary_parts.append(f"- Nome: {profile.company_info.name}")
         summary_parts.append(f"- Setor: {profile.company_info.sector}")
         summary_parts.append(f"- Tamanho: {profile.company_info.size}\n")
-    
+
     # Challenges
     if profile.challenges.challenges:
         summary_parts.append("[DESAFIOS ATUAIS]")
         for i, challenge in enumerate(profile.challenges.challenges, 1):
             summary_parts.append(f"{i}. {challenge}")
         summary_parts.append("")
-    
+
     # Objectives
     if profile.objectives.objectives:
         summary_parts.append("[OBJETIVOS]")
         for i, objective in enumerate(profile.objectives.objectives, 1):
             summary_parts.append(f"{i}. {objective}")
         summary_parts.append("")
-    
+
     summary_parts.append("Está correto? Falta alguma informação importante?")
-    
+
     return "\n".join(summary_parts)
 ```
 
@@ -596,23 +596,23 @@ async def _generate_confirmation_summary(self, state: BSCState) -> str:
 ```python
 async def process_turn(self, state: BSCState) -> BSCState:
     """Processa um turn da conversação com confirmações periódicas."""
-    
+
     # 1. Incrementar contador de turns
     state.onboarding_progress["turn_count"] = (
         state.onboarding_progress.get("turn_count", 0) + 1
     )
-    
+
     # 2. Extrair informações (FASE 1)
     state = await self._extract_information(state)
-    
+
     # 3. Validar semanticamente (FASE 2)
     # ... (já implementado)
-    
+
     # 4. Checar se deve gerar confirmação (FASE 3)
     if self._should_generate_confirmation(state):
         confirmation_summary = await self._generate_confirmation_summary(state)
         state.consultant_response = confirmation_summary
-        
+
         # Atualizar tracking
         state.onboarding_progress["last_confirmation_turn"] = (
             state.onboarding_progress["turn_count"]
@@ -620,7 +620,7 @@ async def process_turn(self, state: BSCState) -> BSCState:
         state.onboarding_progress["confirmation_count"] = (
             state.onboarding_progress.get("confirmation_count", 0) + 1
         )
-    
+
     return state
 ```
 
@@ -652,7 +652,7 @@ async def process_turn(self, state: BSCState) -> BSCState:
 
 ---
 
-## 📂 ARQUIVOS AFETADOS
+## [EMOJI] ARQUIVOS AFETADOS
 
 ### Modificações (5 arquivos)
 
@@ -789,7 +789,7 @@ onboarding_progress: Dict[str, Any]
 [Métricas antes/depois]
 
 ## ROI
-[7h investimento → 20-30h economia]
+[7h investimento -> 20-30h economia]
 
 ## Lições-Chave
 [Top 5 insights]
@@ -835,7 +835,7 @@ onboarding_progress: Dict[str, Any]
 
 ### Arquivamento (1 arquivo)
 
-#### 9. `docs/consulting/workflow-design.md` → `docs/consulting/archive/workflow-design.md`
+#### 9. `docs/consulting/workflow-design.md` -> `docs/consulting/archive/workflow-design.md`
 
 **Razão:** Documento reflete design sequencial antigo (obsoleto após refatoração).
 
@@ -845,10 +845,10 @@ onboarding_progress: Dict[str, Any]
 - [ ] Mover arquivo para archive com comentário no topo:
   ```markdown
   # [OBSOLETO - 2025-10-20] Workflow Design Sequencial
-  
+
   Este documento reflete o design original do onboarding sequencial.
   Foi substituído por `onboarding-conversational-design.md` em 20/10/2025.
-  
+
   Arquivado para referência histórica.
   ```
 
@@ -873,7 +873,7 @@ onboarding_progress: Dict[str, Any]
 
 ---
 
-## ✅ CHECKLIST DE EXECUÇÃO
+## [OK] CHECKLIST DE EXECUÇÃO
 
 ### PREPARAÇÃO
 
@@ -900,7 +900,7 @@ onboarding_progress: Dict[str, Any]
 - [x] **F1-IMPL-5:** Criar `_generate_contextual_response()` em `onboarding_agent.py` (133 linhas + 1 helper: _get_fallback_response - 173 linhas total)
 - [x] **F1-IMPL-6:** Criar `ANALYZE_CONVERSATION_CONTEXT_PROMPT` em `client_profile_prompts.py` (105 linhas - zero-shot ICL)
 - [x] **F1-IMPL-7:** Criar `GENERATE_CONTEXTUAL_RESPONSE_PROMPT` em `client_profile_prompts.py` (123 linhas - 5 cenários, 4 exemplos)
-- [x] **F1-IMPL-8:** Modificar `_extract_information()` para integração completa ✅ **COMPLETO - BLOCO 2 (23/10/2025)**
+- [x] **F1-IMPL-8:** Modificar `_extract_information()` para integração completa [OK] **COMPLETO - BLOCO 2 (23/10/2025)**
 
 **NOTA:** Implementação mais robusta que o planejado. Adicionados 6 métodos helpers, 2 schemas Pydantic completos, e 3 prompts detalhados (vs 4 prompts simples planejados). Total: +614 linhas onboarding_agent.py, +333 linhas prompts, +167 linhas schemas = **+1.114 linhas** (vs ~280 estimado).
 
@@ -918,30 +918,30 @@ onboarding_progress: Dict[str, Any]
 - [x] **F1-TEST-8:** `test_generate_contextual_response_smoke_confirmation` - Resposta confirmação
 - [x] **F1-TEST-9:** `test_generate_contextual_response_smoke_redirect` - Resposta redirect
 
-**TESTES E2E (✅ COMPLETOS - BLOCO 2 - 23/10/2025):**
+**TESTES E2E ([OK] COMPLETOS - BLOCO 2 - 23/10/2025):**
 
-- [x] **F1-TEST-10:** `test_e2e_objectives_before_challenges` - Fluxo completo fora de ordem ✅ **PASSANDO com LLM real**
-- [x] **F1-TEST-11:** `test_e2e_all_info_first_turn` - Tudo em 1 mensagem ✅ **PASSANDO com LLM real**
-- [x] **F1-TEST-12:** `test_e2e_frustration_recovery` - Detecta e recupera de frustração ✅ **PASSANDO com LLM real**
-- [x] **F1-TEST-13:** `test_e2e_incremental_completion` - Completa informações gradualmente ✅ **PASSANDO com LLM real**
-- [x] **F1-TEST-14:** `test_e2e_no_regression_standard_flow` - Fluxo padrão ainda funciona ✅ **PASSANDO com LLM real**
-- [x] **F1-TEST-15:** `test_e2e_integration_complete` - Integração completa com _extract_information() ✅ **PASSANDO com LLM real**
+- [x] **F1-TEST-10:** `test_e2e_objectives_before_challenges` - Fluxo completo fora de ordem [OK] **PASSANDO com LLM real**
+- [x] **F1-TEST-11:** `test_e2e_all_info_first_turn` - Tudo em 1 mensagem [OK] **PASSANDO com LLM real**
+- [x] **F1-TEST-12:** `test_e2e_frustration_recovery` - Detecta e recupera de frustração [OK] **PASSANDO com LLM real**
+- [x] **F1-TEST-13:** `test_e2e_incremental_completion` - Completa informações gradualmente [OK] **PASSANDO com LLM real**
+- [x] **F1-TEST-14:** `test_e2e_no_regression_standard_flow` - Fluxo padrão ainda funciona [OK] **PASSANDO com LLM real**
+- [x] **F1-TEST-15:** `test_e2e_integration_complete` - Integração completa com _extract_information() [OK] **PASSANDO com LLM real**
 
 **NOTA ATUALIZADA (23/10/2025):** Criados 9 smoke tests unitários (3 por método core) + 6 testes E2E com LLM real. Integração com _extract_information() COMPLETA (BLOCO 2). Total: **+537 linhas** test_onboarding_agent.py + **+78 linhas** fixtures (real_llm, onboarding_agent_real).
 
 #### Validação (15min)
 
-- [x] **F1-VAL-1:** Executar suite de testes completa: `pytest tests/test_onboarding_agent.py -v --tb=short` ✅ **28/33 testes passando (85%)**
-- [x] **F1-VAL-2:** Identificar e corrigir regressões: Conflito de nomes `_validate_extraction()` (sync vs async) → renomeado para `_validate_entity_semantically()` ✅ **9 testes recuperados** (14 → 5 falhas)
-- [x] **F1-VAL-3:** Validar coverage: **onboarding_agent.py 19% → 40% (+21pp)**, coverage geral **19% → 20%**
+- [x] **F1-VAL-1:** Executar suite de testes completa: `pytest tests/test_onboarding_agent.py -v --tb=short` [OK] **28/33 testes passando (85%)**
+- [x] **F1-VAL-2:** Identificar e corrigir regressões: Conflito de nomes `_validate_extraction()` (sync vs async) -> renomeado para `_validate_entity_semantically()` [OK] **9 testes recuperados** (14 -> 5 falhas)
+- [x] **F1-VAL-3:** Validar coverage: **onboarding_agent.py 19% -> 40% (+21pp)**, coverage geral **19% -> 20%**
 - [ ] **F1-VAL-4:** Executar benchmark (20 queries) *(PENDENTE - aguarda integração BLOCO 2)*
 - [ ] **F1-VAL-5:** Validar métricas esperadas (turns -40%, reconhecimento +67%, frustração -80%) *(PENDENTE - aguarda integração BLOCO 2)*
 
 **DESCOBERTAS:**
 
-- ✅ **9 novos smoke tests passando** (100% mockados, zero custo API)
-- ⚠️ **5 bugs pré-existentes identificados** (não introduzidos por refatoração): testes de progressão de steps incorretos
-- ✅ **Zero regressões** após correção do conflito de nomes
+- [OK] **9 novos smoke tests passando** (100% mockados, zero custo API)
+- [WARN] **5 bugs pré-existentes identificados** (não introduzidos por refatoração): testes de progressão de steps incorretos
+- [OK] **Zero regressões** após correção do conflito de nomes
 
 **Tempo total FASE 1:** 4h 30min (vs 4h estimado) - **+12% tempo**
 
@@ -1019,21 +1019,21 @@ onboarding_progress: Dict[str, Any]
 
 #### Documentação (20min)
 
-- [x] **FIN-DOC-1:** Criar `docs/lessons/lesson-onboarding-conversational-redesign-2025-10-20.md` (600 linhas) ✅ **COMPLETO** (1.250+ linhas - MANHÃ + TARDE)
-- [x] **FIN-DOC-2:** Criar `docs/consulting/onboarding-conversational-design.md` (400 linhas) ✅ **COMPLETO** (2.500+ linhas)
-- [x] **FIN-DOC-3:** Atualizar `.cursor/progress/consulting-progress.md` (adicionar resumo da refatoração) ✅ **COMPLETO**
+- [x] **FIN-DOC-1:** Criar `docs/lessons/lesson-onboarding-conversational-redesign-2025-10-20.md` (600 linhas) [OK] **COMPLETO** (1.250+ linhas - MANHÃ + TARDE)
+- [x] **FIN-DOC-2:** Criar `docs/consulting/onboarding-conversational-design.md` (400 linhas) [OK] **COMPLETO** (2.500+ linhas)
+- [x] **FIN-DOC-3:** Atualizar `.cursor/progress/consulting-progress.md` (adicionar resumo da refatoração) [OK] **COMPLETO**
 
 #### Validação Final (10min)
 
-- [x] **FIN-VAL-1:** Executar suite E2E completa: `pytest tests/ -v --tb=long 2>&1` ✅ **COMPLETO** (412/484 passando, 85%)
-- [x] **FIN-VAL-2:** Verificar zero regressões em testes existentes ✅ **VALIDADO** (falhas em outros módulos, não onboarding)
-- [x] **FIN-VAL-3:** Executar `tests/test_onboarding_agent.py` atualizado (fixtures novos) ✅ **COMPLETO** (39/39 passando, 100%)
-- [x] **FIN-VAL-4:** Validar métricas finais contra critérios de sucesso ✅ **VALIDADO** (todas métricas atingidas)
+- [x] **FIN-VAL-1:** Executar suite E2E completa: `pytest tests/ -v --tb=long 2>&1` [OK] **COMPLETO** (412/484 passando, 85%)
+- [x] **FIN-VAL-2:** Verificar zero regressões em testes existentes [OK] **VALIDADO** (falhas em outros módulos, não onboarding)
+- [x] **FIN-VAL-3:** Executar `tests/test_onboarding_agent.py` atualizado (fixtures novos) [OK] **COMPLETO** (39/39 passando, 100%)
+- [x] **FIN-VAL-4:** Validar métricas finais contra critérios de sucesso [OK] **VALIDADO** (todas métricas atingidas)
 
 #### Git (5min)
 
-- [x] **FIN-GIT-1:** Commit de todas mudanças: `git add . && git commit -m "feat: implementa onboarding conversacional inteligente (3 fases)"` ✅ **COMPLETO** (commit a5361be)
-- [x] **FIN-GIT-2:** Push branch: `git push origin feature/onboarding-conversational-redesign` ✅ **COMPLETO** (branch sincronizada)
+- [x] **FIN-GIT-1:** Commit de todas mudanças: `git add . && git commit -m "feat: implementa onboarding conversacional inteligente (3 fases)"` [OK] **COMPLETO** (commit a5361be)
+- [x] **FIN-GIT-2:** Push branch: `git push origin feature/onboarding-conversational-redesign` [OK] **COMPLETO** (branch sincronizada)
 - [x] **FIN-GIT-3:** Criar PR com descrição completa (link para `.plan.md` e lição aprendida) ⏳ **PRÓXIMO PASSO**
 
 **Tempo total FINALIZAÇÃO:** 30 minutos
@@ -1056,13 +1056,13 @@ onboarding_progress: Dict[str, Any]
 
 | **FINALIZAÇÃO** | 10 (3 docs + 4 val + 3 git) | 30 min | 30 min | [x] **COMPLETO 100%** *(docs + validações + git workflow)* |
 
-| **TOTAL** | **78 tasks** | **7h 45min** | **8h** (BLOCO 1+2 + bugs + finalização) | **✅ 100% COMPLETO** |
+| **TOTAL** | **78 tasks** | **7h 45min** | **8h** (BLOCO 1+2 + bugs + finalização) | **[OK] 100% COMPLETO** |
 
 ---
 
 **PROGRESSO ATUAL (22/10/2025):**
 
-✅ **BLOCO 1 COMPLETO** (FASE 1 Core):
+[OK] **BLOCO 1 COMPLETO** (FASE 1 Core):
 
 - 3 métodos principais implementados (_extract_all_entities, _analyze_conversation_context, _generate_contextual_response)
 - 6 métodos helpers adicionados
@@ -1070,7 +1070,7 @@ onboarding_progress: Dict[str, Any]
 - 3 prompts ICL detalhados criados (185 + 105 + 123 linhas)
 - 9 smoke tests passando (100% mockados)
 - 28/33 testes totais passando (85%)
-- Coverage: 19% → 40% (+21pp onboarding_agent.py)
+- Coverage: 19% -> 40% (+21pp onboarding_agent.py)
 - 1 regressão corrigida (conflito de nomes)
 - 5 bugs pré-existentes identificados
 
@@ -1086,7 +1086,7 @@ onboarding_progress: Dict[str, Any]
 
 ---
 
-## 🎯 CRITÉRIOS DE SUCESSO
+## [EMOJI] CRITÉRIOS DE SUCESSO
 
 ### Métricas Técnicas
 
@@ -1118,7 +1118,7 @@ onboarding_progress: Dict[str, Any]
 
 | **Accuracy de classificação challenges/objectives** | 60% | > 90% | Benchmark 50 casos |
 
-| **Taxa de confusão challenges ↔ objectives** | 60% | 0% | Validação manual |
+| **Taxa de confusão challenges <-> objectives** | 60% | 0% | Validação manual |
 
 | **Taxa de reclassificação automática correta** | - | > 95% | Testes unitários |
 
@@ -1183,12 +1183,12 @@ onboarding_progress: Dict[str, Any]
 
 ---
 
-## ⏱️ TIMELINE ESTIMADO
+## [TIMER] TIMELINE ESTIMADO
 
 ### Visão Geral
 
 ```
-PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZAÇÃO (30min)
+PREPARAÇÃO (15min) -> FASE 1 (4h) -> FASE 2 (2h) -> FASE 3 (1h) -> FINALIZAÇÃO (30min)
 ├─────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
 0h           0.25h         4.25h          6.25h         7.25h         7.75h
 ```
@@ -1303,7 +1303,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 ---
 
-## 🚨 IMPACTO FASE 3
+## [EMOJI] IMPACTO FASE 3
 
 ### Análise de Impacto
 
@@ -1323,7 +1323,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 #### Impacto da Refatoração
 
-**BLOQUEANTE?** ❌ NÃO
+**BLOQUEANTE?** [ERRO] NÃO
 
 **RAZÃO:**
 
@@ -1333,9 +1333,9 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 **CONFLITOS POTENCIAIS:**
 
-- ✅ **Nenhum arquivo compartilhado** entre refatoração e FASE 3
-- ✅ **Nenhuma mudança em schemas core** que afetem diagnostic tools
-- ✅ **Nenhuma alteração em workflow principal** (apenas onboarding subworkflow)
+- [OK] **Nenhum arquivo compartilhado** entre refatoração e FASE 3
+- [OK] **Nenhuma mudança em schemas core** que afetem diagnostic tools
+- [OK] **Nenhuma alteração em workflow principal** (apenas onboarding subworkflow)
 
 ---
 
@@ -1347,7 +1347,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 1. **UX Crítico** - Onboarding é porta de entrada, impacto em 100% usuários
 2. **Base Sólida** - Corrigir fundação antes de construir novos módulos
-3. **ROI Alto** - 7h investimento → 20-30h economia futura (menos bugs UX)
+3. **ROI Alto** - 7h investimento -> 20-30h economia futura (menos bugs UX)
 4. **Momentum** - Refatoração completa melhor que incremental (contexto fresco)
 
 **IMPACTO EM FASE 3:**
@@ -1366,17 +1366,17 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 > Pausando FASE 3 por 1 dia para implementar refatoração conversacional completa.
 >
 > **Benefícios:**
-> - Onboarding 40% mais rápido (10-15 turns → 6-8 turns)
+> - Onboarding 40% mais rápido (10-15 turns -> 6-8 turns)
 > - Zero loops infinitos (era 15% dos casos)
 > - 100% reconhecimento de informação já dada (era 60%)
 >
 > **Impacto em FASE 3:** Nenhum bloqueio técnico. Retomada em 3.7 após merge.
 >
-> **ROI:** 7h investimento → 20-30h economia futura + UX superior desde o início."
+> **ROI:** 7h investimento -> 20-30h economia futura + UX superior desde o início."
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Documentação do Projeto
 
@@ -1405,7 +1405,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 ---
 
-## 📊 ROI ESPERADO
+## [EMOJI] ROI ESPERADO
 
 ### Investimento
 
@@ -1417,10 +1417,10 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 **Métricas Técnicas (Esperadas):**
 
-- **-40% turns por onboarding** (10-15 → 6-8) → 4-6 min economizados por usuário
-- **-100% loops infinitos** (15% → 0%) → Zero casos de frustração extrema
-- **+67% reconhecimento** (60% → 100%) → Informação nunca repetida
-- **+100% adaptação contextual** (0% → 100%) → Fluxo natural
+- **-40% turns por onboarding** (10-15 -> 6-8) -> 4-6 min economizados por usuário
+- **-100% loops infinitos** (15% -> 0%) -> Zero casos de frustração extrema
+- **+67% reconhecimento** (60% -> 100%) -> Informação nunca repetida
+- **+100% adaptação contextual** (0% -> 100%) -> Fluxo natural
 
 **Economia de Tempo:**
 
@@ -1461,7 +1461,7 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 ---
 
-## ✍️ NOTAS FINAIS
+## ✍ NOTAS FINAIS
 
 ### Lições-Chave para o Futuro
 
@@ -1487,10 +1487,10 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 **Atualizar este arquivo quando:**
 
-- [x] Fases forem concluídas (marcar checkboxes) ✅ BLOCO 1+2 completos
-- [x] Métricas reais divergirem das estimadas (atualizar seção ROI) ✅ 7h 30min vs 7h 45min estimado
-- [x] Novos problemas forem descobertos durante implementação ✅ Prompt schema alignment, LLM real necessário
-- [x] Timeline real divergir do estimado ✅ Atualizado em tabela linha 1059
+- [x] Fases forem concluídas (marcar checkboxes) [OK] BLOCO 1+2 completos
+- [x] Métricas reais divergirem das estimadas (atualizar seção ROI) [OK] 7h 30min vs 7h 45min estimado
+- [x] Novos problemas forem descobertos durante implementação [OK] Prompt schema alignment, LLM real necessário
+- [x] Timeline real divergir do estimado [OK] Atualizado em tabela linha 1059
 
 **Arquivo vivo até:** Merge para `main` e fechamento do PR.
 
@@ -1498,56 +1498,56 @@ PREPARAÇÃO (15min) → FASE 1 (4h) → FASE 2 (2h) → FASE 3 (1h) → FINALIZ
 
 ---
 
-## 🎯 PRÓXIMAS ETAPAS PÓS-FINALIZAÇÃO
+## [EMOJI] PRÓXIMAS ETAPAS PÓS-FINALIZAÇÃO
 
 ### IMEDIATO (Hoje - 24/10/2025)
 
-- [x] ✅ **Documentação criada** - Design doc + lição aprendida (3.750+ linhas)
-- [x] ✅ **Testes validados** - 39/39 passando (100%)
-- [x] ✅ **Branch sincronizada** - Commits pushados
-- [x] ✅ **Pull Request criado** - https://github.com/hpm27/agente-bsc-rag/pull/5
+- [x] [OK] **Documentação criada** - Design doc + lição aprendida (3.750+ linhas)
+- [x] [OK] **Testes validados** - 39/39 passando (100%)
+- [x] [OK] **Branch sincronizada** - Commits pushados
+- [x] [OK] **Pull Request criado** - https://github.com/hpm27/agente-bsc-rag/pull/5
 
 ### CURTO PRAZO (1-2 dias)
 
-- [x] ✅ **Code Review** - APROVADO 4.8/5.0 (commit 96bce30) - .cursor/reviews/code-review-pr5-onboarding-refactor.md
-- [x] ✅ **Merge para master** - CONCLUÍDO (commit 00ddbce) - Fast-forward merge, 161 arquivos
-- [x] ✅ **Limpar branch feature** - Branches local/remota deletadas
-- [x] ✅ **Tag release criada** - v1.1.0 disponível no GitHub
+- [x] [OK] **Code Review** - APROVADO 4.8/5.0 (commit 96bce30) - .cursor/reviews/code-review-pr5-onboarding-refactor.md
+- [x] [OK] **Merge para master** - CONCLUÍDO (commit 00ddbce) - Fast-forward merge, 161 arquivos
+- [x] [OK] **Limpar branch feature** - Branches local/remota deletadas
+- [x] [OK] **Tag release criada** - v1.1.0 disponível no GitHub
 - [ ] ⏳ **Deploy em produção** - Disponibilizar para usuários reais (próximo passo)
 
 ### MÉDIO PRAZO (1-2 semanas)
 
-- [ ] 📊 **A/B Testing** - Comparar onboarding antigo vs novo com usuários reais
-- [ ] 📈 **Monitorar métricas** - Turns médios, completion rate, taxa de abandono
-- [ ] 🔍 **Coletar feedback** - Entrevistas qualitativas com 10-15 usuários
-- [ ] 📉 **Análise de dados** - Validar ROI esperado vs real
+- [ ] [EMOJI] **A/B Testing** - Comparar onboarding antigo vs novo com usuários reais
+- [ ] [EMOJI] **Monitorar métricas** - Turns médios, completion rate, taxa de abandono
+- [ ] [EMOJI] **Coletar feedback** - Entrevistas qualitativas com 10-15 usuários
+- [ ] [EMOJI] **Análise de dados** - Validar ROI esperado vs real
 
 ### LONGO PRAZO (Opcional - Q1 2026)
 
-- [ ] 🔧 **FASE 2 da Refatoração** - Intelligent Validation (SE houver confusões challenges/objectives)
-- [ ] 🔧 **FASE 3 da Refatoração** - Periodic Confirmation (SE usuários pedirem validações)
-- [ ] 🌍 **Multi-língua** - Suporte para inglês e espanhol
-- [ ] 🗣️ **Voice Interface** - Integração com assistentes de voz
+- [ ] [EMOJI] **FASE 2 da Refatoração** - Intelligent Validation (SE houver confusões challenges/objectives)
+- [ ] [EMOJI] **FASE 3 da Refatoração** - Periodic Confirmation (SE usuários pedirem validações)
+- [ ] [EMOJI] **Multi-língua** - Suporte para inglês e espanhol
+- [ ] [EMOJI] **Voice Interface** - Integração com assistentes de voz
 
 ### RETOMAR FASE 3 (Após Merge)
 
-- [ ] 🔄 **Retomar FASE 3.7** - Integração Diagnostic Tools com Workflow
-- [ ] 📚 **Continuar implementação** - Tarefas 3.7-3.12 pendentes
-- [ ] 🎯 **Completar FASE 3** - 6 tools consultivas restantes
+- [ ] [EMOJI] **Retomar FASE 3.7** - Integração Diagnostic Tools com Workflow
+- [ ] [EMOJI] **Continuar implementação** - Tarefas 3.7-3.12 pendentes
+- [ ] [EMOJI] **Completar FASE 3** - 6 tools consultivas restantes
 
 ---
 
-## 📋 CHECKLIST PRÉ-MERGE
+## [EMOJI] CHECKLIST PRÉ-MERGE
 
 Verificar ANTES de fazer merge:
 
-- [x] ✅ 39/39 testes passando (100%)
-- [x] ✅ Suite E2E sem regressões críticas
-- [x] ✅ Documentação completa (design + lição)
-- [x] ✅ Métricas validadas contra targets
-- [x] ✅ Zero emojis Unicode em código ([[9776249]])
-- [x] ✅ Branch sincronizada com remote
-- [x] ✅ Commits com mensagens descritivas
+- [x] [OK] 39/39 testes passando (100%)
+- [x] [OK] Suite E2E sem regressões críticas
+- [x] [OK] Documentação completa (design + lição)
+- [x] [OK] Métricas validadas contra targets
+- [x] [OK] Zero emojis Unicode em código ([[9776249]])
+- [x] [OK] Branch sincronizada com remote
+- [x] [OK] Commits com mensagens descritivas
 - [ ] ⏳ PR criado e aprovado
 - [ ] ⏳ Code review completo
 - [ ] ⏳ CI/CD pipeline passando
@@ -1560,17 +1560,17 @@ Verificar ANTES de fazer merge:
 
 **Última Atualização:** 2025-10-24 (MERGE CONCLUÍDO)
 
-**Status:** ✅ **REFATORAÇÃO INTEGRADA AO MASTER** - Merge commit 00ddbce, tag v1.1.0, branches limpas, 161 arquivos integrados
+**Status:** [OK] **REFATORAÇÃO INTEGRADA AO MASTER** - Merge commit 00ddbce, tag v1.1.0, branches limpas, 161 arquivos integrados
 
 **Progresso Geral:** 100% (8h 15min total - incluindo finalização, code review e merge)
 
-**Próximo Checkpoint:** 🚀 **PRONTO PARA DEPLOY** - Disponibilizar em produção para usuários reais
+**Próximo Checkpoint:** [EMOJI] **PRONTO PARA DEPLOY** - Disponibilizar em produção para usuários reais
 
 ---
 
-## 📊 ATUALIZAÇÃO BLOCO 2 (23/10/2025 - TARDE)
+## [EMOJI] ATUALIZAÇÃO BLOCO 2 (23/10/2025 - TARDE)
 
-### ✅ INTEGRAÇÃO E TESTES E2E - 100% COMPLETO
+### [OK] INTEGRAÇÃO E TESTES E2E - 100% COMPLETO
 
 **Status Final:** 39/39 testes passando (**100%**) - 6 testes E2E com LLM real validando extração REAL de informações
 
@@ -1578,13 +1578,13 @@ Verificar ANTES de fazer merge:
 
 ---
 
-### 🛠️ Mudanças Implementadas
+### [EMOJI] Mudanças Implementadas
 
 #### **1. Correção do Prompt EXTRACT_ALL_ENTITIES (Prompt Schema Alignment)**
 
 **Arquivo:** `src/prompts/client_profile_prompts.py` (linhas 661-676)
 
-**Problema:** LLM retornava `company_info` sem campo `sector` (obrigatório) → ValidationError
+**Problema:** LLM retornava `company_info` sem campo `sector` (obrigatório) -> ValidationError
 
 **Solução:**
 - Prompt agora menciona explicitamente: "Se company_info != null, campos 'name' e 'sector' são OBRIGATÓRIOS"
@@ -1605,9 +1605,9 @@ Verificar ANTES de fazer merge:
 **Padrão:** Lincoln Loop (Jan 2025) - "Avoiding Mocks: Testing LLM Applications"
 
 **Benefícios:**
-- ✅ Valida comportamento completo end-to-end
-- ✅ Detecta breaking changes em APIs
-- ✅ Extração REAL de informações (vs mocks estáticos)
+- [OK] Valida comportamento completo end-to-end
+- [OK] Detecta breaking changes em APIs
+- [OK] Extração REAL de informações (vs mocks estáticos)
 
 **Custo:** ~$0.02 por execução (6 testes × GPT-5 mini)
 
@@ -1619,10 +1619,10 @@ Verificar ANTES de fazer merge:
 
 **Mudança:**
 ```python
-# ❌ ANTES (frágil):
+# [ERRO] ANTES (frágil):
 assert "objetivo" in question.lower()
 
-# ✅ DEPOIS (robusto):
+# [OK] DEPOIS (robusto):
 assert len(goals) >= 3  # Funcionalidade
 assert company_name is not None  # Funcionalidade
 # Texto da resposta é irrelevante
@@ -1632,18 +1632,18 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-### 📊 Resultados Finais
+### [EMOJI] Resultados Finais
 
 | Categoria | Antes | Depois | Melhoria |
 |-----------|-------|--------|----------|
-| Testes E2E | 1/6 (17%) | 6/6 (100%) | 🎯 +500% |
-| **TOTAL** | **34/39 (87%)** | **39/39 (100%)** | **🎉 +13pp** |
+| Testes E2E | 1/6 (17%) | 6/6 (100%) | [EMOJI] +500% |
+| **TOTAL** | **34/39 (87%)** | **39/39 (100%)** | **[EMOJI] +13pp** |
 
 **Tempo Execução:** 2min 47s - Aceitável para LLM real
 
 ---
 
-###  💰 ROI Validado
+###  [EMOJI] ROI Validado
 
 **Investido:** ~2.5h
 
@@ -1655,7 +1655,7 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-### 🎯 Top 5 Lições Aprendidas
+### [EMOJI] Top 5 Lições Aprendidas
 
 1. **Prompt Schema Alignment CRÍTICO**: LLM segue prompt PRIMEIRO, valida schema DEPOIS
 2. **Avoid Mocks in E2E**: LLM real detecta breaking changes
@@ -1665,13 +1665,13 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-## 📊 ATUALIZAÇÃO DE PROGRESSO (23/10/2025 MANHÃ)
+## [EMOJI] ATUALIZAÇÃO DE PROGRESSO (23/10/2025 MANHÃ)
 
-### ✅ CORREÇÃO DE BUGS PRÉ-EXISTENTES COMPLETA
+### [OK] CORREÇÃO DE BUGS PRÉ-EXISTENTES COMPLETA
 
-**Identificados:** 5 bugs (testes falhando: 28/33 → 85%)
+**Identificados:** 5 bugs (testes falhando: 28/33 -> 85%)
 
-**Resolvidos:** 5 bugs (testes passando: 33/33 → **100%**!)
+**Resolvidos:** 5 bugs (testes passando: 33/33 -> **100%**!)
 
 **Tempo:** 75 minutos (Sequential Thinking + debugging + correções)
 
@@ -1689,33 +1689,33 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-## 📊 ATUALIZAÇÃO BLOCO FINALIZAÇÃO (24/10/2025 - Sessão 24)
+## [EMOJI] ATUALIZAÇÃO BLOCO FINALIZAÇÃO (24/10/2025 - Sessão 24)
 
-### ✅ FINALIZAÇÃO 100% COMPLETA - PRONTO PARA MERGE
+### [OK] FINALIZAÇÃO 100% COMPLETA - PRONTO PARA MERGE
 
-**Status Final:** ✅ **Refatoração 100% Completa** - 39/39 testes passando, documentação criada, métricas validadas
+**Status Final:** [OK] **Refatoração 100% Completa** - 39/39 testes passando, documentação criada, métricas validadas
 
 **Tempo Investido:** 30 minutos (100% alinhado com estimativa)
 
 ---
 
-### 🛠️ Tarefas Executadas
+### [EMOJI] Tarefas Executadas
 
 #### **1. Documentação Criada (3 docs)**
 
-**FIN-DOC-1:** Lição aprendida completa ✅
+**FIN-DOC-1:** Lição aprendida completa [OK]
 - **Arquivo:** `docs/lessons/lesson-onboarding-conversational-redesign-2025-10-23.md`
 - **Conteúdo:** 1.250+ linhas (MANHÃ + TARDE consolidadas)
 - **Seções:** Problema, Root Cause 5 Whys, Solução (3 componentes), Implementação, Resultados, Top 5 Lições, Top 5 Antipadrões
 - **Status:** COMPLETO na sessão 23 TARDE
 
-**FIN-DOC-2:** Design Document criado ✅
+**FIN-DOC-2:** Design Document criado [OK]
 - **Arquivo:** `docs/consulting/onboarding-conversational-design.md`
 - **Conteúdo:** 2.500+ linhas (vs 400 estimadas)
 - **Seções:** Context, Problem, Solution (3 componentes), Implementação Técnica, Métricas, Decision Records, Próximos Passos, ROI
 - **Status:** CRIADO na sessão 24
 
-**FIN-DOC-3:** Progress atualizado ✅
+**FIN-DOC-3:** Progress atualizado [OK]
 - **Arquivo:** `.cursor/progress/consulting-progress.md`
 - **Mudanças:** Adicionada seção completa "Resultados da Refatoração Onboarding Conversacional" com entregáveis, métricas, ROI
 - **Status:** ATUALIZADO na sessão 24
@@ -1724,43 +1724,43 @@ assert company_name is not None  # Funcionalidade
 
 #### **2. Validação Final Executada (4 validações)**
 
-**FIN-VAL-1:** Suite E2E completa ✅
+**FIN-VAL-1:** Suite E2E completa [OK]
 - **Comando:** `pytest tests/ -n 8 --dist=loadfile -v -m "not benchmark"`
 - **Resultado:** 412 passando, 72 falhando
 - **Análise:** Falhas em outros módulos (test_onboarding_conversational.py experimental), NÃO na refatoração
 - **Conclusão:** Zero regressões introduzidas pela refatoração
 
-**FIN-VAL-2:** Zero regressões confirmado ✅
+**FIN-VAL-2:** Zero regressões confirmado [OK]
 - **Validação:** Falhas existem em módulos não relacionados (consulting_orchestrator, consulting_workflow com timeouts LLM)
 - **Refatoração:** 39/39 testes do onboarding_agent.py passando (100%)
 - **Conclusão:** Refatoração não quebrou funcionalidade existente
 
-**FIN-VAL-3:** Testes onboarding_agent.py ✅
+**FIN-VAL-3:** Testes onboarding_agent.py [OK]
 - **Comando:** `pytest tests/test_onboarding_agent.py -v --tb=short`
 - **Resultado:** 39/39 passando (100%)
 - **Coverage:** 72% no onboarding_agent.py
 - **Tempo:** 3min 35s (215s)
 - **Conclusão:** Todos os testes da refatoração passando
 
-**FIN-VAL-4:** Métricas validadas ✅
+**FIN-VAL-4:** Métricas validadas [OK]
 
 | Métrica | Target | Alcançado | Status |
 |---------|--------|-----------|--------|
-| **Turns médios** | 6-8 | 7 | ✅ |
-| **Reconhecimento** | 60%+ | 67% | ✅ |
-| **Completion/turn** | 16.7% | 14.3% | ✅ |
-| **Coverage** | - | 40% (+21pp) | ✅ |
+| **Turns médios** | 6-8 | 7 | [OK] |
+| **Reconhecimento** | 60%+ | 67% | [OK] |
+| **Completion/turn** | 16.7% | 14.3% | [OK] |
+| **Coverage** | - | 40% (+21pp) | [OK] |
 
 ---
 
 #### **3. Git Workflow Completado (3 ações)**
 
-**FIN-GIT-1:** Commit realizado ✅
+**FIN-GIT-1:** Commit realizado [OK]
 - **Commit:** `a5361be` - "docs: finalização refatoração onboarding conversacional"
 - **Anteriores:** `75edbb2` (BLOCO 1), `bdc1f4e` (início)
 - **Status:** 3 commits na branch
 
-**FIN-GIT-2:** Branch sincronizada ✅
+**FIN-GIT-2:** Branch sincronizada [OK]
 - **Comando:** `git push origin feature/onboarding-conversational-redesign`
 - **Resultado:** "Everything up-to-date"
 - **Status:** Branch remota atualizada
@@ -1772,23 +1772,23 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-### 📊 Resultados Finais da Refatoração
+### [EMOJI] Resultados Finais da Refatoração
 
 #### **Entregáveis Completos**
 
-1. ✅ **Código Implementado** (100% funcional):
+1. [OK] **Código Implementado** (100% funcional):
    - 6 métodos conversacionais novos
    - 2 schemas Pydantic (ExtractedEntities, ConversationContext)
    - 3 prompts ICL (413 linhas)
    - Integração completa com _extract_information()
 
-2. ✅ **Testes Completos** (39/39 passando):
+2. [OK] **Testes Completos** (39/39 passando):
    - 9 smoke tests (mocks)
    - 24 testes unitários
    - 6 testes E2E (LLM real)
-   - Coverage: 19% → 40% (+21pp)
+   - Coverage: 19% -> 40% (+21pp)
 
-3. ✅ **Documentação Completa** (3.750+ linhas):
+3. [OK] **Documentação Completa** (3.750+ linhas):
    - Design Document (2.500+ linhas)
    - Lição Aprendida (1.250+ linhas)
    - Progress atualizado
@@ -1799,11 +1799,11 @@ assert company_name is not None  # Funcionalidade
 
 | Métrica | Baseline | Target | Alcançado | Status |
 |---------|----------|--------|-----------|--------|
-| **Turns médios** | 10-15 | 6-8 | **7** | ✅ **ATINGIDO** |
-| **Reconhecimento** | 0% | 60%+ | **67%** | ✅ **SUPERADO** |
-| **Completion/turn** | 12.5% | 16.7% | **14.3%** | ✅ **ATINGIDO** |
-| **Coverage** | 19% | - | **40%** | ✅ **+21pp** |
-| **Testes passando** | - | 100% | **100%** | ✅ **39/39** |
+| **Turns médios** | 10-15 | 6-8 | **7** | [OK] **ATINGIDO** |
+| **Reconhecimento** | 0% | 60%+ | **67%** | [OK] **SUPERADO** |
+| **Completion/turn** | 12.5% | 16.7% | **14.3%** | [OK] **ATINGIDO** |
+| **Coverage** | 19% | - | **40%** | [OK] **+21pp** |
+| **Testes passando** | - | 100% | **100%** | [OK] **39/39** |
 
 ---
 
@@ -1817,21 +1817,21 @@ assert company_name is not None  # Funcionalidade
 - **Total:** 8h 45min
 
 **Retorno Esperado:**
-- **Por usuário:** -40% tempo onboarding (10min → 6min)
+- **Por usuário:** -40% tempo onboarding (10min -> 6min)
 - **Por mês:** 6-10h economizadas (100 usuários)
 - **Por ano:** 72-120h economizadas
 - **Break-even:** 1 mês
 - **ROI 1 ano:** 9-15x
 
 **Retorno Qualitativo:**
-- ✅ UX superior (conversacional vs formulário)
-- ✅ First impression positiva
-- ✅ Pattern reutilizável (outros agentes)
-- ✅ Base sólida para expansões futuras
+- [OK] UX superior (conversacional vs formulário)
+- [OK] First impression positiva
+- [OK] Pattern reutilizável (outros agentes)
+- [OK] Base sólida para expansões futuras
 
 ---
 
-### 🎓 Top 5 Lições-Chave
+### [EMOJI] Top 5 Lições-Chave
 
 1. **LLM Testing Strategy** - Fixtures separadas mock vs real, functional assertions funcionam
 2. **Prompt-Schema Alignment** - LLM segue prompt PRIMEIRO, schema valida DEPOIS
@@ -1841,21 +1841,21 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-### 🚀 Status Atual
+### [EMOJI] Status Atual
 
 **Branch:** `feature/onboarding-conversational-redesign`
 **Commits:** 3 (bdc1f4e, 75edbb2, a5361be)
 **Testes:** 39/39 passando (100%)
 **Documentação:** 3.750+ linhas criadas
-**Status:** ✅ **PRONTO PARA MERGE**
+**Status:** [OK] **PRONTO PARA MERGE**
 
 **Próxima Ação:** Criar Pull Request no GitHub
 
 ---
 
-### 🔀 Merge para Master Executado (Sessão 24 - Continuação)
+### [EMOJI] Merge para Master Executado (Sessão 24 - Continuação)
 
-**Status:** ✅ **MERGE CONCLUÍDO** - Refatoração integrada ao master com sucesso
+**Status:** [OK] **MERGE CONCLUÍDO** - Refatoração integrada ao master com sucesso
 
 **Metodologia:**
 - Sequential Thinking (6 thoughts) para planejamento do merge seguro
@@ -1864,14 +1864,14 @@ assert company_name is not None  # Funcionalidade
 - Cleanup automático de branches
 
 **Execução (8 passos):**
-1. ✅ Verificar status PR #5 (OPEN, sem conflitos)
-2. ✅ Merge com --delete-branch (fast-forward bem-sucedido)
-3. ✅ Checkout para master (automático pelo merge)
-4. ✅ Pull para atualizar (já atualizado)
-5. ✅ Deletar branch local (já deletada automaticamente)
-6. ✅ Criar tag v1.1.0 (release marcado)
-7. ✅ Atualizar plano (este documento)
-8. ✅ Atualizar consulting-progress.md (próximo)
+1. [OK] Verificar status PR #5 (OPEN, sem conflitos)
+2. [OK] Merge com --delete-branch (fast-forward bem-sucedido)
+3. [OK] Checkout para master (automático pelo merge)
+4. [OK] Pull para atualizar (já atualizado)
+5. [OK] Deletar branch local (já deletada automaticamente)
+6. [OK] Criar tag v1.1.0 (release marcado)
+7. [OK] Atualizar plano (este documento)
+8. [OK] Atualizar consulting-progress.md (próximo)
 
 **Resultado:**
 - **Merge commit:** 00ddbce
@@ -1894,7 +1894,7 @@ assert company_name is not None  # Funcionalidade
 
 ---
 
-### 🔍 Code Review Executado (Sessão 24 - Continuação)
+### [EMOJI] Code Review Executado (Sessão 24 - Continuação)
 
 **Metodologia:**
 - Sequential Thinking (8 thoughts) para planejamento
@@ -1907,15 +1907,15 @@ assert company_name is not None  # Funcionalidade
 - **MEDIUM:** 0 issues
 - **LOW/NITPICKS:** 3 issues (typos, magic numbers, nomenclatura) - OPCIONAIS
 
-**Resultado:** ✅ **APROVADO 4.8/5.0** (Excelente)
+**Resultado:** [OK] **APROVADO 4.8/5.0** (Excelente)
 
 **Validações:**
-- ✅ 11/11 características de high-quality code (Real Python 2025)
-- ✅ 8/8 memórias críticas aplicadas
-- ✅ Zero vulnerabilidades de segurança (Bandit checklist)
-- ✅ Async/await correto (memória [[10138341]])
-- ✅ Pydantic V2 compliance (memória [[9969821]])
-- ✅ LLM Testing Strategy (memória [[10267391]])
+- [OK] 11/11 características de high-quality code (Real Python 2025)
+- [OK] 8/8 memórias críticas aplicadas
+- [OK] Zero vulnerabilidades de segurança (Bandit checklist)
+- [OK] Async/await correto (memória [[10138341]])
+- [OK] Pydantic V2 compliance (memória [[9969821]])
+- [OK] LLM Testing Strategy (memória [[10267391]])
 
 **Documentação:**
 - **Relatório:** .cursor/reviews/code-review-pr5-onboarding-refactor.md (632 linhas)
@@ -1924,24 +1924,24 @@ assert company_name is not None  # Funcionalidade
 
 **Tempo:** 90 minutos (research + análise + correções + relatório)
 
-**Conclusão:** Código pronto para merge e deploy em produção! 🚀
+**Conclusão:** Código pronto para merge e deploy em produção! [EMOJI]
 
 ---
 
-## 📊 ATUALIZAÇÃO DE PROGRESSO (22/10/2025)
+## [EMOJI] ATUALIZAÇÃO DE PROGRESSO (22/10/2025)
 
 ### Resumo Executivo BLOCO 1
 
 **COMPLETADO (22/10/2025):**
 
-✅ 3 métodos principais (645 linhas)
-✅ 6 métodos helpers (269 linhas)
-✅ 2 schemas Pydantic (167 linhas)
-✅ 3 prompts ICL (413 linhas)
-✅ 9 smoke tests (537 linhas)
-✅ 1 documento progresso (300 linhas)
-✅ 1 regressão corrigida (conflito nomes)
-✅ 28/33 testes passando (85%)
+[OK] 3 métodos principais (645 linhas)
+[OK] 6 métodos helpers (269 linhas)
+[OK] 2 schemas Pydantic (167 linhas)
+[OK] 3 prompts ICL (413 linhas)
+[OK] 9 smoke tests (537 linhas)
+[OK] 1 documento progresso (300 linhas)
+[OK] 1 regressão corrigida (conflito nomes)
+[OK] 28/33 testes passando (85%)
 
 **DESCOBERTAS CRÍTICAS:**
 - Brightdata research validou ICL with LLMs (F1 0.86) > sentiment models (F1 0.34-0.65)
@@ -1950,7 +1950,7 @@ assert company_name is not None  # Funcionalidade
 - Implementação 4x maior que estimado (1.951 vs ~485 linhas) - mais robusta
 
 **MÉTRICAS BLOCO 1:**
-- Coverage: 19% → 40% (+21pp)
+- Coverage: 19% -> 40% (+21pp)
 - Testes novos: 9 smoke tests passando
 - Tempo: 4h 30min (vs 4h estimado)
 - ROI: Base sólida para BLOCO 2
@@ -2002,17 +2002,17 @@ assert company_name is not None  # Funcionalidade
 
 | **09:15 - 11:45** | FASE 1 (Impl) | 2h 30min | Opportunistic extraction |
 
-| **11:45 - 12:00** | PAUSA | 15min | Café ☕ |
+| **11:45 - 12:00** | PAUSA | 15min | Café [EMOJI] |
 
 | **12:00 - 13:15** | FASE 1 (Testes) | 1h 15min | Escrever e executar testes |
 
-| **13:15 - 14:15** | ALMOÇO | 1h | 🍽️ |
+| **13:15 - 14:15** | ALMOÇO | 1h | [EMOJI] |
 
 | **14:15 - 15:30** | FASE 2 (Impl) | 1h 15min | Intelligent validation |
 
 | **15:30 - 16:10** | FASE 2 (Testes) | 40min | Escrever e executar testes |
 
-| **16:10 - 16:25** | PAUSA | 15min | Café ☕ |
+| **16:10 - 16:25** | PAUSA | 15min | Café [EMOJI] |
 
 | **16:25 - 17:05** | FASE 3 (Impl) | 40min | Periodic confirmation |
 
@@ -2023,4 +2023,3 @@ assert company_name is not None  # Funcionalidade
 **Total:** 7h 45min (trabalho efetivo) + 2h 30min (pausas) = **10h 15min total**
 
 ---
-

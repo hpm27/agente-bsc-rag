@@ -8,11 +8,10 @@ Fase: 4.3 - Integration APIs
 
 import logging
 
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-
 from config.settings import settings
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 logger = logging.getLogger(__name__)
 
@@ -29,14 +28,13 @@ limiter = Limiter(
 
 def rate_limit_exceeded_handler(request, exc: RateLimitExceeded):
     """Handler customizado para rate limit excedido.
-    
+
     Retorna 429 + headers padrão RFC + mensagem em português.
     """
     logger.warning(
-        f"[RATE_LIMIT] Limite excedido: {request.url.path} | "
-        f"IP: {get_remote_address(request)}"
+        f"[RATE_LIMIT] Limite excedido: {request.url.path} | " f"IP: {get_remote_address(request)}"
     )
-    
+
     return _rate_limit_exceeded_handler(request, exc)
 
 
@@ -58,4 +56,3 @@ logger.info(
     f"Storage: redis://{settings.redis_host}:{settings.redis_port} | "
     f"Default: 100/minute"
 )
-

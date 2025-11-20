@@ -11,18 +11,18 @@ Pattern: Implementation-First Testing (Lesson Sessao 16)
 Created: 2025-10-19 (FASE 3.2)
 """
 
+from unittest.mock import Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock, patch
 from pydantic import ValidationError
 
-from src.tools.five_whys import FiveWhysTool, IterationOutput, RootCauseOutput
 from src.memory.schemas import (
-    FiveWhysAnalysis,
-    WhyIteration,
     CompanyInfo,
+    FiveWhysAnalysis,
     StrategicContext,
+    WhyIteration,
 )
-
+from src.tools.five_whys import FiveWhysTool, IterationOutput, RootCauseOutput
 
 # ============================================================================
 # FIXTURES
@@ -42,16 +42,16 @@ def mock_specialist_agents():
     """Mock 4 specialist agents para RAG."""
     financial = Mock()
     financial.invoke = Mock(return_value={"context": "Conhecimento financeiro BSC relevante" * 5})
-    
+
     customer = Mock()
     customer.invoke = Mock(return_value={"context": "Conhecimento clientes BSC relevante" * 5})
-    
+
     process = Mock()
     process.invoke = Mock(return_value={"context": "Conhecimento processos BSC relevante" * 5})
-    
+
     learning = Mock()
     learning.invoke = Mock(return_value={"context": "Conhecimento aprendizado BSC relevante" * 5})
-    
+
     return {
         "financial": financial,
         "customer": customer,
@@ -146,7 +146,7 @@ def test_five_whys_tool_creation_with_all_agents(mock_llm, mock_specialist_agent
         learning_agent=mock_specialist_agents["learning"],
         max_iterations=7,
     )
-    
+
     assert tool.llm == mock_llm
     assert tool.financial_agent == mock_specialist_agents["financial"]
     assert tool.max_iterations == 7
@@ -164,7 +164,7 @@ def test_five_whys_tool_creation_without_rag_agents(mock_llm):
         learning_agent=None,
         max_iterations=5,
     )
-    
+
     assert tool.llm == mock_llm
     assert tool.financial_agent is None
     assert tool.max_iterations == 5
@@ -190,11 +190,11 @@ def test_facilitate_five_whys_without_rag(
         financial_agent=None,  # RAG desabilitado
         max_iterations=3,
     )
-    
+
     # Mock LLM structured output (3 iteracoes)
     mock_llm_iteration = Mock()
     mock_llm_synthesis = Mock()
-    
+
     # Configurar retornos
     iteration_outputs = [
         IterationOutput(
@@ -208,10 +208,10 @@ def test_facilitate_five_whys_without_rag(
     ]
     mock_llm_iteration.invoke = Mock(side_effect=iteration_outputs)
     mock_llm_synthesis.invoke = Mock(return_value=mock_root_cause_output)
-    
+
     tool.llm_iteration = mock_llm_iteration
     tool.llm_synthesis = mock_llm_synthesis
-    
+
     # Execute
     analysis = tool.facilitate_five_whys(
         company_info=valid_company_info,
@@ -219,7 +219,7 @@ def test_facilitate_five_whys_without_rag(
         problem_statement=valid_problem_statement,
         use_rag=False,
     )
-    
+
     # Validar
     assert isinstance(analysis, FiveWhysAnalysis)
     assert len(analysis.iterations) == 3
@@ -247,27 +247,27 @@ def test_facilitate_five_whys_with_rag(
         learning_agent=mock_specialist_agents["learning"],
         max_iterations=4,
     )
-    
+
     # Mock LLM structured output (4 iteracoes)
     mock_llm_iteration = Mock()
     mock_llm_synthesis = Mock()
-    
+
     iteration_outputs = [
-            IterationOutput(
-                question=f"Por que iteracao {i}?",
-                answer=f"Resposta iteracao {i} enriquecida com conhecimento BSC do RAG",
-                confidence=0.70 + i * 0.03,  # 0.73, 0.76, 0.79, 0.82 (todos < 0.85 threshold)
-                is_root_cause=False,
-                reasoning=f"Reasoning iteracao {i} baseado em literatura BSC recuperada",
-            )
-            for i in range(1, 5)
-        ]
+        IterationOutput(
+            question=f"Por que iteracao {i}?",
+            answer=f"Resposta iteracao {i} enriquecida com conhecimento BSC do RAG",
+            confidence=0.70 + i * 0.03,  # 0.73, 0.76, 0.79, 0.82 (todos < 0.85 threshold)
+            is_root_cause=False,
+            reasoning=f"Reasoning iteracao {i} baseado em literatura BSC recuperada",
+        )
+        for i in range(1, 5)
+    ]
     mock_llm_iteration.invoke = Mock(side_effect=iteration_outputs)
     mock_llm_synthesis.invoke = Mock(return_value=mock_root_cause_output)
-    
+
     tool.llm_iteration = mock_llm_iteration
     tool.llm_synthesis = mock_llm_synthesis
-    
+
     # Execute
     analysis = tool.facilitate_five_whys(
         company_info=valid_company_info,
@@ -275,18 +275,18 @@ def test_facilitate_five_whys_with_rag(
         problem_statement=valid_problem_statement,
         use_rag=True,
     )
-    
+
     # Validar
     assert isinstance(analysis, FiveWhysAnalysis)
     assert len(analysis.iterations) == 4
     assert analysis.is_complete()
-    
+
     # Validar que RAG foi invocado (4 specialist agents)
     mock_specialist_agents["financial"].invoke.assert_called_once()
     mock_specialist_agents["customer"].invoke.assert_called_once()
     mock_specialist_agents["process"].invoke.assert_called_once()
     mock_specialist_agents["learning"].invoke.assert_called_once()
-    
+
     # Validar contexto RAG no resultado
     assert len(analysis.context_from_rag) > 0
 
@@ -303,11 +303,11 @@ def test_facilitate_five_whys_stops_early_if_root_cause_reached(
         llm=mock_llm,
         max_iterations=7,  # Maximo 7 mas deve parar em 3
     )
-    
+
     # Mock LLM: 3 iteracoes, ultima indica root_cause=True
     mock_llm_iteration = Mock()
     mock_llm_synthesis = Mock()
-    
+
     iteration_outputs = [
         IterationOutput(
             question="Por que iteracao 1?",
@@ -333,10 +333,10 @@ def test_facilitate_five_whys_stops_early_if_root_cause_reached(
     ]
     mock_llm_iteration.invoke = Mock(side_effect=iteration_outputs)
     mock_llm_synthesis.invoke = Mock(return_value=mock_root_cause_output)
-    
+
     tool.llm_iteration = mock_llm_iteration
     tool.llm_synthesis = mock_llm_synthesis
-    
+
     # Execute
     analysis = tool.facilitate_five_whys(
         company_info=valid_company_info,
@@ -344,7 +344,7 @@ def test_facilitate_five_whys_stops_early_if_root_cause_reached(
         problem_statement=valid_problem_statement,
         use_rag=False,
     )
-    
+
     # Validar: Apenas 3 iteracoes (nao 7)
     assert len(analysis.iterations) == 3
     assert analysis.depth_reached() == 3
@@ -358,7 +358,7 @@ def test_facilitate_five_whys_raises_error_if_problem_too_short(
 ):
     """Test: Raise ValueError se problem_statement muito curto (< 10 chars)."""
     tool = FiveWhysTool(llm=mock_llm)
-    
+
     with pytest.raises(ValueError, match="problem_statement deve ter >= 10 chars"):
         tool.facilitate_five_whys(
             company_info=valid_company_info,
@@ -376,10 +376,10 @@ def test_facilitate_five_whys_raises_error_if_less_than_3_iterations(
 ):
     """Test: Raise ValueError se menos de 3 iteracoes coletadas."""
     tool = FiveWhysTool(llm=mock_llm, max_iterations=3)
-    
+
     # Mock LLM que falha apos 2 iteracoes
     mock_llm_iteration = Mock()
-    
+
     iteration_outputs = [
         IterationOutput(
             question="Por que 1?",
@@ -398,9 +398,9 @@ def test_facilitate_five_whys_raises_error_if_less_than_3_iterations(
         Exception("LLM falhou na iteracao 3 - simulando erro"),
     ]
     mock_llm_iteration.invoke = Mock(side_effect=iteration_outputs)
-    
+
     tool.llm_iteration = mock_llm_iteration
-    
+
     with pytest.raises(ValueError, match="Falha ao facilitar iteracao 3"):
         tool.facilitate_five_whys(
             company_info=valid_company_info,
@@ -426,7 +426,7 @@ def test_five_whys_analysis_is_complete_true():
         )
         for i in range(1, 4)
     ]
-    
+
     analysis = FiveWhysAnalysis(
         problem_statement="Problema inicial com descricao suficiente",
         iterations=iterations,
@@ -437,7 +437,7 @@ def test_five_whys_analysis_is_complete_true():
             "Acao recomendada 2 concreta e acionavel",
         ],
     )
-    
+
     assert analysis.is_complete() is True
 
 
@@ -457,7 +457,7 @@ def test_five_whys_analysis_is_complete_false_insufficient_iterations():
             confidence=0.8,
         ),
     ]
-    
+
     with pytest.raises(ValidationError):
         # Schema valida min_length=3 para iterations
         FiveWhysAnalysis(
@@ -480,7 +480,7 @@ def test_five_whys_analysis_depth_reached():
         )
         for i in range(1, 6)  # 5 iteracoes
     ]
-    
+
     analysis = FiveWhysAnalysis(
         problem_statement="Problema inicial suficiente",
         iterations=iterations,
@@ -488,7 +488,7 @@ def test_five_whys_analysis_depth_reached():
         confidence_score=85.0,
         recommended_actions=["Acao 1 suficiente", "Acao 2 suficiente"],
     )
-    
+
     assert analysis.depth_reached() == 5
 
 
@@ -503,7 +503,7 @@ def test_five_whys_analysis_root_cause_confidence():
         )
         for i in range(1, 4)
     ]
-    
+
     analysis = FiveWhysAnalysis(
         problem_statement="Problema inicial suficiente",
         iterations=iterations,
@@ -511,7 +511,7 @@ def test_five_whys_analysis_root_cause_confidence():
         confidence_score=92.5,
         recommended_actions=["Acao 1 suficiente", "Acao 2 suficiente"],
     )
-    
+
     assert analysis.root_cause_confidence() == 92.5
 
 
@@ -537,7 +537,7 @@ def test_five_whys_analysis_average_confidence():
             confidence=0.7,
         ),
     ]
-    
+
     analysis = FiveWhysAnalysis(
         problem_statement="Problema inicial suficiente",
         iterations=iterations,
@@ -545,7 +545,7 @@ def test_five_whys_analysis_average_confidence():
         confidence_score=85.0,
         recommended_actions=["Acao 1 suficiente", "Acao 2 suficiente"],
     )
-    
+
     expected_avg = (0.8 + 0.9 + 0.7) / 3
     assert analysis.average_confidence() == pytest.approx(expected_avg)
 
@@ -561,7 +561,7 @@ def test_five_whys_analysis_summary_format():
         )
         for i in range(1, 4)
     ]
-    
+
     analysis = FiveWhysAnalysis(
         problem_statement="Vendas baixas no ultimo trimestre",
         iterations=iterations,
@@ -572,9 +572,9 @@ def test_five_whys_analysis_summary_format():
             "Criar playbook de onboarding",
         ],
     )
-    
+
     summary = analysis.summary()
-    
+
     assert "Problema: Vendas baixas no ultimo trimestre" in summary
     assert "Iteracoes (3):" in summary
     assert "1. Por que iteracao 1? -> Resposta da iteracao 1" in summary
@@ -611,7 +611,7 @@ def test_five_whys_analysis_validates_iteration_sequence():
             confidence=0.8,
         ),
     ]
-    
+
     with pytest.raises(ValidationError, match="Iteration numbers devem estar em sequencia"):
         FiveWhysAnalysis(
             problem_statement="Problema inicial suficiente",
@@ -633,7 +633,7 @@ def test_five_whys_analysis_validates_actions_not_empty():
         )
         for i in range(1, 4)
     ]
-    
+
     with pytest.raises(ValidationError, match="Action 2 deve ter pelo menos 10 caracteres"):
         FiveWhysAnalysis(
             problem_statement="Problema inicial suficiente",
@@ -645,4 +645,3 @@ def test_five_whys_analysis_validates_actions_not_empty():
                 "Curta",  # Apenas 5 chars (invalido!)
             ],
         )
-

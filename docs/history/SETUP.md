@@ -1,14 +1,14 @@
-# 🚀 Setup Completo - Agente BSC RAG
+# [EMOJI] Setup Completo - Agente BSC RAG
 
 Este guia configura o ambiente completo para o projeto.
 
-## 📋 Pré-requisitos
+## [EMOJI] Pré-requisitos
 
 - Python 3.10+ instalado
 - Docker Desktop instalado e rodando
 - Git instalado
 
-## 🔧 Passo 1: Ambiente Virtual
+## [EMOJI] Passo 1: Ambiente Virtual
 
 ```powershell
 # Criar ambiente virtual
@@ -24,7 +24,7 @@ python -m venv venv
 python --version
 ```
 
-## 📦 Passo 2: Instalar Dependências
+## [EMOJI] Passo 2: Instalar Dependências
 
 ```powershell
 # Atualizar pip
@@ -47,7 +47,7 @@ pip install faiss-cpu
 pip install loguru pydantic pydantic-settings openai anthropic cohere langchain langgraph langchain-openai langchain-community
 ```
 
-## 🔑 Passo 3: Configurar Variáveis de Ambiente
+## [EMOJI] Passo 3: Configurar Variáveis de Ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
 
@@ -119,7 +119,7 @@ DEBUG=false
 LOG_LEVEL=INFO
 ```
 
-## 🐳 Passo 4: Iniciar Serviços Docker
+## [EMOJI] Passo 4: Iniciar Serviços Docker
 
 ```powershell
 # Iniciar todos os serviços
@@ -147,7 +147,7 @@ curl http://localhost:6333/healthz
 curl http://localhost:8080/v1/.well-known/ready
 ```
 
-## 🧪 Passo 5: Rodar Testes
+## [EMOJI] Passo 5: Rodar Testes
 
 ```powershell
 # Ativar venv primeiro (se não estiver)
@@ -165,7 +165,7 @@ pytest tests/test_reranker.py -v
 pytest tests/ --cov=src --cov-report=html
 ```
 
-## 📚 Passo 6: Preparar Dados BSC
+## [EMOJI] Passo 6: Preparar Dados BSC
 
 1. **Adicionar Documentos BSC** em `data/bsc_literature/`:
    - Papers acadêmicos sobre Balanced Scorecard
@@ -181,13 +181,13 @@ python scripts/build_knowledge_base.py
 
 Isso irá:
 
-- ✅ Carregar PDFs
-- ✅ Fazer chunking (TableAware)
-- ✅ Aplicar Contextual Retrieval (se habilitado)
-- ✅ Gerar embeddings OpenAI
-- ✅ Indexar no Vector Store (Qdrant/Weaviate)
+- [OK] Carregar PDFs
+- [OK] Fazer chunking (TableAware)
+- [OK] Aplicar Contextual Retrieval (se habilitado)
+- [OK] Gerar embeddings OpenAI
+- [OK] Indexar no Vector Store (Qdrant/Weaviate)
 
-## ✅ Passo 7: Validar Setup
+## [OK] Passo 7: Validar Setup
 
 ### Teste Rápido de Retrieval
 
@@ -216,7 +216,7 @@ result = orchestrator.process_query(
 print(result["answer"])
 ```
 
-## 🐛 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Erro: "Module not found"
 
@@ -255,34 +255,34 @@ docker-compose down -v
 docker-compose up -d
 ```
 
-## 📊 Estrutura Final
+## [EMOJI] Estrutura Final
 
 ```
 agente-bsc-rag/
-├── .env                          # ✅ Configurações
-├── venv/                         # ✅ Ambiente virtual
+├── .env                          # [OK] Configurações
+├── venv/                         # [OK] Ambiente virtual
 ├── data/
-│   └── bsc_literature/          # ✅ PDFs aqui
+│   └── bsc_literature/          # [OK] PDFs aqui
 ├── src/
-│   ├── rag/                     # ✅ Pipeline RAG
-│   ├── agents/                  # ✅ Multi-agente
-│   └── tools/                   # ✅ Ferramentas
-├── tests/                       # ✅ Testes
-├── scripts/                     # ✅ Utilitários
-└── docker-compose.yml           # ✅ Serviços
+│   ├── rag/                     # [OK] Pipeline RAG
+│   ├── agents/                  # [OK] Multi-agente
+│   └── tools/                   # [OK] Ferramentas
+├── tests/                       # [OK] Testes
+├── scripts/                     # [OK] Utilitários
+└── docker-compose.yml           # [OK] Serviços
 ```
 
-## 🎯 Próximos Passos Após Setup
+## [EMOJI] Próximos Passos Após Setup
 
-1. ✅ Validar testes passando
-2. ✅ Confirmar ingestão de dados BSC
-3. ⏭️ Implementar FASE 1C (LangGraph + Interface)
-4. ⏭️ Testes end-to-end
-5. ⏭️ Documentação final
+1. [OK] Validar testes passando
+2. [OK] Confirmar ingestão de dados BSC
+3. ⏭ Implementar FASE 1C (LangGraph + Interface)
+4. ⏭ Testes end-to-end
+5. ⏭ Documentação final
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Se encontrar problemas, verifique:
 

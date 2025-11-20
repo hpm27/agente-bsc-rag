@@ -1,44 +1,44 @@
 # Lição Aprendida: E2E Tests ONBOARDING State (FASE 2.6)
 
-**Data**: 2025-10-16  
-**Fase**: FASE 2.6 - ONBOARDING State Integration  
-**Sessão**: 11  
-**Tags**: `#testing` `#e2e` `#workflow` `#langgraph` `#pydantic` `#debugging`  
-**Difficulty**: Intermediário  
-**ROI**: 32-60 min economizados por implementação futura  
-**Status**: ✅ Validado (5/5 testes E2E, 100% passando)
+**Data**: 2025-10-16
+**Fase**: FASE 2.6 - ONBOARDING State Integration
+**Sessão**: 11
+**Tags**: `#testing` `#e2e` `#workflow` `#langgraph` `#pydantic` `#debugging`
+**Difficulty**: Intermediário
+**ROI**: 32-60 min economizados por implementação futura
+**Status**: [OK] Validado (5/5 testes E2E, 100% passando)
 
 ---
 
-## 📋 Executive Summary
+## [EMOJI] Executive Summary
 
 ### Contexto
 Na FASE 2.6, implementamos a integração do ONBOARDING state no LangGraph workflow, conectando OnboardingAgent com o sistema de routing e transições automáticas. A validação exigiu 5 testes E2E cobrindo:
 
 1. **Teste 1**: Start onboarding (cliente novo)
-2. **Teste 2**: Multi-turn completo (3 turns COMPANY → STRATEGIC → ENGAGEMENT)
+2. **Teste 2**: Multi-turn completo (3 turns COMPANY -> STRATEGIC -> ENGAGEMENT)
 3. **Teste 3**: RAG não quebrado (cliente existente, **TESTE DE REGRESSÃO CRÍTICO**)
-4. **Teste 4**: Transição automática ONBOARDING → DISCOVERY
+4. **Teste 4**: Transição automática ONBOARDING -> DISCOVERY
 5. **Teste 5**: Persistência Mem0
 
 ### Resultado Final
-- ✅ **5/5 testes passando** (100% success rate)
-- ⏱️ **Tempo total**: ~2h30min (vs 1.5-2h estimado - aceitável)
-- 🐛 **Problemas encontrados**: 4 (2/5 testes passaram na primeira tentativa)
-- ⚡ **Debugging**: ~60 min total (4 problemas × 15 min avg)
-- 💡 **Sequential Thinking**: Economizou 30+ min em planejamento preventivo
+- [OK] **5/5 testes passando** (100% success rate)
+- [TIMER] **Tempo total**: ~2h30min (vs 1.5-2h estimado - aceitável)
+- [EMOJI] **Problemas encontrados**: 4 (2/5 testes passaram na primeira tentativa)
+- [FAST] **Debugging**: ~60 min total (4 problemas × 15 min avg)
+- [EMOJI] **Sequential Thinking**: Economizou 30+ min em planejamento preventivo
 
 ### Key Takeaways
 
-1. ✅ **Sequential Thinking preventivo é ROI positivo** - 10 thoughts antes de implementar identificaram 4 possíveis erros, economizando 30+ min
-2. ✅ **Divisão em micro-etapas funciona** - Resolver Teste 3 → 4 → 5 sequencialmente (um de cada vez) reduziu complexidade
-3. ✅ **In-memory sessions são padrão para workflow stateless** - Solução elegante para multi-turn, reutilizável em FASE 2.7+
-4. ✅ **Teste de regressão crítico é obrigatório** - Teste 3 validou que RAG tradicional não quebrou com nova feature
-5. ⚠️ **Checklist 8 pontos não suficiente para E2E** - Expandimos para 12 pontos (4 novos específicos E2E)
+1. [OK] **Sequential Thinking preventivo é ROI positivo** - 10 thoughts antes de implementar identificaram 4 possíveis erros, economizando 30+ min
+2. [OK] **Divisão em micro-etapas funciona** - Resolver Teste 3 -> 4 -> 5 sequencialmente (um de cada vez) reduziu complexidade
+3. [OK] **In-memory sessions são padrão para workflow stateless** - Solução elegante para multi-turn, reutilizável em FASE 2.7+
+4. [OK] **Teste de regressão crítico é obrigatório** - Teste 3 validou que RAG tradicional não quebrou com nova feature
+5. [WARN] **Checklist 8 pontos não suficiente para E2E** - Expandimos para 12 pontos (4 novos específicos E2E)
 
 ---
 
-## 🎯 Metodologia que Funcionou
+## [EMOJI] Metodologia que Funcionou
 
 ### 1. Sequential Thinking Preventivo (10 Thoughts)
 
@@ -51,7 +51,7 @@ Na FASE 2.6, implementamos a integração do ONBOARDING state no LangGraph workf
 - **Thought 4**: Planejamento Teste 5 (persistência Mem0) - validação spy mock
 - **Thought 5**: Síntese - arquitetura de fixtures globais
 - **Thought 6**: Estratégia de isolamento (user_id único, mock por teste)
-- **Thought 7**: Ordem de implementação (Start → Regressão → Multi-turn → Transição → Persistência)
+- **Thought 7**: Ordem de implementação (Start -> Regressão -> Multi-turn -> Transição -> Persistência)
 - **Thought 8**: Asserções críticas vs nice-to-have
 - **Thought 9**: Warnings esperados vs erros inesperados
 - **Thought 10**: Decisão final - 8 steps granulares, tempo 15-20 min
@@ -59,7 +59,7 @@ Na FASE 2.6, implementamos a integração do ONBOARDING state no LangGraph workf
 **Aplicação Prática**:
 ```python
 # Exemplo: Thought 7 guiou ordem de implementação
-# Por quê Start → Regressão → Multi-turn?
+# Por quê Start -> Regressão -> Multi-turn?
 # R: Start valida routing básico, Regressão previne breaking changes,
 # Multi-turn é mais complexo (construir sobre base validada)
 ```
@@ -99,12 +99,12 @@ Na FASE 2.6, implementamos a integração do ONBOARDING state no LangGraph workf
 8. Verificar método correto (invoke vs process_query)
 
 **Aplicação FASE 2.6**:
-- ✅ Ponto 1: `grep "def start_onboarding" src/agents/onboarding_agent.py -A 15` confirmou assinatura
-- ✅ Ponto 2: `return_value` deve ser `dict` com keys específicas
-- ✅ Ponto 6: `onboarding_progress` tem `default_factory=dict`, nunca passar `None`
-- ✅ Ponto 7: `current_state` min 20 chars, usar 50+ para segurança
+- [OK] Ponto 1: `grep "def start_onboarding" src/agents/onboarding_agent.py -A 15` confirmou assinatura
+- [OK] Ponto 2: `return_value` deve ser `dict` com keys específicas
+- [OK] Ponto 6: `onboarding_progress` tem `default_factory=dict`, nunca passar `None`
+- [OK] Ponto 7: `current_state` min 20 chars, usar 50+ para segurança
 
-**Problema**: Checklist 8 pontos NÃO preveniu 4 erros E2E-específicos → Expandimos para 12 pontos (ver seção 4).
+**Problema**: Checklist 8 pontos NÃO preveniu 4 erros E2E-específicos -> Expandimos para 12 pontos (ver seção 4).
 
 ### 4. Teste de Regressão Crítico
 
@@ -119,18 +119,18 @@ Na FASE 2.6, implementamos a integração do ONBOARDING state no LangGraph workf
 ```python
 def test_rag_workflow_cliente_existente_nao_quebrado():
     """CRÍTICO: RAG tradicional deve continuar funcionando para clientes existentes.
-    
+
     Este teste previne REGRESSÃO no RAG existente!
     """
     # Setup: Cliente existente com phase=DISCOVERY (não ONBOARDING)
     mock_mem0.load_profile.return_value = profile_existente
-    
+
     # Action: Query RAG tradicional
     result = workflow.run(
         query="O que é Balanced Scorecard e quais suas 4 perspectivas?",
         user_id="cliente_existente_003"
     )
-    
+
     # Assert: Workflow RAG executado (não onboarding)
     assert result["current_phase"] == ConsultingPhase.DISCOVERY  # Mantém fase
     mock_execute_agents.assert_called_once()  # RAG executado
@@ -138,7 +138,7 @@ def test_rag_workflow_cliente_existente_nao_quebrado():
     # onboarding_handler NÃO foi chamado (implícito)
 ```
 
-**Resultado**: Teste passou ✅ → Confirmou zero regressão RAG.
+**Resultado**: Teste passou [OK] -> Confirmou zero regressão RAG.
 
 **ROI**: Previne deploy de breaking change, economiza horas de rollback + hotfix.
 
@@ -162,7 +162,7 @@ pytest tests/test_consulting_workflow.py::test_specific -v --tb=long 2>&1
 
 ---
 
-## 🐛 Problemas e Soluções Detalhadas
+## [EMOJI] Problemas e Soluções Detalhadas
 
 ### Problema 1: Mock `onboarding_progress` Faltando
 
@@ -180,7 +180,7 @@ AssertionError: Turn 2 retornou mesma pergunta do Turn 1
 1. Teste chama `workflow.run()` duas vezes (Turn 1 e Turn 2)
 2. Cada call cria NOVO `BSCState` independente (stateless!)
 3. `onboarding_progress` não persistiu entre calls
-4. Turn 2: `if not state.onboarding_progress:` → `True` (dict vazio) → Chama `start_onboarding()` novamente
+4. Turn 2: `if not state.onboarding_progress:` -> `True` (dict vazio) -> Chama `start_onboarding()` novamente
 
 **Código Problemático**:
 ```python
@@ -207,18 +207,18 @@ mock.start_onboarding.return_value = {
 class BSCWorkflow:
     def __init__(self):
         self._onboarding_sessions: dict[str, dict[str, Any]] = {}
-    
+
     def onboarding_handler(self, state):
         user_id = state.user_id
-        
+
         # Load session existente
         if user_id in self._onboarding_sessions:
             session_progress = self._onboarding_sessions[user_id]
         else:
             session_progress = {}
-        
+
         # ... processar ...
-        
+
         # Save session atualizado
         self._onboarding_sessions[user_id] = updated_progress
 
@@ -227,7 +227,7 @@ mock.start_onboarding.return_value = {
     "question": "...",
     "step": 1,
     "is_complete": False,
-    "onboarding_progress": {"step_1": False, "step_2": False, "step_3": False}  # ✅
+    "onboarding_progress": {"step_1": False, "step_2": False, "step_3": False}  # [OK]
 }
 ```
 
@@ -236,7 +236,7 @@ mock.start_onboarding.return_value = {
 - Para workflow stateless: Implementar in-memory sessions pattern
 - Template reutilizável disponível na seção 5
 
-**Tempo Debug**: ~15 min  
+**Tempo Debug**: ~15 min
 **ROI**: 10-15 min economizados em implementações futuras (FASE 2.7+)
 
 ---
@@ -259,7 +259,7 @@ AttributeError: 'BSCWorkflow' object has no attribute 'client_profile_agent'
 ```python
 # workflow.py - linha ~708
 profile = self.client_profile_agent.extract_profile(...)
-# ❌ AttributeError: 'client_profile_agent' property não existe
+# [ERRO] AttributeError: 'client_profile_agent' property não existe
 ```
 
 **Causa Raiz**:
@@ -278,7 +278,7 @@ def client_profile_agent(self) -> ClientProfileAgent:
         llm = ChatOpenAI(model=settings.llm_model, temperature=0)
         self._client_profile_agent = ClientProfileAgent(llm=llm)
         logger.info("[OK] ClientProfileAgent inicializado (lazy)")
-    
+
     return self._client_profile_agent
 ```
 
@@ -289,7 +289,7 @@ def client_profile_agent(self) -> ClientProfileAgent:
   ```
 - Se não encontrar, criar property ou usar alternativa
 
-**Tempo Debug**: ~5 min  
+**Tempo Debug**: ~5 min
 **ROI**: 5-8 min economizados (erro comum ao assumir property existe)
 
 ---
@@ -306,13 +306,13 @@ assert 'test_cliente_fixture' == 'test_cliente_persistencia_005'
 - Teste 5 usa `user_id="test_cliente_persistencia_005"`
 - Mock `ClientProfileAgent.extract_profile()` retorna `valid_client_profile` fixture
 - Fixture tem `client_id="test_cliente_fixture"` (padrão global)
-- Asserção compara `client_id` do profile salvo com `user_id` esperado → Mismatch!
+- Asserção compara `client_id` do profile salvo com `user_id` esperado -> Mismatch!
 
 **Código Problemático**:
 ```python
 # Teste 5 - Reutilização direta do fixture
 mock_profile_agent.extract_profile.return_value = valid_client_profile
-# valid_client_profile.client_id = "test_cliente_fixture"  ❌
+# valid_client_profile.client_id = "test_cliente_fixture"  [ERRO]
 
 # Asserção
 assert saved_profile.client_id == "test_cliente_persistencia_005"
@@ -328,7 +328,7 @@ assert saved_profile.client_id == "test_cliente_persistencia_005"
 ```python
 # Teste 5 - Criar profile inline com client_id correto
 test_profile = ClientProfile(
-    client_id="test_cliente_persistencia_005",  # ✅ Match user_id do teste
+    client_id="test_cliente_persistencia_005",  # [OK] Match user_id do teste
     company=valid_client_profile.company,        # Reutilizar outros campos
     context=valid_client_profile.context,
     engagement=valid_client_profile.engagement,
@@ -351,7 +351,7 @@ mock_profile_agent.extract_profile.return_value = test_profile
   )
   ```
 
-**Tempo Debug**: ~10 min  
+**Tempo Debug**: ~10 min
 **ROI**: 8-12 min economizados (erro frequente em E2E com fixtures)
 
 ---
@@ -373,14 +373,14 @@ AssertionError: Turn 2 retorna mesma pergunta do Turn 1
 ```
 Turn 1: workflow.run(query="start", user_id="user_001")
   └─> BSCState criado: onboarding_progress = {}
-  └─> start_onboarding() → progress = {"step_1": False, ...}
+  └─> start_onboarding() -> progress = {"step_1": False, ...}
   └─> Retorna resposta
-  └─> BSCState destruído ❌
+  └─> BSCState destruído [ERRO]
 
 Turn 2: workflow.run(query="Minha empresa...", user_id="user_001")
   └─> NOVO BSCState criado: onboarding_progress = {} (vazio novamente!)
   └─> Não sabe que Turn 1 aconteceu
-  └─> Chama start_onboarding() novamente ❌
+  └─> Chama start_onboarding() novamente [ERRO]
 ```
 
 **Soluções Consideradas**:
@@ -389,7 +389,7 @@ Turn 2: workflow.run(query="Minha empresa...", user_id="user_001")
 - Pro: Persiste entre sessões (days/weeks)
 - Con: Latência adicional, requer schema change
 
-**Opção B**: In-memory sessions no BSCWorkflow ✅ **ESCOLHIDA**
+**Opção B**: In-memory sessions no BSCWorkflow [OK] **ESCOLHIDA**
 - Pro: Simples, zero latência, sem schema change
 - Con: Perde state se workflow reiniciar (aceitável para single-session onboarding)
 
@@ -398,15 +398,15 @@ Turn 2: workflow.run(query="Minha empresa...", user_id="user_001")
 class BSCWorkflow:
     def __init__(self):
         # ... outros atributos ...
-        
+
         # FASE 2.6: In-memory sessions para onboarding progress
         # Key: user_id, Value: {"step_1": bool, "step_2": bool, "step_3": bool}
         # Persiste estado entre múltiplas chamadas run() para mesmo user_id
         self._onboarding_sessions: dict[str, dict[str, Any]] = {}
-    
+
     def onboarding_handler(self, state: BSCState) -> dict[str, Any]:
         user_id = state.user_id
-        
+
         # FASE 2.6: Carregar session existente (in-memory persistence)
         if user_id in self._onboarding_sessions:
             # Cliente já iniciou onboarding anteriormente (Turn 2+)
@@ -419,18 +419,18 @@ class BSCWorkflow:
             # Cliente novo iniciando onboarding (Turn 1)
             session_progress = {}
             logger.info(f"[INFO] NOVA session criada | user_id: {user_id}")
-        
+
         # Decisão: start vs process_turn baseado em session
         is_start = (
             state.query.lower().strip() == "start" and
-            not session_progress  # Session vazia → Turn 1
+            not session_progress  # Session vazia -> Turn 1
         )
-        
+
         if is_start:
             result = self.onboarding_agent.start_onboarding(user_id, state)
         else:
             result = self.onboarding_agent.process_turn(user_id, state.query, state)
-        
+
         # FASE 2.6: Salvar session atualizado (para próximo turn)
         updated_progress = result.get("onboarding_progress", session_progress)
         self._onboarding_sessions[user_id] = updated_progress
@@ -438,13 +438,13 @@ class BSCWorkflow:
             f"[DEBUG] Session SALVA | user_id: {user_id} | "
             f"progress: {updated_progress}"
         )
-        
+
         # Cleanup: Remover session ao completar
         if result.get("is_complete", False):
             if user_id in self._onboarding_sessions:
                 del self._onboarding_sessions[user_id]
                 logger.debug(f"[DEBUG] Session LIMPA | user_id: {user_id}")
-        
+
         return {
             "final_response": result["question"],
             "current_phase": ConsultingPhase.ONBOARDING,
@@ -454,27 +454,27 @@ class BSCWorkflow:
 ```
 
 **Prevenção Futura** (Novo Ponto Checklist #10):
-- **SEMPRE** perguntar ao implementar workflow multi-turn: 
+- **SEMPRE** perguntar ao implementar workflow multi-turn:
   - **"Como state persiste entre múltiplos `run()` calls?"**
 - Se stateless: Implementar in-memory sessions
 - Template reutilizável disponível acima
 
-**Tempo Debug**: ~30 min (análise + implementação)  
+**Tempo Debug**: ~30 min (análise + implementação)
 **ROI**: 20-30 min economizados em FASE 2.7+ (pattern estabelecido)
 
 ---
 
-## ✅ Checklist Expandido: 8 → 12 Pontos
+## [OK] Checklist Expandido: 8 -> 12 Pontos
 
 ### Comparativo
 
 | Ponto | Original (8) | Expandido (12) | Contexto |
 |-------|--------------|----------------|----------|
-| 1-8 | ✅ Unitários | ✅ Unitários + E2E | FASE 2.5 |
-| 9 | N/A | ✅ Property verification | FASE 2.6 - Novo |
-| 10 | N/A | ✅ State persistence | FASE 2.6 - Novo |
-| 11 | N/A | ✅ Fixtures ID customizado | FASE 2.6 - Novo |
-| 12 | N/A | ✅ Teste regressão | FASE 2.6 - Novo |
+| 1-8 | [OK] Unitários | [OK] Unitários + E2E | FASE 2.5 |
+| 9 | N/A | [OK] Property verification | FASE 2.6 - Novo |
+| 10 | N/A | [OK] State persistence | FASE 2.6 - Novo |
+| 11 | N/A | [OK] Fixtures ID customizado | FASE 2.6 - Novo |
+| 12 | N/A | [OK] Teste regressão | FASE 2.6 - Novo |
 
 ### 4 Novos Pontos Detalhados
 
@@ -495,7 +495,7 @@ grep "def method_name" src/agents/agent.py -A 5
 - Assumiu `client_profile_agent` property existia
 - Código: `profile = self.client_profile_agent.extract_profile(...)`
 - Erro: `AttributeError: 'BSCWorkflow' object has no attribute 'client_profile_agent'`
-- Solução: `grep` confirmou ausência → criou property
+- Solução: `grep` confirmou ausência -> criou property
 
 **PREVENÇÃO**: 5-8 min economizados por erro evitado.
 
@@ -505,7 +505,7 @@ grep "def method_name" src/agents/agent.py -A 5
 
 **QUANDO**: Sempre que implementar workflow multi-turn ou stateful.
 
-**PERGUNTA OBRIGATÓRIA**: 
+**PERGUNTA OBRIGATÓRIA**:
 > "Como state persiste entre múltiplos `run()` calls?"
 
 **RESPOSTAS POSSÍVEIS**:
@@ -518,23 +518,23 @@ grep "def method_name" src/agents/agent.py -A 5
 class Workflow:
     def __init__(self):
         self._sessions: dict[str, dict[str, Any]] = {}
-    
+
     def handler(self, state):
         user_id = state.user_id
-        
+
         # Load
         session = self._sessions.get(user_id, {})
-        
+
         # Process
         result = process_logic(session)
-        
+
         # Save
         self._sessions[user_id] = updated_session
-        
+
         # Cleanup (se completo)
         if result["is_complete"]:
             del self._sessions[user_id]
-        
+
         return result
 ```
 
@@ -553,10 +553,10 @@ class Workflow:
 
 **COMO**:
 ```python
-# ❌ ERRADO: Reutilizar fixture diretamente
+# [ERRO] ERRADO: Reutilizar fixture diretamente
 mock.return_value = valid_client_profile  # client_id="fixture"
 
-# ✅ CORRETO: Criar inline com ID específico
+# [OK] CORRETO: Criar inline com ID específico
 test_profile = ClientProfile(
     client_id="test_specific_id_for_this_test",  # Único
     **{k: v for k, v in valid_client_profile.model_dump().items() if k != "client_id"}
@@ -583,7 +583,7 @@ def create_profile_with_id(base_fixture: ClientProfile, client_id: str) -> Clien
 **EXEMPLO VALIDADO** (FASE 2.6):
 - Teste usa `user_id="test_005"`
 - Fixture tem `client_id="fixture"`
-- Asserção: `assert profile.client_id == "test_005"` → Falhou
+- Asserção: `assert profile.client_id == "test_005"` -> Falhou
 - Solução: Profile inline com `client_id="test_005"`
 
 **PREVENÇÃO**: 8-12 min economizados (erro frequente).
@@ -600,15 +600,15 @@ def create_profile_with_id(base_fixture: ClientProfile, client_id: str) -> Clien
 ```python
 def test_existing_functionality_not_broken():
     """CRÍTICO: Validar que funcionalidade X não quebrou com nova feature Y.
-    
+
     Este teste previne REGRESSÃO!
     """
     # Setup: Estado/cliente existente (não novo cenário)
     mock_existing_state()
-    
+
     # Action: Executar workflow tradicional (caminho antigo)
     result = workflow.run_existing_flow(...)
-    
+
     # Assert: Comportamento esperado mantido
     assert result["expected_field"] == expected_value
     assert traditional_method_called()
@@ -619,17 +619,17 @@ def test_existing_functionality_not_broken():
 ```python
 def test_rag_workflow_cliente_existente_nao_quebrado():
     """CRÍTICO: RAG tradicional deve continuar para clientes existentes.
-    
+
     Nova feature: ONBOARDING state + routing condicional
     Risco: Cliente existente pode ser roteado errado
     Validação: RAG tradicional executado corretamente
     """
     # Setup: Cliente existente (phase=DISCOVERY, não ONBOARDING)
     mock_mem0.load_profile.return_value = existing_profile
-    
+
     # Action: Query BSC tradicional
     result = workflow.run(query="O que é BSC?", user_id="existing_123")
-    
+
     # Assert CRÍTICO: RAG executado (não onboarding)
     assert result["current_phase"] == ConsultingPhase.DISCOVERY  # Mantém fase
     mock_execute_agents.assert_called_once()  # RAG workflow executado
@@ -642,7 +642,7 @@ def test_rag_workflow_cliente_existente_nao_quebrado():
 
 ---
 
-## 🔧 Padrões Reutilizáveis (Templates de Código)
+## [EMOJI] Padrões Reutilizáveis (Templates de Código)
 
 ### 1. In-Memory Sessions Pattern
 
@@ -657,11 +657,11 @@ class MultiTurnWorkflow:
     def __init__(self):
         # In-memory sessions: Key=user_id, Value=session_state
         self._sessions: Dict[str, Dict[str, Any]] = {}
-    
+
     def handler(self, state: BSCState) -> Dict[str, Any]:
         """Handler genérico com in-memory sessions."""
         user_id = state.user_id
-        
+
         # 1. LOAD: Carregar session existente ou criar novo
         if user_id in self._sessions:
             session = self._sessions[user_id]
@@ -669,59 +669,59 @@ class MultiTurnWorkflow:
         else:
             session = self._create_initial_session()
             logger.info(f"NEW session | user: {user_id}")
-        
+
         # 2. PROCESS: Lógica de negócio usando session
         is_first_turn = self._is_first_turn(state, session)
-        
+
         if is_first_turn:
             result = self._handle_first_turn(user_id, state)
         else:
             result = self._handle_subsequent_turn(user_id, state, session)
-        
+
         # 3. SAVE: Atualizar session
         updated_session = self._update_session(session, result)
         self._sessions[user_id] = updated_session
         logger.debug(f"Session SAVED | user: {user_id} | state: {updated_session}")
-        
+
         # 4. CLEANUP: Remover session se completo
         if result.get("is_complete", False):
             self._cleanup_session(user_id)
-        
+
         return {
             "response": result["message"],
             "session_state": updated_session,
             "is_complete": result.get("is_complete", False)
         }
-    
+
     def _create_initial_session(self) -> Dict[str, Any]:
         """Cria session inicial vazio."""
         return {}
-    
+
     def _is_first_turn(self, state: BSCState, session: Dict[str, Any]) -> bool:
         """Decide se é primeiro turn baseado em query + session."""
         return state.query.lower() == "start" and not session
-    
+
     def _handle_first_turn(self, user_id: str, state: BSCState) -> Dict[str, Any]:
         """Processa primeiro turn (start)."""
         return {"message": "Welcome!", "is_complete": False}
-    
+
     def _handle_subsequent_turn(
-        self, 
-        user_id: str, 
-        state: BSCState, 
+        self,
+        user_id: str,
+        state: BSCState,
         session: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Processa turns subsequentes."""
         return {"message": "Next question...", "is_complete": False}
-    
+
     def _update_session(
-        self, 
-        session: Dict[str, Any], 
+        self,
+        session: Dict[str, Any],
         result: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Atualiza session baseado em resultado."""
         return {**session, **result.get("session_updates", {})}
-    
+
     def _cleanup_session(self, user_id: str):
         """Remove session ao completar."""
         if user_id in self._sessions:
@@ -746,11 +746,11 @@ class Workflow:
     def __init__(self):
         # Private attributes para lazy loading
         self._agent: Optional[Agent] = None
-    
+
     @property
     def agent(self) -> Agent:
         """Lazy loading do Agent.
-        
+
         Instancia apenas na primeira chamada, reutiliza em chamadas subsequentes.
         """
         if self._agent is None:
@@ -760,14 +760,14 @@ class Workflow:
                 # ... outros parâmetros ...
             )
             logger.info("[OK] Agent inicializado (lazy)")
-        
+
         return self._agent
 ```
 
 **Benefícios**:
-- ✅ Performance: Instancia apenas se usado
-- ✅ Memory: Economiza RAM se agent não usado
-- ✅ Testability: Mock property facilmente
+- [OK] Performance: Instancia apenas se usado
+- [OK] Memory: Economiza RAM se agent não usado
+- [OK] Testability: Mock property facilmente
 
 **Validado**: FASE 2.6 (client_profile_agent property).
 
@@ -795,7 +795,7 @@ def test_with_custom_id(valid_client_profile_base):
     """Teste que precisa client_id específico."""
     # Criar profile inline com ID customizado
     test_profile = ClientProfile(
-        client_id="test_specific_id_123",  # ← ID único para este teste
+        client_id="test_specific_id_123",  # <- ID único para este teste
         company=valid_client_profile_base.company,  # Reutilizar outros campos
         context=valid_client_profile_base.context,
         engagement=valid_client_profile_base.engagement,
@@ -804,10 +804,10 @@ def test_with_custom_id(valid_client_profile_base):
         created_at=valid_client_profile_base.created_at,
         updated_at=valid_client_profile_base.updated_at
     )
-    
+
     # Usar test_profile no mock
     mock.return_value = test_profile
-    
+
     # Asserção com ID correto
     assert result.client_id == "test_specific_id_123"
 ```
@@ -839,12 +839,12 @@ from unittest.mock import Mock, patch
 
 def test_FEATURE_existing_functionality_not_broken():
     """CRÍTICO: Validar que [FUNCIONALIDADE EXISTENTE] não quebrou com [NOVA FEATURE].
-    
+
     Context:
     - Nova feature: [Descrever o quê foi adicionado]
     - Risco: [Descrever possível breaking change]
     - Validação: [O quê este teste confirma]
-    
+
     Este teste previne REGRESSÃO!
     """
     # ============================================================
@@ -852,7 +852,7 @@ def test_FEATURE_existing_functionality_not_broken():
     # ============================================================
     mock_existing_state = Mock()
     mock_existing_state.campo_relevante = "valor_tradicional"
-    
+
     # ============================================================
     # ACTION: Executar workflow tradicional (caminho antigo)
     # ============================================================
@@ -860,28 +860,28 @@ def test_FEATURE_existing_functionality_not_broken():
         input=mock_existing_state,
         # ... parâmetros que acionam caminho tradicional ...
     )
-    
+
     # ============================================================
     # ASSERT CRÍTICO: Comportamento esperado mantido
     # ============================================================
-    
+
     # 1. Resultado correto
     assert result["expected_field"] == expected_value, \
         "Resultado tradicional deve ser mantido"
-    
+
     # 2. Caminho tradicional executado
     assert traditional_method.called, \
         "Método tradicional deve ter sido chamado"
-    
+
     # 3. Nova feature NÃO interferiu (implícito ou explícito)
     assert not new_feature_method.called, \
         "Nova feature NÃO deve ter sido acionada para estado existente"
-    
+
     # 4. State preservado (se aplicável)
     assert result["state_field"] == original_state_value, \
         "Estado existente deve ser preservado"
-    
-    print("✅ TESTE REGRESSÃO PASSOU: Funcionalidade existente não quebrou")
+
+    print("[OK] TESTE REGRESSÃO PASSOU: Funcionalidade existente não quebrou")
 ```
 
 **Template Específico E2E Workflow**:
@@ -889,7 +889,7 @@ def test_FEATURE_existing_functionality_not_broken():
 @patch("src.graph.workflow.MemoryFactory.get_provider")
 def test_traditional_workflow_not_broken_by_new_state(mock_memory_factory):
     """CRÍTICO: Workflow tradicional deve funcionar para clientes existentes.
-    
+
     Context:
     - Nova feature: [NOVO STATE] com routing condicional
     - Risco: Cliente existente pode ser roteado para novo state incorretamente
@@ -901,27 +901,27 @@ def test_traditional_workflow_not_broken_by_new_state(mock_memory_factory):
         # ... state que NÃO aciona nova feature ...
     )
     mock_memory_factory.return_value.load_profile.return_value = existing_profile
-    
+
     # Action: Query tradicional
     workflow = Workflow()
     result = workflow.run(
         query="Traditional query that should use old path",
         user_id="existing_user_123"
     )
-    
+
     # Assert: Workflow tradicional executado
     assert result["current_state"] == TraditionalState.VALUE  # Mantém state
     assert result["response"] != ""  # Resposta gerada
     # Implícito: new_state_handler NÃO foi chamado (verificar logs ou spy)
-    
-    print("✅ REGRESSÃO TEST PASSED: Traditional workflow preserved")
+
+    print("[OK] REGRESSÃO TEST PASSED: Traditional workflow preserved")
 ```
 
 **Validado**: FASE 2.6 (test_rag_workflow_cliente_existente_nao_quebrado).
 
 ---
 
-## 📊 Métricas e ROI
+## [EMOJI] Métricas e ROI
 
 ### Tempo por Atividade
 
@@ -959,9 +959,9 @@ def test_traditional_workflow_not_broken_by_new_state(mock_memory_factory):
 **ECONOMIA: 35 min** (19% mais rápido)
 
 **QUALIDADE ADICIONAL**:
-- ✅ Teste de regressão crítico incluído (previne breaking change)
-- ✅ Código reutilizável (in-memory sessions pattern para FASE 2.7+)
-- ✅ Documentação inline completa (docstrings)
+- [OK] Teste de regressão crítico incluído (previne breaking change)
+- [OK] Código reutilizável (in-memory sessions pattern para FASE 2.7+)
+- [OK] Documentação inline completa (docstrings)
 
 ### Projeção FASE 2.7 (DISCOVERY State)
 
@@ -972,29 +972,29 @@ def test_traditional_workflow_not_broken_by_new_state(mock_memory_factory):
 - Testes: 15 min (templates de regressão prontos)
 - **TOTAL ESTIMADO: 85 min** (vs 150 min FASE 2.6 - **43% mais rápido**)
 
-**ROI Acumulado (FASE 2.6 → 2.10)**:
+**ROI Acumulado (FASE 2.6 -> 2.10)**:
 - 4 fases restantes × 65 min economizados/fase = **260 min** (4h 20min)
 - Checklist 12 pontos previne ~8-12 erros × 10 min = **80-120 min**
 - **ROI TOTAL ESTIMADO: 5-6 horas** economizadas no restante da FASE 2
 
 ---
 
-## 🎓 Lições-Chave (Top 10)
+## [EMOJI] Lições-Chave (Top 10)
 
-1. ✅ **Sequential Thinking é investimento, não overhead** - 15 min planejamento economiza 30+ min debugging
-2. ✅ **Micro-etapas reduzem complexidade cognitiva** - Resolver 1 problema por vez é mais rápido que múltiplos
-3. ✅ **In-memory sessions são padrão para workflow stateless** - Solução elegante, reutilizável, zero latência
-4. ✅ **Teste de regressão é obrigatório, não opcional** - Previne breaking changes (impacto 100% usuários)
-5. ✅ **Property verification via grep evita AttributeError** - 2 min grep economiza 5-10 min debug
-6. ✅ **Fixtures Pydantic precisam ID inline quando específico** - Reutilizar direto causa mismatch
-7. ✅ **Checklist 8 pontos não suficiente para E2E** - Expandir para 12 pontos (4 novos E2E-específicos)
-8. ✅ **--tb=long SEM filtros é não-negociável** - Filtros ocultam causa raiz, dobra tempo debug
-9. ✅ **Patterns estabelecidos aceleram fases futuras** - FASE 2.7 estimada 43% mais rápida
-10. ✅ **Documentação inline durante implementação** - 10 min investidos economiza 30+ min onboarding futuro
+1. [OK] **Sequential Thinking é investimento, não overhead** - 15 min planejamento economiza 30+ min debugging
+2. [OK] **Micro-etapas reduzem complexidade cognitiva** - Resolver 1 problema por vez é mais rápido que múltiplos
+3. [OK] **In-memory sessions são padrão para workflow stateless** - Solução elegante, reutilizável, zero latência
+4. [OK] **Teste de regressão é obrigatório, não opcional** - Previne breaking changes (impacto 100% usuários)
+5. [OK] **Property verification via grep evita AttributeError** - 2 min grep economiza 5-10 min debug
+6. [OK] **Fixtures Pydantic precisam ID inline quando específico** - Reutilizar direto causa mismatch
+7. [OK] **Checklist 8 pontos não suficiente para E2E** - Expandir para 12 pontos (4 novos E2E-específicos)
+8. [OK] **--tb=long SEM filtros é não-negociável** - Filtros ocultam causa raiz, dobra tempo debug
+9. [OK] **Patterns estabelecidos aceleram fases futuras** - FASE 2.7 estimada 43% mais rápida
+10. [OK] **Documentação inline durante implementação** - 10 min investidos economiza 30+ min onboarding futuro
 
 ---
 
-## 🔗 Referências Cruzadas
+## [EMOJI] Referências Cruzadas
 
 ### Lições Relacionadas
 - **[Test Debugging Methodology](lesson-test-debugging-methodology-2025-10-15.md)** - Fundamentos de debugging pytest (--tb=long, um erro por vez)
@@ -1013,14 +1013,14 @@ def test_traditional_workflow_not_broken_by_new_state(mock_memory_factory):
 
 ---
 
-## 📝 Comandos Úteis
+## [EMOJI] Comandos Úteis
 
 ### Debug Pytest
 ```bash
-# ✅ CORRETO: Traceback completo
+# [OK] CORRETO: Traceback completo
 pytest tests/test_consulting_workflow.py::test_specific -v --tb=long 2>&1
 
-# ❌ NUNCA: Filtros ocultam informação
+# [ERRO] NUNCA: Filtros ocultam informação
 pytest tests/test_consulting_workflow.py -v --tb=short 2>&1 | Select-Object -Last 50
 
 # Executar todos E2E
@@ -1059,8 +1059,7 @@ grep "assert" tests/test_consulting_workflow.py | wc -l
 
 ---
 
-**Criado**: 2025-10-16  
-**Autor**: AI Agent (Sessão 11 - FASE 2.6)  
-**Validado**: 5/5 testes E2E (100% passing)  
+**Criado**: 2025-10-16
+**Autor**: AI Agent (Sessão 11 - FASE 2.6)
+**Validado**: 5/5 testes E2E (100% passing)
 **Próxima Aplicação**: FASE 2.7 - DISCOVERY State Integration
-

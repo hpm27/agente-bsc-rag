@@ -12,9 +12,9 @@ A nova arquitetura suporta múltiplos vector stores através de uma interface co
 
 | Vector Store | Status | Recomendação |
 |--------------|--------|--------------|
-| **Qdrant** | ✅ Recomendado | Melhor para produção 2025 |
-| **Weaviate** | ✅ Alternativa | Melhor se hybrid search nativo for crítico |
-| **Redis Stack** | ⚠️ Legacy | Mantido para compatibilidade |
+| **Qdrant** | [OK] Recomendado | Melhor para produção 2025 |
+| **Weaviate** | [OK] Alternativa | Melhor se hybrid search nativo for crítico |
+| **Redis Stack** | [WARN] Legacy | Mantido para compatibilidade |
 
 ---
 
@@ -344,11 +344,11 @@ store.create_index(algorithm="HNSW", m=16, ef_construct=100)
 
 ## Próximos Passos
 
-1. ✅ Escolher vector store baseado no benchmark
-2. ✅ Atualizar `.env` com configuração
-3. ✅ Subir serviço Docker
-4. ✅ Re-indexar documentos
-5. ✅ Testar queries
+1. [OK] Escolher vector store baseado no benchmark
+2. [OK] Atualizar `.env` com configuração
+3. [OK] Subir serviço Docker
+4. [OK] Re-indexar documentos
+5. [OK] Testar queries
 6. ⏳ Monitorar performance em produção
 
 ---

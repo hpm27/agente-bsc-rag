@@ -1,14 +1,14 @@
 # Lição Aprendida: Debugging Complexo & Formatação UI Streamlit (FASE 2.7)
 
-**Data:** 2025-10-22  
-**Sessão:** Out 22, 2025 (4.5h investidas)  
-**Fase:** FASE 2.7 (UI Streamlit + Debugging Produção)  
-**Problemas Resolvidos:** 7 principais  
+**Data:** 2025-10-22
+**Sessão:** Out 22, 2025 (4.5h investidas)
+**Fase:** FASE 2.7 (UI Streamlit + Debugging Produção)
+**Problemas Resolvidos:** 7 principais
 **ROI Validado:** 50-67% economia tempo debugging, UI profissional em 1h vs 3-4h
 
 ---
 
-## 📋 Contexto Geral
+## [EMOJI] Contexto Geral
 
 Esta sessão focou em resolver **múltiplos problemas críticos** que surgiram após a implementação das técnicas RAG avançadas (Query Decomposition, Adaptive Re-ranking, Router). Os problemas incluíram:
 
@@ -19,7 +19,7 @@ Esta sessão focou em resolver **múltiplos problemas críticos** que surgiram a
 5-7. **UI Streamlit mal formatada** (cards invisíveis, layout horizontal apertado, texto branco em branco)
 
 **Metodologia Aplicada:**
-- **Sequential Thinking** via MCP (8 thoughts + 5 thoughts → root causes identificadas)
+- **Sequential Thinking** via MCP (8 thoughts + 5 thoughts -> root causes identificadas)
 - **Brightdata research** para soluções validadas pela comunidade (2024-2025)
 - **5 Whys** implícito durante debugging
 - **Defensive programming** patterns
@@ -28,7 +28,7 @@ Esta sessão focou em resolver **múltiplos problemas críticos** que surgiram a
 
 ---
 
-## 🔍 PROBLEMA #1: Loop Infinito DiagnosticAgent (Crítico)
+## [EMOJI] PROBLEMA #1: Loop Infinito DiagnosticAgent (Crítico)
 
 ### **Sintomas Observados**
 
@@ -37,14 +37,14 @@ Esta sessão focou em resolver **múltiplos problemas críticos** que surgiram a
 12:27:48 - Customer Agent completou processamento
 12:27:50 - Learning Agent completou processamento
 12:27:52 - Process Agent completou processamento
-12:28:11 → 12:37:18 - GAP de 9 minutos sem logs (540 segundos)
+12:28:11 -> 12:37:18 - GAP de 9 minutos sem logs (540 segundos)
 12:37:18 - ValidationError: 1 validation error for Recommendation
            impact: Field required [type=missing]
 ```
 
 **O que deveria acontecer:** Após os 4 agentes completarem (12:27:52), o sistema deveria consolidar diagnóstico e gerar recomendações em ~3-5 minutos.
 
-**O que aconteceu:** GAP de 9 minutos → erro → loop infinito / timeout.
+**O que aconteceu:** GAP de 9 minutos -> erro -> loop infinito / timeout.
 
 ---
 
@@ -52,14 +52,14 @@ Esta sessão focou em resolver **múltiplos problemas críticos** que surgiram a
 
 **Sequential Thinking (8 thoughts) aplicado:**
 
-1. **Thought 1:** Analisar timeline dos logs → 4 agentes completaram, gap de 9 min antes do erro
-2. **Thought 2:** Traceback mostra `generate_recommendations()` linha 684 → ValidationError no campo `impact`
-3. **Thought 3:** Tenacity fez 3 retries (~3 min cada) → todas falharam com mesmo ValidationError
-4. **Thought 4:** Grep código linha 684 → `json.loads()` + `Recommendation.model_validate()` manual
-5. **Thought 5:** Grep schema `Recommendation` → campo `impact` É obrigatório (sem default)
-6. **Thought 6:** LLM retorna JSON SEM campo `impact` → Pydantic validation falha
-7. **Thought 7:** **Por que LLM omite `impact`?** → Prompt não menciona campo explicitamente
-8. **Thought 8:** **ROOT CAUSE REAL:** GPT-5 usa `max_tokens` (ignorado) ao invés de `max_completion_tokens` → response truncada → `finish_reason: length`
+1. **Thought 1:** Analisar timeline dos logs -> 4 agentes completaram, gap de 9 min antes do erro
+2. **Thought 2:** Traceback mostra `generate_recommendations()` linha 684 -> ValidationError no campo `impact`
+3. **Thought 3:** Tenacity fez 3 retries (~3 min cada) -> todas falharam com mesmo ValidationError
+4. **Thought 4:** Grep código linha 684 -> `json.loads()` + `Recommendation.model_validate()` manual
+5. **Thought 5:** Grep schema `Recommendation` -> campo `impact` É obrigatório (sem default)
+6. **Thought 6:** LLM retorna JSON SEM campo `impact` -> Pydantic validation falha
+7. **Thought 7:** **Por que LLM omite `impact`?** -> Prompt não menciona campo explicitamente
+8. **Thought 8:** **ROOT CAUSE REAL:** GPT-5 usa `max_tokens` (ignorado) ao invés de `max_completion_tokens` -> response truncada -> `finish_reason: length`
 
 ---
 
@@ -79,7 +79,7 @@ llm = ChatOpenAI(
 **Por que é crítico:**
 - GPT-5 usa `max_completion_tokens` ao invés de `max_tokens` (breaking change vs GPT-4)
 - Quando `max_tokens` é passado, GPT-5 IGNORA e usa default baixo (~4K tokens)
-- Resultado: `finish_reason: length` (response truncada) → JSON incompleto → ValidationError
+- Resultado: `finish_reason: length` (response truncada) -> JSON incompleto -> ValidationError
 
 **Fonte Validada:** OpenAI Community Forum (Agosto 2025), Memória [[memory:9785174]]
 
@@ -142,10 +142,10 @@ recommendations = result.recommendations  # Lista de Recommendation já validada
 ```
 
 **Benefícios:**
-1. ✅ LLM recebe schema Pydantic via OpenAI function calling
-2. ✅ OpenAI valida schema ANTES de retornar
-3. ✅ Zero `json.loads()` manual (parsing automático)
-4. ✅ ValidationError prevenido na origem
+1. [OK] LLM recebe schema Pydantic via OpenAI function calling
+2. [OK] OpenAI valida schema ANTES de retornar
+3. [OK] Zero `json.loads()` manual (parsing automático)
+4. [OK] ValidationError prevenido na origem
 
 ---
 
@@ -159,7 +159,7 @@ recommendations = result.recommendations  # Lista de Recommendation já validada
 
 ---
 
-## 🔍 PROBLEMA #2: ValidationError Campo 'impact' Faltando (Recorrente)
+## [EMOJI] PROBLEMA #2: ValidationError Campo 'impact' Faltando (Recorrente)
 
 ### **Sintomas Observados**
 
@@ -187,7 +187,7 @@ RETORNE uma lista de objetos JSON:
         "description": "string (mínimo 50 caracteres)",
         "perspective": "Financeira" | "Clientes" | "Processos Internos" | "Aprendizado e Crescimento",
         "related_perspectives": [...],
-        "expected_impact": "HIGH" | "MEDIUM" | "LOW",  # ❌ CAMPO ERRADO!
+        "expected_impact": "HIGH" | "MEDIUM" | "LOW",  # [ERRO] CAMPO ERRADO!
         "effort": "HIGH" | "MEDIUM" | "LOW",
         "priority": "HIGH" | "MEDIUM" | "LOW",
         "timeframe": "string",
@@ -200,7 +200,7 @@ RETORNE uma lista de objetos JSON:
 
 ```python
 class Recommendation(BaseModel):
-    impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(  # ✅ CAMPO CORRETO: impact
+    impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(  # [OK] CAMPO CORRETO: impact
         description="Impacto esperado da recomendação"
     )
 ```
@@ -224,7 +224,7 @@ RETORNE uma lista de objetos JSON:
     {
         "title": "string (10-150 caracteres)",
         "description": "string (mínimo 50 caracteres)",
-        "impact": "HIGH" | "MEDIUM" | "LOW",  # ✅ CAMPO CORRETO
+        "impact": "HIGH" | "MEDIUM" | "LOW",  # [OK] CAMPO CORRETO
         "effort": "HIGH" | "MEDIUM" | "LOW",
         "priority": "HIGH" | "MEDIUM" | "LOW",
         "timeframe": "string (ex: '3-6 meses', 'quick win')",
@@ -234,9 +234,9 @@ RETORNE uma lista de objetos JSON:
 ```
 
 **Mudanças:**
-1. ✅ `expected_impact` → `impact`
-2. ✅ Removidos campos que NÃO existem no schema (`perspective`, `related_perspectives`)
-3. ✅ Mantidos APENAS campos obrigatórios + opcionais válidos
+1. [OK] `expected_impact` -> `impact`
+2. [OK] Removidos campos que NÃO existem no schema (`perspective`, `related_perspectives`)
+3. [OK] Mantidos APENAS campos obrigatórios + opcionais válidos
 
 ---
 
@@ -252,15 +252,15 @@ RETORNE uma lista de objetos JSON:
 class Recommendation(BaseModel):
     impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(
         description="Impacto esperado da recomendação",
-        examples=["HIGH", "MEDIUM", "LOW"]  # ✅ Ajuda LLM entender opções
+        examples=["HIGH", "MEDIUM", "LOW"]  # [OK] Ajuda LLM entender opções
     )
-    
+
     class Config:
         json_schema_extra = {
-            "example": {  # ✅ Objeto completo como exemplo
+            "example": {  # [OK] Objeto completo como exemplo
                 "title": "Implementar Dashboard Financeiro",
                 "description": "Criar dashboard consolidando...",
-                "impact": "HIGH",  # ✅ Campo presente no exemplo!
+                "impact": "HIGH",  # [OK] Campo presente no exemplo!
                 "effort": "LOW",
                 "priority": "HIGH",
                 "timeframe": "3-6 meses",
@@ -281,7 +281,7 @@ class Recommendation(BaseModel):
 
 ---
 
-## 🔍 PROBLEMA #3-4: Logs e Asyncio.gather (Debugging)
+## [EMOJI] PROBLEMA #3-4: Logs e Asyncio.gather (Debugging)
 
 ### **Problema #3: Logs Não Aparecendo no Arquivo .log**
 
@@ -293,7 +293,7 @@ class Recommendation(BaseModel):
 # app/main.py linha 89 (ANTES):
 logger.add(
     log_file,
-    enqueue=True  # ⚠️ Thread-safe MAS causa delay em escrever!
+    enqueue=True  # [WARN] Thread-safe MAS causa delay em escrever!
 )
 ```
 
@@ -303,11 +303,11 @@ logger.add(
 # CORRETO:
 logger.add(
     log_file,
-    enqueue=False  # ⚡ Logs imediatos (desabilitar para debugging)
+    enqueue=False  # [FAST] Logs imediatos (desabilitar para debugging)
 )
 ```
 
-**ROI:** Logs imediatos no arquivo (vs 3-10s delay) → debugging acelerado.
+**ROI:** Logs imediatos no arquivo (vs 3-10s delay) -> debugging acelerado.
 
 ---
 
@@ -315,7 +315,7 @@ logger.add(
 
 **Sintoma:** 4 agentes completam, mas `asyncio.gather()` não retorna (sem exceção).
 
-**Root Cause:** Sem `try/except` defensivo → exceção silenciosa.
+**Root Cause:** Sem `try/except` defensivo -> exceção silenciosa.
 
 **Solução:**
 
@@ -330,21 +330,21 @@ except Exception as e:
     raise
 ```
 
-**ROI:** Zero falhas silenciosas → debugging acelerado.
+**ROI:** Zero falhas silenciosas -> debugging acelerado.
 
 ---
 
-## 🎨 PROBLEMA #5-7: UI Streamlit Mal Formatada
+## [EMOJI] PROBLEMA #5-7: UI Streamlit Mal Formatada
 
 ### **Sintomas Observados**
 
 1. **Cards das Recomendações Invisíveis:**
    - Background cinza claro (`#f8f9fb`)
-   - Texto SEM `color` especificado → texto branco em branco (invisível)
+   - Texto SEM `color` especificado -> texto branco em branco (invisível)
 
 2. **Layout Horizontal Apertado:**
    - 3 cards lado a lado em colunas (`st.columns(3)`)
-   - ~33% largura cada → pouco espaço para texto
+   - ~33% largura cada -> pouco espaço para texto
    - Descriptions truncadas para 180 chars (ainda apertado)
 
 3. **Título Duplicado:**
@@ -365,16 +365,16 @@ except Exception as e:
 
 **Top 10 Dicas Extraídas:**
 
-1. ✅ `st.columns()` para layout grid
-2. ✅ `st.metric()` para KPIs com delta visual
-3. ✅ `st.expander()` para collapse/expand sections
-4. ✅ CSS customizado via `st.markdown(unsafe_allow_html=True)`
-5. ✅ Containers com bordas via HTML inline
-6. ✅ Plotly para charts interativos (melhor que matplotlib)
-7. ✅ Color palette consistente (usar mesmas cores em todo dashboard)
-8. ✅ Whitespace adequado (não sobrecarregar tela)
-9. ✅ Icons/Emojis apenas em títulos (não no código!)
-10. ✅ Dark/Light theme toggle via `st.config`
+1. [OK] `st.columns()` para layout grid
+2. [OK] `st.metric()` para KPIs com delta visual
+3. [OK] `st.expander()` para collapse/expand sections
+4. [OK] CSS customizado via `st.markdown(unsafe_allow_html=True)`
+5. [OK] Containers com bordas via HTML inline
+6. [OK] Plotly para charts interativos (melhor que matplotlib)
+7. [OK] Color palette consistente (usar mesmas cores em todo dashboard)
+8. [OK] Whitespace adequado (não sobrecarregar tela)
+9. [OK] Icons/Emojis apenas em títulos (não no código!)
+10. [OK] Dark/Light theme toggle via `st.config`
 
 ---
 
@@ -386,8 +386,8 @@ except Exception as e:
 # ANTES (texto invisível):
 st.markdown(
     f"<div style='background:#f8f9fb;border:1px solid #e6e9ef;'>"
-    f"<div style='font-weight:700;'>{title}</div>"  # ❌ Sem color!
-    f"<div>{desc}</div>"  # ❌ Sem color!
+    f"<div style='font-weight:700;'>{title}</div>"  # [ERRO] Sem color!
+    f"<div>{desc}</div>"  # [ERRO] Sem color!
     f"</div>",
     unsafe_allow_html=True
 )
@@ -395,8 +395,8 @@ st.markdown(
 # DEPOIS (texto visível):
 st.markdown(
     f"<div style='background:#f8f9fb;border:1px solid #e6e9ef;'>"
-    f"<div style='font-weight:700;color:#1f1f1f;'>{title}</div>"  # ✅ Color preto!
-    f"<div style='color:#333;'>{desc_short}</div>"  # ✅ Color cinza escuro!
+    f"<div style='font-weight:700;color:#1f1f1f;'>{title}</div>"  # [OK] Color preto!
+    f"<div style='color:#333;'>{desc_short}</div>"  # [OK] Color cinza escuro!
     f"</div>",
     unsafe_allow_html=True
 )
@@ -416,13 +416,13 @@ for col, rec in zip(cols, norm_recs):
 # DEPOIS (vertical, espaçoso):
 for rec in norm_recs:
     # card com 100% da largura
-    desc_short = truncate_text(desc, 300)  # 180 → 300 chars (66% mais texto)
+    desc_short = truncate_text(desc, 300)  # 180 -> 300 chars (66% mais texto)
 ```
 
 **Benefícios:**
-- ✅ Largura total disponível para cada card
-- ✅ Textos completos (300 chars vs 180)
-- ✅ Mais legível (line-height 1.5, fontes maiores)
+- [OK] Largura total disponível para cada card
+- [OK] Textos completos (300 chars vs 180)
+- [OK] Mais legível (line-height 1.5, fontes maiores)
 
 ---
 
@@ -450,17 +450,17 @@ with st.expander("[CHECK] Diagnóstico BSC Completo", expanded=True):
     with col1:
         st.metric("Perspectivas analisadas", "4")
     # ... demais métricas
-    
+
     # Resumo Executivo expansível
     with st.expander("Resumo Executivo (bullet points)", expanded=False):
         for bullet in bullets:
             st.markdown(f"- {bullet}")
-    
+
     # Synergies expansível
     with st.expander("Synergies cross-perspective (5)", expanded=False):
         for s in synergies:
             st.markdown(f"- {s}")
-    
+
     # Top 3 Recomendações (sempre visíveis)
     for rec in recommendations[:3]:
         # card vertical aqui
@@ -475,28 +475,28 @@ with st.expander("[CHECK] Diagnóstico BSC Completo", expanded=True):
 | Tempo formatação UI | 3-4h (tentativa e erro) | 1h (research-first) | -67% |
 | Cards visíveis | 0% (texto branco) | 100% | +100% |
 | Texto legível por card | 180 chars | 300 chars | +66% |
-| Usuário satisfeito | Não | Sim | ✅ |
+| Usuário satisfeito | Não | Sim | [OK] |
 
 ---
 
-## 📊 Top 5 Lições-Chave da Sessão
+## [EMOJI] Top 5 Lições-Chave da Sessão
 
 ### **LIÇÃO 1: Sequential Thinking é ESSENCIAL para Debugging Complexo**
 
 **Problema:** Loop infinito com 4 perspectivas falhando simultaneamente.
 
 **Metodologia:**
-- 8 thoughts sistemáticos → root cause GPT-5 max_tokens ignorado
-- 5 thoughts para ValidationError → root cause prompt desalinhado
+- 8 thoughts sistemáticos -> root cause GPT-5 max_tokens ignorado
+- 5 thoughts para ValidationError -> root cause prompt desalinhado
 - Sem Sequential Thinking: tentativa e erro demoraria 3-6h (vs 2h real)
 
 **ROI Validado:** 50-67% economia de tempo debugging
 
 **Quando Usar:**
-- ✅ Erros complexos com múltiplas variáveis
-- ✅ Logs confusos ou contraditórios
-- ✅ Dependências complexas (Pydantic, LangGraph, LLMs, APIs)
-- ❌ Erros simples com causa óbvia
+- [OK] Erros complexos com múltiplas variáveis
+- [OK] Logs confusos ou contraditórios
+- [OK] Dependências complexas (Pydantic, LangGraph, LLMs, APIs)
+- [ERRO] Erros simples com causa óbvia
 
 ---
 
@@ -507,15 +507,15 @@ with st.expander("[CHECK] Diagnóstico BSC Completo", expanded=True):
 **Metodologia:**
 - Brightdata search: "streamlit dashboard cards layout best practices 2024 2025"
 - Medium article (Amanda Iglesias, 830+ likes, Aug 2025)
-- Top 10 dicas validadas pela comunidade → aplicadas diretamente
+- Top 10 dicas validadas pela comunidade -> aplicadas diretamente
 
 **ROI Validado:** Soluções validadas em 15 min (vs 30-60 min CSS inline tentativa e erro)
 
 **Quando Usar:**
-- ✅ Tecnologia nova/desconhecida (Streamlit UI)
-- ✅ Problema recorrente (prompt schema alignment)
-- ✅ Best practices existem (não reinventar)
-- ❌ Problema único/específico do projeto
+- [OK] Tecnologia nova/desconhecida (Streamlit UI)
+- [OK] Problema recorrente (prompt schema alignment)
+- [OK] Best practices existem (não reinventar)
+- [ERRO] Problema único/específico do projeto
 
 ---
 
@@ -537,13 +537,13 @@ structured_llm = llm.with_structured_output(Recommendation)
 class Recommendation(BaseModel):
     impact: Literal["HIGH", "MEDIUM", "LOW"] = Field(
         description="Impacto esperado da recomendação",
-        examples=["HIGH", "MEDIUM", "LOW"]  # ✅ Ajuda LLM
+        examples=["HIGH", "MEDIUM", "LOW"]  # [OK] Ajuda LLM
     )
-    
+
     class Config:
         json_schema_extra = {
-            "example": {  # ✅ Objeto completo válido
-                "impact": "HIGH",  # ✅ Campo presente!
+            "example": {  # [OK] Objeto completo válido
+                "impact": "HIGH",  # [OK] Campo presente!
                 # ... demais campos
             }
         }
@@ -564,15 +564,15 @@ class Recommendation(BaseModel):
 **Problema:** Cards invisíveis, layout apertado, badges pouco contrastantes.
 
 **Tentativa e Erro (ineficiente):**
-1. Tentar CSS inline → 15 min → falha
-2. Tentar ajustar cores → 10 min → falha
-3. Tentar layout horizontal → 15 min → ainda apertado
+1. Tentar CSS inline -> 15 min -> falha
+2. Tentar ajustar cores -> 10 min -> falha
+3. Tentar layout horizontal -> 15 min -> ainda apertado
 4. **Total:** 40-60 min desperdiçados
 
 **Research-First (eficiente):**
-1. Brightdata search (5 min) → artigo validado (830+ likes)
+1. Brightdata search (5 min) -> artigo validado (830+ likes)
 2. Extrair top 10 dicas (10 min)
-3. Aplicar diretamente (30 min) → ✅ UI profissional
+3. Aplicar diretamente (30 min) -> [OK] UI profissional
 4. **Total:** 45 min investidos
 
 **ROI Validado:** UI profissional em 1h vs 3-4h tentativa e erro
@@ -606,11 +606,11 @@ if hasattr(raw_test, 'response_metadata'):
         raise ValueError(f"Response truncada - aumentar max_completion_tokens")
 ```
 
-**ROI Validado:** Zero falhas silenciosas → debugging acelerado
+**ROI Validado:** Zero falhas silenciosas -> debugging acelerado
 
 ---
 
-## 🚫 Top 5 Antipadrões Evitados
+## [EMOJI] Top 5 Antipadrões Evitados
 
 ### **ANTIPADRÃO #1: Assumir que with_structured_output() Garante Tudo**
 
@@ -622,7 +622,7 @@ if hasattr(raw_test, 'response_metadata'):
 
 ### **ANTIPADRÃO #2: Prompt Genérico Esperando Schema Funcionar Sozinho**
 
-**Problema:** Campo `impact` obrigatório mas NÃO mencionado no exemplo do prompt → ValidationError recorrente.
+**Problema:** Campo `impact` obrigatório mas NÃO mencionado no exemplo do prompt -> ValidationError recorrente.
 
 **Solução:** Alinhar prompt com schema explicitamente.
 
@@ -632,13 +632,13 @@ if hasattr(raw_test, 'response_metadata'):
 
 **Problema:** Tentativa e erro com CSS: 30-60 min desperdiçados.
 
-**Solução:** Brightdata research-first → 10-15 min soluções validadas.
+**Solução:** Brightdata research-first -> 10-15 min soluções validadas.
 
 ---
 
 ### **ANTIPADRÃO #4: enqueue=True em Logs de Debugging**
 
-**Problema:** Logs não aparecem no arquivo (delay 3-10s) → debugging lento.
+**Problema:** Logs não aparecem no arquivo (delay 3-10s) -> debugging lento.
 
 **Solução:** enqueue=False para logs imediatos.
 
@@ -646,13 +646,13 @@ if hasattr(raw_test, 'response_metadata'):
 
 ### **ANTIPADRÃO #5: asyncio.gather() Sem try/except**
 
-**Problema:** Exceção silenciosa → debugging lento.
+**Problema:** Exceção silenciosa -> debugging lento.
 
 **Solução:** Try/except defensivo + logs estruturados.
 
 ---
 
-## 📚 Referências e Fontes Validadas
+## [EMOJI] Referências e Fontes Validadas
 
 ### **1. GPT-5 max_completion_tokens (Problema #1)**
 
@@ -700,54 +700,54 @@ if hasattr(raw_test, 'response_metadata'):
 
 ---
 
-## 🎯 Aplicabilidade Futura
+## [EMOJI] Aplicabilidade Futura
 
 ### **Quando Aplicar Estas Lições:**
 
 **LIÇÃO 1 (Sequential Thinking):**
-- ✅ Debugging complexo (3+ variáveis)
-- ✅ Logs confusos
-- ✅ Dependências complexas
+- [OK] Debugging complexo (3+ variáveis)
+- [OK] Logs confusos
+- [OK] Dependências complexas
 
 **LIÇÃO 2 (Brightdata Research):**
-- ✅ Tecnologia nova/desconhecida
-- ✅ Problema recorrente
-- ✅ Best practices existem
+- [OK] Tecnologia nova/desconhecida
+- [OK] Problema recorrente
+- [OK] Best practices existem
 
 **LIÇÃO 3 (Prompt Schema Alignment):**
-- ✅ SEMPRE antes de criar novo prompt com structured output
-- ✅ ValidationError recorrente
-- ✅ Campos obrigatórios omitidos
+- [OK] SEMPRE antes de criar novo prompt com structured output
+- [OK] ValidationError recorrente
+- [OK] Campos obrigatórios omitidos
 
 **LIÇÃO 4 (UI Research-First):**
-- ✅ Formatação UI Streamlit
-- ✅ CSS inline complexo
-- ✅ Dashboard design
+- [OK] Formatação UI Streamlit
+- [OK] CSS inline complexo
+- [OK] Dashboard design
 
 **LIÇÃO 5 (Defensive Programming):**
-- ✅ asyncio.gather()
-- ✅ Logs de debugging
-- ✅ LLM structured output
+- [OK] asyncio.gather()
+- [OK] Logs de debugging
+- [OK] LLM structured output
 
 ---
 
-## 📊 Métricas Finais da Sessão
+## [EMOJI] Métricas Finais da Sessão
 
 | Métrica | Valor |
 |---|---|
 | **Problemas Resolvidos** | 7 principais |
 | **Tempo Investido** | 4.5h |
 | **ROI Debugging** | 50-67% economia tempo |
-| **ROI UI** | 3-4h → 1h (-67%) |
-| **Diagnósticos Sucesso** | 0% → 100% (+100%) |
-| **ValidationError** | 3+ por sessão → 0 (-100%) |
-| **Logs Imediatos** | Delay 3-10s → 0s (-100%) |
-| **Cards Visíveis** | 0% → 100% (+100%) |
-| **Texto Legível por Card** | 180 → 300 chars (+66%) |
+| **ROI UI** | 3-4h -> 1h (-67%) |
+| **Diagnósticos Sucesso** | 0% -> 100% (+100%) |
+| **ValidationError** | 3+ por sessão -> 0 (-100%) |
+| **Logs Imediatos** | Delay 3-10s -> 0s (-100%) |
+| **Cards Visíveis** | 0% -> 100% (+100%) |
+| **Texto Legível por Card** | 180 -> 300 chars (+66%) |
 
 ---
 
-## ✅ Checklist de Prevenção (Usar em Futuras Sessões)
+## [OK] Checklist de Prevenção (Usar em Futuras Sessões)
 
 ### **PRÉ-PROMPT (Structured Output):**
 - [ ] Todos campos obrigatórios mencionados no prompt?
@@ -769,7 +769,6 @@ if hasattr(raw_test, 'response_metadata'):
 
 ---
 
-**Última Atualização:** 2025-10-22  
-**Status:** ✅ Completo (7/7 problemas resolvidos)  
+**Última Atualização:** 2025-10-22
+**Status:** [OK] Completo (7/7 problemas resolvidos)
 **Próxima Fase:** FASE 3 (Ferramentas Consultivas)
-

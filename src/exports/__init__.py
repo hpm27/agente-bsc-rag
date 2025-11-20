@@ -10,12 +10,12 @@ Classes principais:
 
 Usage:
     >>> from src.exports import PdfExporter, CsvExporter, TemplateManager
-    >>> 
+    >>>
     >>> # PDF Export
     >>> template_manager = TemplateManager()
     >>> pdf_exporter = PdfExporter(template_manager)
     >>> pdf_path = pdf_exporter.export_full_diagnostic(diagnostic, profile)
-    >>> 
+    >>>
     >>> # CSV Export
     >>> csv_exporter = CsvExporter()
     >>> csv_path = csv_exporter.export_clients_list(profiles)
@@ -25,15 +25,14 @@ Versão: 1.0
 Data: 2025-11-18
 """
 
-from src.exports.pdf_exporter import PdfExporter
 from src.exports.csv_exporter import CsvExporter
+from src.exports.pdf_exporter import PdfExporter
 from src.exports.template_manager import TemplateManager
 
 __all__ = [
-    "PdfExporter",
     "CsvExporter",
+    "PdfExporter",
     "TemplateManager",
 ]
 
 __version__ = "1.0.0"
-

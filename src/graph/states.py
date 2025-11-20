@@ -1,6 +1,7 @@
 """
 Definição de estados para o grafo LangGraph.
 """
+
 from __future__ import annotations
 
 from collections.abc import MutableMapping
@@ -10,45 +11,45 @@ from typing import Annotated, Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
-from src.memory.schemas import ClientProfile
-
+from src.memory.schemas import AlignmentReport, ClientProfile, StrategyMap
 
 # ============================================================================
 # CUSTOM REDUCER: Deep Merge para Metadata
 # ============================================================================
 
+
 def deep_merge_dicts(current: Any, update: Any) -> dict[str, Any]:
     """
     Custom reducer para LangGraph: deep merge de dicts aninhados.
-    
+
     Preserva nested keys como partial_profile entre turnos do onboarding multi-turn.
     Solução baseada em Stack Overflow (Hans Bouwmeester, 2018) + best practices comunidade 2024-2025.
-    
+
     Args:
         current: Dict existente no checkpoint LangGraph
         update: Dict novo retornado pelo handler
-    
+
     Returns:
         Dict merged (deep recursivo, não shallow)
-    
+
     Behavior:
         - Se current ou update não são dicts: retorna update
         - Chaves novas em update: adicionadas ao result
         - Chaves existentes com valores dict em ambos: merge recursivo
         - Chaves existentes com outros tipos: update sobrescreve current
-    
+
     Example:
         >>> current = {"partial_profile": {"challenges": ["A"], "company_name": "TechCorp"}, "chat_history": [1]}
         >>> update = {"partial_profile": {"challenges": ["A", "B"]}, "chat_history": [1, 2]}
         >>> deep_merge_dicts(current, update)
         {"partial_profile": {"challenges": ["A", "B"], "company_name": "TechCorp"}, "chat_history": [1, 2]}
         # NOTE: company_name preservado mesmo não estando em update!
-    
+
     Use Case (BSC RAG):
         - Onboarding multi-turn: acumula company_name, industry, challenges, goals entre turnos
         - Sem deep merge: partial_profile seria substituído inteiro (perda de dados)
         - Com deep merge: apenas campos em update são atualizados, demais preservados
-    
+
     References:
         - Stack Overflow Q7204805 (167K views, solução validada Hans Bouwmeester)
         - LangGraph Docs - Custom Reducers (langchain-ai.github.io/langgraph/concepts/low_level/#reducers)
@@ -57,21 +58,21 @@ def deep_merge_dicts(current: Any, update: Any) -> dict[str, Any]:
     if not isinstance(current, MutableMapping) or not isinstance(update, MutableMapping):
         result_dict: dict[str, Any] = dict(update) if isinstance(update, MutableMapping) else {}
         return result_dict
-    
+
     # Converter para dict e criar cópia para evitar mutação
     result: dict[str, Any] = dict(current)  # Converte MutableMapping -> dict
-    
+
     # Iterar sobre chaves do update
     for key, update_value in update.items():
         current_value = result.get(key)
-        
+
         # Se ambos são MutableMapping (dicts), merge recursivo
         if isinstance(current_value, MutableMapping) and isinstance(update_value, MutableMapping):
             result[key] = deep_merge_dicts(current_value, update_value)
         else:
             # Caso contrário, update substitui current (comportamento padrão dict.update())
             result[key] = update_value
-    
+
     return result
 
 
@@ -79,8 +80,10 @@ def deep_merge_dicts(current: Any, update: Any) -> dict[str, Any]:
 # GRAPH STATE SCHEMAS
 # ============================================================================
 
+
 class PerspectiveType(str, Enum):
     """Perspectivas do BSC."""
+
     FINANCIAL = "financial"
     CUSTOMER = "customer"
     PROCESS = "process"
@@ -89,6 +92,7 @@ class PerspectiveType(str, Enum):
 
 class AgentResponse(BaseModel):
     """Resposta de um agente especialista."""
+
     perspective: PerspectiveType
     content: str
     confidence: float = Field(ge=0.0, le=1.0)
@@ -98,6 +102,7 @@ class AgentResponse(BaseModel):
 
 class JudgeEvaluation(BaseModel):
     """Avaliação do Judge Agent."""
+
     approved: bool
     score: float = Field(ge=0.0, le=1.0)
     feedback: str
@@ -167,6 +172,10 @@ class BSCState(BaseModel):
     # Tool outputs (FASE 3)
     tool_outputs: dict[str, Any] = Field(default_factory=dict)
 
+    # Strategy Map (SPRINT 2 - FASE 5)
+    strategy_map: StrategyMap | None = None
+    alignment_report: AlignmentReport | None = None
+
     model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
 
     def model_dump(self, *args, **kwargs):  # type: ignore[override]
@@ -176,6 +185,3 @@ class BSCState(BaseModel):
         if "exclude_none" not in kwargs:
             kwargs["exclude_none"] = True
         return super().model_dump(*args, **kwargs)
-
-
-

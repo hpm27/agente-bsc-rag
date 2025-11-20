@@ -12,8 +12,9 @@ Cobertura:
 - Validações de erro (dados ausentes, output inválido)
 """
 
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
 import pytest
-from unittest.mock import Mock, MagicMock, patch, AsyncMock
 from pydantic import ValidationError
 
 from src.agents.diagnostic_agent import DiagnosticAgent
@@ -26,7 +27,6 @@ from src.memory.schemas import (
     Recommendation,
     StrategicContext,
 )
-
 
 # ============================================================================
 # FIXTURES
@@ -103,9 +103,7 @@ def sample_diagnostic_result():
             "Dashboard financeiro executivo",
         ],
         priority="HIGH",
-        key_insights=[
-            "Kaplan & Norton: 60% empresas falham em conectar finanças a processos"
-        ],
+        key_insights=["Kaplan & Norton: 60% empresas falham em conectar finanças a processos"],
     )
 
 
@@ -163,7 +161,9 @@ def test_analyze_perspective_financial(diagnostic_agent, sample_bsc_state):
     )
 
     # Mock specialist agent (método correto: invoke, não process_query)
-    with patch.object(diagnostic_agent.financial_agent, 'invoke', return_value={"answer": "Contexto BSC"}):
+    with patch.object(
+        diagnostic_agent.financial_agent, "invoke", return_value={"answer": "Contexto BSC"}
+    ):
         result = diagnostic_agent.analyze_perspective(
             "Financeira",
             sample_bsc_state.client_profile,
@@ -191,7 +191,9 @@ def test_analyze_perspective_customer(diagnostic_agent, sample_bsc_state):
         return_value=Mock(invoke=Mock(return_value=mock_result))
     )
 
-    with patch.object(diagnostic_agent.customer_agent, 'invoke', return_value={"answer": "Contexto BSC"}):
+    with patch.object(
+        diagnostic_agent.customer_agent, "invoke", return_value={"answer": "Contexto BSC"}
+    ):
         result = diagnostic_agent.analyze_perspective(
             "Clientes",
             sample_bsc_state.client_profile,
@@ -259,7 +261,7 @@ async def test_run_parallel_analysis_success(diagnostic_agent, sample_bsc_state)
     def mock_analyze(perspective, profile, state):
         return mock_results[perspective]
 
-    with patch.object(diagnostic_agent, 'analyze_perspective', side_effect=mock_analyze):
+    with patch.object(diagnostic_agent, "analyze_perspective", side_effect=mock_analyze):
         results = await diagnostic_agent.run_parallel_analysis(
             sample_bsc_state.client_profile,
             sample_bsc_state,
@@ -290,8 +292,8 @@ def test_consolidate_diagnostic_success(diagnostic_agent, sample_perspective_res
     mock_response = Mock()
     mock_response.content = """{
         "cross_perspective_synergies": [
-            "Processos manuais → custos altos",
-            "Turnover alto → qualidade inconsistente"
+            "Processos manuais -> custos altos",
+            "Turnover alto -> qualidade inconsistente"
         ],
         "executive_summary": "Empresa possui desafios estruturais em 3 perspectivas. Principais gaps: custos opacos, processos manuais, turnover alto. Recomenda-se iniciar pela perspectiva Aprendizado.",
         "next_phase": "APPROVAL_PENDING"
@@ -423,13 +425,16 @@ def test_generate_recommendations_invalid_list(diagnostic_agent, sample_perspect
 
 
 @pytest.mark.asyncio
-async def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample_perspective_results):
+async def test_run_diagnostic_success(
+    diagnostic_agent, sample_bsc_state, sample_perspective_results
+):
     """Testa execução completa do diagnóstico E2E."""
+
     # Mock run_parallel_analysis para retornar sample_perspective_results
     async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
 
-    with patch.object(diagnostic_agent, 'run_parallel_analysis', side_effect=mock_parallel):
+    with patch.object(diagnostic_agent, "run_parallel_analysis", side_effect=mock_parallel):
         # Mock consolidate_diagnostic
         mock_consolidated = {
             "cross_perspective_synergies": ["Synergy 1"],
@@ -437,7 +442,9 @@ async def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample
             "next_phase": "APPROVAL_PENDING",
         }
 
-        with patch.object(diagnostic_agent, 'consolidate_diagnostic', return_value=mock_consolidated):
+        with patch.object(
+            diagnostic_agent, "consolidate_diagnostic", return_value=mock_consolidated
+        ):
             # Mock generate_recommendations
             mock_recommendations = [
                 Recommendation(
@@ -469,7 +476,9 @@ async def test_run_diagnostic_success(diagnostic_agent, sample_bsc_state, sample
                 ),
             ]
 
-            with patch.object(diagnostic_agent, 'generate_recommendations', return_value=mock_recommendations):
+            with patch.object(
+                diagnostic_agent, "generate_recommendations", return_value=mock_recommendations
+            ):
                 diagnostic = await diagnostic_agent.run_diagnostic(sample_bsc_state)
 
     # Validar CompleteDiagnostic
@@ -561,11 +570,15 @@ def sample_complete_diagnostic(sample_perspective_results):
                 effort="HIGH",
                 priority="HIGH",
                 timeframe="longo prazo (6-12 meses)",
-                next_steps=["Mapear processos manuais", "Identificar oportunidades de automação", "Implementar RPA"],
+                next_steps=[
+                    "Mapear processos manuais",
+                    "Identificar oportunidades de automação",
+                    "Implementar RPA",
+                ],
             ),
         ],
         cross_perspective_synergies=[
-            "Processos manuais (Processos) → custos altos (Financeira) + erros frequentes (Clientes)"
+            "Processos manuais (Processos) -> custos altos (Financeira) + erros frequentes (Clientes)"
         ],
         executive_summary=(
             "Executive summary com 250 caracteres mínimo para validar constraint Pydantic do campo "
@@ -603,7 +616,7 @@ def test_recommendation_validation():
             next_steps=[],
         )
 
-    # Priority logic auto-correction (LOW impact + HIGH effort → priority ajustado para LOW)
+    # Priority logic auto-correction (LOW impact + HIGH effort -> priority ajustado para LOW)
     rec_auto = Recommendation(
         title="Auto Priority Correction Test",
         description="This tests automatic priority correction based on impact vs effort logic that we have",
@@ -631,17 +644,19 @@ def test_analyze_perspective_retry_on_validation_error(diagnostic_agent, sample_
     mock_result.errors.return_value = [
         {"type": "value_error", "loc": ("test",), "msg": "Test error"}
     ]
-    
+
     def mock_invoke_with_error(*args, **kwargs):
         # Criar ValidationError simples
         from pydantic import BaseModel, field_validator
+
         class TestModel(BaseModel):
             test_field: int
-            @field_validator('test_field')
+
+            @field_validator("test_field")
             @classmethod
             def validate_field(cls, v):
                 raise ValueError("Test error")
-        
+
         try:
             TestModel(test_field="invalid")  # Dispara ValidationError
         except ValidationError as e:
@@ -651,7 +666,9 @@ def test_analyze_perspective_retry_on_validation_error(diagnostic_agent, sample_
         return_value=Mock(invoke=mock_invoke_with_error)
     )
 
-    with patch.object(diagnostic_agent.financial_agent, 'invoke', return_value={"answer": "Context"}):
+    with patch.object(
+        diagnostic_agent.financial_agent, "invoke", return_value={"answer": "Context"}
+    ):
         # Com reraise=True, lança ValidationError original (não RetryError)
         with pytest.raises(ValidationError):
             diagnostic_agent.analyze_perspective(
@@ -702,13 +719,15 @@ def test_generate_recommendations_retry_behavior(diagnostic_agent, sample_perspe
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_validates_feedback_empty(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_validates_feedback_empty(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve validar que feedback não é vazio."""
     with pytest.raises(ValueError, match="Feedback não pode ser vazio"):
         await diagnostic_agent.refine_diagnostic(
             existing_diagnostic=sample_complete_diagnostic,
             feedback="",  # Feedback vazio
-            state=sample_bsc_state
+            state=sample_bsc_state,
         )
 
 
@@ -719,29 +738,33 @@ async def test_refine_diagnostic_validates_diagnostic_none(diagnostic_agent, sam
         await diagnostic_agent.refine_diagnostic(
             existing_diagnostic=None,  # Diagnóstico None
             feedback="SWOT precisa mais Opportunities",
-            state=sample_bsc_state
+            state=sample_bsc_state,
         )
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_validates_client_profile(diagnostic_agent, sample_complete_diagnostic):
+async def test_refine_diagnostic_validates_client_profile(
+    diagnostic_agent, sample_complete_diagnostic
+):
     """refine_diagnostic deve validar que state tem client_profile."""
     state = BSCState(
         query="Como implementar BSC?",
         conversation_history=[],
         # client_profile ausente propositalmente
     )
-    
+
     with pytest.raises(ValueError, match="client_profile ausente"):
         await diagnostic_agent.refine_diagnostic(
             existing_diagnostic=sample_complete_diagnostic,
             feedback="SWOT precisa mais Opportunities",
-            state=state
+            state=state,
         )
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_returns_refined_diagnostic(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_returns_refined_diagnostic(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve retornar CompleteDiagnostic refinado."""
     # Mock LLM structured output
     refined_diagnostic_mock = CompleteDiagnostic(
@@ -759,24 +782,26 @@ async def test_refine_diagnostic_returns_refined_diagnostic(diagnostic_agent, sa
                 timeframe="quick win (1-3 meses)",
                 next_steps=["Step refinado 1", "Step refinado 2"],
             ),
-        ] + sample_complete_diagnostic.recommendations,
+        ]
+        + sample_complete_diagnostic.recommendations,
         cross_perspective_synergies=sample_complete_diagnostic.cross_perspective_synergies,
-        executive_summary="Executive summary refinado com melhorias aplicadas baseadas no feedback do usuário. " * 10,
+        executive_summary="Executive summary refinado com melhorias aplicadas baseadas no feedback do usuário. "
+        * 10,
         next_phase="APPROVAL_PENDING",
     )
-    
+
     # Mock structured LLM (usar AsyncMock para ainvoke)
     mock_structured_llm = Mock()
     mock_structured_llm.ainvoke = AsyncMock(return_value=refined_diagnostic_mock)
     diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
-    
+
     # Executar refinement
     refined = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=sample_complete_diagnostic,
         feedback="SWOT precisa mais Opportunities relacionadas ao mercado enterprise",
-        state=sample_bsc_state
+        state=sample_bsc_state,
     )
-    
+
     # Validar resultado
     assert isinstance(refined, CompleteDiagnostic)
     assert len(refined.recommendations) >= len(sample_complete_diagnostic.recommendations)
@@ -784,51 +809,57 @@ async def test_refine_diagnostic_returns_refined_diagnostic(diagnostic_agent, sa
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_fallback_on_timeout(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_fallback_on_timeout(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve retornar diagnóstico original se timeout."""
     import asyncio
-    
+
     # Mock LLM que demora muito (timeout)
     async def slow_llm(*args, **kwargs):
         await asyncio.sleep(400)  # Mais que timeout de 300s
         return sample_complete_diagnostic
-    
+
     mock_structured_llm = Mock()
     mock_structured_llm.ainvoke = slow_llm
     diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
-    
+
     # Executar refinement (deve timeout e retornar original)
     refined = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=sample_complete_diagnostic,
         feedback="SWOT precisa mais Opportunities",
-        state=sample_bsc_state
+        state=sample_bsc_state,
     )
-    
+
     # Deve retornar diagnóstico original (fallback)
     assert refined == sample_complete_diagnostic
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_fallback_on_error(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_fallback_on_error(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve retornar diagnóstico original se erro."""
     # Mock LLM que lança exceção
     mock_structured_llm = Mock()
     mock_structured_llm.ainvoke = Mock(side_effect=Exception("LLM error"))
     diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
-    
+
     # Executar refinement (deve capturar erro e retornar original)
     refined = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=sample_complete_diagnostic,
         feedback="SWOT precisa mais Opportunities",
-        state=sample_bsc_state
+        state=sample_bsc_state,
     )
-    
+
     # Deve retornar diagnóstico original (fallback)
     assert refined == sample_complete_diagnostic
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_preserves_valid_insights(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_preserves_valid_insights(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve preservar insights válidos do diagnóstico original."""
     # Mock LLM que retorna diagnóstico refinado mantendo perspectivas
     refined_diagnostic_mock = CompleteDiagnostic(
@@ -836,7 +867,8 @@ async def test_refine_diagnostic_preserves_valid_insights(diagnostic_agent, samp
         customer=sample_complete_diagnostic.customer,  # Mantém original
         process=sample_complete_diagnostic.process,  # Mantém original
         learning=sample_complete_diagnostic.learning,  # Mantém original
-        recommendations=sample_complete_diagnostic.recommendations + [
+        recommendations=sample_complete_diagnostic.recommendations
+        + [
             Recommendation(
                 title="Nova Recomendação Adicionada",
                 description="Descrição detalhada com mais de 50 caracteres conforme requerido pelo schema Pydantic para validação completa",
@@ -851,19 +883,19 @@ async def test_refine_diagnostic_preserves_valid_insights(diagnostic_agent, samp
         executive_summary="Executive summary atualizado refletindo melhorias aplicadas. " * 10,
         next_phase="APPROVAL_PENDING",
     )
-    
+
     # Mock structured LLM (usar AsyncMock para ainvoke)
     mock_structured_llm = Mock()
     mock_structured_llm.ainvoke = AsyncMock(return_value=refined_diagnostic_mock)
     diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
-    
+
     # Executar refinement
     refined = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=sample_complete_diagnostic,
         feedback="Adicionar mais recomendações práticas",
-        state=sample_bsc_state
+        state=sample_bsc_state,
     )
-    
+
     # Validar que perspectivas foram preservadas
     assert refined.financial == sample_complete_diagnostic.financial
     assert refined.customer == sample_complete_diagnostic.customer
@@ -874,20 +906,21 @@ async def test_refine_diagnostic_preserves_valid_insights(diagnostic_agent, samp
 
 
 @pytest.mark.asyncio
-async def test_refine_diagnostic_handles_llm_none_response(diagnostic_agent, sample_complete_diagnostic, sample_bsc_state):
+async def test_refine_diagnostic_handles_llm_none_response(
+    diagnostic_agent, sample_complete_diagnostic, sample_bsc_state
+):
     """refine_diagnostic deve retornar diagnóstico original se LLM retorna None."""
     # Mock LLM que retorna None
     mock_structured_llm = Mock()
     mock_structured_llm.ainvoke = Mock(return_value=None)
     diagnostic_agent.llm.with_structured_output = Mock(return_value=mock_structured_llm)
-    
+
     # Executar refinement
     refined = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=sample_complete_diagnostic,
         feedback="SWOT precisa mais Opportunities",
-        state=sample_bsc_state
+        state=sample_bsc_state,
     )
-    
+
     # Deve retornar diagnóstico original (fallback)
     assert refined == sample_complete_diagnostic
-

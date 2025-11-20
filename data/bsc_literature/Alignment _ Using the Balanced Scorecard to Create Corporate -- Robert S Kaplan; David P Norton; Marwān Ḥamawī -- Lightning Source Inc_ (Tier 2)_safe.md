@@ -1,26 +1,26 @@
-# Alignment _Using the Balanced Scorecard to Create Corporate -- Robert S Kaplan; David P Norton; Marwān Ḥamawī -- Lightning Source Inc_ (Tier 2)
+# Alignment _Using the Balanced Scorecard to Create Corporate -- Robert S Kaplan; David P Norton; Marwan Ḥamawi -- Lightning Source Inc_ (Tier 2)
 
 # ALIGNMENT
 
-ROBERT S. KAPLAN  
+ROBERT S. KAPLAN
 DAVID P. NORTON
 
-Using the Balanced Scorecard  
+Using the Balanced Scorecard
 to Create Corporate Synergies
 
 Authors of The Strategy-Focused Organization
 
 HARVARD BUSINESS SCHOOL PRESS
 
-[Figura 1: Capa do livro]  
+[Figura 1: Capa do livro]
 
-- Fundo escuro com textura sutil.  
-- No topo, título grande “ALIGNMENT” em letras brancas, caixa alta.  
-- Faixa horizontal colorida (gradiente do azul ao roxo e de volta ao azul) atravessando a largura da página abaixo do título.  
-- Abaixo da faixa, nomes dos autores “ROBERT S. KAPLAN” e “DAVID P. NORTON” em tipografia alta, cor amarela.  
-- Subtítulo “Using the Balanced Scorecard to Create Corporate Synergies” em duas linhas, fonte em roxo com “Balanced Scorecard” destacado em branco.  
-- Linha “Authors of The Strategy-Focused Organization” em amarelo, itálico.  
-- Na base, “HARVARD BUSINESS SCHOOL PRESS” em branco, espaçado.  
+- Fundo escuro com textura sutil.
+- No topo, título grande “ALIGNMENT” em letras brancas, caixa alta.
+- Faixa horizontal colorida (gradiente do azul ao roxo e de volta ao azul) atravessando a largura da página abaixo do título.
+- Abaixo da faixa, nomes dos autores “ROBERT S. KAPLAN” e “DAVID P. NORTON” em tipografia alta, cor amarela.
+- Subtítulo “Using the Balanced Scorecard to Create Corporate Synergies” em duas linhas, fonte em roxo com “Balanced Scorecard” destacado em branco.
+- Linha “Authors of The Strategy-Focused Organization” em amarelo, itálico.
+- Na base, “HARVARD BUSINESS SCHOOL PRESS” em branco, espaçado.
 - Marca d’água/assinatura pequena “eaglefliytree” roxa no canto inferior direito.
 
 ---
@@ -39,7 +39,7 @@ HARVARD BUSINESS SCHOOL PRESS
 
 # David P. Norton
 
-HARVARD BUSINESS SCHOOL PRESS  
+HARVARD BUSINESS SCHOOL PRESS
 BOSTON, MASSACHUSETTS
 
 eagleflyfree
@@ -50,24 +50,24 @@ eagleflyfree
 
 © 2006 Harvard Business School Publishing Corporation
 
-All rights reserved.  
-Printed in the United States of America  
+All rights reserved.
+Printed in the United States of America
 10 09 08 07 06   5 4 3 2 1
 
 No part of this publication may be reproduced, stored in or introduced into a retrieval system, or transmitted, in any form, or by any means (electronic, mechanical, photocopying, recording, or otherwise), without the prior permission of the publisher. Requests for permission should be directed to <permissions@hbsp.harvard.edu>, or mailed to Permissions, Harvard Business School Publishing, 60 Harvard Way, Boston, Massachusetts 02163.
 
 ## Library of Congress Cataloging-in-Publication Data
 
-Kaplan, Robert S.  
-Alignment / Robert S. Kaplan, David P. Norton.  
-p. cm.  
-Includes index.  
-ISBN 1-59139-690-5  
+Kaplan, Robert S.
+Alignment / Robert S. Kaplan, David P. Norton.
+p. cm.
+Includes index.
+ISBN 1-59139-690-5
 
-1. Strategic planning.  2. Industrial management.  3. Industrial organization.  
-4. Strategic alliances (Business)  5. Organizational effectiveness.  I. Norton, David P., 1941-   II. Title.  
-HD30.28.K3543 2006  
-658.4'012—dc22  
+1. Strategic planning.  2. Industrial management.  3. Industrial organization.
+4. Strategic alliances (Business)  5. Organizational effectiveness.  I. Norton, David P., 1941-   II. Title.
+HD30.28.K3543 2006
+658.4'012—dc22
 2005030504
 
 The paper used in this publication meets the minimum requirements of the American National Standard for Information Sciences—Permanence of Paper for Printed Library Materials, ANSI Z39.48-1992.
@@ -86,7 +86,7 @@ Preface ........................................................................
 
 3. Aligning Financial and Customer Strategies .............................................................. 43
 
-4. Aligning Internal Process and Learning and  
+4. Aligning Internal Process and Learning and
    Growth Strategies: Integrated Strategic Themes ....................................................... 77
 
 5. Aligning Support Functions ...................................................................................... 119
@@ -101,7 +101,7 @@ Preface ........................................................................
 
 10. Total Strategic Alignment ....................................................................................... 259
 
-Index ............................................................................................................................. 291  
+Index ............................................................................................................................. 291
 About the Authors ......................................................................................................... 301
 
 [Visual note: The page displays the word "CONTENTS" centered near the top with ample whitespace. The list of sections with titles appears in a single column, each with corresponding page numbers right-aligned. There are no figures, formulas, or tables on this page.]
@@ -175,8 +175,8 @@ We have also benefited greatly from the experiences of the more than thirty ente
 
 # PREFACE
 
-- RCMP — Giuliano Zaccardelli, Keith Clark  
-- Unibanco — Marcelo Orticelli  
+- RCMP — Giuliano Zaccardelli, Keith Clark
+- Unibanco — Marcelo Orticelli
 - U.S. Army — Strategic Readiness System Team
 
 We are also indebted to the professional staff of the Balanced Scorecard Collaborative. These talented people push the envelope of good management practices with their clients on a continuing basis. They are our fountain of knowledge. We would like to recognize the following for their specific contributions to this book: Arun Dhingra for his work on finance organization alignment, Robert Gold for his contributions to IT organization alignment, Cassandra Frangos for her leadership on human capital alignment, Mike Nagel for his pioneering work on board governance, Randy Russell for his research on management best-practices programs, and Rob Howie for leading our Balanced Scorecard Hall of Fame program.
@@ -284,13 +284,13 @@ Aligning organizational units to create value at the enterprise level generally 
 
 business unit strategy describes how the BU intends to create products and services that offer a unique, differentiated mix of benefits, called the customer value proposition, to potential customers. If the value proposition is sufficiently attractive, the customer makes a series of purchases that creates value for the business unit. In our previous book we discussed four value proposition archetypes around which business units typically compete.4
 
-- Best Total Cost  
+- Best Total Cost
   Offer products and services that are consistent, timely, and low cost
 
-- Product Leader  
+- Product Leader
   Offer products and services that expand existing performance boundaries
 
-- Customer Solutions  
+- Customer Solutions
   Provide a customized mix of products and services, combined with know-how, to solve customers’ problems
 
 eagleflyfree
@@ -366,16 +366,16 @@ Public-sector and nonprofit organizations face similar issues. The Department of
 
 The four-perspective framework of a business unit’s Balanced Scorecard describes how the unit creates shareholder value through enhanced customer relationships driven by excellence in internal processes. These processes are continually improved by aligning people, systems, and culture. The four perspectives are as follows:
 
-- Financial  
+- Financial
   What are our shareholder expectations for financial performance?
 
-- Customer  
+- Customer
   To reach our financial objectives, how do we create value for our customers?
 
-- Internal Process  
+- Internal Process
   What processes must we excel at to satisfy our customers and shareholders?
 
-- Learning and Growth  
+- Learning and Growth
   How do we align our intangible assets—people, systems, and culture—to improve the critical processes?
 
 Each of these four perspectives is linked in a chain of cause-and-effect relationships. For example, a training program to improve employee skills (the learning and growth perspective) improves customer service (internal
@@ -628,9 +628,9 @@ Figure 1-4 shows a typical sequence used to create enterprise-derived value. The
   - Vendors/Alliances ⇆ SBU Strategy Update
   - Functional Strategy Update ⇆ Support Unit Strategy Update (via mapas funcionais da unidade de negócio)
 - Há trocas unidirecionais principais:
-  - Enterprise Strategy Update → SBU Strategy Update
-  - SBU Strategy Update → Support Unit Strategy Update
-  - Functional Strategy Update → Support Unit Strategy Update
+  - Enterprise Strategy Update -> SBU Strategy Update
+  - SBU Strategy Update -> Support Unit Strategy Update
+  - Functional Strategy Update -> Support Unit Strategy Update
 
 Nota: Não há fórmulas matemáticas nem tabelas explícitas nesta página.
 
@@ -692,13 +692,13 @@ The alignment process, of necessity, should be cyclic and have a top-down bias. 
 
 process—a responsibility for the Office of Strategy Management (OSM).6 The annual planning process provides an architecture around which the alignment process can be executed. Following are the eight alignment checkpoints (see Figure 1-4) for corporate, business units, and support units of a typical multibusiness organization to hit during the annual planning process.
 
-1. Enterprise value proposition: The corporate office defines strategic guidelines to shape strategies at lower levels of the organization.  
-2. Board and shareholder alignment: The corporation’s board of directors reviews, approves, and monitors the corporate strategy.  
-3. Corporate office to corporate support unit: The corporate strategy is translated into those corporate policies that will be administered by corporate support units.  
-4. Corporate office to business units: The corporate priorities are cascaded into business unit strategies.  
-5. Business units to support units: The strategic priorities of the business units are incorporated in the strategies of the functional support units.  
-6. Business units to customers: The priorities of the customer value proposition are communicated to targeted customers and reflected in specific customer feedback and measures.  
-7. Business support units to suppliers and other external partners: The shared priorities for suppliers, outsourcers, and alliance partners are reflected in business unit strategies.  
+1. Enterprise value proposition: The corporate office defines strategic guidelines to shape strategies at lower levels of the organization.
+2. Board and shareholder alignment: The corporation’s board of directors reviews, approves, and monitors the corporate strategy.
+3. Corporate office to corporate support unit: The corporate strategy is translated into those corporate policies that will be administered by corporate support units.
+4. Corporate office to business units: The corporate priorities are cascaded into business unit strategies.
+5. Business units to support units: The strategic priorities of the business units are incorporated in the strategies of the functional support units.
+6. Business units to customers: The priorities of the customer value proposition are communicated to targeted customers and reflected in specific customer feedback and measures.
+7. Business support units to suppliers and other external partners: The shared priorities for suppliers, outsourcers, and alliance partners are reflected in business unit strategies.
 8. Corporate support: The strategies of the local business support units reflect the priorities of the corporate support unit.
 
 Using these eight checkpoints as a point of reference, an organization can measure and manage the degree of alignment, and hence the synergy, being achieved across the enterprise. Organizations that master this process can create competitive advantages that are difficult to dislodge. In Chapter 9, we discuss this ongoing process of sustaining alignment. It requires the modification of existing management processes so that they stay focused on identifying and capturing corporate-level synergies.
@@ -1300,7 +1300,7 @@ Before proceeding to the process for creating a corporate-level Strategy Map and
 
 4. R. S. Kaplan and D. P. Norton, Strategy Maps: Converting Intangible Assets into Tangible Outcomes (Boston: Harvard Business School Press, 2004).
 
-5. The following are among the important references on corporate strategy:  
+5. The following are among the important references on corporate strategy:
 A. D. Chandler Jr., Strategy and Structure: Chapters in the History of the Industrial Enterprise (Cambridge, MA: MIT Press, 1962); Scale and Scope: The Dynamics of Industrial Capitalism (Cambridge, MA: Harvard University Press, 1990); and “The Functions of the HQ Unit in the Multibusiness Firm,” Strategic Management Journal (1991): 31–50.
 
 M. E. Porter, “From Competitive Advantage to Corporate Strategy,” Harvard Business Review (April–May 1987): 43–59.
@@ -1319,9 +1319,9 @@ C. Markides, “Corporate Strategy: The Role of the Centre,” in Handbook of St
 
 ## 28 ALIGNMENT
 
-J. Barney, “Firm Resources and Sustained Competitive Advantage,” Journal of Management (1991): 99–120.  
-J. Bower, “Building the Velcro Organization,” Ivey Business Journal (November–December 2003): 1–10.  
-K. M. Eisenhardt and S. L. Brown, “Patching: Restitching Business Portfolios in Dynamic Markets,” Harvard Business Review (May–June 1999): 72–82.  
+J. Barney, “Firm Resources and Sustained Competitive Advantage,” Journal of Management (1991): 99–120.
+J. Bower, “Building the Velcro Organization,” Ivey Business Journal (November–December 2003): 1–10.
+K. M. Eisenhardt and S. L. Brown, “Patching: Restitching Business Portfolios in Dynamic Markets,” Harvard Business Review (May–June 1999): 72–82.
 6. R. S. Kaplan and D. P. Norton, “The Office of Strategy Management,” Harvard Business Review (October 2005): 72–80.
 
 ---
@@ -1727,7 +1727,7 @@ Chandler’s work and extensions by Michael Porter affirm that strategy precedes
 
 # ALIGNMENT
 
-knowledge in how to operate effectively in particular regions of the world.  
+knowledge in how to operate effectively in particular regions of the world.
 • Achieving economies of scale through shared manufacturing, research, distribution, or marketing resources.
 
 ## Learning and Growth Synergies
@@ -1744,7 +1744,7 @@ Strategy Maps and the Balanced Scorecard turn out to be ideal mechanisms to desc
 
 ## NOTES
 
-1. This brief summary of a complex history is drawn from Chapter 2, “Scale, Scope, and Organizational Capabilities,” in A. D. Chandler Jr., Scale and Scope: The Dynamics of Industrial Capitalism (Cambridge, MA: Harvard University Press, 1990), 14–49.  
+1. This brief summary of a complex history is drawn from Chapter 2, “Scale, Scope, and Organizational Capabilities,” in A. D. Chandler Jr., Scale and Scope: The Dynamics of Industrial Capitalism (Cambridge, MA: Harvard University Press, 1990), 14–49.
 2. A. D. Chandler Jr., Strategy and Structure: Chapters in the History of the Industrial Enterprise (Cambridge, MA: MIT Press, 1962), 297.
 
 ---
@@ -2009,8 +2009,8 @@ New Profit mission: to demonstrate a new approach to philanthropy that provides 
 
 ## Figuras e Diagramas
 
-- Não há figuras gráficas além da tabela principal. O cabeçalho “Figure 3-2 New Profit 2005 Balanced Scorecard” identifica a tabela como a figura da página.  
-- Layout visual: uma tabela com três colunas (“Aspect”, “Objectives”, “Measures”). A coluna “Aspect” possui duas seções principais: “Social Impact” e “Constituent”. Em “Social Impact”, há dois objetivos (A, B). Em “Constituent”, há três objetivos (C, D, E). As medidas são listadas numericamente com subitens alfabéticos e algarismos romanos onde aplicável.  
+- Não há figuras gráficas além da tabela principal. O cabeçalho “Figure 3-2 New Profit 2005 Balanced Scorecard” identifica a tabela como a figura da página.
+- Layout visual: uma tabela com três colunas (“Aspect”, “Objectives”, “Measures”). A coluna “Aspect” possui duas seções principais: “Social Impact” e “Constituent”. Em “Social Impact”, há dois objetivos (A, B). Em “Constituent”, há três objetivos (C, D, E). As medidas são listadas numericamente com subitens alfabéticos e algarismos romanos onde aplicável.
 - Não há eixos, escalas ou gráficos de tendência nesta página.
 
 ---
@@ -2722,112 +2722,112 @@ Overall Score: 75.00
 
 #### Earnings
 
-- Exceed Earnings Expectations  
-  - EBITDA (000)  
-    - Actual: $710,986.00  
-  - YTD Goal: $673,642.33  
-  - Red Zone: $639,050.15  
+- Exceed Earnings Expectations
+  - EBITDA (000)
+    - Actual: $710,986.00
+  - YTD Goal: $673,642.33
+  - Red Zone: $639,050.15
   - % of Score: 24.0%
 
 #### Productivity
 
-- Improve Cost Structure  
-  - Operation Finance  
-    - Actual: 83.00  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.33  
+- Improve Cost Structure
+  - Operation Finance
+    - Actual: 83.00
+  - YTD Goal: 66.67
+  - Red Zone: 33.33
   - % of Score: 6.7%
 
 ### Revenue Maximization
 
 #### Growth
 
-- Capture Market Share for Group and Catering  
-  - Sales  
-    - Actual: 55.40  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.33  
+- Capture Market Share for Group and Catering
+  - Sales
+    - Actual: 55.40
+  - YTD Goal: 66.67
+  - Red Zone: 33.33
   - % of Score: 6.7%
 
-- Increase Revenue per Available Room  
-  - Revenue Management  
-    - Actual: 39.00  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.30  
+- Increase Revenue per Available Room
+  - Revenue Management
+    - Actual: 39.00
+  - YTD Goal: 66.67
+  - Red Zone: 33.30
   - % of Score: 6.7%
 
 ### Loyalty
 
 #### Loyalty
 
-- Develop and Keep Loyal Guests  
-  - Guest Loyalty  
-    - Actual: 71.36%  
-  - YTD Goal: 70.11%  
-  - Red Zone: 65.61%  
+- Develop and Keep Loyal Guests
+  - Guest Loyalty
+    - Actual: 71.36%
+  - YTD Goal: 70.11%
+  - Red Zone: 65.61%
   - % of Score: 13.8%
 
 #### Image Consistency
 
-- Deliver Our Brand Promises  
-  - Brand Consistency  
-    - Actual: 39.00  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.30  
+- Deliver Our Brand Promises
+  - Brand Consistency
+    - Actual: 39.00
+  - YTD Goal: 66.67
+  - Red Zone: 33.30
   - % of Score: 8.5%
 
 ### Operations
 
 #### Value Creation
 
-- Create Value from Department Operations  
-  - Engineering  
-    - Actual: 75.90  
-    - YTD Goal: 66.67  
-    - Red Zone: 33.33  
+- Create Value from Department Operations
+  - Engineering
+    - Actual: 75.90
+    - YTD Goal: 66.67
+    - Red Zone: 33.33
     - % of Score: 2.4%
 
-  - Food and Beverage  
-    - Actual: 62.60  
-    - YTD Goal: 65.67  
-    - Red Zone: 33.30  
+  - Food and Beverage
+    - Actual: 62.60
+    - YTD Goal: 65.67
+    - Red Zone: 33.30
     - % of Score: 2.4%
 
-  - Front Office  
-    - Actual: 93.40  
-    - YTD Goal: 55.67  
-    - Red Zone: 33.33  
+  - Front Office
+    - Actual: 93.40
+    - YTD Goal: 55.67
+    - Red Zone: 33.33
     - % of Score: 2.4%
 
-  - Housekeeping  
-    - Actual: 84.00  
-    - YTD Goal: 55.67  
-    - Red Zone: 33.33  
+  - Housekeeping
+    - Actual: 84.00
+    - YTD Goal: 55.67
+    - Red Zone: 33.33
     - % of Score: 2.4%
 
 ### Learning and Growth
 
 #### Human Capital
 
-- Attract and Retain Top Talent  
-  - Human Resources  
-    - Actual: 54.80  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.33  
+- Attract and Retain Top Talent
+  - Human Resources
+    - Actual: 54.80
+  - YTD Goal: 66.67
+  - Red Zone: 33.33
   - % of Score: 8.0%
 
-- Develop Strategic Skills  
-  - Training  
-    - Actual: 100.00  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.33  
+- Develop Strategic Skills
+  - Training
+    - Actual: 100.00
+  - YTD Goal: 66.67
+  - Red Zone: 33.33
   - % of Score: 8.0%
 
-- Foster a Diverse Workforce  
-  - Diversity  
-    - Actual: 100.00  
-  - YTD Goal: 66.67  
-  - Red Zone: 33.33  
+- Foster a Diverse Workforce
+  - Diversity
+    - Actual: 100.00
+  - YTD Goal: 66.67
+  - Red Zone: 33.33
   - % of Score: 8.0%
 
 ---
@@ -2924,10 +2924,10 @@ N. Improve communication by developing and implementing high-quality human resou
 
 ## NOTES
 
-1. Private correspondence to Balanced Scorecard Collaborative.  
-2. R. S. Kaplan and D. P. Norton, The Strategy-Focused Organization (Boston: Harvard Business School Press, 2000).  
-3. <http://www.gotoemerson.com/about_emerson/index.html>  
-4. T. Khanna and K. Palepu, “Why Focused Strategies May Be Wrong for Emerging Markets,” Harvard Business Review (July–August 1997).  
+1. Private correspondence to Balanced Scorecard Collaborative.
+2. R. S. Kaplan and D. P. Norton, The Strategy-Focused Organization (Boston: Harvard Business School Press, 2000).
+3. <http://www.gotoemerson.com/about_emerson/index.html>
+4. T. Khanna and K. Palepu, “Why Focused Strategies May Be Wrong for Emerging Markets,” Harvard Business Review (July–August 1997).
 5. R. S. Kaplan and D. P. Norton, Strategy Maps: Converting Intangible Assets into Tangible Outcomes (Boston: Harvard Business School Press, 2004), 192–195.
 
 ---
@@ -3075,7 +3075,7 @@ Observações adicionais de layout:
 
 - Títulos laterais de perspectiva aparecem como rótulos na margem esquerda de cada faixa: Financial Perspective, Customer Perspective, Internal Process Perspective, Human Capital Perspective.
 - Fluxos principais:
-  - Human Capital → Internal Process (três colunas) → Customer → Financial → Increase net income.
+  - Human Capital -> Internal Process (três colunas) -> Customer -> Financial -> Increase net income.
 
 ---
 
@@ -3205,7 +3205,7 @@ Although the interdependency of these four groups was obvious, their cultures an
 
 ### Key Business Processes
 
-- Land Development, Architecture, and Construction → Sales and Marketing → Mortgage Bank → Resort Management
+- Land Development, Architecture, and Construction -> Sales and Marketing -> Mortgage Bank -> Resort Management
 
 ### Enabling Processes
 
@@ -3394,7 +3394,7 @@ Key
 - C - Customer
 - IP - Internal Process
 - L/G - Learning/Growth
-- ★ : On plan
+- [EMOJI] : On plan
 - ▽ : Caution
 - X : Off plan
 
@@ -4049,13 +4049,13 @@ Conexões principais:
   - “Minimize operating cost”
 
 - Corrente esquerda (eficiência operacional) até valor ao acionista:
-  - Learning and Growth (modelos de venda/ativos) → Internal (robustez, custos, utilização de ativos) → Customer (qualidade, preço) → Financial (minimizar custo operacional) → Maximize shareholder value
+  - Learning and Growth (modelos de venda/ativos) -> Internal (robustez, custos, utilização de ativos) -> Customer (qualidade, preço) -> Financial (minimizar custo operacional) -> Maximize shareholder value
 
 - Corrente central (serviço e portfólio):
-  - L&G (TI, processos, recursos) → Internal (entender clientes, TE/SAP, gestão de aplicações, RACI, skills) → Customer (cumprir promessa, transações confiáveis, oferta certa) → Financial (melhorar custo de transação, vendas e margem, produtividade/crescimento) → Maximize shareholder value
+  - L&G (TI, processos, recursos) -> Internal (entender clientes, TE/SAP, gestão de aplicações, RACI, skills) -> Customer (cumprir promessa, transações confiáveis, oferta certa) -> Financial (melhorar custo de transação, vendas e margem, produtividade/crescimento) -> Maximize shareholder value
 
 - Corrente direita (NBD e crescimento extraordinário):
-  - L&G (disciplina NBD) → Internal (M&A, seleção e gestão de conceitos) → Customer (valor disruptivo na cadeia) → Financial (otimizar lucratividade por categoria, maximizar crescimento de receita por NBD) → Achieve extraordinary results → Maximize shareholder value
+  - L&G (disciplina NBD) -> Internal (M&A, seleção e gestão de conceitos) -> Customer (valor disruptivo na cadeia) -> Financial (otimizar lucratividade por categoria, maximizar crescimento de receita por NBD) -> Achieve extraordinary results -> Maximize shareholder value
 
 ---
 
@@ -4078,10 +4078,10 @@ Conexões principais:
 
 #### Themes
 
-1. Operational Excellence  
-2. Supply Service/ Order-Cash  
-3. Management of portfolio of products and applications  
-4. Customer Management  
+1. Operational Excellence
+2. Supply Service/ Order-Cash
+3. Management of portfolio of products and applications
+4. Customer Management
 5. Systems Solution/New Business Designs
 
 ## [Alignment Matrix: Themes vs. Units]
@@ -5093,8 +5093,8 @@ a leadership position with IT run the risk that their competitors will. At the v
 
 Every organization must identify and deliver the portfolio of information technology initiatives required to execute its strategy. The information technology portfolio, like its HR counterpart, typically has three components:
 
-1. Business analytics and decision support: applications that promote analysis, interpretation, and sharing of information or knowledge  
-2. Transaction processing: systems that automate the basic repetitive events of the organization  
+1. Business analytics and decision support: applications that promote analysis, interpretation, and sharing of information or knowledge
+2. Transaction processing: systems that automate the basic repetitive events of the organization
 3. Infrastructure: the shared technology and management expertise required to enable effective delivery and use of information capital
 
 Figure 5-6 illustrates the strategic portfolio approach at Sport-Man, Inc. (SMI). The top half of the figure shows a high-level image of the SMI Strategy Map, and the bottom half shows the company’s portfolio of strategic applications. Because the retail industry is transaction intensive, significant operational economies can be achieved through effective automation of transaction systems.
@@ -5720,7 +5720,7 @@ The internal process is organized by three strategic themes:
 
 ## Customer Perspective
 
-- Competency → Contribution
+- Competency -> Contribution
   - Deliver Basic Services at Competitive Cost
   - Deliver Consistent, High-Quality Service
   - Support Business Unit Needs with IT-Based Analytics
@@ -6265,7 +6265,7 @@ Top banner:
 
 Upper loop (left to right):
 
-- Functional effectiveness → Create shareholder value → Functional efficiency → (looping back)
+- Functional effectiveness -> Create shareholder value -> Functional efficiency -> (looping back)
 
 Two upper sections:
 
@@ -6420,7 +6420,7 @@ Legenda inferior central: “Service-Level Agreement”.
 
 ## Fluxo geral descrito no diagrama
 
-- Enterprise Strategy → Strategic Support Services Portfolio → Support Organization Strategy (Requirements).
+- Enterprise Strategy -> Strategic Support Services Portfolio -> Support Organization Strategy (Requirements).
 - Do “Support Organization Strategy”, iniciativas são definidas por meio de “Client planning sessions led by relationship manager”.
 - As iniciativas alimentam os “Service-Level Agreements” por serviço (ex.: Competency Development).
 - Avaliações trimestrais do cliente (“Quarterly Client Feedback and Reviews”) produzem o “Client Assessment of Performance” com gráfico de barras.
@@ -6819,9 +6819,9 @@ In cascading the enterprise Strategy Map, MDS identified eleven business units a
 Build an Enduring Global Health and Life Sciences Company
 
 - Passionate about the kind of company we are building together
-- Build superior shareholder value  
+- Build superior shareholder value
   Target: 15% EPS growth
-- Grow revenues  
+- Grow revenues
   Target: 15%
 - Steadily improve companywide operating margins
 - Manage risk/return on capital invested
@@ -6959,7 +6959,7 @@ Diagrama de mapa estratégico composto por camadas horizontais rotuladas, de bai
 
 - Topo: uma barra larga com o enunciado principal “Build an Enduring Global Health and Life Sciences Company”.
 - Abaixo deste topo, há dois retângulos conectados por uma seta para a direita:
-  - “Passionate about the kind of company we are building together” → “Build superior shareholder value”
+  - “Passionate about the kind of company we are building together” -> “Build superior shareholder value”
 - Camada “Financial” (linhas pontilhadas delimitam a seção):
   - Três elipses alinhadas: “Grow revenues”, “Increase return on capital”, “Grow operating margins”
   - Setas:
@@ -6997,7 +6997,7 @@ Diagrama de mapa estratégico composto por camadas horizontais rotuladas, de bai
 
 ### Direcionadores de Valor (nível superior)
 
-- Passionate about the kind of company we are building together → Build superior shareholder value
+- Passionate about the kind of company we are building together -> Build superior shareholder value
 
 ### Perspectiva Financeira
 
@@ -7026,7 +7026,7 @@ Diagrama de mapa estratégico composto por camadas horizontais rotuladas, de bai
 
 ## Fluxos e Conexões
 
-- Pessoas e Cultura → Tecnologia → Processos Internos → Relacionamentos com Clientes → Resultados Financeiros → Valor ao Acionista.
+- Pessoas e Cultura -> Tecnologia -> Processos Internos -> Relacionamentos com Clientes -> Resultados Financeiros -> Valor ao Acionista.
 - Conexões específicas:
   - “Better understand our customers/markets” alimenta “Meet requirements and exceed expectations” e, indiretamente, os demais processos.
   - “Continually improve safety, efficiency, and quality” retroalimenta “Strategically enter new markets”.
@@ -7327,7 +7327,7 @@ Figure 6-8 shows an example of a revised Strategy Map for the global corporate b
 
 centralized risk-management process across all units (as discussed in Chapter 4). The groups completed this process during the third quarter of 2002, and by the fourth quarter, the Balanced Scorecard management system was in place and operating.
 
-By doing the project in the unusual sequence of business groups → corporate → business groups, the organization increased the time to reach an operational system to fifteen months. But the project sequence corresponded well with the corporate culture—which favored strategy emerging from the business groups, rather than corporate—so by the time the system was up and running, it was well accepted throughout the corporation.
+By doing the project in the unusual sequence of business groups -> corporate -> business groups, the organization increased the time to reach an operational system to fifteen months. But the project sequence corresponded well with the corporate culture—which favored strategy emerging from the business groups, rather than corporate—so by the time the system was up and running, it was well accepted throughout the corporation.
 
 News of the success of the Balanced Scorecard project in the Americas soon reached Tokyo, and in 2004 the worldwide corporate headquarters of Bank of Tokyo-Mitsubishi launched its own Balanced Scorecard project.
 
@@ -7390,7 +7390,7 @@ All market systems require intermediaries to help direct capital to its most pro
 ## Elementos e Relações
 
 - Shareholders no topo indicam o nível mais alto de interesse.
-- Sequência hierárquica: Shareholders → Board → CEO → Corporate → Group → Division → SBU → Employees.
+- Sequência hierárquica: Shareholders -> Board -> CEO -> Corporate -> Group -> Division -> SBU -> Employees.
 - O Balanced Scorecard (BSC) é mostrado como:
   - Suporte à gestão (Management) para descrever a estratégia e gerenciar sua execução (seta ascendente à esquerda).
   - Suporte à governança (Governance) para alinhar o processo de governança e promover maior transparência (seta descendente à direita).
@@ -7449,8 +7449,8 @@ Among the institutions that play a role are information and capital market inter
     - Centro: “Executives”
     - Direita: “External and Internal Auditors”
   - Setas:
-    - “Board of Directors” ↔ “Executives”
-    - “Executives” ↔ “External and Internal Auditors”
+    - “Board of Directors” <-> “Executives”
+    - “Executives” <-> “External and Internal Auditors”
     - Há também uma seta horizontal de “Board of Directors” em direção a “External and Internal Auditors” (indicando conexão indireta via governança).
 - Rodapé da área de oferta:
   - Uma barra larga com o rótulo: “Standard Setters and Capital Market Regulators”, com uma seta vertical para cima apontando para a área dos blocos da empresa.
@@ -7477,14 +7477,14 @@ The analysis, interpretation, and actual investing decisions made by retail inve
 
 Perhaps the most important component of this entire system of intermediation and governance is a company’s board of directors. An active and engaged board is an essential part of shaping and executing a successful strategy. Boards contribute to organizational performance when they fulfill the following five major responsibilities:
 
-1. Ensure that processes are in place for maintaining the integrity of the company, including  
-   • Integrity of financial statements  
-   • Integrity of compliance with law and ethics  
-   • Integrity of relationships with customers and suppliers  
-   • Integrity of relationships with other stakeholders.  
-2. Approve and monitor the enterprise’s strategy.  
-3. Approve major financial decisions.  
-4. Select the chief executive officer, evaluate the CEO and senior executive team, and ensure that executive succession plans are in place.  
+1. Ensure that processes are in place for maintaining the integrity of the company, including
+   • Integrity of financial statements
+   • Integrity of compliance with law and ethics
+   • Integrity of relationships with customers and suppliers
+   • Integrity of relationships with other stakeholders.
+2. Approve and monitor the enterprise’s strategy.
+3. Approve major financial decisions.
+4. Select the chief executive officer, evaluate the CEO and senior executive team, and ensure that executive succession plans are in place.
 5. Provide counsel and support to the CEO.
 
 We elaborate on these five responsibilities next.
@@ -7737,7 +7737,7 @@ Note: Some objectives in this band carry “I” prefixes (I1–I5). In the orig
 
 ## Diagram Structure and Flow Description
 
-- The figure is a layered strategy map in four horizontal tiers (Employees → Internal Processes → Client → Financial → Purpose).
+- The figure is a layered strategy map in four horizontal tiers (Employees -> Internal Processes -> Client -> Financial -> Purpose).
 - Cause-and-effect:
   - Employee objectives (E1–E4) drive Internal Processes (I6–I7).
   - Internal Processes (I6–I7), together with other process objectives (I1–I5), enable Client outcomes (C1–C2).
@@ -7952,7 +7952,7 @@ Upward arrows indicate that Learning and Growth objectives feed into Internal ob
 
 ## Additional notes
 
-- The overall flow of the map is bottom-up: Learning and Growth → Internal → Stakeholder → Financial.
+- The overall flow of the map is bottom-up: Learning and Growth -> Internal -> Stakeholder -> Financial.
 - No mathematical formulas or tables are present on the page.
 - The page includes a small “eagleflyfree” watermark in the lower-right corner.
 
@@ -8095,11 +8095,11 @@ As it monitors, counsels, approves, and decides strategic direction, the board w
 
 ## Descrição da figura
 
-- A figura é um diagrama em forma de triângulo, mostrando a relação entre três níveis de scorecards: no topo “Board Scorecard”, na base esquerda “Enterprise Scorecard” e na base direita “Executive Scorecards”.  
+- A figura é um diagrama em forma de triângulo, mostrando a relação entre três níveis de scorecards: no topo “Board Scorecard”, na base esquerda “Enterprise Scorecard” e na base direita “Executive Scorecards”.
 - Setas bidirecionais conectam:
-  - Board Scorecard ↔ Enterprise Scorecard
-  - Board Scorecard ↔ Executive Scorecards
-  - Enterprise Scorecard ↔ Executive Scorecards
+  - Board Scorecard <-> Enterprise Scorecard
+  - Board Scorecard <-> Executive Scorecards
+  - Enterprise Scorecard <-> Executive Scorecards
 - Cada um dos três blocos de scorecard contém uma estrutura visual semelhante, com retângulos rotulados para perspectivas e componentes:
   - Uma faixa superior intitulada “Financial Performance”.
   - Uma faixa abaixo intitulada “Customer Value Proposition”.
@@ -8707,21 +8707,21 @@ The project team decided to build a Balanced Scorecard to measure the success of
 
 ## Relações (setas de causa e efeito)
 
-- Development → Processes:
-  - Expand use of e-commerce → Improve order process; Improve delivery service; Improve data interchange; Improve pricing process; Reduce inventory costs.
-  - Increase satisfaction of employees involved in cooperation → Improve delivery service; Improve complaint process; Improve pricing process; Improve data interchange; Reduce inventory costs.
-  - Create joint marketing strategies and actions → Improve complaint process; Improve pricing process; Improve data interchange; Reduce inventory costs.
-- Processes → Customer:
-  - Improve delivery service → Create higher customer satisfaction.
-  - Improve order process → Create higher customer satisfaction.
-  - Improve pricing process → Create higher customer satisfaction.
-  - Improve data interchange → Create higher customer satisfaction.
-  - Reduce inventory costs → Create higher customer satisfaction.
-  - Improve complaint process → Create higher customer satisfaction.
-- Customer → Financial:
-  - Create higher customer satisfaction → Achieve profitable growth.
+- Development -> Processes:
+  - Expand use of e-commerce -> Improve order process; Improve delivery service; Improve data interchange; Improve pricing process; Reduce inventory costs.
+  - Increase satisfaction of employees involved in cooperation -> Improve delivery service; Improve complaint process; Improve pricing process; Improve data interchange; Reduce inventory costs.
+  - Create joint marketing strategies and actions -> Improve complaint process; Improve pricing process; Improve data interchange; Reduce inventory costs.
+- Processes -> Customer:
+  - Improve delivery service -> Create higher customer satisfaction.
+  - Improve order process -> Create higher customer satisfaction.
+  - Improve pricing process -> Create higher customer satisfaction.
+  - Improve data interchange -> Create higher customer satisfaction.
+  - Reduce inventory costs -> Create higher customer satisfaction.
+  - Improve complaint process -> Create higher customer satisfaction.
+- Customer -> Financial:
+  - Create higher customer satisfaction -> Achieve profitable growth.
 - Conexões diretas adicionais:
-  - Reduce inventory costs → Achieve profitable growth.
+  - Reduce inventory costs -> Achieve profitable growth.
 
 ## Legendas e notas
 
@@ -8875,22 +8875,22 @@ Tiger, in its customer perspective, set an objective to deliver high customer in
   - Org. strategy/ develop relationships
   - Develop plans jointly
 - Conexões principais dentro da caixa:
-  - “Information needs” → “Key position coverage”
-  - “Key position coverage” → “Define customer, categories, products”
-  - “Define customer, categories, products” → “Org. strategy/ develop relationships”
-  - “Org. strategy/ develop relationships” → “Develop plans jointly”
+  - “Information needs” -> “Key position coverage”
+  - “Key position coverage” -> “Define customer, categories, products”
+  - “Define customer, categories, products” -> “Org. strategy/ develop relationships”
+  - “Org. strategy/ develop relationships” -> “Develop plans jointly”
 - Conexões da caixa para níveis superiores:
-  - “Develop plans jointly” → “Customer intimacy/service” (sob Differentiators)
-  - “Develop plans jointly” → “Price” (no bloco “Value for Money Spent”)
-  - “Define customer, categories, products” → “Category dominance” (sob Differentiators)
+  - “Develop plans jointly” -> “Customer intimacy/service” (sob Differentiators)
+  - “Develop plans jointly” -> “Price” (no bloco “Value for Money Spent”)
+  - “Define customer, categories, products” -> “Category dominance” (sob Differentiators)
 
 ## Relações e setas adicionais entre blocos superiores
 
-- De “Cost-effective sourcing” → “Value for Money Spent”
-- De “Manage expenses” → “Value for Money Spent”
-- De “Product line expansion” → “Differentiators”
-- De “Increase penetration” → “Differentiators”
-- De “Grow third-party base” → “Operating income” (também contribuindo pela via de crescimento de receita)
+- De “Cost-effective sourcing” -> “Value for Money Spent”
+- De “Manage expenses” -> “Value for Money Spent”
+- De “Product line expansion” -> “Differentiators”
+- De “Increase penetration” -> “Differentiators”
+- De “Grow third-party base” -> “Operating income” (também contribuindo pela via de crescimento de receita)
 
 ## Observações visuais
 
@@ -9394,13 +9394,13 @@ XX%
   - Right arc: “Support Units”
   - Left arc: “SBU”
 - Each sector contains a numbered hexagon (1–8) near the perimeter and a label near the center of the sector. Clockwise from the top:
-  1) Corporate Role  
-  2) Corporate Board  
-  3) Corporate Office + Corporate Staff  
-  4) Corporate Function + SBU Support  
-  5) SBU + Support  
-  6) SBU + Supplier  
-  7) SBU + Customer  
+  1) Corporate Role
+  2) Corporate Board
+  3) Corporate Office + Corporate Staff
+  4) Corporate Function + SBU Support
+  5) SBU + Support
+  6) SBU + Supplier
+  7) SBU + Customer
   8) Corporate + SBU
 - Two curved arrows indicate directional grouping along the outer ring:
   - Left side arrow pointing downward along “SBU”
@@ -9615,7 +9615,7 @@ The core idea is that strategy is at the center of the management system. With t
   - No lado esquerdo superior, oval com o texto: "Adapt".
 - Setas contínuas conectam os ovais em um ciclo horário: do oval "Plan" (topo) para "Align organization" (direita superior), deste para "Align employees" (direita inferior), deste para "Continuous improvement" (base), deste para "Analyze" (esquerda inferior), deste para "Adapt" (esquerda superior), retornando ao oval "Plan".
 - Linhas pontilhadas partem do oval central "Strategy" em direção às quatro áreas textuais "Plan", "Align", "Operate" e "Learn", sugerindo ligação conceitual do centro com cada quadrante.
-- No canto superior esquerdo da página, fora do retângulo principal, há um diagrama menor intitulado "The Deming Cycle", composto por quatro elipses conectadas em ciclo circular por setas, nos seguintes rótulos e ordem: "Plan" → "Do" → "Check" → "Act" → (retorna a) "Plan".
+- No canto superior esquerdo da página, fora do retângulo principal, há um diagrama menor intitulado "The Deming Cycle", composto por quatro elipses conectadas em ciclo circular por setas, nos seguintes rótulos e ordem: "Plan" -> "Do" -> "Check" -> "Act" -> (retorna a) "Plan".
 
 ## Elementos textuais da página
 
@@ -9645,7 +9645,7 @@ The core idea is that strategy is at the center of the management system. With t
 ## Notas sobre fluxos e conexões
 
 - Fluxo principal do framework (ciclo operacional visualizado por setas contínuas):
-  - Plan → Align organization → Align employees → Continuous improvement → Analyze → Adapt → Plan.
+  - Plan -> Align organization -> Align employees -> Continuous improvement -> Analyze -> Adapt -> Plan.
 - Conexões conceituais (linhas pontilhadas) partindo de "Strategy" para:
   - Plan
   - Align
@@ -10143,7 +10143,7 @@ Initiative planning involves two steps. The first, rationalization, entails the 
   - Right: Align
   - Bottom: Operate
   - Left: Learn
-- Around the outer oval flow (clockwise): Plan → Align organization → Align human capital → Continuous improvement → Analyze → Adapt → back to Plan.
+- Around the outer oval flow (clockwise): Plan -> Align organization -> Align human capital -> Continuous improvement -> Analyze -> Adapt -> back to Plan.
 - Dotted diagonal lines connect each quadrant (Plan, Align, Operate, Learn) to the central “Strategic Fit,” implying alignment with the core.
 - Small bulleted lists near several ovals specify best practices/activities.
 
@@ -10319,9 +10319,9 @@ When the Handleman Company introduced its BSC program, executives saw the BSC’
 
 CPM devised a four-step initiative management process that it uses with the company’s executive team council.
 
-1. Gating: council members screen proposed initiatives to determine those meriting formal review.  
-2. Presenting: Once proposals are approved for consideration, CPM presents them to the council for a final go/no go decision.  
-3. Tracking progress: CPM follows a disciplined procedure to monitor initiatives’ progress.  
+1. Gating: council members screen proposed initiatives to determine those meriting formal review.
+2. Presenting: Once proposals are approved for consideration, CPM presents them to the council for a final go/no go decision.
+3. Tracking progress: CPM follows a disciplined procedure to monitor initiatives’ progress.
 4. Tracking benefits: CPM follows a disciplined procedure to assess whether promised benefits are realized.
 
 The tracking of progress and benefits is the core process for setting priorities and managing the ongoing strategic initiative portfolio. CPM conducts Balanced Scorecard review meetings to track, discuss, and take action on active, approved initiatives. Once an initiative is completed, the initiative owner conducts periodic lessons-learned analyses to determine whether the promised benefits are being delivered by the initiative and to capture strategic learning for future efforts.
@@ -10427,10 +10427,10 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 #### Translate the Strategy to Operational Terms
 
-1. Strategy Map developed  
-2. Balanced Scorecard created  
-3. Targets established  
-4. Initiatives rationalized  
+1. Strategy Map developed
+2. Balanced Scorecard created
+3. Targets established
+4. Initiatives rationalized
 5. Accountability assigned
 
 ## Organization Alignment
@@ -10439,10 +10439,10 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 #### Align the Organization to the Strategy
 
-1. Corporate role defined  
-2. Corporate and SBUs aligned  
-3. SBU and support units aligned  
-4. SBU and external partners aligned  
+1. Corporate role defined
+2. Corporate and SBUs aligned
+3. SBU and support units aligned
+4. SBU and external partners aligned
 5. Board of directors aligned
 
 ## Human Capital Alignment
@@ -10451,9 +10451,9 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 #### Motivate to Make Strategy Everyone’s Job
 
-1. Strategic awareness created  
-2. Personal goals aligned  
-3. Personal incentives aligned  
+1. Strategic awareness created
+2. Personal goals aligned
+3. Personal incentives aligned
 4. Competency development aligned
 
 ## Planning and Control Systems Alignment
@@ -10462,16 +10462,16 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 #### Govern to Make Strategy a Continual Process
 
-- Planning Process  
-  1. Initiative planning  
-  2. Integrated HR/IT planning  
+- Planning Process
+  1. Initiative planning
+  2. Integrated HR/IT planning
   3. Budget linkage
-- Operations Management  
-  1. Process improvement  
-  2. Initiative management  
+- Operations Management
+  1. Process improvement
+  2. Initiative management
   3. Knowledge sharing
-- Learning and Control  
-  1. BSC reporting system  
+- Learning and Control
+  1. BSC reporting system
   2. Strategy review meetings
 
 ## Executive Leadership
@@ -10480,11 +10480,11 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 #### Mobilize Change Through Executive Leadership
 
-1. Top leadership committed  
-2. Case for change clearly articulated  
-3. Leadership team engaged  
-4. Vision and strategy clarified  
-5. New way of managing understood  
+1. Top leadership committed
+2. Case for change clearly articulated
+3. Leadership team engaged
+4. Vision and strategy clarified
+5. New way of managing understood
 6. Office of strategy management established
 
 ---
@@ -10523,7 +10523,7 @@ Strategy execution is not a matter of luck. It is the result of conscious attent
 
 ABB, 37–38
 
-accountability, 253–256, 282  
+accountability, 253–256, 282
 
 - organizational design and, 102
 
@@ -10537,31 +10537,31 @@ Aktiva, 46–49
 
 Alexander, M., 27n, 39, 41n
 
-alignment, 1–28  
+alignment, 1–28
 
-- accountability and, 253–256  
-- Balanced Scorecard for, 39–40  
-- board and investor, 193–220  
-- checkpoints for, 16, 246–247  
-- creating, 245–249  
-- external organization, 14–15  
-- external partner, 221–244  
-- of headquarters with operating units, 13  
-- of human capital, 261, 262, 263–277  
-- importance of, 2–3  
-- integrated planning and, 160, 162–164  
-- of internal support/service units, 13–14  
-- managing, 15–17, 245–257  
-- as ongoing process, 160–165  
-- organization, 261, 262  
-- planning and control systems, 262, 263  
-- process of, 15–17, 160–165  
-- relationship managers in, 160, 162  
-- sequence for, 10, 12–15  
-- 7-S Model for, 38  
-- strategic fit and, 261, 262  
-- of support functions, 119–167  
-- sustaining, 250–253  
+- accountability and, 253–256
+- Balanced Scorecard for, 39–40
+- board and investor, 193–220
+- checkpoints for, 16, 246–247
+- creating, 245–249
+- external organization, 14–15
+- external partner, 221–244
+- of headquarters with operating units, 13
+- of human capital, 261, 262, 263–277
+- importance of, 2–3
+- integrated planning and, 160, 162–164
+- of internal support/service units, 13–14
+- managing, 15–17, 245–257
+- as ongoing process, 160–165
+- organization, 261, 262
+- planning and control systems, 262, 263
+- process of, 15–17, 160–165
+- relationship managers in, 160, 162
+- sequence for, 10, 12–15
+- 7-S Model for, 38
+- strategic fit and, 261, 262
+- of support functions, 119–167
+- sustaining, 250–253
 - total strategic, 259–289
 
 alignment champions, 162, 253
@@ -10592,12 +10592,12 @@ audit committee, 212
 
 auditors, 197
 
-Balanced Scorecard (BSC). See also individual organizations  
+Balanced Scorecard (BSC). See also individual organizations
 
-- as alignment tool, 39–40  
-- alliance, 237–238  
-- in board governance, 200–213  
-- for boards of directors, 208–213  
+- as alignment tool, 39–40
+- alliance, 237–238
+- in board governance, 200–213
+- for boards of directors, 208–213
 - bottom-up approach with, 52
 
 ---
@@ -10620,61 +10620,61 @@ Assim que receber a página correta, farei a conversão imediata seguindo todas 
 
 # Index — Page 297
 
-headquarters alignment with, 13  
-increasing shareholder value of, 7  
-support units compared with, 136, 138  
+headquarters alignment with, 13
+increasing shareholder value of, 7
+support units compared with, 136, 138
 synergies from, 13
 
-Campbell, A., 27n, 39, 41n  
-Canadian Blood Services, 254  
+Campbell, A., 27n, 39, 41n
+Canadian Blood Services, 254
 Canon, USA, 122, 248
 
-capital markets  
+capital markets
 
-- adverse selection and, 195, 196  
-- intermediation in, 196–197  
+- adverse selection and, 195, 196
+- intermediation in, 196–197
 - moral hazard and, 195–196
 
 Carr, N., 166n
 
-cascading, 169–192  
+cascading, 169–192
 
-- at Bank of Tokyo-Mitsubishi, 81, 186–192  
-- bottom-up, 172–173  
-- from business units, 184–186  
-- customer value proposition and, 69  
-- in franchise operations, 169, 170–171  
-- in holding companies, 169, 172–173  
-- hybrid processes for, 173  
-- at KeyCorp, 273–277  
-- at MDS Corporation, 178–184  
-- at Media General, 67, 68  
-- middle-to-top-down, 186–192  
-- office of strategy management in, 254, 256  
-- top-down, 170–171, 174–178  
-- top-to-middle and middle-to-top, 178–184  
+- at Bank of Tokyo-Mitsubishi, 81, 186–192
+- bottom-up, 172–173
+- from business units, 184–186
+- customer value proposition and, 69
+- in franchise operations, 169, 170–171
+- in holding companies, 169, 172–173
+- hybrid processes for, 173
+- at KeyCorp, 273–277
+- at MDS Corporation, 178–184
+- at Media General, 67, 68
+- middle-to-top-down, 186–192
+- office of strategy management in, 254, 256
+- top-down, 170–171, 174–178
+- top-to-middle and middle-to-top, 178–184
 - in the U.S. Army, 174–178
 
-case studies  
+case studies
 
-- Aktiva, 46–49  
-- Bank of Tokyo-Mitsubishi, 79–82, 169–170, 186–192  
-- Citizen Schools, 71, 73, 74–75  
-- DuPont Engineering Polymers, 103–109  
-- Handleman Company, 125–136, 156–160  
-- Hilton Hotels, 69–71, 73  
-- IBM, 97–101  
-- Ingersoll-Rand, 55–62, 144–146  
-- KeyCorp, 273–277  
-- Lockheed Martin Corporation, 149–152  
-- Marriott Vacation Club, 85, 86–87, 88–90  
-- MDS Corporation, 178–184  
-- Media General, 63–67  
-- New Profit Inc., 49–52  
-- Royal Canadian Mounted Police (RCMP), 109–113, 114  
-- Sport-Man Inc., 17–26  
-- Unibanco, 268–272  
-- U.S. Army, 174–178  
+- Aktiva, 46–49
+- Bank of Tokyo-Mitsubishi, 79–82, 169–170, 186–192
+- Citizen Schools, 71, 73, 74–75
+- DuPont Engineering Polymers, 103–109
+- Handleman Company, 125–136, 156–160
+- Hilton Hotels, 69–71, 73
+- IBM, 97–101
+- Ingersoll-Rand, 55–62, 144–146
+- KeyCorp, 273–277
+- Lockheed Martin Corporation, 149–152
+- Marriott Vacation Club, 85, 86–87, 88–90
+- MDS Corporation, 178–184
+- Media General, 63–67
+- New Profit Inc., 49–52
+- Royal Canadian Mounted Police (RCMP), 109–113, 114
+- Sport-Man Inc., 17–26
+- Unibanco, 268–272
+- U.S. Army, 174–178
 - Washington State salmon recovery, 113, 115–117
 
 centralized functional organizations, 29–32
@@ -10693,7 +10693,7 @@ Chemical Retail Bank, 215
 
 ChemTrade, 230–232
 
-chief executive officers (CEOs), 199  
+chief executive officers (CEOs), 199
 
 - executive scorecards for, 204–208
 
@@ -10719,25 +10719,25 @@ Collis, D. J., 27n, 40, 41n
 
 Committee of Sponsoring Organizations (COSO), 79, 81
 
-communication  
+communication
 
-- at Bank of Tokyo-Mitsubishi, 79, 81  
-- finance units and, 135–136  
-- with investors/analysts, 214–218  
+- at Bank of Tokyo-Mitsubishi, 79, 81
+- finance units and, 135–136
+- with investors/analysts, 214–218
 - motivation and, 264–265
 
 compensation committee, 212. See also boards of directors
 
-compensation systems, 266–268  
+compensation systems, 266–268
 
 - at Unibanco, 269–272
 
-competencies  
+competencies
 
-- brands/themes and, 53  
-- core, 39–40, 128, 174  
-- education/training programs and, 93–95  
-- employee, developing, 272–273  
+- brands/themes and, 53
+- core, 39–40, 128, 174
+- education/training programs and, 93–95
+- employee, developing, 272–273
 - strategic, 94–95, 123, 125
 
 eagleflyfree
@@ -10752,17 +10752,17 @@ compliance issues, 135–136, 197–198
 
 Conger, J., 219n
 
-conglomerates, 34–35  
+conglomerates, 34–35
 
-- brands/themes and, 53  
-- financial synergies and, 44–45  
+- brands/themes and, 53
+- financial synergies and, 44–45
 - movement toward, 44–45
 
 coordination, 102
 
-core competencies, 39–40  
+core competencies, 39–40
 
-- at Handleman, 128  
+- at Handleman, 128
 - U.S. Army, 174
 
 Couto, V., 167n
@@ -10771,49 +10771,49 @@ Crown Castle International (CCI), 96, 254, 284
 
 customer management, 78, 281
 
-customer perspective, 6, 7, 9  
+customer perspective, 6, 7, 9
 
-- in board scorecards, 209  
-- branding and, 54–55  
-- at Citizen Schools, 71, 73  
-- enterprise-derived value and, 83  
-- finance function, 153, 155  
-- at Handleman, 156, 159  
-- at Hilton Hotels, 69–71  
-- human resources organizations and, 140  
-- IT department and, 146  
-- at Lockheed Martin, 150  
-- at MDS Corporation, 181  
-- at Media General, 66  
-- shared customer synergies and, 62–67  
-- at Sport-Man Inc., 20  
-- in supply-chain scorecards, 229  
-- support units and, 138–139  
+- in board scorecards, 209
+- branding and, 54–55
+- at Citizen Schools, 71, 73
+- enterprise-derived value and, 83
+- finance function, 153, 155
+- at Handleman, 156, 159
+- at Hilton Hotels, 69–71
+- human resources organizations and, 140
+- IT department and, 146
+- at Lockheed Martin, 150
+- at MDS Corporation, 181
+- at Media General, 66
+- shared customer synergies and, 62–67
+- at Sport-Man Inc., 20
+- in supply-chain scorecards, 229
+- support units and, 138–139
 - synergies in, 39, 62–73
 
-customer relationships, 35–36  
+customer relationships, 35–36
 
-- at Handleman, 125–136  
+- at Handleman, 125–136
 - value-chain integration and, 82–87
 
-customers  
+customers
 
-- aligning, 14–15  
-- in alignment process, 246, 247  
-- feedback from, 160, 164  
-- finance function, 153–155  
-- retaining versus acquiring, 83  
-- satisfaction of, 214  
-- scorecards on, 232–237  
-- sharing, 62–67  
+- aligning, 14–15
+- in alignment process, 246, 247
+- feedback from, 160, 164
+- finance function, 153–155
+- retaining versus acquiring, 83
+- satisfaction of, 214
+- scorecards on, 232–237
+- sharing, 62–67
 - support unit, 138
 
 customer solutions value proposition, 4, 122–123
 
-customer value propositions  
+customer value propositions
 
-- cascading and, 69–71  
-- enterprise-derived value and, 4–5  
+- cascading and, 69–71
+- enterprise-derived value and, 4–5
 - synergies from common, 67, 68–69
 
 Dahlmann, David, 212
@@ -10822,11 +10822,11 @@ Dana Corporation, 223
 
 Datex Ohmeda (DO), 62
 
-decision making  
+decision making
 
-- in centralized functional organizations, 31  
-- finance units and, 136, 156  
-- at Handleman, 159–160  
+- in centralized functional organizations, 31
+- finance units and, 136, 156
+- at Handleman, 159–160
 - information technology and, 133
 
 Davis, S., 41n
@@ -10841,24 +10841,24 @@ discretionary expense centers, 13–14, 120
 
 due diligence processes, 45, 52
 
-DuPont Corporation, 32, 33  
+DuPont Corporation, 32, 33
 
 - Engineering Polymers, 103–109
 
 economies of knowledge, 78
 
-economies of scale, 9–10, 29, 31  
+economies of scale, 9–10, 29, 31
 
-- in multidivisional organizations, 34  
-- shared processes/services and, 77–78  
+- in multidivisional organizations, 34
+- shared processes/services and, 77–78
 - strategic themes and, 101–117
 
-education/training programs, 93–95  
+education/training programs, 93–95
 
-- employee competency development and, 273–277  
-- executive scorecards and, 208  
-- at Handleman, 128–129  
-- at KeyCorp, 273–277  
+- employee competency development and, 273–277
+- executive scorecards and, 208
+- at Handleman, 128–129
+- at KeyCorp, 273–277
 - motivation and, 264–265
 
 Eisenhardt, K. M., 28n
@@ -10867,20 +10867,20 @@ E-Land, 2
 
 Emerson Electric, 52, 53, 54
 
-employees, 263–277  
+employees, 263–277
 
-- alignment of, 16–17  
-- compensation systems and, 266–268  
-- competency development for, 272–273  
-- customer value proposition and, 69  
-- human capital development and, 93–95  
-- information technology, 149  
-- key staff rotation, 20, 22  
-- leadership development and, 91–93  
-- motivating, 3, 263–268  
+- alignment of, 16–17
+- compensation systems and, 266–268
+- competency development for, 272–273
+- customer value proposition and, 69
+- human capital development and, 93–95
+- information technology, 149
+- key staff rotation, 20, 22
+- leadership development and, 91–93
+- motivating, 3, 263–268
 - empowerment, 265
 
-enterprise-derived value, 3–10, 43–76  
+enterprise-derived value, 3–10, 43–76
 
 - at Aktiva, 46–49
 
@@ -10890,133 +10890,133 @@ enterprise-derived value, 3–10, 43–76
 
 # INDEX — Page 299
 
-at Bank of Tokyo-Mitsubishi, 79–82  
-business-unit value versus, 3–6  
-at Citizen Schools, 71, 73  
-corporate brands/themes and, 53–62  
-corporate strategic themes and, 101–117  
-customer synergies and, 62–73  
-customer value proposition synergies and, 67, 68–73  
-definition of, 5  
-financial synergies in, 43–62  
-at Hilton Hotels, 69–71  
-holding company model and, 43–49  
-at Ingersoll-Rand, 55–62  
-intangible assets and, 87, 91–97  
-at Media General, 63–67  
-at New Profit Inc., 49–52  
-shared customer synergies and, 62–67  
-shared processes/services synergies and, 77–82  
-value-chain integration and, 82–87  
+at Bank of Tokyo-Mitsubishi, 79–82
+business-unit value versus, 3–6
+at Citizen Schools, 71, 73
+corporate brands/themes and, 53–62
+corporate strategic themes and, 101–117
+customer synergies and, 62–73
+customer value proposition synergies and, 67, 68–73
+definition of, 5
+financial synergies in, 43–62
+at Hilton Hotels, 69–71
+holding company model and, 43–49
+at Ingersoll-Rand, 55–62
+intangible assets and, 87, 91–97
+at Media General, 63–67
+at New Profit Inc., 49–52
+shared customer synergies and, 62–67
+shared processes/services synergies and, 77–82
+value-chain integration and, 82–87
 
-enterprise scorecards  
+enterprise scorecards
 
-- for boards of directors, 200–203  
-- four-perspective framework for, 6–10  
-- Sport-Man Inc., 18, 19  
+- for boards of directors, 200–203
+- four-perspective framework for, 6–10
+- Sport-Man Inc., 18, 19
 
-enterprise value propositions, 6–10  
+enterprise value propositions, 6–10
 
-- as alignment checkpoint, 246, 247  
-- alignment process and, 15–17  
-- brands/themes and, 53–55  
-- BSC perspectives and, 39–40  
-- business unit alignment with, 246, 248–249  
+- as alignment checkpoint, 246, 247
+- alignment process and, 15–17
+- brands/themes and, 53–55
+- BSC perspectives and, 39–40
+- business unit alignment with, 246, 248–249
 
-enterprise-wide alignment. See cascading  
+enterprise-wide alignment. See cascading
 
-entropy, 245  
+entropy, 245
 
-Epstein, M. J., 219n  
+Epstein, M. J., 219n
 
-Ernst, J., 244n  
+Ernst, J., 244n
 
-ethics, 199  
+ethics, 199
 
-European Foundation for Quality Management (EFQM), 78, 281  
+European Foundation for Quality Management (EFQM), 78, 281
 
-Evans, Lesa, 275  
+Evans, Lesa, 275
 
-executive scorecards, 203–208  
+executive scorecards, 203–208
 
-extrinsic motivation, 263–264, 266–268  
+extrinsic motivation, 263–264, 266–268
 
-Federal Mogul, 224  
+Federal Mogul, 224
 
-feedback, client, 160, 164  
+feedback, client, 160, 164
 
-finance departments, 29, 31. See also shared-service units  
+finance departments, 29, 31. See also shared-service units
 
-- aligning, 152–160  
-- at Handleman, 156–160  
-- strategic services portfolios of, 135–136  
-- financial perspective, 6, 7  
-- IT department and, 146  
-- at Media General, 66–67  
-- at Sport-Man Inc., 20  
-- in supply-chain scorecards, 229  
-- support units and, 138–139  
-- synergies in, 39  
+- aligning, 152–160
+- at Handleman, 156–160
+- strategic services portfolios of, 135–136
+- financial perspective, 6, 7
+- IT department and, 146
+- at Media General, 66–67
+- at Sport-Man Inc., 20
+- in supply-chain scorecards, 229
+- support units and, 138–139
+- synergies in, 39
 
-financial synergies, 43–62  
+financial synergies, 43–62
 
-- at Aktiva, 46–49  
-- corporate brands/themes and, 53–62  
-- holding company model and, 43–52  
-- at Ingersoll-Rand, 55–62  
-- at New Profit Inc., 49–52  
+- at Aktiva, 46–49
+- corporate brands/themes and, 53–62
+- holding company model and, 43–52
+- at Ingersoll-Rand, 55–62
+- at New Profit Inc., 49–52
 
-Finegold, D., 219n  
+Finegold, D., 219n
 
-First Commonwealth Financial Corporation, 200  
+First Commonwealth Financial Corporation, 200
 
-- board scorecard at, 212  
-- enterprise scorecard at, 201–203  
-- executive scorecards at, 204, 205–206  
+- board scorecard at, 212
+- enterprise scorecard at, 201–203
+- executive scorecards at, 204, 205–206
 
-FMC Corporation, 7, 52, 53, 119, 172–173  
+FMC Corporation, 7, 52, 53, 119, 172–173
 
-- governance at, 45–46  
+- governance at, 45–46
 
-forecasting, 224–228  
+forecasting, 224–228
 
-franchises, 169, 170–171  
+franchises, 169, 170–171
 
-Frangos, Cassandra, 166n  
+Frangos, Cassandra, 166n
 
-Fried, J., 219n  
+Fried, J., 219n
 
-Fulton County Schools, 280–281  
+Fulton County Schools, 280–281
 
-General Electric (GE), 32, 193  
+General Electric (GE), 32, 193
 
-- branding at, 52, 53, 54  
-- human capital development at, 93–94  
+- branding at, 52, 53, 54
+- human capital development at, 93–94
 
-Gilmore, T., 41n  
+Gilmore, T., 41n
 
-Global Chemical Inc., 91, 92  
+Global Chemical Inc., 91, 92
 
-Global Commerce Initiative, 227  
+Global Commerce Initiative, 227
 
-global economy, 35  
+global economy, 35
 
-- intangible assets and, 87–101  
+- intangible assets and, 87–101
 
-Gold, Robert S., 148, 167n  
+Gold, Robert S., 148, 167n
 
-Goold, M., 27n, 39, 41n  
+Goold, M., 27n, 39, 41n
 
-governance, 3, 193–199. See also boards of directors  
+governance, 3, 193–199. See also boards of directors
 
-- at Aktiva, 46–49  
-- financial synergies and, 45–52  
-- at Sport-Man Inc., 25  
-- governance committee, 212  
+- at Aktiva, 46–49
+- financial synergies and, 45–52
+- at Sport-Man Inc., 25
+- governance committee, 212
 
-Govindarajan, V., 166n  
+Govindarajan, V., 166n
 
-Hackett Group, 120  
+Hackett Group, 120
 
 Hammer, Michael, 281, 289n
 
@@ -11026,9 +11026,9 @@ Hammer, Michael, 281, 289n
 
 # 296 INDEX
 
-Handelman Company, 125–136, 249  
+Handelman Company, 125–136, 249
 
-- finance department, 156–160  
+- finance department, 156–160
 - initiative management at, 283
 
 Harris, Bob, 179
@@ -11051,29 +11051,29 @@ Hirschhorn, L., 41n
 
 Hoff, Ted, 97, 98, 101
 
-holding companies, 43–46, 172–173  
+holding companies, 43–46, 172–173
 
 - cascading in, 169
 
 Horvat, Darko, 47, 49
 
-human capital. See also intangible assets  
+human capital. See also intangible assets
 
-- alignment of, 261, 262, 263–277  
-- developing, 93–95  
-- HR departments and, 96–97  
+- alignment of, 261, 262, 263–277
+- developing, 93–95
+- HR departments and, 96–97
 - in supply-chain scorecards, 230–232
 
-human resources organizations, 96–97. See also shared-service units  
+human resources organizations, 96–97. See also shared-service units
 
-- aligning, 140–144  
-- at Handelman, 125–136  
-- at Ingersoll-Rand, 144–146  
-- integrated planning for, 279–280  
-- linkage scorecards for, 138  
+- aligning, 140–144
+- at Handelman, 125–136
+- at Ingersoll-Rand, 144–146
+- integrated planning for, 279–280
+- linkage scorecards for, 138
 - strategic services of, 123, 125
 
-IBM, 82, 83  
+IBM, 82, 83
 
 - Learning, 97–101, 162, 249
 
@@ -11085,43 +11085,43 @@ Industrial Revolution, 29
 
 information capital, 230
 
-information technology (IT)  
+information technology (IT)
 
-- aligning, 146–152  
-- at Handelman, 129, 133  
-- integrated planning for, 279–280  
-- learning and growth perspective and, 10  
+- aligning, 146–152
+- at Handelman, 129, 133
+- integrated planning for, 279–280
+- learning and growth perspective and, 10
 - at Lockheed Martin, 149–152
 
 infrastructure, 133
 
-Ingersoll-Rand, 55–62, 248  
+Ingersoll-Rand, 55–62, 248
 
-- Enterprise Leadership Team, 60  
-- Global Business Services, 56–58, 60  
-- human resources at, 144–146  
-- investor/analyst information at, 215–218  
-- initiatives, 160, 164  
-  - common value propositions and, 170–171  
-  - financial services portfolios and, 136  
-  - human resources organizations and, 143–144  
-  - implementation plans, 277, 279  
-  - managing, 282–283  
-  - owners of, 164  
-  - planning, 277, 279  
+- Enterprise Leadership Team, 60
+- Global Business Services, 56–58, 60
+- human resources at, 144–146
+- investor/analyst information at, 215–218
+- initiatives, 160, 164
+  - common value propositions and, 170–171
+  - financial services portfolios and, 136
+  - human resources organizations and, 143–144
+  - implementation plans, 277, 279
+  - managing, 282–283
+  - owners of, 164
+  - planning, 277, 279
   - rationalization, 277
 
 Institutional Investor Research Group, 217
 
 Instrumentarium Corporation, 62
 
-intangible assets  
+intangible assets
 
-- human capital development and, 93–95  
-- at IBM, 97–101  
-- knowledge sharing and, 95–96  
-- leadership development and, 91–93  
-- support groups and, 120  
+- human capital development and, 93–95
+- at IBM, 97–101
+- knowledge sharing and, 95–96
+- leadership development and, 91–93
+- support groups and, 120
 - synergies from leveraging, 87, 91–101
 
 integrity, 197–198
@@ -11130,23 +11130,23 @@ interagency processes, 113, 115–117
 
 internal capital markets, 43
 
-internal process perspective, 6, 9–10  
+internal process perspective, 6, 9–10
 
-- in board scorecards, 209, 212  
-- branding and, 54–55  
-- customer value proposition and, 69  
-- enterprise-derived value and, 83  
-- finance function, 155  
-  - at Handelman, 159–160  
-- human resources organizations and, 140, 143  
-- IT department and, 146, 148–149  
-  - at Lockheed Martin, 150, 152  
-- at Media General, 66  
-- at Sport-Man Inc., 20  
-- in supply-chain scorecards, 229–230  
-- support units and, 139  
-- synergies in, 39–40  
-  - at Tiger, 234, 237  
+- in board scorecards, 209, 212
+- branding and, 54–55
+- customer value proposition and, 69
+- enterprise-derived value and, 83
+- finance function, 155
+  - at Handelman, 159–160
+- human resources organizations and, 140, 143
+- IT department and, 146, 148–149
+  - at Lockheed Martin, 150, 152
+- at Media General, 66
+- at Sport-Man Inc., 20
+- in supply-chain scorecards, 229–230
+- support units and, 139
+- synergies in, 39–40
+  - at Tiger, 234, 237
 - U.S. Army, 174
 
 intrinsic motivation, 263–265
@@ -11165,102 +11165,102 @@ eagleflyfree
 
 # INDEX
 
-Johnson & Johnson, 156  
-joint ventures, 14–15. See also alliance scorecards; initiatives; partners  
+Johnson & Johnson, 156
+joint ventures, 14–15. See also alliance scorecards; initiatives; partners
 just-in-time practices, 222
 
-Kerr, Steve, 93–94  
-KeyCorp, 273–277  
-key performance indicator (KPI) scorecards, 224  
-key staff rotation, 20, 22  
-Khanna, T., 41n, 76n  
-Khurana, R., 207–208, 219n  
-Kinnarps, 95  
-knowledge sharing, 95–96  
+Kerr, Steve, 93–94
+KeyCorp, 273–277
+key performance indicator (KPI) scorecards, 224
+key staff rotation, 20, 22
+Khanna, T., 41n, 76n
+Khurana, R., 207–208, 219n
+Kinnarps, 95
+knowledge sharing, 95–96
 
-- with investors and analysts, 214–218  
-Kolodny, H., 41n  
-Korea Telecommunications, 286  
+- with investors and analysts, 214–218
+Kolodny, H., 41n
+Korea Telecommunications, 286
 Kulp, S., 244n
 
-Lawler, Edward, 199, 219n  
-Lawrence, P., 41n  
-leadership. See also intangible assets  
+Lawler, Edward, 199, 219n
+Lawrence, P., 41n
+leadership. See also intangible assets
 
-- communication and, 264–265  
-- developing, 91–93  
-- development programs for, 125  
-- motivation and, 264–265  
-- in total strategic alignment, 259  
-lead indicators, 199  
-learning and control processes, 284–286  
-learning and growth perspective, 6, 10  
-- in board scorecards, 212  
-- customer value proposition and, 69  
-- enterprise-derived value and, 83  
-- finance function, 155–156  
-- human resources and, 143  
-- at Media General, 64  
-- motivation and, 264–265  
-- at Sport-Man Inc., 20, 22  
-- in supply-chain scorecards, 230–232  
-- support units and, 139  
-- synergies in, 40  
-- U.S. Army, 174  
-learning curve effects, 34  
-Limited, The, 9, 78  
-linkage scorecards, 138  
-- human resources organizations and, 140  
-Lockheed Martin Corporation, 149–152  
+- communication and, 264–265
+- developing, 91–93
+- development programs for, 125
+- motivation and, 264–265
+- in total strategic alignment, 259
+lead indicators, 199
+learning and control processes, 284–286
+learning and growth perspective, 6, 10
+- in board scorecards, 212
+- customer value proposition and, 69
+- enterprise-derived value and, 83
+- finance function, 155–156
+- human resources and, 143
+- at Media General, 64
+- motivation and, 264–265
+- at Sport-Man Inc., 20, 22
+- in supply-chain scorecards, 230–232
+- support units and, 139
+- synergies in, 40
+- U.S. Army, 174
+learning curve effects, 34
+Limited, The, 9, 78
+linkage scorecards, 138
+- human resources organizations and, 140
+Lockheed Martin Corporation, 149–152
 Lorsch, Jay, 200, 219n
 
-low-benefit users (LBUs), 3  
+low-benefit users (LBUs), 3
 low-cost strategy, 122–123
 
-management  
+management
 
-- activity-based, 78, 281  
-- alignment of, 16–17  
-- of alignment process, 15–17  
-- of the alignment process, 245–257  
-- BSC excellence and, 3, 4  
-- buyouts, 36  
-- customer, 78  
-- framework for strategy execution, 259–261  
-- of matrix organizations, 36–38  
-- in strategy implementation, 3  
-management by objectives (MBO), 266  
-managers  
-- communication by, 265  
-- moral hazard and, 195–196, 209  
-Markides, C., 27n, 41n  
-Marriott Vacation Club (MVCI), 85, 86–87, 88–90  
-Maslow, A., 167n  
-matrix organizations, 36–38  
-- ABB, 37  
-- DuPont, 103–109  
-Mausner, B., 167n  
-McKinsey & Company, 38, 238, 240  
-MDS Corporation, 178–184  
-Media General, 2, 63–67  
-Meehan, Ed, 149–150, 152  
-mergers and acquisitions, 43  
-- failure of, 239–240  
-- integrating, 238–242  
-- risk reduction and, 44–45  
-Metalcraft Corporation, 222–223  
-metrics  
-- alignment, 249, 250–253  
-- customer value proposition and, 69  
-- financial, 46, 69, 153  
-- investor/analyst information and, 214–218  
-- motivation and, 264–265  
-- regulatory/social process, 55  
-- for support departments, 119–120  
-Meyers, Henry, 273  
-M-form structure, 32–34  
-mobilization, 3  
-Mobil US Marketing & Refining, 215  
+- activity-based, 78, 281
+- alignment of, 16–17
+- of alignment process, 15–17
+- of the alignment process, 245–257
+- BSC excellence and, 3, 4
+- buyouts, 36
+- customer, 78
+- framework for strategy execution, 259–261
+- of matrix organizations, 36–38
+- in strategy implementation, 3
+management by objectives (MBO), 266
+managers
+- communication by, 265
+- moral hazard and, 195–196, 209
+Markides, C., 27n, 41n
+Marriott Vacation Club (MVCI), 85, 86–87, 88–90
+Maslow, A., 167n
+matrix organizations, 36–38
+- ABB, 37
+- DuPont, 103–109
+Mausner, B., 167n
+McKinsey & Company, 38, 238, 240
+MDS Corporation, 178–184
+Media General, 2, 63–67
+Meehan, Ed, 149–150, 152
+mergers and acquisitions, 43
+- failure of, 239–240
+- integrating, 238–242
+- risk reduction and, 44–45
+Metalcraft Corporation, 222–223
+metrics
+- alignment, 249, 250–253
+- customer value proposition and, 69
+- financial, 46, 69, 153
+- investor/analyst information and, 214–218
+- motivation and, 264–265
+- regulatory/social process, 55
+- for support departments, 119–120
+Meyers, Henry, 273
+M-form structure, 32–34
+mobilization, 3
+Mobil US Marketing & Refining, 215
 money managers, 196–197
 
 ---
@@ -11269,104 +11269,104 @@ money managers, 196–197
 
 # INDEX (continuação)
 
-Montgomery, C. A., 27n, 40, 41n  
-moral hazard problem, 195–196, 209  
-Moran, M., 167n  
-motivation, 3, 263–277  
+Montgomery, C. A., 27n, 40, 41n
+moral hazard problem, 195–196, 209
+Moran, M., 167n
+motivation, 3, 263–277
 
-- compensation and, 266–268  
-- extrinsic, 263–264, 266–268  
-- intrinsic, 263–264  
-- at Unibanco, 268–272  
+- compensation and, 266–268
+- extrinsic, 263–264, 266–268
+- intrinsic, 263–264
+- at Unibanco, 268–272
 multidivisional (M-form) structure, 32–34
 
-Nagel, Michael, 167n  
-Narayan, V. G., 244n  
-Naylor, Craig, 103  
-New Profit Inc. (NPI), 49–52  
+Nagel, Michael, 167n
+Narayan, V. G., 244n
+Naylor, Craig, 103
+New Profit Inc. (NPI), 49–52
 
-- Citizen Schools, 71, 73, 74–75  
-nonprofit organizations  
-- enterprise-derived value and, 6  
-- New Profit Inc., 49–52  
+- Citizen Schools, 71, 73, 74–75
+nonprofit organizations
+- enterprise-derived value and, 6
+- New Profit Inc., 49–52
 Northwestern Mutual, 9
 
-office of strategy management (OSM), 16, 254, 256  
-operations management, 281–284  
-organizational culture  
+office of strategy management (OSM), 16, 254, 256
+operations management, 281–284
+organizational culture
 
-- at Handleman, 160  
-- information technology and, 149  
-- leadership development and, 91–93  
-- supply-chain scorecards and, 230  
-- in support groups, 120  
-organization alignment, 261, 262  
-organizational strategy  
-- aligning with structure, 36–38  
-- history of, 29–41  
-organizational structure  
-- aligning with strategy, 36–38  
-- centralized functional, 29–32  
-- conglomerates, 34–35  
-- history of, 29–41  
-- matrix, 36–38  
-- multidivisional, 32–34  
-- post-industrial, 38  
+- at Handleman, 160
+- information technology and, 149
+- leadership development and, 91–93
+- supply-chain scorecards and, 230
+- in support groups, 120
+organization alignment, 261, 262
+organizational strategy
+- aligning with structure, 36–38
+- history of, 29–41
+organizational structure
+- aligning with strategy, 36–38
+- centralized functional, 29–32
+- conglomerates, 34–35
+- history of, 29–41
+- matrix, 36–38
+- multidivisional, 32–34
+- post-industrial, 38
 - strategic themes and, 101–102, 101–117
 
-Palepu, K., 41n, 76n, 219n  
-partners, 14–15, 16, 221–244  
+Palepu, K., 41n, 76n, 219n
+partners, 14–15, 16, 221–244
 
-- in alignment process, 246, 247  
-- alliance scorecards, 237–238, 239  
-- customer scorecards and, 232–237  
-- merger integration and, 238–242  
-supplier scorecards and, 221–228  
-supply-chain scorecards and, 228–232  
-performance indicators, 224. See also metrics  
+- in alignment process, 246, 247
+- alliance scorecards, 237–238, 239
+- customer scorecards and, 232–237
+- merger integration and, 238–242
+supplier scorecards and, 221–228
+supply-chain scorecards and, 228–232
+performance indicators, 224. See also metrics
 performance management processes, 125
 
-Peters, T. J., 41n  
-Petrobras, 14  
-Pettigrew, A., 41n  
-Phillips, J. R., 41n  
-Pinus TKI, 47  
-plan-do-check-act process, 259  
-planning  
+Peters, T. J., 41n
+Petrobras, 14
+Pettigrew, A., 41n
+Phillips, J. R., 41n
+Pinus TKI, 47
+plan-do-check-act process, 259
+planning
 
-- aligning, 277–281  
-- budget linkage with, 280–281  
-- building alignment into, 12  
-- collaborative, 224–228  
-- finance units and, 136, 156  
-- for initiatives, 277, 279  
-- integrated HR/IT, 279–280  
-- integrated process for, 160, 162–164  
-planning and control systems, 262, 263  
-platforms, leveraging, 36  
-Porter, Michael, 27n, 39, 289n  
-post-industrial organizations, 38  
-process improvement, 281–284  
-Procter & Gamble, 153, 224, 225, 227  
-production departments, 29  
-product leader value proposition, 4, 122–123  
-public-sector organizations  
-- enterprise-derived value and, 6  
-- financial synergies and, 44  
-- Royal Canadian Mounted Police (RCMP), 109–113, 114  
-- salmon recovery and, 113, 115–117  
-- shared customer synergies in, 62–63  
+- aligning, 277–281
+- budget linkage with, 280–281
+- building alignment into, 12
+- collaborative, 224–228
+- finance units and, 136, 156
+- for initiatives, 277, 279
+- integrated HR/IT, 279–280
+- integrated process for, 160, 162–164
+planning and control systems, 262, 263
+platforms, leveraging, 36
+Porter, Michael, 27n, 39, 289n
+post-industrial organizations, 38
+process improvement, 281–284
+Procter & Gamble, 153, 224, 225, 227
+production departments, 29
+product leader value proposition, 4, 122–123
+public-sector organizations
+- enterprise-derived value and, 6
+- financial synergies and, 44
+- Royal Canadian Mounted Police (RCMP), 109–113, 114
+- salmon recovery and, 113, 115–117
+- shared customer synergies in, 62–63
 - strategic themes and, 102–103
 
 quality movement, 78, 259
 
-Raynor, M., 41n  
-Red Cross, 6  
-reengineering, 281  
-regulatory processes, 55, 199  
-relationship managers, 160, 162  
-reporting to investors and analysts, 214–218, 285  
-research, leveraging, 36  
+Raynor, M., 41n
+Red Cross, 6
+reengineering, 281
+regulatory processes, 55, 199
+relationship managers, 160, 162
+reporting to investors and analysts, 214–218, 285
+research, leveraging, 36
 Retail, Inc., 136, 137
 
 ---
@@ -11379,12 +11379,12 @@ Rice, Don, 144
 
 Rigby, D., 27n
 
-risk management, 13–14  
+risk management, 13–14
 
-- at Bank of Tokyo-Mitsubishi, 79, 81  
-- boards of directors and, 203  
-- in conglomerates, 34  
-- investor/analyst information and, 214–218  
+- at Bank of Tokyo-Mitsubishi, 79, 81
+- boards of directors and, 203
+- in conglomerates, 34
+- investor/analyst information and, 214–218
 - mergers and acquisitions as, 44–45
 
 Rockwater Company, 232–234, 249
@@ -11417,26 +11417,26 @@ service agreements, 160, 164
 
 Seyranian, Michele, 273
 
-shared-service units, 13–14. See also  
+shared-service units, 13–14. See also
 
-- human resources organizations;  
-- information technology (IT);  
-- planning  
-  - aligning, 119–167  
-  - as discretionary expense centers, 13–14  
+- human resources organizations;
+- information technology (IT);
+- planning
+  - aligning, 119–167
+  - as discretionary expense centers, 13–14
   - at Sport-Man Inc., 22–24
 
-shareholders  
+shareholders
 
-- alignment of, 16  
-- in alignment process, 246, 247  
+- alignment of, 16
+- in alignment process, 246, 247
 - disclosure to, 14–15
 
 Siemens Information and Communications Mobile, 282
 
-six sigma programs, 282  
+six sigma programs, 282
 
-- branding and, 54–55  
+- branding and, 54–55
 - at DuPont, 106
 
 Smith, Adam, 29, 31, 36
@@ -11447,7 +11447,7 @@ Society for Human Resource Management, 96–97
 
 Speh, T. W., 228, 244n
 
-Sport-Man Inc., 17–26, 133, 134, 249  
+Sport-Man Inc., 17–26, 133, 134, 249
 
 - enterprise scorecard at, 18, 19
 
@@ -11459,60 +11459,60 @@ strategic competencies, 94–95, 123, 125
 
 strategic fit, 261, 262
 
-strategic job families, 94, 272–273  
+strategic job families, 94, 272–273
 
-- at Handleman, 129–133  
+- at Handleman, 129–133
 - at Sport-Man Inc., 22
 
-strategic portfolio approach, 139  
+strategic portfolio approach, 139
 
-- at Handleman, 125–136  
+- at Handleman, 125–136
 - at Sport-Man Inc., 133, 134
 
 Strategic Readiness System, 174–178
 
-strategic themes, 101–117  
+strategic themes, 101–117
 
 - at DuPont Engineering Polymers, 103–109
 
 Royal Canadian Mounted Police (RCMP), 109–113, 114
 
-strategy  
+strategy
 
-- boards of directors and, 198  
-- communicating, 264–265  
-- definition of, 259  
-- historical perspective on, 29–41  
-- management of, 287  
-- review meetings on, 285–286  
-- support unit, 122–123  
+- boards of directors and, 198
+- communicating, 264–265
+- definition of, 259
+- historical perspective on, 29–41
+- management of, 287
+- review meetings on, 285–286
+- support unit, 122–123
 - translation of, 3
 
-Strategy Maps. See also individual organizations  
+Strategy Maps. See also individual organizations
 
-- board, 209, 210  
-- common value propositions and, 171  
-- finance function, 153–155  
-- for human resources organizations, 140, 141  
-- IT department, 146, 147  
-- line organization, 120–122  
+- board, 209, 210
+- common value propositions and, 171
+- finance function, 153–155
+- for human resources organizations, 140, 141
+- IT department, 146, 147
+- line organization, 120–122
 - support unit, 136, 138–144
 
 Strome, Stephen, 125
 
-suppliers  
+suppliers
 
-- aligning, 14–15  
-- at Metalcraft, 222–223  
-- scorecards for, 221–228  
+- aligning, 14–15
+- at Metalcraft, 222–223
+- scorecards for, 221–228
 - strategic, 224
 
-supplier scorecards, 221–228  
+supplier scorecards, 221–228
 
-- at Dana Corporation, 223  
-- delivery, 223  
-- at Metalcraft, 222–223  
-- quality, 222  
+- at Dana Corporation, 223
+- delivery, 223
+- at Metalcraft, 222–223
+- quality, 222
 - timing, 222–223
 
 eagleflyfree
@@ -11523,37 +11523,37 @@ eagleflyfree
 
 # INDEX (Página 304)
 
-- supply-chain management, 221–228  
-  - collaborative planning, forecasting, and replenishment scorecards in, 224–228  
-  - at Handleman, 125–136  
+- supply-chain management, 221–228
+  - collaborative planning, forecasting, and replenishment scorecards in, 224–228
+  - at Handleman, 125–136
   - scorecard for, 228–232
-- support units, 119–167  
-  - aligning, 136, 138–144  
-  - in alignment process, 246, 247  
-  - closing the loop with, 160–165  
-  - costs/benefits of, 165  
-  - extensions of alignment and, 165  
-  - finance, 152–160  
-  - finance portfolio of, 135–136  
-  - at Handleman, 125–136  
-  - human resources, 140–146  
-  - information technology, 146–152  
-  - monitoring and evaluating, 119–120  
-  - processes in, 120–122  
-  - strategic services and, 123–125  
+- support units, 119–167
+  - aligning, 136, 138–144
+  - in alignment process, 246, 247
+  - closing the loop with, 160–165
+  - costs/benefits of, 165
+  - extensions of alignment and, 165
+  - finance, 152–160
+  - finance portfolio of, 135–136
+  - at Handleman, 125–136
+  - human resources, 140–146
+  - information technology, 146–152
+  - monitoring and evaluating, 119–120
+  - processes in, 120–122
+  - strategic services and, 123–125
   - strategies and, 122–123
-- synergy  
-  - business process, 39–40  
-  - customer, 39, 62–73  
-  - customer value propositions and, 67, 68–69  
-  - enterprise-derived value and, 5–6  
-  - financial, 39, 43–62  
-  - global economy and, 35  
-  - from intangible assets leveraging, 87, 91–101  
-  - learning and growth, 40  
-  - from shared processes/services, 77–82  
-  - sources of enterprise-level, 10, 11  
-  - at Sport-Man Inc., 20  
+- synergy
+  - business process, 39–40
+  - customer, 39, 62–73
+  - customer value propositions and, 67, 68–69
+  - enterprise-derived value and, 5–6
+  - financial, 39, 43–62
+  - global economy and, 35
+  - from intangible assets leveraging, 87, 91–101
+  - learning and growth, 40
+  - from shared processes/services, 77–82
+  - sources of enterprise-level, 10, 11
+  - at Sport-Man Inc., 20
   - from value-chain integration, 82–87
 - system platform value proposition, 5
 
@@ -11568,15 +11568,15 @@ eagleflyfree
 - Unibanco, 268–272
 - U.S. Army, 14, 174–178, 181, 184, 254
 
-- value  
-  - alignment as source of, 1–28  
+- value
+  - alignment as source of, 1–28
   - enterprise-derived, 3–10
-- value-chain integration, 9–10  
-  - at Marriott Vacation Club, 85, 86–87  
+- value-chain integration, 9–10
+  - at Marriott Vacation Club, 85, 86–87
   - synergies from, 82–87
-- value propositions  
-  - cascading from common, 170–171  
-  - customer, 4–5  
+- value propositions
+  - cascading from common, 170–171
+  - customer, 4–5
   - enterprise, 6–10
 - virtual organizations, 113
 - vision, communicating, 264–265

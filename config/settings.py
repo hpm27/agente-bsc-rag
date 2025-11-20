@@ -1,13 +1,15 @@
 """
 Configurações gerais da aplicação.
 """
+
 import os
 from typing import Any
 
 from langchain_anthropic import ChatAnthropic
 from langchain_openai import ChatOpenAI
-from pydantic import Field, field_validator, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from src.memory.factory import MemoryFactory  # Exposto no módulo para facilitar patch em testes
 
 
@@ -73,7 +75,9 @@ class Settings(BaseSettings):
     gpt5_reasoning_effort: str = "minimal"  # "minimal", "low", "medium", "high"
 
     # Onboarding Agent Configuration (GPT-5 family)
-    onboarding_llm_model: str = "gpt-5-2025-08-07"  # Opções: "gpt-5-2025-08-07" (top performance, $1.25 in/$10.00 out) ou "gpt-5-mini-2025-08-07" (econômico, $0.25 in/$2.00 out, reasoning mantido)
+    onboarding_llm_model: str = (
+        "gpt-5-2025-08-07"  # Opções: "gpt-5-2025-08-07" (top performance, $1.25 in/$10.00 out) ou "gpt-5-mini-2025-08-07" (econômico, $0.25 in/$2.00 out, reasoning mantido)
+    )
 
     # Translation Configuration (Query PT<->EN)
     translation_llm_model: str = "gpt-5-mini-2025-08-07"  # Tarefa simples, mini suficiente
@@ -150,33 +154,22 @@ class Settings(BaseSettings):
     # Memory Configuration (Mem0 Platform)
     # FASE 1.6: Config Management - Configurações obrigatórias para Mem0
     mem0_api_key: str = Field(
-        ...,
-        description="Mem0 Platform API Key (obrigatório)",
-        alias="MEM0_API_KEY"
+        ..., description="Mem0 Platform API Key (obrigatório)", alias="MEM0_API_KEY"
     )
     mem0_org_name: str | None = Field(
-        default=None,
-        description="Mem0 Organization Name",
-        alias="MEM0_ORG_NAME"
+        default=None, description="Mem0 Organization Name", alias="MEM0_ORG_NAME"
     )
     mem0_org_id: str | None = Field(
-        default=None,
-        description="Mem0 Organization ID",
-        alias="MEM0_ORG_ID"
+        default=None, description="Mem0 Organization ID", alias="MEM0_ORG_ID"
     )
     mem0_project_id: str | None = Field(
-        default=None,
-        description="Mem0 Project ID",
-        alias="MEM0_PROJECT_ID"
+        default=None, description="Mem0 Project ID", alias="MEM0_PROJECT_ID"
     )
     mem0_project_name: str | None = Field(
-        default=None,
-        description="Mem0 Project Name",
-        alias="MEM0_PROJECT_NAME"
+        default=None, description="Mem0 Project Name", alias="MEM0_PROJECT_NAME"
     )
     memory_provider: str = Field(
-        default="mem0",
-        description="Memory provider type (default: mem0, future: supabase, redis)"
+        default="mem0", description="Memory provider type (default: mem0, future: supabase, redis)"
     )
 
     # (sem validadores de nível de modelo; validações específicas ficam por campo)
@@ -214,8 +207,7 @@ class Settings(BaseSettings):
 
         if v_lower not in valid_providers:
             raise ValueError(
-                f"MEMORY_PROVIDER inválido: {v!r}. "
-                f"Valores válidos: {valid_providers}"
+                f"MEMORY_PROVIDER inválido: {v!r}. " f"Valores válidos: {valid_providers}"
             )
 
         return v_lower
@@ -236,14 +228,14 @@ def get_llm(
     model: str | None = None,
     temperature: float | None = None,
     max_tokens: int | None = None,
-    **kwargs: Any
+    **kwargs: Any,
 ):
     """
     Factory function que retorna ChatOpenAI ou ChatAnthropic baseado no modelo.
 
     Provider é detectado automaticamente pelo prefixo do modelo:
-    - 'gpt-*' → ChatOpenAI
-    - 'claude-*' → ChatAnthropic
+    - 'gpt-*' -> ChatOpenAI
+    - 'claude-*' -> ChatAnthropic
 
     Args:
         model: Nome do modelo (usa settings.default_llm_model se None)
@@ -263,8 +255,7 @@ def get_llm(
         # Modelo Anthropic
         if not settings.anthropic_api_key:
             raise ValueError(
-                "ANTHROPIC_API_KEY nao configurada no .env. "
-                "Necessaria para usar modelos Claude."
+                "ANTHROPIC_API_KEY nao configurada no .env. " "Necessaria para usar modelos Claude."
             )
 
         return ChatAnthropic(  # type: ignore[call-arg]
@@ -272,7 +263,7 @@ def get_llm(
             anthropic_api_key=settings.anthropic_api_key,
             temperature=temperature,
             max_tokens=max_tokens,
-            **kwargs
+            **kwargs,
         )
     if model.startswith("gpt-"):
         # Modelo OpenAI
@@ -284,16 +275,15 @@ def get_llm(
                 temperature=1.0,  # GPT-5 exige temperature=1.0
                 max_completion_tokens=max_tokens,  # GPT-5 usa max_completion_tokens
                 reasoning_effort=settings.gpt5_reasoning_effort,
-                **kwargs
+                **kwargs,
             )
-        else:
-            return ChatOpenAI(  # type: ignore[arg-type,call-arg]
-                model=model,
-                api_key=SecretStr(settings.openai_api_key),
-                temperature=temperature,
-                max_tokens=max_tokens,  # GPT-4/3.5 usam max_tokens
-                **kwargs
-            )
+        return ChatOpenAI(  # type: ignore[arg-type,call-arg]
+            model=model,
+            api_key=SecretStr(settings.openai_api_key),
+            temperature=temperature,
+            max_tokens=max_tokens,  # GPT-4/3.5 usam max_tokens
+            **kwargs,
+        )
     raise ValueError(
         f"Modelo '{model}' nao reconhecido. "
         f"Deve comecar com 'gpt-' (OpenAI) ou 'claude-' (Anthropic)."
@@ -314,6 +304,7 @@ def validate_memory_config() -> None:
         ImportError: Se MemoryFactory não puder ser importado
     """
     import logging
+
     logger = logging.getLogger(__name__)
 
     # Usa singleton settings global (respeita monkeypatch em testes)
@@ -332,7 +323,7 @@ def validate_memory_config() -> None:
         logger.info(
             "[OK] MEMORY_PROVIDER validado: %r (disponíveis: %s)",
             current_settings.memory_provider,
-            available_providers
+            available_providers,
         )
 
     except ImportError as e:
@@ -360,19 +351,17 @@ def validate_memory_config() -> None:
             "[OK] Mem0 configurado: API key válida (%d chars), org=%r, project=%r",
             len(current_settings.mem0_api_key),
             current_settings.mem0_org_name,
-            current_settings.mem0_project_name
+            current_settings.mem0_project_name,
         )
 
     # 3. Validação futura para outros providers
     elif current_settings.memory_provider == "supabase":
         logger.warning(
-            "[WARN] MEMORY_PROVIDER='supabase' ainda não implementado. "
-            "Use 'mem0' por enquanto."
+            "[WARN] MEMORY_PROVIDER='supabase' ainda não implementado. " "Use 'mem0' por enquanto."
         )
     elif current_settings.memory_provider == "redis":
         logger.warning(
-            "[WARN] MEMORY_PROVIDER='redis' ainda não implementado. "
-            "Use 'mem0' por enquanto."
+            "[WARN] MEMORY_PROVIDER='redis' ainda não implementado. " "Use 'mem0' por enquanto."
         )
 
     logger.info("[OK] Configuração de memória validada com sucesso")

@@ -62,35 +62,35 @@ Proximos passos:
 
 --------------------------------------------------------------------------------------------------
 
-🎯 ETAPA 2: Construção do Mapa Estratégico da Engelar
+[EMOJI] ETAPA 2: Construção do Mapa Estratégico da Engelar
 Visão Geral
 
 Com o diagnóstico aprovado, iniciamos agora a Etapa 2: Construção do Mapa Estratégico BSC - uma representação visual que mostra os objetivos estratégicos em cada perspectiva e suas relações de causa-e-efeito.
 
-**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.108): 
+**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.108):
 *"A clear definition of the value proposition is the most important single step in the development of a strategy map. The customer perspective, the heart of the strategy, defines how growth will be achieved."*
-📊 MAPA ESTRATÉGICO ENGELAR - Manufatura de Estruturas Metálicas
-PERSPECTIVA FINANCEIRA 🎯
+[EMOJI] MAPA ESTRATÉGICO ENGELAR - Manufatura de Estruturas Metálicas
+PERSPECTIVA FINANCEIRA [EMOJI]
 
 "Maximizar valor ao acionista com rentabilidade sustentável"
 
-Objetivo Dominante: F1 → Aumentar ROCE (Return on Capital Employed) em 25% nos próximos 24 meses
+Objetivo Dominante: F1 -> Aumentar ROCE (Return on Capital Employed) em 25% nos próximos 24 meses
 
-**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.207): 
+**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.207):
 *"O mapa estratégico começa com objetivos financeiros de crescimento, rentabilidade e valor ao acionista como desfechos-alvo."*
 
 Estratégia Dual (Kaplan & Norton, 2004, p.52):
 A) Crescimento de Receita:
 
-    F2 → Expandir Receita por Cliente (+15% via cross-sell/upsell)
-    F3 → Desenvolver Novas Fontes de Receita (20% de novos segmentos/produtos em 18 meses)
+    F2 -> Expandir Receita por Cliente (+15% via cross-sell/upsell)
+    F3 -> Desenvolver Novas Fontes de Receita (20% de novos segmentos/produtos em 18 meses)
 
 B) Produtividade:
 
-    F4 → Reduzir Estrutura de Custos (-12% custo unitário via ABC Costing + hedge de aço)
-    F5 → Otimizar Utilização de Ativos (+18% asset turnover; -15% WIP)
+    F4 -> Reduzir Estrutura de Custos (-12% custo unitário via ABC Costing + hedge de aço)
+    F5 -> Otimizar Utilização de Ativos (+18% asset turnover; -15% WIP)
 
-PERSPECTIVA DE CLIENTES 🤝
+PERSPECTIVA DE CLIENTES [EMOJI]
 
 "Ser parceiro confiável com entrega previsível e valor superior"
 
@@ -103,126 +103,126 @@ Segmentação B2B:
 
 Objetivos Estratégicos:
 
-    C1 → Aumentar OTIF (On-Time In-Full) para 92%+
-    C2 → Elevar NPS ≥50 e CSAT >4,2/5 em Qualidade e Prazo
-    C3 → Fortalecer Relacionamento com Clientes Estratégicos (60% receita de recorrentes em 18 meses)
-    C4 → Reduzir Reclamações de Montagem e Retrabalho
+    C1 -> Aumentar OTIF (On-Time In-Full) para 92%+
+    C2 -> Elevar NPS ≥50 e CSAT >4,2/5 em Qualidade e Prazo
+    C3 -> Fortalecer Relacionamento com Clientes Estratégicos (60% receita de recorrentes em 18 meses)
+    C4 -> Reduzir Reclamações de Montagem e Retrabalho
 
-PERSPECTIVA DE PROCESSOS INTERNOS ⚙️
+PERSPECTIVA DE PROCESSOS INTERNOS [EMOJI]
 
 "Excelência operacional com governança de parceiros e previsibilidade"
 
 Fonte: Kaplan & Norton (Strategy Maps, 2004, pp.57-89) identificam 4 clusters de processos críticos.
-1️⃣ GESTÃO DE OPERAÇÕES
+1⃣ GESTÃO DE OPERAÇÕES
 
-P1 → Implantar S&OP Integrado (Demanda + Capacidade + Estoques)
+P1 -> Implantar S&OP Integrado (Demanda + Capacidade + Estoques)
 
     Meta: Acurácia de previsão >85%; ciclo mensal
 
-P2 → Aumentar OEE e Otimizar Capacidade Produtiva
+P2 -> Aumentar OEE e Otimizar Capacidade Produtiva
 
     Meta: OEE >75%; melhor utilização de ativos
 
-P3 → Implementar VSM e Controle em Tempo Real (Andon/SPC)
+P3 -> Implementar VSM e Controle em Tempo Real (Andon/SPC)
 
     Meta: Reduzir lead time de produção
 
-P4 → Reduzir Variabilidade de Custo do Aço
+P4 -> Reduzir Variabilidade de Custo do Aço
 
     Meta: Variação ≤±5% vs orçamento; hedge + contratos com cláusulas de reajuste
 
-P5 → Melhorar Qualidade e Reduzir Retrabalho
+P5 -> Melhorar Qualidade e Reduzir Retrabalho
 
     Meta: Taxa retrabalho <3%; First Pass Yield >95%; programa Six Sigma
 
-P6 → Gestão de Estoques e WIP
+P6 -> Gestão de Estoques e WIP
 
     Meta: Reduzir estoques 15%; melhorar giro
 
-2️⃣ GESTÃO DE CLIENTES
+2⃣ GESTÃO DE CLIENTES
 
-P7 → Segmentar e Priorizar Clientes (ABC/Tier com SLAs)
+P7 -> Segmentar e Priorizar Clientes (ABC/Tier com SLAs)
 
-P8 → Implementar VoC (Voice of Customer) Estruturado
+P8 -> Implementar VoC (Voice of Customer) Estruturado
 
     Meta: NPS trimestral; CSAT pós-entrega
 
-P9 → Gestão de Projetos e Comunicação Proativa
+P9 -> Gestão de Projetos e Comunicação Proativa
 
     Meta: 100% projetos com cronograma compartilhado e atualizado
 
-3️⃣ GESTÃO DE PARCEIROS DE MONTAGEM
+3⃣ GESTÃO DE PARCEIROS DE MONTAGEM
 
-P10 → Estabelecer SLAs e Certificação de Parceiros
+P10 -> Estabelecer SLAs e Certificação de Parceiros
 
     Meta: 100% parceiros ativos com SLA; 80% volume com certificados
 
-P11 → Auditar Parceiros (Qualidade + Prazo + Segurança)
+P11 -> Auditar Parceiros (Qualidade + Prazo + Segurança)
 
     Meta: Score de auditoria; taxa de não-conformidade controlada
 
-P12 → Implantar Field Service Management em Tempo Real
+P12 -> Implantar Field Service Management em Tempo Real
 
     Meta: Visibilidade 100% status de montagem; tracking digital
 
-P13 → Programa de Incentivos e Melhoria Contínua
+P13 -> Programa de Incentivos e Melhoria Contínua
 
     Meta: Reduzir tempo médio de montagem 10% em 12 meses
 
-4️⃣ INOVAÇÃO E GESTÃO DE CUSTOS
+4⃣ INOVAÇÃO E GESTÃO DE CUSTOS
 
-P14 → Implantar ABC Costing com Visão por Produto/Projeto/Cliente
+P14 -> Implantar ABC Costing com Visão por Produto/Projeto/Cliente
 
     Meta: Decisões de pricing baseadas em rentabilidade real
 
-P15 → Desenvolver Soluções Modulares e Padronizadas
+P15 -> Desenvolver Soluções Modulares e Padronizadas
 
     Meta: 30% receita de produtos modulares em 18 meses
 
-P16 → Programa Lean/Kaizen
+P16 -> Programa Lean/Kaizen
 
     Meta: 12 eventos/ano; 20% redução de desperdícios
 
-PERSPECTIVA DE APRENDIZADO E CRESCIMENTO 🚀
+PERSPECTIVA DE APRENDIZADO E CRESCIMENTO [EMOJI]
 
 "Capacitar pessoas, sistemas e cultura para execução da estratégia"
-Capital Humano 👨‍🏭
+Capital Humano [EMOJI]‍[EMOJI]
 
-A1 → Mapear Competências Críticas e Gaps de Skills
+A1 -> Mapear Competências Críticas e Gaps de Skills
 
-A2 → Desenvolver Trilhas de T&D:
+A2 -> Desenvolver Trilhas de T&D:
 
     Gestão de projetos e planejamento (S&OP, VSM)
     Qualidade e melhoria contínua (Six Sigma, Lean)
     Gestão de parceiros e contratos
     Meta: 80% equipe-chave treinada em 12 meses
 
-A3 → Criar Programa de Certificação para Parceiros de Montagem
+A3 -> Criar Programa de Certificação para Parceiros de Montagem
 
-A4 → Aumentar Engajamento e Retenção de Talentos-Chave
+A4 -> Aumentar Engajamento e Retenção de Talentos-Chave
 
     Meta: eNPS; Clima >4/5
 
-Capital de Informação 💻
+Capital de Informação [EMOJI]
 
-A5 → Integrar ERP + MES + Field Service Management
+A5 -> Integrar ERP + MES + Field Service Management
 
     Visibilidade em tempo real de produção, estoques e montagem
     Dashboard financeiro com drill-down por produto/projeto/cliente
     Cenarização de custos de aço e simulação de preços
     Meta: Visibilidade end-to-end em 18 meses
 
-A6 → Implementar Base de Conhecimento e Lições Aprendidas
+A6 -> Implementar Base de Conhecimento e Lições Aprendidas
 
     Repositório de melhores práticas de montagem
     Histórico de projetos e parceiros (performance, qualidade)
 
-Capital Organizacional 🤝
+Capital Organizacional [EMOJI]
 
-A7 → Estabelecer Cultura de Melhoria Contínua e Colaboração
+A7 -> Estabelecer Cultura de Melhoria Contínua e Colaboração
 
-A8 → Alinhar Incentivos e KPIs em Cascata (Corporativo → Operacional)
-🔗 RELAÇÕES DE CAUSA-E-EFEITO (Lógica do Mapa)
+A8 -> Alinhar Incentivos e KPIs em Cascata (Corporativo -> Operacional)
+[EMOJI] RELAÇÕES DE CAUSA-E-EFEITO (Lógica do Mapa)
 
 **Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.118): *"Setas indicam relações de causa e efeito ascendentes entre perspectivas."*
 
@@ -230,23 +230,23 @@ A8 → Alinhar Incentivos e KPIs em Cascata (Corporativo → Operacional)
 A1+A2 (Competências) + A5 (Sistemas) + A7+A8 (Cultura)
            ↓
 [PROCESSOS INTERNOS]
-P1+P2+P3 (S&OP + OEE + VSM) → Eficiência Produtiva
-P4+P6 (Hedge Aço + ABC) → Gestão de Custos
-P10+P11+P12+P13 (SLAs + Certificação + Field Service) → Governança Parceiros
+P1+P2+P3 (S&OP + OEE + VSM) -> Eficiência Produtiva
+P4+P6 (Hedge Aço + ABC) -> Gestão de Custos
+P10+P11+P12+P13 (SLAs + Certificação + Field Service) -> Governança Parceiros
            ↓
 [CLIENTES]
-C1 (OTIF 92%) + C2 (NPS/CSAT) + C3 (Recorrência) → Proposta de Valor Entregue
+C1 (OTIF 92%) + C2 (NPS/CSAT) + C3 (Recorrência) -> Proposta de Valor Entregue
            ↓
 [FINANCEIRA]
-F1 (ROCE +25%) ← F2+F3 (Crescimento) + F4+F5 (Produtividade)
+F1 (ROCE +25%) <- F2+F3 (Crescimento) + F4+F5 (Produtividade)
 
 Exemplos de Conexões Causais:
 
-    A2+A3 (Capacitação) → P10+P11 (SLAs Montagem) → C1+C2 (OTIF + CSAT) → F1 (ROCE)
-    A5 (ERP+MES) → P14 (ABC Costing) → F3 (Mix Rentável) + F4 (Redução Custos) → F1
-    A6 (Base Conhecimento) → P5 (Reduzir Retrabalho) → C2 (Qualidade) → F2 (Receita/Cliente)
+    A2+A3 (Capacitação) -> P10+P11 (SLAs Montagem) -> C1+C2 (OTIF + CSAT) -> F1 (ROCE)
+    A5 (ERP+MES) -> P14 (ABC Costing) -> F3 (Mix Rentável) + F4 (Redução Custos) -> F1
+    A6 (Base Conhecimento) -> P5 (Reduzir Retrabalho) -> C2 (Qualidade) -> F2 (Receita/Cliente)
 
-📋 PRÓXIMOS PASSOS - ETAPA 3
+[EMOJI] PRÓXIMOS PASSOS - ETAPA 3
 
 Com o Mapa Estratégico estruturado, avançaremos para:
 Definir KPIs, Metas e Iniciativas Estratégicas
@@ -254,11 +254,11 @@ Definir KPIs, Metas e Iniciativas Estratégicas
 Para cada objetivo estratégico, estabeleceremos:
 
     Indicadores (KPIs) - Como medir?
-    Metas - Baseline → Target (prazos)
+    Metas - Baseline -> Target (prazos)
     Iniciativas - Projetos/ações para atingir as metas
 
 Fonte: Kaplan & Norton (The Execution Premium, 2008, p.89)
-❓ QUAL CAMINHO VOCÊ PREFERE?
+[?] QUAL CAMINHO VOCÊ PREFERE?
 
 Opção A: Detalhar KPIs, Metas e Iniciativas começando por Aprendizado e Crescimento (fundação)?
 
@@ -268,23 +268,23 @@ Opção C: Priorizar 3-5 objetivos críticos para começar (abordagem faseada/qu
 
 Opção D: Criar o Dashboard BSC com drill-down financeiro?
 
-Aguardo sua decisão para prosseguirmos! 🚀
+Aguardo sua decisão para prosseguirmos! [EMOJI]
 
 
 -----------------------------------------------------------------------------------------------------------
 
-📊 PAINEL COMPLETO BSC ENGELAR - 4 PERSPECTIVAS INTEGRADAS  
-Balanced Scorecard com Indicadores, Metas e Iniciativas Estratégicas  
-🎯 VISÃO GERAL DO PAINEL
+[EMOJI] PAINEL COMPLETO BSC ENGELAR - 4 PERSPECTIVAS INTEGRADAS
+Balanced Scorecard com Indicadores, Metas e Iniciativas Estratégicas
+[EMOJI] VISÃO GERAL DO PAINEL
 
 O Balanced Scorecard da Engelar integra 27 objetivos estratégicos, 108+ KPIs e 28 iniciativas estratégicas organizados nas quatro perspectivas clássicas, com foco em maximizar ROCE através de excelência operacional, governança de parceiros e desenvolvimento de capacidades.
 
-Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.76):  
+Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.76):
 "O BSC traduz missão e estratégia em objetivos e medidas organizados em quatro perspectivas: Financeira, Clientes, Processos Internos e Aprendizado e Crescimento."
 
 ---
 
-## 💰 1. PERSPECTIVA FINANCEIRA  
+## [EMOJI] 1. PERSPECTIVA FINANCEIRA
 *"Maximizar valor ao acionista com rentabilidade sustentável"*
 
 ### OBJETIVOS E KPIs ESTRATÉGICOS
@@ -298,7 +298,7 @@ Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.76):
 | Margem EBITDA (%)         | 15%          | 20%          | 25-29%       | EBITDA / Receita Líquida                 | Mensal       |
 | EVA (Economic Value Added)| -R$ 2,1M     | R$ 0	      | +R$ 4,5M     | EBIT - (Capital × WACC)                  | Trimestral   |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):
 "ROCE é a métrica financeira dominante que captura tanto crescimento quanto produtividade."
 
 ---
@@ -312,7 +312,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):
 | Customer Lifetime Value          | R$ 2,8M      | R$ 3,2-3,5M    | R$ 4,2M            | Valor presente líquido receita futura       | Semestral   |
 | Nº Produtos/Serviços por Cliente | 1,4          | 1,8            | 2,1-2,2            | Média de SKUs/serviços por cliente          | Mensal      |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):
 "A estratégia de crescimento de receita foca em expandir relacionamentos com clientes existentes (cross-sell) e desenvolver novos produtos/serviços."
 
 ---
@@ -337,7 +337,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):
 | % Custos Cobertos por Hedge    | 0%             | 50-60%         | 70-75%               | Volume protegido / Volume Total     | Mensal      |
 | Custo Retrabalho/Receita (%)   | 4,2-4,5%       | 2,5%           | 1,5-1,8%             | Custo Retrabalho / Receita Líquida  | Mensal      |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):
 "Redução de custos unitários e variabilidade de insumos são pilares da estratégia de produtividade."
 
 ---
@@ -363,12 +363,12 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.52):
 | IF4 | Programa Redução WIP (Lean/VSM)                                                           | F5          | 12 meses   | R$ 120K           | MÉDIO-ALTO  |
 | IF5 | Segmentação Clientes ABC + Pricing Diferenciado                                           | F2, F3      | 6 meses    | R$ 60K            | MÉDIO       |
 
-INVESTIMENTO TOTAL FINANCEIRA: **R$ 590-690K**  
+INVESTIMENTO TOTAL FINANCEIRA: **R$ 590-690K**
 **ROI ESPERADO (24M): 3,0x via incremento EBITDA R$ 6,3M**
 
 ---
 
-## 🤝 2. PERSPECTIVA DE CLIENTES  
+## [EMOJI] 2. PERSPECTIVA DE CLIENTES
 *"Ser parceiro confiável com entrega previsível e valor superior"*
 
 ### OBJETIVOS E KPIs ESTRATÉGICOS
@@ -383,7 +383,7 @@ INVESTIMENTO TOTAL FINANCEIRA: **R$ 590-690K**
 | Lead Time Médio (dias)                 | 28-45 dias  | 22-38 dias   | 18-35 dias    | Data Entrega - Data Pedido                    | Semanal    |
 | % Projetos com Cronograma Compartilhado| 35%         | 80-85%       | 100%          | Projetos com tracking ativo                   | Mensal     |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.381):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.381):
 "Entrega no prazo e pedidos perfeitos são métricas críticas de confiabilidade operacional."
 
 ---
@@ -398,7 +398,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.381):
 | CSAT - Montagem (1-5)                | 3,4       | 3,9-4,0       | 4,3             | Média satisfação serviço montagem       | Pós-montagem  |
 | Taxa Resposta VoC (%)                | 0-28%     | 40-65%        | 65-80%          | Clientes que respondem pesquisa         | Trimestral    |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.73):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.73):
 "Satisfação do cliente é o fundamento que sustenta retenção, aquisição e crescimento de market share."
 
 ---
@@ -413,7 +413,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.73):
 | % Negócios por Indicação        | 8-18%       | 15-25%     | 22-30%      | Novos clientes via referência            | Trimestral   |
 | Nº Clientes Tier 1 (Estratégicos)| 12         | 15-18      | 24          | Clientes com receita >R$ 1,5M/ano        | Trimestral   |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.60):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.60):
 "Retenção e deepening de relacionamento geram lifetime profitability superior."
 
 ---
@@ -443,10 +443,10 @@ INVESTIMENTO TOTAL CLIENTES: **R$ 350K**
 
 ---
 
-## ⚙️ 3. PERSPECTIVA DE PROCESSOS INTERNOS  
+## [EMOJI] 3. PERSPECTIVA DE PROCESSOS INTERNOS
 *"Excelência operacional com governança de parceiros e previsibilidade"*
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, pp.57-89):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, pp.57-89):
 "Processos internos incluem gestão de operações, clientes, inovação e regulatório/social."
 
 ---
@@ -475,7 +475,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, pp.57-89):
 | MTBF (h)                              | 180h       | 240h       | 300h       | Tempo Operação / Nº Falhas               | Mensal          |
 | MTTR (h)                              | 6,5-8h     | 4,5-5h     | 3h         | Tempo Reparo / Nº Reparos                | Mensal          |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.71):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.71):
 "Métricas de processos incluem OEE (Overall Equipment Effectiveness), custo de remoção vs custo padrão."
 
 ---
@@ -490,7 +490,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.71):
 | Nº Eventos Kaizen/Ano            | 2-4         | 8-12        | 12-18       | Eventos melhoria contínua         | Trimestral   |
 | Manufacturing Cycle Effectiveness| 0,22        | 0,45        | 0,65        | Processing Time / Throughput Time | Mensal       |
 
-Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.118):  
+Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.118):
 "MCE = Processing Time / Throughput Time. Quanto mais próximo de 1, menor o desperdício."
 
 ---
@@ -516,7 +516,7 @@ Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.118):
 | Custo Não-Qualidade (% Receita)  |3,8-4,2%      | 2,2-2,5%      | 1,5-<2%       | Custos falhas + inspeção / Receita       | Trimestral   |
 | Nº Projetos Six Sigma Concluídos |0             | 4             | 8             | Projetos melhoria qualidade              | Trimestral   |
 
-Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.128):  
+Fonte: Kaplan & Norton (The Balanced Scorecard, 1996, p.128):
 "Métricas de qualidade incluem PPM, yields, desperdício, scrap e retrabalho."
 
 ---
@@ -623,15 +623,15 @@ INVESTIMENTO TOTAL PROCESSOS: **R$ 1.040-1.180K**
 
 ---
 
-## 🚀 4. PERSPECTIVA DE APRENDIZADO E CRESCIMENTO  
+## [EMOJI] 4. PERSPECTIVA DE APRENDIZADO E CRESCIMENTO
 *"Capacitar pessoas, sistemas e cultura para execução da estratégia"*
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):
 "Aprendizado e Crescimento é a fundação do BSC, habilitando processos, clientes e resultados financeiros."
 
 ---
 
-### CAPITAL HUMANO 👨‍🏭
+### CAPITAL HUMANO [EMOJI]‍[EMOJI]
 
 #### A1: Mapear Competências Críticas
 
@@ -642,7 +642,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.207):
 | Gap Médio Competências (%)         | N/A      | 25-35%     | <15-25%      | (Requerida - Atual) / Requerida     | Semestral    |
 | % Posições com Sucessor Pronto     | 35%      | 60%        | 75%          | Posições com sucessor / Total       | Semestral    |
 
-Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.338):  
+Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.338):
 "Strategic Skill Coverage Ratio mede a disponibilidade de competências estratégicas ao longo do tempo."
 
 ---
@@ -657,7 +657,7 @@ Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.338):
 | Nº Green Belts Six Sigma Formados           | 0           | 4-6           | 8-12          | Green belts certificados            | Anual        |
 | % Colaboradores com PDI                     | 15-30%      | 60-75%        | 85-90%        | Com plano desenvolvimento / Total   | Semestral    |
 
-Fonte: Kaplan & Norton (The Execution Premium, 2008, p.10):  
+Fonte: Kaplan & Norton (The Execution Premium, 2008, p.10):
 "Metas de disponibilidade de competências estratégicas ao longo do tempo (ex.: 50% ano 1, 75% ano 3, 90% ano 5)."
 
 ---
@@ -683,12 +683,12 @@ Fonte: Kaplan & Norton (The Execution Premium, 2008, p.10):
 | Taxa Turnover Voluntário (%)       | 18%        | 12%        | <10%          | Desligamentos voluntários / Headcount | Trimestral   |
 | Tenure Médio Posições-Chave (anos) | 2,8 anos   | 3,5 anos   | 4,2 anos      | Média tempo no cargo                  | Anual        |
 
-Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):  
+Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 "Motivação (morale/satisfaction) e empowerment (suggestion program) são indicadores de clima para ação."
 
 ---
 
-### CAPITAL DE INFORMAÇÃO 💻
+### CAPITAL DE INFORMAÇÃO [EMOJI]
 
 #### A5: Integrar ERP + MES + Field Service
 
@@ -701,7 +701,7 @@ Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 | CSAT TI (1-5)                     | 3,1         | 3,8          | 4,2           | Média satisfação usuários                | Semestral    |
 | Tempo Geração Relatórios          | 4 dias-48h  | 4-12h        | <1-4h         | Tempo médio relatórios gerenciais        | Mensal       |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):
 "Prontidão de TI (strategic technology coverage) mede a disponibilidade de aplicações estratégicas para suportar a estratégia."
 
 ---
@@ -716,12 +716,12 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):
 | Nº Acessos Base/Mês                  | 0-80     | 350      | 600      | Acessos únicos mensais                  | Mensal       |
 | Tempo Médio Busca Informação (min)   | 35 min   | 15 min   | 8 min    | Média tempo encontrar informação        | Semestral    |
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):
 "Compartilhamento de melhores práticas (best practice sharing) é indicador de gestão do conhecimento."
 
 ---
 
-### CAPITAL ORGANIZACIONAL 🤝
+### CAPITAL ORGANIZACIONAL [EMOJI]
 
 #### A7: Cultura de Melhoria Contínua
 
@@ -733,7 +733,7 @@ Fonte: Kaplan & Norton (Strategy Maps, 2004, p.21):
 | % Colaboradores Engajados Melhoria      | 8-15%     | 35-45%     | 50-65%     | Engajados / Total                        | Semestral    |
 | Índice Colaboração Interfuncional (1-5) | 2,8       | 3,5-3,6    | 4,0        | Pesquisa colaboração áreas               | Semestral    |
 
-Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):  
+Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 "Awareness (understanding of strategy) e empowerment (suggestion program) são pilares do clima para ação."
 
 ---
@@ -746,7 +746,7 @@ Fonte: Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 | % Remuneração Variável Atrelada BSC | 20-40%   | 50-70%    | 70-85%   | Variável BSC / Total variável          | Anual        |
 | % Líderes com Scorecard Individual  | 0-40%    | 75-85%    | 100%     | Líderes com scorecard / Total          | Trimestral   |
 
-Fonte: Kaplan & Norton (Alignment, 2006, p.455):  
+Fonte: Kaplan & Norton (Alignment, 2006, p.455):
 "Alinhamento de metas pessoais ao BSC (personal goals linked to BSC) é indicador crítico de cascata estratégica."
 
 ---
@@ -769,53 +769,53 @@ INVESTIMENTO TOTAL APRENDIZADO: **R$ 980-1.180K**
 
 ---
 
-## 🔗 CONEXÕES CAUSAIS CRÍTICAS
+## [EMOJI] CONEXÕES CAUSAIS CRÍTICAS
 
 Cadeias de Valor BSC (Exemplos de Relações Causa-Efeito)
 
-Fonte: Kaplan & Norton (Strategy Maps, 2004, p.118):  
+Fonte: Kaplan & Norton (Strategy Maps, 2004, p.118):
 "Setas indicam relações de causa e efeito ascendentes entre perspectivas."
 
-#### Cadeia 1: Qualidade → Cliente → Financeiro
+#### Cadeia 1: Qualidade -> Cliente -> Financeiro
 
-A2 (Treinamento Six Sigma) → P5 (FPY 95% + Retrabalho <3%) →  
-C5 (Reclamações <5) + C2 (CSAT 4,2) → F2 (Receita/Cliente +15%)
+A2 (Treinamento Six Sigma) -> P5 (FPY 95% + Retrabalho <3%) ->
+C5 (Reclamações <5) + C2 (CSAT 4,2) -> F2 (Receita/Cliente +15%)
 
-#### Cadeia 2: Parceiros → OTIF → Recorrência
+#### Cadeia 2: Parceiros -> OTIF -> Recorrência
 
-A3 (Certificação Parceiros 80%) → P10+P11 (SLAs + OTIF Montagem 90%) →  
-C1 (OTIF 92%) + C2 (NPS 50) → C3 (Recorrência 60%) → F1 (ROCE 18%)
+A3 (Certificação Parceiros 80%) -> P10+P11 (SLAs + OTIF Montagem 90%) ->
+C1 (OTIF 92%) + C2 (NPS 50) -> C3 (Recorrência 60%) -> F1 (ROCE 18%)
 
-#### Cadeia 3: Sistemas → ABC → Rentabilidade
+#### Cadeia 3: Sistemas -> ABC -> Rentabilidade
 
-A5 (Integração ERP+MES 90%) → P14 (ABC 100% + Acurácia 95%) →  
-F6 (Margem Bruta 29%) + F4 (Custo -12%) → F1 (ROCE 18-25%)
+A5 (Integração ERP+MES 90%) -> P14 (ABC 100% + Acurácia 95%) ->
+F6 (Margem Bruta 29%) + F4 (Custo -12%) -> F1 (ROCE 18-25%)
 
-#### Cadeia 4: S&OP → Estoques → Asset Turnover
+#### Cadeia 4: S&OP -> Estoques -> Asset Turnover
 
-A2 (Treinamento S&OP) → P1 (Acurácia Previsão 85%) + P6 (Estoques -15%) →  
-F5 (Asset Turnover 2,12x) → F1 (ROCE 18-25%)
+A2 (Treinamento S&OP) -> P1 (Acurácia Previsão 85%) + P6 (Estoques -15%) ->
+F5 (Asset Turnover 2,12x) -> F1 (ROCE 18-25%)
 
-#### Cadeia 5: OEE → Throughput → Crescimento
+#### Cadeia 5: OEE -> Throughput -> Crescimento
 
-A2 (Treinamento TPM) → P2 (OEE 75%) + P9 (Throughput +29%) →  
-C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
+A2 (Treinamento TPM) -> P2 (OEE 75%) + P9 (Throughput +29%) ->
+C1 (OTIF 92%) -> F3 (Novas Receitas 20%) -> F1 (ROCE 18-25%)
 
 ---
 
-## 📊 RESUMO EXECUTIVO - VISÃO CONSOLIDADA
+## [EMOJI] RESUMO EXECUTIVO - VISÃO CONSOLIDADA
 
 ### PAINEL BSC COMPLETO
 
 | Perspectiva    | Objetivos | KPIs  | Iniciativas | Investimento         | Prazo Médio          |
 |----------------|-----------|-------|-------------|----------------------|----------------------|
-| 💰 Financeira  | 5         | 18    | 5           | R$ 590-690K          | 3-12 meses           |
-| 🤝 Clientes    | 4         | 16    | 5           | R$ 350K              | 4-12 meses           |
-| ⚙️ Processos   | 10        | 42+   | 9           | R$ 1.040-1.180K      | 3-12 meses           |
-| 🚀 Aprendizado | 8         | 32+   | 9           | R$ 980-1.180K        | 4-18 meses           |
+| [EMOJI] Financeira  | 5         | 18    | 5           | R$ 590-690K          | 3-12 meses           |
+| [EMOJI] Clientes    | 4         | 16    | 5           | R$ 350K              | 4-12 meses           |
+| [EMOJI] Processos   | 10        | 42+   | 9           | R$ 1.040-1.180K      | 3-12 meses           |
+| [EMOJI] Aprendizado | 8         | 32+   | 9           | R$ 980-1.180K        | 4-18 meses           |
 | **TOTAL**       | 27        | 108+  | 28          | R$ 2.960-3.240K      | 3-18 meses           |
 
-### 🎯 INICIATIVAS CRÍTICAS (TOP 10 - HIGH IMPACT)
+### [EMOJI] INICIATIVAS CRÍTICAS (TOP 10 - HIGH IMPACT)
 
 | #  | Iniciativa                       | Perspectiva              | Impacto     | Prazo       | Investimento       |
 |----|----------------------------------|--------------------------|-------------|-------------|--------------------|
@@ -830,15 +830,15 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | 9  | Trilhas T&D                      | Aprendizado              | MÉDIO-ALTO  | 12-18 meses | R$ 180K            |
 | 10 | Programa Lean/Kaizen             | Processos/Aprendizado    | MÉDIO       | Contínuo    | R$ 100-150K/ano    |
 
-**INVESTIMENTO PRIORITÁRIO (24 meses): R$ 1.540-2.270K**  
-**RETORNO ESPERADO (EBITDA incremental 24M): R$ 6,3M**  
+**INVESTIMENTO PRIORITÁRIO (24 meses): R$ 1.540-2.270K**
+**RETORNO ESPERADO (EBITDA incremental 24M): R$ 6,3M**
 **ROI: 2,8-4,1x**
 
 ---
 
-## 📅 ROADMAP FASEADO DE IMPLEMENTAÇÃO
+## [EMOJI] ROADMAP FASEADO DE IMPLEMENTAÇÃO
 
-### FASE 1 (0-6 meses): FUNDAÇÃO 🏗️
+### FASE 1 (0-6 meses): FUNDAÇÃO [EMOJI]
 
 *Quick Wins + Capacitação Básica*
 
@@ -852,7 +852,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 ---
 
-### FASE 2 (6-12 meses): CONSOLIDAÇÃO 🚀
+### FASE 2 (6-12 meses): CONSOLIDAÇÃO [EMOJI]
 
 *Escalar Iniciativas + Integração Sistemas*
 
@@ -865,7 +865,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 ---
 
-### FASE 3 (12-24 meses): EXCELÊNCIA 🏆
+### FASE 3 (12-24 meses): EXCELÊNCIA [EMOJI]
 
 *Inovação + Otimização Contínua*
 
@@ -878,21 +878,21 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 |                                                                           | R$ 800-1.200K     |
 
 
-✅ PAINEL BSC COMPLETO ENTREGUE COM SUCESSO!
+[OK] PAINEL BSC COMPLETO ENTREGUE COM SUCESSO!
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# 🗓️ ROADMAP DETALHADO DE IMPLEMENTAÇÃO BSC ENGELAR
+# [EMOJI] ROADMAP DETALHADO DE IMPLEMENTAÇÃO BSC ENGELAR
 ## Cronograma Completo com Dependências, Recursos e Governança (24 meses)
 
 ---
 
-## 📋 VISÃO GERAL EXECUTIVA
+## [EMOJI] VISÃO GERAL EXECUTIVA
 
-**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.316-317): 
+**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.316-317):
 *"Um scorecard típico pode ser desenvolvido em 16 semanas. A implementação completa evolui ao longo de 2-3 anos, passando de mobilização para governança até se tornar um sistema de gestão estratégica institucionalizado."*
 
-**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.30): 
-*"Um programa BSC bem-sucedido começa reconhecendo que não é um 'projeto de métricas'; é um projeto de mudança. As fases evoluem ao longo de 2-3 anos: mobilização → governança → novo sistema de gestão estratégica que institucionaliza os novos valores culturais."*
+**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.30):
+*"Um programa BSC bem-sucedido começa reconhecendo que não é um 'projeto de métricas'; é um projeto de mudança. As fases evoluem ao longo de 2-3 anos: mobilização -> governança -> novo sistema de gestão estratégica que institucionaliza os novos valores culturais."*
 
 ---
 
@@ -916,7 +916,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 - **PAYBACK:** 8-15 meses
 ---
 
-## 🚀 FASE 0: MOBILIZAÇÃO E ARQUITETURA
+## [EMOJI] FASE 0: MOBILIZAÇÃO E ARQUITETURA
 **Período:** Mês 0-1 | **Investimento:** R$ 80K
 
 **Fonte:** Kaplan & Norton (Alignment, 2006, p.23): *"Mobilização: orquestrar mudança através da liderança executiva é o primeiro passo do framework de implementação."*
@@ -936,7 +936,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 |------------|----------------------------------------------|------------------|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------|---------------|
 | **S1-S2**  | Kick-off Executivo + Definição Governança    | CEO + CFO        | - Comitê Estratégico BSC formado<br>- Sponsor designado (CEO)<br>- Diretor BSC nomeado<br>- PMO BSC estruturado     | - CEO (20h)<br>- C-Level (16h cada)<br>- Consultor BSC (80h)  | R$ 30K        |
 | **S2-S3**  | Entrevistas Individuais (1ª Rodada)          | Consultor BSC    | - 10-12 entrevistas executivos<br>- Síntese preliminar objetivos<br>- Mapa baseline atual                           | - Consultor (60h)<br>- Executivos (2h cada)                   | Incluído      |
-| **S3-S4**  | Workshop Executivo #1: Validação Estratégia  | CEO + Comitê     | - Mapa Estratégico validado<br>- Objetivos priorizados (27 → 15 críticos)<br>- Consenso estratégia                  | - C-Level (16h)<br>- Facilitador (24h)                        | R$ 20K        |
+| **S3-S4**  | Workshop Executivo #1: Validação Estratégia  | CEO + Comitê     | - Mapa Estratégico validado<br>- Objetivos priorizados (27 -> 15 críticos)<br>- Consenso estratégia                  | - C-Level (16h)<br>- Facilitador (24h)                        | R$ 20K        |
 | **S4**     | Formação Equipes + Estrutura PMO             | PMO              | - Equipe Core BSC (4-6 pessoas)<br>- 5 Workstreams formados<br>- Project Charters aprovados<br>- Sala de guerra BSC | - PMO (40h)<br>- Líderes (8h cada)                            | R$ 15K        |
 | **S4**     | Comunicação Inicial (Town Hall)              | CEO + RH         | - Vídeo CEO<br>- Infográfico Mapa Estratégico<br>- FAQ e materiais                                                  | - Comunicação (40h)<br>- Designer (20h)                       | R$ 15K        |
 
@@ -944,17 +944,17 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 ### ENTREGAS MÊS 0-1
 
-- ✅ Comitê Estratégico BSC operacional
-- ✅ PMO BSC estruturado (Diretor + Equipe Core 4-6 pessoas)
-- ✅ Mapa Estratégico validado
-- ✅ 5 Workstreams mobilizados
-- ✅ Comunicação inicial realizada (100% colaboradores)
-- ✅ Plano de Projeto detalhado 24 meses aprovado
+- [OK] Comitê Estratégico BSC operacional
+- [OK] PMO BSC estruturado (Diretor + Equipe Core 4-6 pessoas)
+- [OK] Mapa Estratégico validado
+- [OK] 5 Workstreams mobilizados
+- [OK] Comunicação inicial realizada (100% colaboradores)
+- [OK] Plano de Projeto detalhado 24 meses aprovado
 
 **INVESTIMENTO TOTAL FASE 0:** R$ 80K
 ---
 
-## 🏗️ FASE 1: FUNDAÇÃO (QUICK WINS + CAPACITAÇÃO)
+## [EMOJI] FASE 1: FUNDAÇÃO (QUICK WINS + CAPACITAÇÃO)
 **Período:** Mês 1-6 | **Investimento:** R$ 620-740K
 
 **Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.315): *"Clarificar a Visão: Membros da equipe executiva trabalham juntos por três meses. Um BSC é desenvolvido para traduzir uma visão genérica em estratégia compreensível e comunicável."*
@@ -970,7 +970,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 ---
 
-### 📊 CRONOGRAMA INTEGRADO - FASE 1
+### [EMOJI] CRONOGRAMA INTEGRADO - FASE 1
 
 #### MÊS 1-3: INICIATIVAS QUICK WINS + DIAGNÓSTICO
 
@@ -990,8 +990,8 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | M3-4  | Rollout 60-80% produtos               | ABC operacional        | 3 analistas (80% cada)                           | R$ 40K        |
 | M5-6  | Integração ERP + Dashboard drill-down | Dashboard ABC completo | TI (80h) + BI (40h)                              | R$ 20-50K     |
 
-**Dependências:** Dados ERP limpos (estoque, produção, custos indiretos)  
-**Investimento:** R$ 180-250K  
+**Dependências:** Dados ERP limpos (estoque, produção, custos indiretos)
+**Investimento:** R$ 180-250K
 **KPI Sucesso (M6):** 60-80% produtos com ABC; acurácia >90%; 3+ decisões pricing baseadas ABC
 
 ---
@@ -1005,8 +1005,8 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | M3-4  | Implementar hedge (50% volume) + Cláusulas| Posições hedge ativas            | Tesouraria + Corretora                     | R$ 10-15K    |
 | M4    | Dashboard monitoramento                   | Dashboard hedge                  | TI (20h)                                   | R$ 5K        |
 
-**Dependências:** Aprovação CFO para hedge; relacionamento fornecedores  
-**Investimento:** R$ 50-80K  
+**Dependências:** Aprovação CFO para hedge; relacionamento fornecedores
+**Investimento:** R$ 50-80K
 **KPI Sucesso (M6):** 50-60% volume hedge; economia R$ 400-600K
 
 ---
@@ -1025,8 +1025,8 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | M3-4  | Piloto 1º-2º ciclo S&OP                      | 2 ciclos completos         | Equipe S&OP (8 pessoas, 80h)      | R$ 30K       |
 | M4-6  | 3º-5º ciclos + Ajustes + Integração ERP      | S&OP maduro + integrado    | Equipe (20h/mês) + TI (40h)       | R$ 30K       |
 
-**Dependências:** Dados históricos demanda (24 meses); capacidade produtiva mapeada  
-**Investimento:** R$ 120K  
+**Dependências:** Dados históricos demanda (24 meses); capacidade produtiva mapeada
+**Investimento:** R$ 120K
 **KPI Sucesso (M6):** 90% ciclos completos; acurácia previsão >75%; aderência plano >80%
 
 ---
@@ -1041,7 +1041,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | M3-4  | Piloto 10-15 clientes + Lançamento base | 1ª onda NPS/CSAT       | Comercial (40h)                          | R$ 5K        |
 | M4-5  | Análise resultados + Planos ação        | Planos ação priorizados| Comercial + Ops (60h)                    | R$ 5K        |
 
-**Investimento:** R$ 40K  
+**Investimento:** R$ 40K
 **KPI Sucesso (M6):** Taxa resposta >40%; baseline NPS/CSAT estabelecido; 3+ melhorias implementadas
 
 ---
@@ -1055,8 +1055,8 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | M4-5  | Classificação + Comunicação clientes                   | 100% clientes classificados | Comercial (80h)                     | R$ 10K       |
 | M5-6  | Ajustar processos internos por tier                    | Processos ajustados         | Ops + Comercial (60h)               | R$ 5K        |
 
-**Dependências:** IF1 (ABC Costing para margem por cliente)  
-**Investimento:** R$ 50K  
+**Dependências:** IF1 (ABC Costing para margem por cliente)
+**Investimento:** R$ 50K
 **KPI Sucesso (M6):** 100% clientes segmentados; SLAs definidos; 60% receita Gold/Silver
 
 ---
@@ -1064,7 +1064,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 **IA1: MAPEAMENTO COMPETÊNCIAS CRÍTICAS**
 
-**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.338): 
+**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.338):
 *"Strategic Skill Coverage Ratio mede a disponibilidade de competências estratégicas ao longo do tempo."*
 
 | Mês   | Atividade                                       | Entregável                                 | Recursos                         | Investimento |
@@ -1079,7 +1079,7 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 
 **IA7: COMUNICAÇÃO ESTRATÉGIA (CASCATA BSC)**
 
-**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105): 
+**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 *"Awareness (compreensão da estratégia) e empowerment são pilares do clima para ação."*
 
 | Mês   | Atividade                                          | Entregável              | Recursos                           | Investimento |
@@ -1097,10 +1097,10 @@ C1 (OTIF 92%) → F3 (Novas Receitas 20%) → F1 (ROCE 18-25%)
 | Semana   | Atividade                                        | Responsável   | Entregas                                                                                        | Recursos                          |
 |----------|--------------------------------------------------|---------------|-------------------------------------------------------------------------------------------------|-----------------------------------|
 | S16      | Reuniões Subgrupos (5 workstreams)               | Líderes       | - Relatórios progresso<br>- KPIs preliminares<br>- Ajustes necessários                          | Líderes (8h cada) + Equipes (16h) |
-| S17      | Workshop Executivo #2: Revisão KPIs e Metas      | CEO + Comitê  | - KPIs validados (108 → 60 prioritários)<br>- Metas stretch aprovadas<br>- Ajustes iniciativas  | C-Level (16h) + Facilitador (24h) |
+| S17      | Workshop Executivo #2: Revisão KPIs e Metas      | CEO + Comitê  | - KPIs validados (108 -> 60 prioritários)<br>- Metas stretch aprovadas<br>- Ajustes iniciativas  | C-Level (16h) + Facilitador (24h) |
 | S18-24   | Ajustes Pós-Workshop + Preparação Fase 2         | PMO           | - Plano Fase 2 detalhado<br>- Orçamento Fase 2 aprovado                                         | PMO (60h)                         |
 
-🎯 RECURSOS CONSOLIDADOS - FASE 1
+[EMOJI] RECURSOS CONSOLIDADOS - FASE 1
 EQUIPE INTERNA (Dedicação Média 6 meses)
 
 | Área          | Pessoas                   | Dedicação | Horas Totais |
@@ -1150,28 +1150,28 @@ INVESTIMENTO TOTAL FASE 1
 | Contingência (10%)                    | R$ 70K       | 10%     |
 | TOTAL FASE 1                          | R$ 700-740K  | 100%    |
 
-✅ ENTREGAS E QUICK WINS - FASE 1 (Mês 6)
+[OK] ENTREGAS E QUICK WINS - FASE 1 (Mês 6)
 ### ENTREGAS TANGÍVEIS
 
-✅ ABC Costing operacional (60-80% produtos com custeio real)
-✅ Hedge Aço 50-60% volume protegido; variação custo ±8% (vs ±15%)
-✅ S&OP 5 ciclos completos; acurácia previsão 75%; aderência >80%
-✅ Dashboard Financeiro com drill-down produto/projeto/cliente
-✅ VoC baseline NPS/CSAT + 2 ondas pesquisa
-✅ Segmentação 100% clientes classificados ABC/Tiers; SLAs definidos
-✅ Competências 80-100 posições-chave mapeadas; 60-70% com PDI
-✅ Comunicação 70% colaboradores entendem estratégia (vs 42%)
+[OK] ABC Costing operacional (60-80% produtos com custeio real)
+[OK] Hedge Aço 50-60% volume protegido; variação custo ±8% (vs ±15%)
+[OK] S&OP 5 ciclos completos; acurácia previsão 75%; aderência >80%
+[OK] Dashboard Financeiro com drill-down produto/projeto/cliente
+[OK] VoC baseline NPS/CSAT + 2 ondas pesquisa
+[OK] Segmentação 100% clientes classificados ABC/Tiers; SLAs definidos
+[OK] Competências 80-100 posições-chave mapeadas; 60-70% com PDI
+[OK] Comunicação 70% colaboradores entendem estratégia (vs 42%)
 ### QUICK WINS FINANCEIROS
 
-💰 Economia Hedge Aço: R400-600K anualizadoR400-600K anualizadoR 800K-1,2M 
-💰 Decisões Pricing ABC: +R 150-300K margem (repricing não-rentáveis) 💰 **Redução Estoques S&OP:** R 600K (liberação caixa, -5-8%)
-📈 OTIF: 68-78% → 72-82% (+4-5pp via S&OP)
-📈 NPS Baseline: Estabelecido (18-28) + planos ação detratores
+[EMOJI] Economia Hedge Aço: R400-600K anualizadoR400-600K anualizadoR 800K-1,2M
+[EMOJI] Decisões Pricing ABC: +R 150-300K margem (repricing não-rentáveis) [EMOJI] **Redução Estoques S&OP:** R 600K (liberação caixa, -5-8%)
+[EMOJI] OTIF: 68-78% -> 72-82% (+4-5pp via S&OP)
+[EMOJI] NPS Baseline: Estabelecido (18-28) + planos ação detratores
 
 ROI FASE 1 (6 meses): R1,15-1,5Meconomia/margemvsR1,15-1,5Meconomia/margemvsR 700-740K investimento = 1,6-2,0x
 ---
 
-## ⚙️ FASE 2: CONSOLIDAÇÃO (ESCALA + INTEGRAÇÃO)
+## [EMOJI] FASE 2: CONSOLIDAÇÃO (ESCALA + INTEGRAÇÃO)
 Mês 6-12 | Investimento: R$ 1.000-1.300K
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.10): *"A maioria das empresas, ao implementar o sistema de gestão estratégica BSC, seguiu uma sequência: Princípio 1 (mobilizar), 2 (traduzir), 3 (alinhar). Os Princípios 4 e 5 (motivar pessoas, redesenhar sistemas RH/planejamento) não começaram até o programa estar um ou mais anos em andamento."*
@@ -1182,13 +1182,13 @@ Mês 6-12 | Investimento: R$ 1.000-1.300K
     Integrar sistemas e criar visibilidade end-to-end
     Capacitar equipe em metodologias avançadas (Lean, Six Sigma)
 
-📊 CRONOGRAMA INTEGRADO - FASE 2
+[EMOJI] CRONOGRAMA INTEGRADO - FASE 2
 #### MÊS 6-9: EXCELÊNCIA OPERACIONAL + PARCEIROS
 WORKSTREAM PROCESSOS - OEE/TPM + VSM (IP2, IP3, IP4)
 
 **IP2: PROGRAMA OEE/TPM + MANUTENÇÃO PREDITIVA**
 
-**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.71): 
+**Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.71):
 *"OEE (Overall Equipment Effectiveness) é métrica crítica de processos, medindo disponibilidade × performance × qualidade."*
 
 |   Mês   |                        Atividade                        |              Entregável                 |                Recursos                     | Investimento |
@@ -1205,7 +1205,7 @@ WORKSTREAM PROCESSOS - OEE/TPM + VSM (IP2, IP3, IP4)
 
 **IP3: VSM PONTA-A-PONTA + LEAN/KAIZEN**
 
-**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.118): 
+**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.118):
 *"MCE (Manufacturing Cycle Effectiveness) = Processing Time / Throughput Time. Quanto mais próximo de 1, menor o desperdício."*
 
 |   Mês   |                Atividade                       |              Entregável             |                   Recursos                        | Investimento |
@@ -1229,14 +1229,14 @@ WORKSTREAM PROCESSOS - OEE/TPM + VSM (IP2, IP3, IP4)
 
 
 **Investimento:** R$ 80K
-**KPI Sucesso (M12):** FPY 88-92% → 93-96%; PPM defeitos -50%
+**KPI Sucesso (M12):** FPY 88-92% -> 93-96%; PPM defeitos -50%
 ##### WORKSTREAM PARCEIROS (IP6, IC5)
 
 ---
 
 **IP6: CERTIFICAÇÃO + AUDITORIA PARCEIROS MONTAGEM**
 
-**Fonte:** Kaplan & Norton (Alignment, 2006, p.136): 
+**Fonte:** Kaplan & Norton (Alignment, 2006, p.136):
 *"Programas de treinamento foram diretamente vinculados aos requisitos estratégicos da organização, e o orçamento e recursos de treinamento foram focados em áreas com maior retorno sobre investimento."*
 
 |   Mês   |                       Atividade                        |                  Entregável                   |                  Recursos                    | Investimento |
@@ -1279,7 +1279,7 @@ WORKSTREAM APRENDIZADO - TRILHAS T&D (IA2, IA5)
 
 **IA2: TRILHAS T&D (S&OP, Lean, Six Sigma, Gestão Projetos)**
 
-**Fonte:** Kaplan & Norton (Alignment, 2006, p.3): 
+**Fonte:** Kaplan & Norton (Alignment, 2006, p.3):
 *"Todos os funcionários participarão dos seguintes treinamentos: plano estratégico, Balanced Scorecard, banco de dados, tecnologia de escritório e dois outros tópicos organizacionais."*
 
 |   Mês    | Atividade                                           | Entregável              | Recursos                               | Investimento |
@@ -1314,7 +1314,7 @@ Investimento Fase 2: R200K(deR200K(deR 600-800K total)
 | S43     | Workshop Executivo #3: Revisão Anual BSC     | CEO + Comitê   | - Revisão Mapa Estratégico<br>- Ajuste metas Ano 2<br>- Aprovação Fase 3                      | C-Level (24h) + Facilitador (32h)  |
 | S44-48  | Consolidação + Preparação Fase 3             | PMO            | - Documentação lições<br>- Plano Fase 3 detalhado<br>- Orçamento Ano 2                        | PMO (80h)                         |
 
-🎯 RECURSOS CONSOLIDADOS - FASE 2
+[EMOJI] RECURSOS CONSOLIDADOS - FASE 2
 EQUIPE INTERNA (Dedicação Média 6 meses)
 
 | Área                       | Pessoas | Dedicação | Horas Totais |
@@ -1364,35 +1364,35 @@ INVESTIMENTO TOTAL FASE 2
 | Contingência (10%)                  |   R$ 115K       |    9%   |
 | **TOTAL FASE 2**                    | **R$ 1.261K**   |  100%   |
 
-✅ ENTREGAS E RESULTADOS - FASE 2 (Mês 12)
+[OK] ENTREGAS E RESULTADOS - FASE 2 (Mês 12)
 ### ENTREGAS TANGÍVEIS
 
-✅ OEE >68-72% em 70% equipamentos críticos (baseline 58-62%)
-✅ VSM implementado 2 famílias; lead time -15%; MCE >0,45
-✅ 4-6 eventos Kaizen realizados; economia R$ 600K-1,2M
-✅ SPC operacional 40-60% processos; FPY 93-96%
-✅ 6-8 parceiros certificados (60-80% volume montagem)
-✅ 60 montadores treinados; NC montagem -50%; acidentes -50%
-✅ Portal Cliente operacional 40-60% clientes; cronograma compartilhado
-✅ 80 pessoas treinadas (S&OP, Lean, Six Sigma, PM); 6 Green Belts formados
-✅ MES piloto operacional (1-2 linhas produção)
+[OK] OEE >68-72% em 70% equipamentos críticos (baseline 58-62%)
+[OK] VSM implementado 2 famílias; lead time -15%; MCE >0,45
+[OK] 4-6 eventos Kaizen realizados; economia R$ 600K-1,2M
+[OK] SPC operacional 40-60% processos; FPY 93-96%
+[OK] 6-8 parceiros certificados (60-80% volume montagem)
+[OK] 60 montadores treinados; NC montagem -50%; acidentes -50%
+[OK] Portal Cliente operacional 40-60% clientes; cronograma compartilhado
+[OK] 80 pessoas treinadas (S&OP, Lean, Six Sigma, PM); 6 Green Belts formados
+[OK] MES piloto operacional (1-2 linhas produção)
 RESULTADOS OPERACIONAIS (Mês 12)
 
-📈 OTIF: 68-78% → 82-88% (+10-14pp via OEE + VSM + Certificação)
-📈 NPS: 18-28 → 35-40 (+12-17 pontos via Portal + Certificação)
-📈 CSAT Montagem: 3,4 → 3,7-3,8 (+0,3-0,4)
-📈 Taxa Retrabalho: 4,2-7,2% → 3,5-5,0% (-1,5-2pp)
-📈 Lead Time Produção: 14-28 dias → 10-22 dias (-15%)
+[EMOJI] OTIF: 68-78% -> 82-88% (+10-14pp via OEE + VSM + Certificação)
+[EMOJI] NPS: 18-28 -> 35-40 (+12-17 pontos via Portal + Certificação)
+[EMOJI] CSAT Montagem: 3,4 -> 3,7-3,8 (+0,3-0,4)
+[EMOJI] Taxa Retrabalho: 4,2-7,2% -> 3,5-5,0% (-1,5-2pp)
+[EMOJI] Lead Time Produção: 14-28 dias -> 10-22 dias (-15%)
 RESULTADOS FINANCEIROS (Mês 12)
 
-💰 Redução Custos OEE/TPM: R600K/ano(disponibilidade+10pp,performance+8pp)💰**EconomiaLean/Kaizen:**R600K/ano(disponibilidade+10pp,performance+8pp)💰**EconomiaLean/Kaizen:**R 600-1,2M (desperdícios -15%, retrabalho -2pp)
-💰 Economia Six Sigma: R200K(FPY+4-5pp)💰**Reduc\ca~oReclamac\co~esMontagem:**R200K(FPY+4-5pp)💰**Reduc\c​a~oReclamac\c​o~esMontagem:**R 300K (NC -50%)
-💰 Incremento Receita (OTIF): R800K(menosperdasvendas)💰**TOTALIMPACTOFASE2:**R800K(menosperdasvendas)💰**TOTALIMPACTOFASE2:**R 2,5M/ano economia/margem
+[EMOJI] Redução Custos OEE/TPM: R600K/ano(disponibilidade+10pp,performance+8pp)[EMOJI]**EconomiaLean/Kaizen:**R600K/ano(disponibilidade+10pp,performance+8pp)[EMOJI]**EconomiaLean/Kaizen:**R 600-1,2M (desperdícios -15%, retrabalho -2pp)
+[EMOJI] Economia Six Sigma: R200K(FPY+4-5pp)[EMOJI]**Reduc\ca~oReclamac\co~esMontagem:**R200K(FPY+4-5pp)[EMOJI]**Reduc\c​a~oReclamac\c​o~esMontagem:**R 300K (NC -50%)
+[EMOJI] Incremento Receita (OTIF): R800K(menosperdasvendas)[EMOJI]**TOTALIMPACTOFASE2:**R800K(menosperdasvendas)[EMOJI]**TOTALIMPACTOFASE2:**R 2,5M/ano economia/margem
 
 ROI FASE 2 (12 meses acumulado): R3,65M(Fase1+2)vsR3,65M(Fase1+2)vsR 1,961K investimento = 1,9x
 ---
 
-## 🏆 FASE 3: EXCELÊNCIA (INOVAÇÃO + OTIMIZAÇÃO)
+## [EMOJI] FASE 3: EXCELÊNCIA (INOVAÇÃO + OTIMIZAÇÃO)
 Mês 12-24 | Investimento: R$ 800-1.200K
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.30): *"Finalmente, e gradualmente ao longo do tempo, um novo sistema de gestão evolui — um sistema de gestão estratégica que institucionaliza os novos valores culturais e estruturas em um novo sistema para gerenciar."*
@@ -1403,7 +1403,7 @@ Mês 12-24 | Investimento: R$ 800-1.200K
     Otimizar continuamente processos (Lean, Six Sigma)
     Institucionalizar cultura BSC e incentivos
 
-📊 CRONOGRAMA INTEGRADO - FASE 3
+[EMOJI] CRONOGRAMA INTEGRADO - FASE 3
 TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 ##### WORKSTREAM DIGITAL (IP7, IA5)
 
@@ -1430,7 +1430,7 @@ TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 |   Mês    |                        Atividade                        |                 Entregável                  |                  Recursos                   | Investimento |
 |:--------:|:-------------------------------------------------------:|:-------------------------------------------:|:-------------------------------------------:|:------------:|
 | M12-14   | Expandir MES 70-90% linhas produção                     | MES 70-90% linhas                           | TI (240h) + Fornecedor (R$ 150K)            |   R$ 150K    |
-| M14-16   | Integrar ERP + MES (dados tempo real)                   | Integração ERP↔MES                          | TI (200h) + Fornecedor (R$ 100K)            |   R$ 100K    |
+| M14-16   | Integrar ERP + MES (dados tempo real)                   | Integração ERP<->MES                          | TI (200h) + Fornecedor (R$ 100K)            |   R$ 100K    |
 | M16-18   | Integrar Field Service ao ERP+MES                       | Integração completa 90-95% processos        | TI (160h) + Fornecedor (R$ 100K)            |   R$ 100K    |
 | M17-18   | Criar dashboards executivos integrados                  | Dashboards tempo real (4 perspectivas)      | TI (120h) + BI (80h)                        |   R$ 50K     |
 
@@ -1459,7 +1459,7 @@ TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 
 **IA9: PROGRAMA DE SUGESTÕES (Gamificação)**
 
-**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105): 
+**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.105):
 *"Empowerment (programa de sugestões) é pilar do clima para ação."*
 
 |   Mês    |                        Atividade                              |                  Entregável                  |                Recursos                 | Investimento |
@@ -1509,7 +1509,7 @@ TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 | M18-24   | Expandir Lean áreas administrativas    | 2-3 eventos admin               | Equipe Lean           |   R$ 30K     |
 
 
-**Investimento:** R$ 110K  
+**Investimento:** R$ 110K
 **KPI Sucesso (M24):** 12-18 eventos/ano total; economia R$ 1,2-2,5M/ano; desperdícios -20-25%
 
 ##### WORKSTREAM GOVERNANÇA (IA8)
@@ -1518,13 +1518,13 @@ TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 
 **IA8: REDESENHO DE INCENTIVOS (Variável Atrelado BSC)**
 
-**Fonte:** Kaplan & Norton (Alignment, 2006, p.455): 
+**Fonte:** Kaplan & Norton (Alignment, 2006, p.455):
 *"Alinhamento de metas pessoais ao BSC (personal goals linked to BSC) é indicador crítico de cascata estratégica."*
 
 |    Mês    |                 Atividade                             |            Entregável                  |                 Recursos                        | Investimento |
 |:---------:|:-----------------------------------------------------:|:--------------------------------------:|:-----------------------------------------------:|:------------:|
 |  M18      | Revisar política remuneração variável                 | Política revisada                      | RH (40h) + Finanças (20h)                       |   R$ 15K     |
-| M18-19    | Desenhar cascata metas BSC (corporativo → individual) | Metas cascateadas 100% líderes         | RH (80h) + Liderança (60h)                      |   R$ 15K     |
+| M18-19    | Desenhar cascata metas BSC (corporativo -> individual) | Metas cascateadas 100% líderes         | RH (80h) + Liderança (60h)                      |   R$ 15K     |
 | M19-20    | Comunicar nova política + Sistema metas               | Comunicação + Software (R$ 30K)        | RH (60h) + Comunicação (40h)                    |   R$ 30K     |
 | M20-24    | Implementar + Monitorar ciclos trimestrais            | 70-85% variável atrelado BSC           | RH (40h/trimestre)                              |      -       |
 
@@ -1532,7 +1532,7 @@ TRIMESTRE 5-6 (Meses 12-18): INTEGRAÇÃO AVANÇADA
 **Investimento:** R$ 60K
 **KPI Sucesso (M24):** 85-90% colaboradores com metas BSC; 70-85% variável atrelado; 100% líderes scorecard individual
 
-🎯 RECURSOS CONSOLIDADOS - FASE 3
+[EMOJI] RECURSOS CONSOLIDADOS - FASE 3
 EQUIPE INTERNA (Dedicação Média 12 meses)
 
 | Área                          | Pessoas | Dedicação | Horas Totais |
@@ -1579,37 +1579,37 @@ INVESTIMENTO TOTAL FASE 3
 | Contingência (10%)                   |    R$ 108K      |   9%    |
 | TOTAL FASE 3                         |   R$ 1.189K     |  100%   |
 
-✅ ENTREGAS E RESULTADOS - FASE 3 (Mês 24)
+[OK] ENTREGAS E RESULTADOS - FASE 3 (Mês 24)
 ### ENTREGAS TANGÍVEIS
 
-✅ ERP + MES + Field Service integrados (90-95% processos); visibilidade end-to-end
-✅ 90-100% montagens com tracking digital; tempo atualização <2-4h
-✅ Dashboards executivos tempo real (4 perspectivas BSC)
-✅ Base Conhecimento 150-300 documentos; taxa utilização >70-75%
-✅ Programa Sugestões ativo (2,0-2,5/colaborador/ano; 40-55% implementadas)
-✅ 10-12 Green Belts certificados; 8-12 projetos Six Sigma concluídos
-✅ 12-18 eventos Kaizen/ano realizados
-✅ 8-12 módulos padronizados no catálogo (30% receita modulares)
-✅ 85-90% colaboradores com metas BSC; 70-85% variável atrelado
-✅ Sistema gestão estratégica institucionalizado
+[OK] ERP + MES + Field Service integrados (90-95% processos); visibilidade end-to-end
+[OK] 90-100% montagens com tracking digital; tempo atualização <2-4h
+[OK] Dashboards executivos tempo real (4 perspectivas BSC)
+[OK] Base Conhecimento 150-300 documentos; taxa utilização >70-75%
+[OK] Programa Sugestões ativo (2,0-2,5/colaborador/ano; 40-55% implementadas)
+[OK] 10-12 Green Belts certificados; 8-12 projetos Six Sigma concluídos
+[OK] 12-18 eventos Kaizen/ano realizados
+[OK] 8-12 módulos padronizados no catálogo (30% receita modulares)
+[OK] 85-90% colaboradores com metas BSC; 70-85% variável atrelado
+[OK] Sistema gestão estratégica institucionalizado
 RESULTADOS OPERACIONAIS (Mês 24)
 
-📈 OTIF: 68-78% → 92-94% (META ATINGIDA)
-📈 NPS: 18-28 → 50-55 (META ATINGIDA)
-📈 CSAT Montagem: 3,4 → 4,2-4,3 (META ATINGIDA)
-📈 OEE: 58-62% → 75-78% (META ATINGIDA)
-📈 FPY: 88-92% → 95-97% (META ATINGIDA)
-📈 Taxa Retrabalho: 4,2-7,2% → <2-3% (META ATINGIDA)
-📈 Lead Time Produção: 14-28 dias → 8-18 dias (META ATINGIDA)
-📈 % Receita Modulares: 8% → 30% (META ATINGIDA)
+[EMOJI] OTIF: 68-78% -> 92-94% (META ATINGIDA)
+[EMOJI] NPS: 18-28 -> 50-55 (META ATINGIDA)
+[EMOJI] CSAT Montagem: 3,4 -> 4,2-4,3 (META ATINGIDA)
+[EMOJI] OEE: 58-62% -> 75-78% (META ATINGIDA)
+[EMOJI] FPY: 88-92% -> 95-97% (META ATINGIDA)
+[EMOJI] Taxa Retrabalho: 4,2-7,2% -> <2-3% (META ATINGIDA)
+[EMOJI] Lead Time Produção: 14-28 dias -> 8-18 dias (META ATINGIDA)
+[EMOJI] % Receita Modulares: 8% -> 30% (META ATINGIDA)
 RESULTADOS FINANCEIROS (Mês 24)
 
-💰 ROCE: 8,0-8,5% → 18-25% (META ATINGIDA)
-💰 EBITDA: R12-12,5M→**R12-12,5M→**R 18,8-24M** (+50-92%)
-💰 Margem EBITDA: 15% → 25-29% (+10-14pp)
-💰 Receita/Cliente: R250-280K→**R250-280K→**R 322-980K** (+15%)
-💰 Custo Unitário: -12% (R$ 1.628-7.200/ton)
-💰 Asset Turnover: 1,2-1,8x → 1,42-2,12x (+18%)
+[EMOJI] ROCE: 8,0-8,5% -> 18-25% (META ATINGIDA)
+[EMOJI] EBITDA: R12-12,5M->**R12-12,5M->**R 18,8-24M** (+50-92%)
+[EMOJI] Margem EBITDA: 15% -> 25-29% (+10-14pp)
+[EMOJI] Receita/Cliente: R250-280K->**R250-280K->**R 322-980K** (+15%)
+[EMOJI] Custo Unitário: -12% (R$ 1.628-7.200/ton)
+[EMOJI] Asset Turnover: 1,2-1,8x -> 1,42-2,12x (+18%)
 IMPACTO FINANCEIRO TOTAL (24 MESES)
 
     Incremento EBITDA: R$ 6,3-11,5M
@@ -1619,10 +1619,10 @@ IMPACTO FINANCEIRO TOTAL (24 MESES)
 
 ---
 
-## 🎯 FASE 4: GOVERNANÇA E INSTITUCIONALIZAÇÃO
+## [EMOJI] FASE 4: GOVERNANÇA E INSTITUCIONALIZAÇÃO
 Mês 18-24+ | Investimento Contínuo: R$ 530K/ano
 
-**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.290): 
+**Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.290):
 *"O calendário anual de governança BSC articula identificação de temas estratégicos (Jan-Fev), revisão scorecard 3 anos (Fev-Mar), definição de objetivos pessoais (Mar-Abr) e integração com orçamento anual (Jul-Set)."*
 
 
@@ -1678,31 +1678,31 @@ Mês 18-24+ | Investimento Contínuo: R$ 530K/ano
 | Eventos e Comunicação                          | R$ 30K       | Town halls, workshops, celebrações          |
 | TOTAL ANUAL                                    | R$ 530K      |                                             |
 
-🔗 MATRIZ DE DEPENDÊNCIAS CRÍTICAS
+[EMOJI] MATRIZ DE DEPENDÊNCIAS CRÍTICAS
 
-**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.5): 
+**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.5):
 *"Matriz de priorização de iniciativas avalia tempo, custo, equipe e risco para implementar projetos no ciclo de execução da estratégia."*
 
 | Iniciativa                  | Depende de                                                    | Habilita                                                        | Risco  | Criticidade   |
 |-----------------------------|---------------------------------------------------------------|-----------------------------------------------------------------|--------|---------------|
-| IF1: ABC Costing            | M0.2 (Estratégia); Dados ERP                                  | IF2, IC2, IP14 (Pricing), IF3 (Dashboard)                       | MÉDIO  | 🔴 CRÍTICA    |
-| IF2: Hedge Aço              | IF1 (ABC para pricing); Aprovação CFO                         | IP5 (Política Hedge), F4 (Redução Custos)                       | BAIXO  | 🔴 CRÍTICA    |
-| IP1: S&OP                   | M0.2; Dados históricos demanda                                | IP2 (OEE), IP3 (VSM), IP6 (Estoques), F5 (Asset Turnover)       | MÉDIO  | 🔴 CRÍTICA    |
-| IP2: OEE/TPM                | IP1 (S&OP capacidade); Dados históricos falhas                | IP3 (VSM), C1 (OTIF), P5 (Qualidade)                            | MÉDIO  | 🔴 CRÍTICA    |
-| IP3: VSM/Lean               | IP1 (S&OP estável); IP2 (OEE baseline); IA2 (Equipe treinada) | IP9 (Six Sigma), IP15 (Modulares), P5 (Qualidade)               | MÉDIO  | 🔴 CRÍTICA    |
-| IP6: Certificação Parceiros | IC2 (Segmentação); IA2 (Treinamento); Dados históricos        | IP7 (Field Service), C1 (OTIF), C4 (Reclamações)                | ALTO   | 🔴 CRÍTICA    |
-| IP7: Field Service          | IP6 (SLAs Parceiros); IA5 (ERP+MES operacional)               | C1 (OTIF), C2 (CSAT), IC3 (Portal integrado)                    | ALTO   | 🟡 ALTA       |
-| IA5: ERP+MES                | IP1 (S&OP); IP2 (OEE); IF1 (ABC); Fornecedor selecionado      | IP7 (Field Service), IA6 (Base Conhecimento), A5 (Visibilidade) | ALTO   | 🔴 CRÍTICA    |
-| IC3: Portal Cliente         | IC2 (Segmentação); IA5 (ERP+MES); IF3 (Dashboard)             | C1 (OTIF), C2 (CSAT), IP7 (integração)                          | MÉDIO  | 🟡 ALTA       |
-| IA2: Trilhas T&D            | IA1 (Mapeamento Competências)                                 | IP2, IP3, IP9 (capacitação equipe); Todas iniciativas           | BAIXO  | 🟡 ALTA       |
-| IA8: Incentivos BSC         | Fase 2 (Scorecards maduros); KPIs estáveis                    | A2 (Clima), A4 (Engajamento)                                    | BAIXO  | 🟡 ALTA       |
+| IF1: ABC Costing            | M0.2 (Estratégia); Dados ERP                                  | IF2, IC2, IP14 (Pricing), IF3 (Dashboard)                       | MÉDIO  | [EMOJI] CRÍTICA    |
+| IF2: Hedge Aço              | IF1 (ABC para pricing); Aprovação CFO                         | IP5 (Política Hedge), F4 (Redução Custos)                       | BAIXO  | [EMOJI] CRÍTICA    |
+| IP1: S&OP                   | M0.2; Dados históricos demanda                                | IP2 (OEE), IP3 (VSM), IP6 (Estoques), F5 (Asset Turnover)       | MÉDIO  | [EMOJI] CRÍTICA    |
+| IP2: OEE/TPM                | IP1 (S&OP capacidade); Dados históricos falhas                | IP3 (VSM), C1 (OTIF), P5 (Qualidade)                            | MÉDIO  | [EMOJI] CRÍTICA    |
+| IP3: VSM/Lean               | IP1 (S&OP estável); IP2 (OEE baseline); IA2 (Equipe treinada) | IP9 (Six Sigma), IP15 (Modulares), P5 (Qualidade)               | MÉDIO  | [EMOJI] CRÍTICA    |
+| IP6: Certificação Parceiros | IC2 (Segmentação); IA2 (Treinamento); Dados históricos        | IP7 (Field Service), C1 (OTIF), C4 (Reclamações)                | ALTO   | [EMOJI] CRÍTICA    |
+| IP7: Field Service          | IP6 (SLAs Parceiros); IA5 (ERP+MES operacional)               | C1 (OTIF), C2 (CSAT), IC3 (Portal integrado)                    | ALTO   | [EMOJI] ALTA       |
+| IA5: ERP+MES                | IP1 (S&OP); IP2 (OEE); IF1 (ABC); Fornecedor selecionado      | IP7 (Field Service), IA6 (Base Conhecimento), A5 (Visibilidade) | ALTO   | [EMOJI] CRÍTICA    |
+| IC3: Portal Cliente         | IC2 (Segmentação); IA5 (ERP+MES); IF3 (Dashboard)             | C1 (OTIF), C2 (CSAT), IP7 (integração)                          | MÉDIO  | [EMOJI] ALTA       |
+| IA2: Trilhas T&D            | IA1 (Mapeamento Competências)                                 | IP2, IP3, IP9 (capacitação equipe); Todas iniciativas           | BAIXO  | [EMOJI] ALTA       |
+| IA8: Incentivos BSC         | Fase 2 (Scorecards maduros); KPIs estáveis                    | A2 (Clima), A4 (Engajamento)                                    | BAIXO  | [EMOJI] ALTA       |
 
 
 LEGENDA:
-🔴 CRÍTICA: Bloqueia múltiplas iniciativas; impacto alto em ROCE
-🟡 ALTA: Impacto significativo em 1-2 perspectivas
-🟢 MÉDIA: Impacto localizado; pode ser postergada
-🚨 RISCOS E MITIGAÇÕES
+[EMOJI] CRÍTICA: Bloqueia múltiplas iniciativas; impacto alto em ROCE
+[EMOJI] ALTA: Impacto significativo em 1-2 perspectivas
+[EMOJI] MÉDIA: Impacto localizado; pode ser postergada
+[EMOJI] RISCOS E MITIGAÇÕES
 ### TOP 10 RISCOS DO ROADMAP
 
 |  #   | Risco                                           | Probabilidade | Impacto  | Mitigação                                                                                             |
@@ -1718,7 +1718,7 @@ LEGENDA:
 | R9   | Volatilidade mercado (aço, demanda)             | ALTA          | MÉDIO    | Hedge 70-75% volume; contratos reajuste; flexibilidade S&OP; cenarização                              |
 | R10  | Fadiga iniciativas (excesso projetos)           | MÉDIA         | MÉDIO    | Priorização rigorosa; comunicação; celebrar vitórias; pausas estratégicas; foco quick wins            |
 
-📊 RESUMO EXECUTIVO CONSOLIDADO
+[EMOJI] RESUMO EXECUTIVO CONSOLIDADO
 ### INVESTIMENTO POR FASE
 
 | Fase                  | Duração            | Investimento        | % Total | ROI Esperado           | Marcos Críticos                                                        |
@@ -1743,7 +1743,7 @@ RETORNO ESPERADO (EBITDA Incremental - M24)
 
 ROI Consolidado (24M): R7,5-10,2M/R7,5-10,2M/R 2,58-3,32M = 2,3-3,9x
 Payback: 8-15 meses
-✅ CHECKLIST DE SUCESSO - MARCOS CRÍTICOS
+[OK] CHECKLIST DE SUCESSO - MARCOS CRÍTICOS
 Mês 1: Mobilização
 
     Comitê BSC formado (100% C-Level engajado)
@@ -1780,7 +1780,7 @@ Mês 24: Excelência
     Sistema gestão estratégica institucionalizado
     ROI 1,9-4,0x; EBITDA +50-92%
 
-🎯 PRÓXIMOS PASSOS IMEDIATOS
+[EMOJI] PRÓXIMOS PASSOS IMEDIATOS
 #### SEMANA 1-2: KICKOFF E APROVAÇÃO
 
 
@@ -1807,7 +1807,7 @@ Mês 24: Excelência
 
 
     Workshop Executivo #1: Validação Mapa Estratégico
-        10 executivos (8h); Priorização 27 → 15 objetivos críticos
+        10 executivos (8h); Priorização 27 -> 15 objetivos críticos
 
     Iniciar Iniciativas Quick Wins:
         IF1 (ABC Costing): Diagnóstico estrutura custos
@@ -1817,23 +1817,23 @@ Mês 24: Excelência
     Mapeamento Baseline KPIs
         Coleta dados 108 KPIs; Definição fontes e responsáveis
 
-❓ DECISÕES NECESSÁRIAS PARA APROVAÇÃO
+[?] DECISÕES NECESSÁRIAS PARA APROVAÇÃO
 
 Para prosseguir, necessitamos de:
 
-    Orçamento: R$ 2,58-3,32M (24 meses) aprovado? ✅ / ❌
-    Equipe PMO: Autorização contratação Diretor BSC + 4-6 pessoas (50% dedicação)? ✅ / ❌
-    Consultoria: Orçamento R111K(Fase1)+R111K(Fase1)+R 148K (Fase 2) + R43K(Fase3)=R43K(Fase3)=R 302K total consultoria aprovado? ✅ / ❌
-    Priorização: Concordam com sequência Fase 1 → 2 → 3 e iniciativas priorizadas? ✅ / ❌
-    Governança: CEO/CFO comprometem-se com reuniões mensais Comitê Diretivo (3-4h/mês)? ✅ / ❌
+    Orçamento: R$ 2,58-3,32M (24 meses) aprovado? [OK] / [ERRO]
+    Equipe PMO: Autorização contratação Diretor BSC + 4-6 pessoas (50% dedicação)? [OK] / [ERRO]
+    Consultoria: Orçamento R111K(Fase1)+R111K(Fase1)+R 148K (Fase 2) + R43K(Fase3)=R43K(Fase3)=R 302K total consultoria aprovado? [OK] / [ERRO]
+    Priorização: Concordam com sequência Fase 1 -> 2 -> 3 e iniciativas priorizadas? [OK] / [ERRO]
+    Governança: CEO/CFO comprometem-se com reuniões mensais Comitê Diretivo (3-4h/mês)? [OK] / [ERRO]
 
-🚀 ROADMAP DETALHADO COMPLETO ENTREGUE!
+[EMOJI] ROADMAP DETALHADO COMPLETO ENTREGUE!
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-🏛️ MODELO DE GOVERNANÇA BSC ENGELAR
+[EMOJI] MODELO DE GOVERNANÇA BSC ENGELAR
 Framework Completo: Estrutura, Papéis, Reuniões, Templates e Processos
-📋 VISÃO GERAL DO MODELO DE GOVERNANÇA
+[EMOJI] VISÃO GERAL DO MODELO DE GOVERNANÇA
 
 **Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.290): *"O calendário anual de governança BSC articula identificação de temas estratégicos (Jan-Fev), revisão scorecard 3 anos (Fev-Mar), definição de objetivos pessoais (Mar-Abr) e integração com orçamento anual (Jul-Set)."*
 
@@ -1842,11 +1842,11 @@ PRINCÍPIOS DA GOVERNANÇA BSC ENGELAR
 
     Separação Estratégico vs Operacional: Reuniões estratégicas (trimestral/anual) separadas de operacionais (mensal/semanal)
     Cascata e Alinhamento: Decisões estratégicas cascateiam para áreas funcionais e metas individuais
-    Ciclo PDCA Integrado: Plan (estratégia) → Do (iniciativas) → Check (KPIs) → Act (ajustes)
+    Ciclo PDCA Integrado: Plan (estratégia) -> Do (iniciativas) -> Check (KPIs) -> Act (ajustes)
     Transparência e Accountability: Donos claros para cada objetivo, KPI e iniciativa
     Aprendizado Estratégico: Revisões focam em testar hipóteses causa-efeito, não apenas reportar performance
 
-🏗️ ESTRUTURA ORGANIZACIONAL BSC (3 CAMADAS)
+[EMOJI] ESTRUTURA ORGANIZACIONAL BSC (3 CAMADAS)
 
 ┌─────────────────────────────────────────────────────────────┐
 │                    CAMADA ESTRATÉGICA                       │
@@ -1872,15 +1872,15 @@ PRINCÍPIOS DA GOVERNANÇA BSC ENGELAR
 │  • Implementação iniciativas                                │
 └─────────────────────────────────────────────────────────────┘
 
-👥 PAPÉIS E RESPONSABILIDADES (RACI)
+[EMOJI] PAPÉIS E RESPONSABILIDADES (RACI)
 
-**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.89): 
+**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.89):
 *"O Escritório de Gestão Estratégica (OSM) coordena todas as atividades relacionadas ao BSC: comunicação, revisões, análise de dados, facilitação de reuniões."*
 
 1. CAMADA ESTRATÉGICA
 CEO (CHIEF EXECUTIVE OFFICER) - SPONSOR BSC
 
-**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.23): 
+**Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.23):
 *"Mobilização: orquestrar mudança através da liderança executiva. O CEO deve ser o sponsor ativo do BSC."*
 
 | Responsabilidade                         | RACI | Frequência   | Dedicação   |
@@ -1919,7 +1919,7 @@ Responsabilidades Comuns:
 2. CAMADA TÁTICA
 DIRETOR BSC / OFFICE OF STRATEGY MANAGEMENT (OSM)
 
-**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.89): 
+**Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.89):
 
 *"O OSM é o guardião do sistema de gestão estratégica, garantindo que processos sejam executados de forma consistente."*
 
@@ -1984,7 +1984,7 @@ Responsabilidades:
     Garantir entrega no prazo e orçamento
     Documentar lições aprendidas
 
-📅 CALENDÁRIO ANUAL DE GOVERNANÇA BSC
+[EMOJI] CALENDÁRIO ANUAL DE GOVERNANÇA BSC
 CICLO ANUAL COMPLETO (12 MESES)
 
 | Mês      | Atividade Principal                          | Responsável         | Duração      | Entregável               |
@@ -2001,7 +2001,7 @@ CICLO ANUAL COMPLETO (12 MESES)
 | NOV      | Reunião Operacional Mensal                   | COO                 | 2h           | Planos ação              |
 | DEZ      | Revisão Anual Estratégica (Offsite)          | CEO + Board         | 2 dias       | Estratégia 3 anos        |
 
-🗓️ REUNIÕES DE GOVERNANÇA BSC (7 FÓRUNS)
+[EMOJI] REUNIÕES DE GOVERNANÇA BSC (7 FÓRUNS)
 MATRIZ DE REUNIÕES
 
 | Fórum                               | Frequência       | Duração | Participantes                                | Objetivo                                            |
@@ -2059,12 +2059,12 @@ DIA 2: PLANEJAMENTO E DECISÕES
 | 15:15-16:30  | Apresentação ao Board: Estratégia 3 Anos      | CEO + CFO      | 75min   |
 | 16:30-17:00  | Aprovação Board e Sign-Off                    | Board          | 30min   |
 
-ENTREGÁVEIS: 
-✅ Mapa Estratégico atualizado 
-✅ Scorecard 3 anos (objetivos, KPIs, metas) 
-✅ Portfólio iniciativas aprovado (28 iniciativas) 
-✅ Orçamento alinhado ao BSC 
-✅ Aprovação formal do Board
+ENTREGÁVEIS:
+[OK] Mapa Estratégico atualizado
+[OK] Scorecard 3 anos (objetivos, KPIs, metas)
+[OK] Portfólio iniciativas aprovado (28 iniciativas)
+[OK] Orçamento alinhado ao BSC
+[OK] Aprovação formal do Board
 
 REUNIÃO 2: REVISÃO TRIMESTRAL ESTRATÉGICA
 
@@ -2091,11 +2091,11 @@ AGENDA DETALHADA (4-6 HORAS)
 | 15:00-15:45  | Decisões e Aprovações               | CEO                     | 45min   |
 | 15:45-16:00  | Próximos Passos                     | Diretor BSC             | 15min   |
 
-ENTREGÁVEIS: 
-✅ Relatório Trimestral BSC (25-35 slides) 
-✅ Ajustes KPIs/metas aprovados 
-✅ Planos ação corretivos aprovados 
-✅ Hipóteses testadas (validadas/refutadas)
+ENTREGÁVEIS:
+[OK] Relatório Trimestral BSC (25-35 slides)
+[OK] Ajustes KPIs/metas aprovados
+[OK] Planos ação corretivos aprovados
+[OK] Hipóteses testadas (validadas/refutadas)
 
 REUNIÃO 3: COMITÊ DIRETIVO BSC (MENSAL)
 
@@ -2122,7 +2122,7 @@ AGENDA DETALHADA (3-4 HORAS)
 | 16:50-17:00  | Próximos Passos                 | Diretor BSC           | 10min   |
 
 
-ENTREGÁVEIS: ✅ Dashboard BSC mensal (60 KPIs prioritários) ✅ Ata de decisões ✅ Planos ação aprovados
+ENTREGÁVEIS: [OK] Dashboard BSC mensal (60 KPIs prioritários) [OK] Ata de decisões [OK] Planos ação aprovados
 REUNIÃO 4: REUNIÃO OPERACIONAL BSC (MENSAL)
 FICHA TÉCNICA
 
@@ -2210,7 +2210,7 @@ AGENDA DETALHADA (1 HORA)
 | 14:40-14:55  | Feedback e Sugestões (Rodada)     | 15min   |
 | 14:55-15:00  | Próximos Passos e Encerramento    | 5min    |
 
-📊 DASHBOARDS E FERRAMENTAS
+[EMOJI] DASHBOARDS E FERRAMENTAS
 1. DASHBOARD EXECUTIVO BSC (CEO + C-LEVEL)
 
 **Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.149): *"O scorecard deve caber em uma única página, permitindo que executivos vejam rapidamente se a estratégia está sendo executada com sucesso."*
@@ -2226,8 +2226,8 @@ Especificações:
 Página 1 - Dashboard Consolidado (1 Página):
 
     60 KPIs prioritários (de 108 totais)
-    Semáforos por perspectiva (🟢🟡🔴)
-    Tendências (↗️ melhorando, → estável, ↘️ piorando)
+    Semáforos por perspectiva ([EMOJI][EMOJI][EMOJI])
+    Tendências (↗ melhorando, -> estável, ↘ piorando)
     Top 5 desvios críticos
     Status portfólio iniciativas (28 projetos)
 
@@ -2269,7 +2269,7 @@ Funcionalidades:
     Suporte (chamados, chat online)
     Pesquisas satisfação (NPS/CSAT automático)
 
-📝 TEMPLATES E FERRAMENTAS (15 DOCUMENTOS)
+[EMOJI] TEMPLATES E FERRAMENTAS (15 DOCUMENTOS)
 
 |  #   | Template                                           | Uso                      | Frequência   |
 |:----:|:---------------------------------------------------|:-------------------------|:-------------|
@@ -2289,7 +2289,7 @@ Funcionalidades:
 | T14  | Pesquisa VoC (NPS/CSAT) (5-8 perguntas)            | Medir satisfação cliente | Trimestral   |
 | T15  | Auditoria Parceiro Montagem (50 itens)             | Certificação parceiros   | Trimestral   |
 
-🎯 INDICADORES DE MATURIDADE GOVERNANÇA BSC
+[EMOJI] INDICADORES DE MATURIDADE GOVERNANÇA BSC
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.30): *"Organizações strategy-focused evoluem através de 5 princípios ao longo de 2-3 anos."*
 MODELO DE MATURIDADE (5 NÍVEIS)
@@ -2372,7 +2372,7 @@ DIMENSÃO 5: APRENDIZADO E MELHORIA (8 itens)
     Cultura melhoria (≥50% engajados)
 
 SCORE GERAL: _____ / 50 = _____%
-💰 INVESTIMENTO GOVERNANÇA (ANUAL RECORRENTE)
+[EMOJI] INVESTIMENTO GOVERNANÇA (ANUAL RECORRENTE)
 
 | Item                                       | Valor Anual |
 |--------------------------------------------|:-----------:|
@@ -2383,7 +2383,7 @@ SCORE GERAL: _____ / 50 = _____%
 | Eventos e Comunicação                      |   R$  30K   |
 | **TOTAL ANUAL**                            | **R$ 530K** |
 
-🎯 PRÓXIMOS PASSOS IMEDIATOS
+[EMOJI] PRÓXIMOS PASSOS IMEDIATOS
 #### SEMANA 1-2: IMPLEMENTAR GOVERNANÇA
 
 
@@ -2408,46 +2408,46 @@ SCORE GERAL: _____ / 50 = _____%
         Infográfico estrutura governança
         Vídeo explicativo "Como funciona o BSC Engelar"
 
-❓ DECISÕES NECESSÁRIAS PARA APROVAÇÃO
+[?] DECISÕES NECESSÁRIAS PARA APROVAÇÃO
 
-    Modelo de Governança: Estrutura aprovada? ✅ / ❌
-    Diretor BSC: Autorização contratação/nomeação? ✅ / ❌
-    Equipe Core BSC: Liberação 4-6 pessoas (50%)? ✅ / ❌
-    Orçamento Governança: R$ 530K/ano aprovado? ✅ / ❌
-    Templates: Autorização customização? ✅ / ❌
-    Dashboards: R$ 120K Power BI aprovado? ✅ / ❌
-    Calendário Reuniões: Compromisso C-Level (8-12h/mês)? ✅ / ❌
+    Modelo de Governança: Estrutura aprovada? [OK] / [ERRO]
+    Diretor BSC: Autorização contratação/nomeação? [OK] / [ERRO]
+    Equipe Core BSC: Liberação 4-6 pessoas (50%)? [OK] / [ERRO]
+    Orçamento Governança: R$ 530K/ano aprovado? [OK] / [ERRO]
+    Templates: Autorização customização? [OK] / [ERRO]
+    Dashboards: R$ 120K Power BI aprovado? [OK] / [ERRO]
+    Calendário Reuniões: Compromisso C-Level (8-12h/mês)? [OK] / [ERRO]
 
-📚 RESUMO EXECUTIVO
+[EMOJI] RESUMO EXECUTIVO
 ESTRUTURA COMPLETA
 
-✅ 3 Camadas: Estratégica → Tática → Operacional
-✅ 7 Papéis Principais: CEO, CFO, COO, CCO, CHRO, CTO, Diretor BSC
-✅ 7 Fóruns Reunião: Anual, Trimestral, Mensal Comitê, Mensal Operacional, Workstreams Quinzenais, Iniciativas Quinzenais, Cascata Mensal
-✅ 15 Templates: Relatórios, atas, planos ação, scorecards, pesquisas
-✅ 3 Dashboards: Executivo (semanal), Operacional (tempo real), Portal Cliente (tempo real)
-✅ 5 Níveis Maturidade: Inicial → Gerenciado → Definido → Quant. Gerenciado → Otimizado
+[OK] 3 Camadas: Estratégica -> Tática -> Operacional
+[OK] 7 Papéis Principais: CEO, CFO, COO, CCO, CHRO, CTO, Diretor BSC
+[OK] 7 Fóruns Reunião: Anual, Trimestral, Mensal Comitê, Mensal Operacional, Workstreams Quinzenais, Iniciativas Quinzenais, Cascata Mensal
+[OK] 15 Templates: Relatórios, atas, planos ação, scorecards, pesquisas
+[OK] 3 Dashboards: Executivo (semanal), Operacional (tempo real), Portal Cliente (tempo real)
+[OK] 5 Níveis Maturidade: Inicial -> Gerenciado -> Definido -> Quant. Gerenciado -> Otimizado
 BENEFÍCIOS ESPERADOS
 
-📈 Alinhamento: 85-90% colaboradores com metas BSC (vs 0% baseline)
-📈 Transparência: 100% KPIs visíveis tempo real
-📈 Agilidade: Decisões <7 dias (vs semanas)
-📈 Accountability: 100% objetivos com donos claros
-📈 Aprendizado: 4 ciclos PDCA/ano + teste hipóteses trimestral
-📈 Execução: 90% iniciativas no prazo (vs 50-60% típico)
-📈 Resultados: ROCE 18-25% (M24); EBITDA +50-92% (M24)
+[EMOJI] Alinhamento: 85-90% colaboradores com metas BSC (vs 0% baseline)
+[EMOJI] Transparência: 100% KPIs visíveis tempo real
+[EMOJI] Agilidade: Decisões <7 dias (vs semanas)
+[EMOJI] Accountability: 100% objetivos com donos claros
+[EMOJI] Aprendizado: 4 ciclos PDCA/ano + teste hipóteses trimestral
+[EMOJI] Execução: 90% iniciativas no prazo (vs 50-60% típico)
+[EMOJI] Resultados: ROCE 18-25% (M24); EBITDA +50-92% (M24)
 INVESTIMENTO E RETORNO
 
     Investimento Anual: R$ 530K (recorrente)
     ROI Esperado: 1,9-4,0x (M24)
     Payback: 12-18 meses
 
-Modelo de Governança BSC Engelar completo e pronto para implementação! 🎯
+Modelo de Governança BSC Engelar completo e pronto para implementação! [EMOJI]
 
 --------------------------------------------------------------------------------------------------------------------------
-🎯 APRESENTAÇÃO EXECUTIVA BOARD: PROGRAMA BSC ENGELAR
+[EMOJI] APRESENTAÇÃO EXECUTIVA BOARD: PROGRAMA BSC ENGELAR
 Transformação Estratégica 2024-2026 (28 Slides)
-📊 ESTRUTURA DA APRESENTAÇÃO
+[EMOJI] ESTRUTURA DA APRESENTAÇÃO
 
 A apresentação para aprovação do Board está estruturada em 6 seções principais (28 slides), com duração estimada de 60 minutos de apresentação + 30-45 minutos de Q&A, totalizando 90-105 minutos.
 Seções:
@@ -2459,7 +2459,7 @@ Seções:
     RISCOS E MITIGAÇÕES (Slides 21-23) - 5 min
     APROVAÇÃO E PRÓXIMOS PASSOS (Slides 24-28) - 5 min
 
-📌 SLIDES-CHAVE POR SEÇÃO
+[EMOJI] SLIDES-CHAVE POR SEÇÃO
 SEÇÃO 1: CONTEXTO E URGÊNCIA
 
 SLIDE 3: SITUAÇÃO ATUAL - DESAFIOS CRÍTICOS
@@ -2471,7 +2471,7 @@ FINANCEIRO:
     ROCE: 8,0-8,5% (vs 15-20% benchmark) - Gap -7-12pp
     EBITDA: R$ 12-12,5M (Margem 15% vs 20-25% setor) - Gap -5-10pp
     Custo Aço: Volatilidade ±15% sem hedge
-    Sem ABC Costing → Decisões pricing no escuro
+    Sem ABC Costing -> Decisões pricing no escuro
 
 CLIENTES:
 
@@ -2509,7 +2509,7 @@ Oportunidade Anual Não Capturada:
 
 TOTAL OPORTUNIDADE: R$ 5,3-8,5M/ano (44-71% EBITDA atual)
 
-💡 Insight: Capturando 75-90% desta oportunidade, aumentamos EBITDA em 50-92% (R12M→R12M→R 18,8-24M).
+[EMOJI] Insight: Capturando 75-90% desta oportunidade, aumentamos EBITDA em 50-92% (R12M->R12M->R 18,8-24M).
 SEÇÃO 2: SOLUÇÃO BSC
 
 SLIDE 6: POR QUE BALANCED SCORECARD?
@@ -2580,37 +2580,37 @@ Distribuição por Perspectiva:
 
 FINANCEIRA (6 iniciativas):
 
-    🔴 IF1: ABC Costing (M1-6) - R$ 180-250K
-    🔴 IF2: Hedge Aço + Contratos (M2-4) - R$ 50-80K
+    [EMOJI] IF1: ABC Costing (M1-6) - R$ 180-250K
+    [EMOJI] IF2: Hedge Aço + Contratos (M2-4) - R$ 50-80K
     IF3: Dashboard Financeiro (M4-6) - R$ 40K
     IF4-IF6: Redução Custos + Hedge + Rentabilidade - R$ 65K
 
 CLIENTES (5 iniciativas):
 
-    🔴 IC1: Programa VoC (NPS/CSAT) (M2-6) - R$ 40K
-    🔴 IC2: Segmentação ABC + Tiers (M3-6) - R$ 50K
+    [EMOJI] IC1: Programa VoC (NPS/CSAT) (M2-6) - R$ 40K
+    [EMOJI] IC2: Segmentação ABC + Tiers (M3-6) - R$ 50K
     IC3: Portal Cliente (M8-12) - R$ 150K
     IC4-IC5: Relacionamento + SLAs - R$ 80K
 
 PROCESSOS (12 iniciativas - Foco Principal):
 
-    🔴 IP1: S&OP Integrado (M2-6) - R$ 120K
-    🔴 IP2: OEE/TPM + Manutenção Preditiva (M6-12) - R$ 200K
-    🔴 IP3: VSM + Lean/Kaizen (M7-12) - R$ 150K
-    🔴 IP6: Certificação Parceiros (M7-12) - R$ 100K
+    [EMOJI] IP1: S&OP Integrado (M2-6) - R$ 120K
+    [EMOJI] IP2: OEE/TPM + Manutenção Preditiva (M6-12) - R$ 200K
+    [EMOJI] IP3: VSM + Lean/Kaizen (M7-12) - R$ 150K
+    [EMOJI] IP6: Certificação Parceiros (M7-12) - R$ 100K
     IP7: Field Service Management (M12-18) - R$ 230K
     IP9: Six Sigma (M12-24) - R$ 150K
     Outras: IP4, IP15, IP16 + 5 complementares
 
 APRENDIZADO (5 iniciativas):
 
-    🔴 IA1: Mapeamento Competências (M2-5) - R$ 40K
-    🔴 IA2: Trilhas T&D (M6-12) - R$ 180K
-    🔴 IA5: ERP+MES+FSM (M10-18) - R$ 600-800K
+    [EMOJI] IA1: Mapeamento Competências (M2-5) - R$ 40K
+    [EMOJI] IA2: Trilhas T&D (M6-12) - R$ 180K
+    [EMOJI] IA5: ERP+MES+FSM (M10-18) - R$ 600-800K
     IA7: Comunicação Estratégia (M3-6) - R$ 30K
     IA8: Incentivos BSC (M18-24) - R$ 60K
 
-Legenda: 🔴 Crítica | 🟡 Alta | 🟢 Média
+Legenda: [EMOJI] Crítica | [EMOJI] Alta | [EMOJI] Média
 
 INVESTIMENTO TOTAL: R$ 2,58-3,32M (24 meses)
 SEÇÃO 3: ROADMAP E GOVERNANÇA
@@ -2715,48 +2715,48 @@ Breakdown por Categoria:
 
 TOTAL: R2,58-3,32M(meˊdiaR2,58-3,32M(meˊdiaR 2,90M)
 
-💡 Nota: 39% investimento em software = ativos permanentes que ficam na empresa.
+[EMOJI] Nota: 39% investimento em software = ativos permanentes que ficam na empresa.
 
 SLIDE 17: RETORNO ESPERADO (EBITDA INCREMENTAL)
 
 Alavanca 1: CRESCIMENTO RECEITA (+15%)
 
-    Receita: R80M→R80M→R 92M (+R$ 12M)
+    Receita: R80M->R80M->R 92M (+R$ 12M)
     Margem Contribuição: 35%
     Impacto EBITDA: +R$ 4,2M
 
 Drivers:
 
-    IC1 (VoC): NPS 50-55 → Retenção +5% → +R$ 1,2M
-    IC2 (Segmentação): Foco Gold/Silver → +R$ 800K
-    IC3 (Portal): CSAT +0,3 → Recompra +3% → +R$ 600K
-    IC4 (Relacionamento): Cross-sell → +R$ 800K
-    IP15 (Modulares): 30% receita → Margem +5% → +R$ 800K
+    IC1 (VoC): NPS 50-55 -> Retenção +5% -> +R$ 1,2M
+    IC2 (Segmentação): Foco Gold/Silver -> +R$ 800K
+    IC3 (Portal): CSAT +0,3 -> Recompra +3% -> +R$ 600K
+    IC4 (Relacionamento): Cross-sell -> +R$ 800K
+    IP15 (Modulares): 30% receita -> Margem +5% -> +R$ 800K
 
 Alavanca 2: REDUÇÃO CUSTOS (-12%)
 
-    Custo: R68M→R68M→R 59,8M (-R$ 8,2M)
+    Custo: R68M->R68M->R 59,8M (-R$ 8,2M)
     Impacto EBITDA: +R$ 8,2M
 
 Drivers:
 
-    IF1 (ABC): Repricing não-rentáveis → +R$ 800K-1,2M
-    IF2 (Hedge): Volatilidade ±8% vs ±15% → +R$ 800K-1,2M
-    IP2 (OEE): 75-78% vs 58-62% → +R$ 1,2-1,8M
-    IP3 (VSM/Lean): Desperdícios -20% → +R$ 1,2-2,5M
-    IP9 (Six Sigma): 8-12 projetos → +R$ 600K-1,2M
+    IF1 (ABC): Repricing não-rentáveis -> +R$ 800K-1,2M
+    IF2 (Hedge): Volatilidade ±8% vs ±15% -> +R$ 800K-1,2M
+    IP2 (OEE): 75-78% vs 58-62% -> +R$ 1,2-1,8M
+    IP3 (VSM/Lean): Desperdícios -20% -> +R$ 1,2-2,5M
+    IP9 (Six Sigma): 8-12 projetos -> +R$ 600K-1,2M
 
 Alavanca 3: OTIMIZAÇÃO ATIVOS (+18% Asset Turnover)
 
     Estoques: -R$ 3M (liberação caixa)
-    Giro Ativos: 1,2-1,8x → 1,42-2,12x
+    Giro Ativos: 1,2-1,8x -> 1,42-2,12x
     Impacto EBITDA: +R$ 1,5-2,2M
 
 Drivers:
 
-    IP1 (S&OP): Estoques -5-8% → +R$ 600K
-    IP6 (Certificação): NC -50% → +R$ 300K
-    IP7 (Field Service): OTIF +14-24pp → +R$ 600K
+    IP1 (S&OP): Estoques -5-8% -> +R$ 600K
+    IP6 (Certificação): NC -50% -> +R$ 300K
+    IP7 (Field Service): OTIF +14-24pp -> +R$ 600K
 
 TOTAL EBITDA INCREMENTAL (M24):
 
@@ -2775,9 +2775,9 @@ Evolução Investimento e Retorno:
 | Mês  | Invest.Acum  | EBITDA Incr.Acum |   ROI Acum   |    Payback     |
 |:----:|:------------:|:----------------:|:------------:|:--------------:|
 | M6   |  R$ 780K     | R$ 1,15-1,5M     | 1,5-1,9x     | ⏳ Próximo     |
-| M12  | R$ 1.961K    | R$ 3,65M         | 1,9x         | ✅ Atingido    |
-| M18  | R$ 2.556K    | R$ 5,2-7,8M      | 2,0-3,1x     | ✅             |
-| M24  | R$ 3.190K    | R$ 6,3-11,5M     | 2,0-3,6x     | ✅             |
+| M12  | R$ 1.961K    | R$ 3,65M         | 1,9x         | [OK] Atingido    |
+| M18  | R$ 2.556K    | R$ 5,2-7,8M      | 2,0-3,1x     | [OK]             |
+| M24  | R$ 3.190K    | R$ 6,3-11,5M     | 2,0-3,6x     | [OK]             |
 
 
 PAYBACK: 8-15 MESES
@@ -2810,9 +2810,9 @@ Opção C: BSC Completo (Recomendado)
 
     Investimento: R$ 2,58-3,32M
     Retorno: R$ 6,3-11,5M
-    ROI: 1,9-4,0x ✅
+    ROI: 1,9-4,0x [OK]
 
-💡 BSC entrega 2-3x mais retorno que iniciativas isoladas.
+[EMOJI] BSC entrega 2-3x mais retorno que iniciativas isoladas.
 
 SLIDE 19: IMPACTO NOS KPIs CRÍTICOS (M24)
 
@@ -2834,7 +2834,7 @@ TRANSFORMAÇÃO ENGELAR: ANTES vs DEPOIS
 |             | Turnover Chave     |  18-22%     |    <12%       | -6-10pp     |
 
 
-🎯 Transformação sistêmica nas 4 perspectivas integradas.
+[EMOJI] Transformação sistêmica nas 4 perspectivas integradas.
 SEÇÃO 5: RISCOS E MITIGAÇÕES
 
 SLIDE 21: TOP 10 RISCOS E MITIGAÇÕES
@@ -2842,46 +2842,46 @@ SLIDE 21: TOP 10 RISCOS E MITIGAÇÕES
 RISCO 1: RESISTÊNCIA À MUDANÇA (Prob: ALTA | Impacto: ALTO)
 
     Mitigação:
-        ✅ Change management robusto (comunicação contínua)
-        ✅ Quick wins visíveis (M6: R$ 1,15-1,5M)
-        ✅ Incentivos alinhados (M18: 70-85% variável BSC)
-        ✅ Sponsor CEO ativo (town halls trimestrais)
+        [OK] Change management robusto (comunicação contínua)
+        [OK] Quick wins visíveis (M6: R$ 1,15-1,5M)
+        [OK] Incentivos alinhados (M18: 70-85% variável BSC)
+        [OK] Sponsor CEO ativo (town halls trimestrais)
     Responsável: CEO + CHRO
 
 RISCO 2: FALTA DE RECURSOS (Prob: MÉDIA | Impacto: ALTO)
 
     Mitigação:
-        ✅ Priorização rigorosa (críticas primeiro)
-        ✅ Faseamento (quick wins → escala → excelência)
-        ✅ Business case claro (ROI 1,9-4,0x)
-        ✅ Checkpoints Go/No-Go a cada 6 meses
+        [OK] Priorização rigorosa (críticas primeiro)
+        [OK] Faseamento (quick wins -> escala -> excelência)
+        [OK] Business case claro (ROI 1,9-4,0x)
+        [OK] Checkpoints Go/No-Go a cada 6 meses
     Responsável: CFO + PMO BSC
 
 RISCO 3: QUALIDADE DADOS (Prob: ALTA | Impacto: ALTO)
 
     Mitigação:
-        ✅ Limpeza dados prévia (M0-1)
-        ✅ Validação contínua (auditorias mensais)
-        ✅ Governança dados (donos por KPI)
-        ✅ Dashboards com alertas qualidade
+        [OK] Limpeza dados prévia (M0-1)
+        [OK] Validação contínua (auditorias mensais)
+        [OK] Governança dados (donos por KPI)
+        [OK] Dashboards com alertas qualidade
     Responsável: CTO + PMO BSC
 
 RISCO 4: COMPLEXIDADE INTEGRAÇÃO SISTEMAS (Prob: ALTA | Impacto: ALTO)
 
     Mitigação:
-        ✅ Fornecedor experiente (RFP rigoroso)
-        ✅ Piloto extensivo (M10-12: 1-2 linhas)
-        ✅ Testes rigorosos (UAT 4 semanas)
-        ✅ PMO TI dedicado (6 pessoas, 70%)
+        [OK] Fornecedor experiente (RFP rigoroso)
+        [OK] Piloto extensivo (M10-12: 1-2 linhas)
+        [OK] Testes rigorosos (UAT 4 semanas)
+        [OK] PMO TI dedicado (6 pessoas, 70%)
     Responsável: CTO + Fornecedor
 
 RISCO 5: TURNOVER TALENTOS-CHAVE (Prob: MÉDIA | Impacto: ALTO)
 
     Mitigação:
-        ✅ Retenção via incentivos (bônus BSC)
-        ✅ Plano sucessão (backup para cada papel)
-        ✅ Documentação conhecimento (base 150-300 docs)
-        ✅ Rotação controlada (cross-training)
+        [OK] Retenção via incentivos (bônus BSC)
+        [OK] Plano sucessão (backup para cada papel)
+        [OK] Documentação conhecimento (base 150-300 docs)
+        [OK] Rotação controlada (cross-training)
     Responsável: CHRO + CEO
 
 RISCOS 6-10 (Gerenciados):
@@ -2954,71 +2954,71 @@ FCS 8: APRENDIZADO E ADAPTAÇÃO
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.14): *"5 Princípios de Organizações Strategy-Focused: 1) Mobilizar mudança através liderança executiva, 2) Traduzir estratégia em termos operacionais, 3) Alinhar organização à estratégia, 4) Motivar para fazer da estratégia o trabalho de todos, 5) Governar para fazer da estratégia um processo contínuo."*
 
-💡 Sucesso = combinação dos 8 FCS (não apenas 1-2).
+[EMOJI] Sucesso = combinação dos 8 FCS (não apenas 1-2).
 SEÇÃO 6: APROVAÇÃO E PRÓXIMOS PASSOS
 
 SLIDE 24: RESUMO EXECUTIVO (1 SLIDE)
 
 SITUAÇÃO ATUAL:
 
-    🔴 ROCE: 8% (vs 15-20% benchmark)
-    🔴 EBITDA: R$ 12M (Margem 15% vs 20-25% setor)
-    🔴 NPS: 18-28 | OTIF: 68-78% | OEE: 58-62%
-    ⚠️ R$ 6-8M EBITDA deixados na mesa/ano
+    [EMOJI] ROCE: 8% (vs 15-20% benchmark)
+    [EMOJI] EBITDA: R$ 12M (Margem 15% vs 20-25% setor)
+    [EMOJI] NPS: 18-28 | OTIF: 68-78% | OEE: 58-62%
+    [WARN] R$ 6-8M EBITDA deixados na mesa/ano
 
 SOLUÇÃO: BALANCED SCORECARD
 
-    ✅ Metodologia Harvard (Kaplan & Norton)
-    ✅ 50%+ Fortune 500; Gerdau, Embraer, Siemens
-    ✅ 4 Perspectivas: Financeira, Clientes, Processos, Pessoas
-    ✅ 27 Objetivos | 108 KPIs | 28 Iniciativas
+    [OK] Metodologia Harvard (Kaplan & Norton)
+    [OK] 50%+ Fortune 500; Gerdau, Embraer, Siemens
+    [OK] 4 Perspectivas: Financeira, Clientes, Processos, Pessoas
+    [OK] 27 Objetivos | 108 KPIs | 28 Iniciativas
 
 INVESTIMENTO E RETORNO:
 
-    💰 Investimento: R$ 2,58-3,32M (24 meses)
-    💰 Retorno: R$ 6,3-11,5M EBITDA incremental
-    💰 ROI: 1,9-4,0x | Payback: 8-15 meses
+    [EMOJI] Investimento: R$ 2,58-3,32M (24 meses)
+    [EMOJI] Retorno: R$ 6,3-11,5M EBITDA incremental
+    [EMOJI] ROI: 1,9-4,0x | Payback: 8-15 meses
 
 RESULTADOS ESPERADOS (M24):
 
-    🎯 ROCE: 8% → 18-25% (+10-17pp)
-    🎯 EBITDA: R12M→R12M→R 18,8-24M (+57-100%)
-    🎯 NPS: 18-28 → 50-55 (+22-32)
-    🎯 OTIF: 68-78% → 92-94% (+14-24pp)
-    🎯 OEE: 58-62% → 75-78% (+13-20pp)
+    [EMOJI] ROCE: 8% -> 18-25% (+10-17pp)
+    [EMOJI] EBITDA: R12M->R12M->R 18,8-24M (+57-100%)
+    [EMOJI] NPS: 18-28 -> 50-55 (+22-32)
+    [EMOJI] OTIF: 68-78% -> 92-94% (+14-24pp)
+    [EMOJI] OEE: 58-62% -> 75-78% (+13-20pp)
 
 RISCOS GERENCIADOS:
 
-    ✅ Top 10 riscos identificados + planos mitigação
-    ✅ Contingência 10% (R$ 293K) incluída
-    ✅ Checkpoints Go/No-Go a cada 6 meses
-    ✅ Mesmo cenário conservador: ROI 1,9x
+    [OK] Top 10 riscos identificados + planos mitigação
+    [OK] Contingência 10% (R$ 293K) incluída
+    [OK] Checkpoints Go/No-Go a cada 6 meses
+    [OK] Mesmo cenário conservador: ROI 1,9x
 
 SLIDE 25: DECISÕES NECESSÁRIAS (CHECKLIST)
 
-☐ DECISÃO 1: ORÇAMENTO
+[EMOJI] DECISÃO 1: ORÇAMENTO
 
     Aprovar investimento R$ 2,58-3,32M (24 meses)
 
-☐ DECISÃO 2: EQUIPE BSC
+[EMOJI] DECISÃO 2: EQUIPE BSC
 
     Autorizar contratação Diretor BSC (100% M0-18)
     Liberar 4-6 pessoas Equipe Core BSC (50% dedicação)
 
-☐ DECISÃO 3: GOVERNANÇA
+[EMOJI] DECISÃO 3: GOVERNANÇA
 
     Formar Comitê Diretivo BSC (CEO + C-Level)
     Comprometer C-Level (8-12h/mês, 100% presença)
     Agendar Revisões Trimestrais Board (4-6h)
 
-☐ DECISÃO 4: CHECKPOINTS
+[EMOJI] DECISÃO 4: CHECKPOINTS
 
     Aprovar checkpoints Go/No-Go a cada 6 meses
-        M6: ROI ≥1,2x → Continuar Fase 2
-        M12: ROI ≥1,5x → Continuar Fase 3
-        M18: ROI ≥1,8x → Institucionalizar
+        M6: ROI ≥1,2x -> Continuar Fase 2
+        M12: ROI ≥1,5x -> Continuar Fase 3
+        M18: ROI ≥1,8x -> Institucionalizar
 
-☐ DECISÃO 5: INÍCIO IMEDIATO
+[EMOJI] DECISÃO 5: INÍCIO IMEDIATO
 
     Autorizar início Fase 0 (Mobilização) - Semana 1
     Agendar Workshop Executivo #1 (Semana 3-4)
@@ -3028,38 +3028,38 @@ SLIDE 26: PRÓXIMOS PASSOS (SEMANAS 1-4)
 
 SEMANA 1: MOBILIZAÇÃO INICIAL
 
-    ✅ Comunicar aprovação Board
-    ✅ Nomear Diretor BSC
-    ✅ Formar Comitê Diretivo BSC
-    ✅ Agendar Workshop Executivo #1
+    [OK] Comunicar aprovação Board
+    [OK] Nomear Diretor BSC
+    [OK] Formar Comitê Diretivo BSC
+    [OK] Agendar Workshop Executivo #1
 
 SEMANA 2: ESTRUTURAÇÃO PMO BSC
 
-    ✅ Selecionar Equipe Core BSC (4-6 pessoas)
-    ✅ Estabelecer Escritório BSC (sala de guerra)
-    ✅ Iniciar RFP consultoria BSC
+    [OK] Selecionar Equipe Core BSC (4-6 pessoas)
+    [OK] Estabelecer Escritório BSC (sala de guerra)
+    [OK] Iniciar RFP consultoria BSC
 
 SEMANA 3: ENTREVISTAS EXECUTIVAS
 
-    ✅ Realizar 10-12 entrevistas (C-Level + Diretores)
-    ✅ Síntese preliminar objetivos estratégicos
-    ✅ Selecionar consultor BSC
+    [OK] Realizar 10-12 entrevistas (C-Level + Diretores)
+    [OK] Síntese preliminar objetivos estratégicos
+    [OK] Selecionar consultor BSC
 
 SEMANA 4: WORKSHOP + COMUNICAÇÃO
 
-    ✅ Workshop Executivo #1: Validação Mapa Estratégico (8h)
-    ✅ Town Hall CEO: Lançamento BSC (100% colaboradores)
-    ✅ Formar 5 Workstreams
+    [OK] Workshop Executivo #1: Validação Mapa Estratégico (8h)
+    [OK] Town Hall CEO: Lançamento BSC (100% colaboradores)
+    [OK] Formar 5 Workstreams
 
 MARCO CRÍTICO (M1):
 
-    ✅ Comitê BSC operacional
-    ✅ PMO BSC estruturado
-    ✅ Mapa Estratégico validado
-    ✅ 5 Workstreams mobilizados
-    ✅ Comunicação inicial realizada
+    [OK] Comitê BSC operacional
+    [OK] PMO BSC estruturado
+    [OK] Mapa Estratégico validado
+    [OK] 5 Workstreams mobilizados
+    [OK] Comunicação inicial realizada
 
-🚀 INÍCIO FASE 1 (QUICK WINS): SEMANA 5
+[EMOJI] INÍCIO FASE 1 (QUICK WINS): SEMANA 5
 
 SLIDE 28: CALL TO ACTION - APROVAÇÃO
 
@@ -3067,27 +3067,27 @@ SLIDE 28: CALL TO ACTION - APROVAÇÃO
          DECISÃO SOLICITADA AO BOARD
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ APROVAR investimento R$ 2,58-3,32M (24 meses)
+[OK] APROVAR investimento R$ 2,58-3,32M (24 meses)
 
-✅ AUTORIZAR contratação Diretor BSC + Equipe Core
+[OK] AUTORIZAR contratação Diretor BSC + Equipe Core
 
-✅ COMPROMETER C-Level (8-12h/mês, 100% presença)
+[OK] COMPROMETER C-Level (8-12h/mês, 100% presença)
 
-✅ INICIAR Fase 0 (Mobilização) - Semana 1
+[OK] INICIAR Fase 0 (Mobilização) - Semana 1
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              RETORNO ESPERADO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-💰 R$ 6,3-11,5M EBITDA incremental (M24)
-💰 ROI: 1,9-4,0x | Payback: 8-15 meses
-💰 ROCE: 8% → 18-25% (+10-17pp)
+[EMOJI] R$ 6,3-11,5M EBITDA incremental (M24)
+[EMOJI] ROI: 1,9-4,0x | Payback: 8-15 meses
+[EMOJI] ROCE: 8% -> 18-25% (+10-17pp)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
            "A HORA DE AGIR É AGORA"
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-⚠️ CUSTO DE NÃO FAZER NADA:
+[WARN] CUSTO DE NÃO FAZER NADA:
    R$ 6-11M EBITDA deixados na mesa/ano
    Perda market share para concorrentes
    Margens comprimidas continuamente
@@ -3098,7 +3098,7 @@ SLIDE 28: CALL TO ACTION - APROVAÇÃO
        AGUARDAMOS SUA APROVAÇÃO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📚 MATERIAIS COMPLEMENTARES (APÊNDICES)
+[EMOJI] MATERIAIS COMPLEMENTARES (APÊNDICES)
 
 SLIDE A1: GLOSSÁRIO BSC
 
@@ -3112,10 +3112,10 @@ SLIDE A2: REFERÊNCIAS BIBLIOGRÁFICAS
 
 SLIDE A3: EQUIPE PROJETO (ORGANOGRAMA)
 
-    Board → CEO → Comitê BSC + Diretor BSC + Consultor BSC
-    Equipe Core BSC (4-6) → 5 Workstreams (40-60 pessoas)
+    Board -> CEO -> Comitê BSC + Diretor BSC + Consultor BSC
+    Equipe Core BSC (4-6) -> 5 Workstreams (40-60 pessoas)
 
-🎯 MENSAGENS-CHAVE PARA O BOARD
+[EMOJI] MENSAGENS-CHAVE PARA O BOARD
 1. PROBLEMA CRÍTICO (Slide 3-4):
 
     ROCE 8% vs 15-20% benchmark = R$ 6-11M deixados na mesa/ano
@@ -3130,7 +3130,7 @@ SLIDE A3: EQUIPE PROJETO (ORGANOGRAMA)
 
 3. ROADMAP FASEADO (Slide 11-12):
 
-    4 fases (24 meses): Mobilização → Fundação (quick wins) → Consolidação → Excelência
+    4 fases (24 meses): Mobilização -> Fundação (quick wins) -> Consolidação -> Excelência
     Quick wins M6: ROI 1,6-2,0x (R$ 1,15-1,5M economia)
     Checkpoints Go/No-Go a cada 6 meses (governança de riscos)
 
@@ -3155,7 +3155,7 @@ SLIDE A3: EQUIPE PROJETO (ORGANOGRAMA)
     Comprometer C-Level (8-12h/mês, 100% presença)
     Iniciar Fase 0 (Mobilização) - Semana 1
 
-📊 RESUMO EXECUTIVO (1 PÁGINA)
+[EMOJI] RESUMO EXECUTIVO (1 PÁGINA)
 
 PROGRAMA BSC ENGELAR: TRANSFORMAÇÃO ESTRATÉGICA 2024-2026
 
@@ -3168,12 +3168,12 @@ PROGRAMA BSC ENGELAR: TRANSFORMAÇÃO ESTRATÉGICA 2024-2026
 | OEE      | 58-62%       | 75-78%        | Payback:         | 8-15 meses        |
 
 
-ROADMAP: 4 fases (24M): Mobilização → Fundação → Consolidação → Excelência GOVERNANÇA: 3 camadas, 7 fóruns, checkpoints Go/No-Go a cada 6 meses RISCOS: Top 10 gerenciados, contingência 10% (R$ 293K)
+ROADMAP: 4 fases (24M): Mobilização -> Fundação -> Consolidação -> Excelência GOVERNANÇA: 3 camadas, 7 fóruns, checkpoints Go/No-Go a cada 6 meses RISCOS: Top 10 gerenciados, contingência 10% (R$ 293K)
 
 FONTE METODOLOGIA: Kaplan & Norton (Harvard Business School, 1996-2008) CASOS SUCESSO: Gerdau, Embraer, Siemens, Volkswagen Brasil (ROI médio 2,5-4,0x)
 
-DECISÃO BOARD: ✅ Aprovar orçamento | ✅ Autorizar equipe | ✅ Iniciar Semana 1
-🚀 PRÓXIMOS PASSOS PÓS-APROVAÇÃO
+DECISÃO BOARD: [OK] Aprovar orçamento | [OK] Autorizar equipe | [OK] Iniciar Semana 1
+[EMOJI] PRÓXIMOS PASSOS PÓS-APROVAÇÃO
 
 #### SEMANA 1-4: Mobilização (R$ 80K)
 
@@ -3189,8 +3189,8 @@ DECISÃO BOARD: ✅ Aprovar orçamento | ✅ Autorizar equipe | ✅ Iniciar Sema
     ABC, Hedge, S&OP, VoC, Segmentação
     ROI M6: 1,6-2,0x (R$ 1,15-1,5M)
 
-DECISÃO M6: Continuar Fase 2 se ROI ≥1,2x ✅
-📞 CONTATOS
+DECISÃO M6: Continuar Fase 2 se ROI ≥1,2x [OK]
+[EMOJI] CONTATOS
 
 Equipe Apresentação:
 
@@ -3205,13 +3205,13 @@ Documentação Disponível:
     Business Case Financeiro (40 páginas)
     Templates e Ferramentas (15 documentos)
 
-🎯 APRESENTAÇÃO EXECUTIVA BOARD: COMPLETA E PRONTA PARA APROVAÇÃO!
+[EMOJI] APRESENTAÇÃO EXECUTIVA BOARD: COMPLETA E PRONTA PARA APROVAÇÃO!
 
 ---------------------------------------------------------------------------------------------------------
 
-📢 PLANO INTEGRADO DE COMUNICAÇÃO E CHANGE MANAGEMENT BSC ENGELAR
+[EMOJI] PLANO INTEGRADO DE COMUNICAÇÃO E CHANGE MANAGEMENT BSC ENGELAR
 Framework Completo: Cascata, Treinamento, Engajamento e Gestão de Resistências
-🎯 VISÃO GERAL EXECUTIVA
+[EMOJI] VISÃO GERAL EXECUTIVA
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.23): *"Fazer da estratégia o trabalho de todos requer que todos os colaboradores compreendam a estratégia e conduzam suas atividades diárias de forma a contribuir para o sucesso da estratégia."*
 OBJETIVO CENTRAL
@@ -3241,8 +3241,8 @@ Transformar a Engelar em uma Organização Strategy-Focused através de comunica
         Infográficos, vídeos e materiais simplificados
 
     ALINHAR ORGANIZAÇÃO À ESTRATÉGIA
-        Cascata vertical: Board → C-Level → Gerentes → Equipes
-        Cascata horizontal: Corporativo → Áreas → Processos
+        Cascata vertical: Board -> C-Level -> Gerentes -> Equipes
+        Cascata horizontal: Corporativo -> Áreas -> Processos
         Scorecards individuais (100% líderes, 85-90% colaboradores M24)
 
     MOTIVAR PARA FAZER DA ESTRATÉGIA O TRABALHO DE TODOS
@@ -3255,7 +3255,7 @@ Transformar a Engelar em uma Organização Strategy-Focused através de comunica
         Reuniões estratégicas separadas de operacionais
         Aprendizado estratégico contínuo
 
-📣 ESTRATÉGIA DE COMUNICAÇÃO
+[EMOJI] ESTRATÉGIA DE COMUNICAÇÃO
 REGRA 7x7: SETE VEZES, SETE FORMAS
 
 Fonte: Kaplan & Norton (The Execution Premium, 2008, p.155): *"O plano de comunicação deve ser planejado e gerenciado tão cuidadosamente quanto qualquer campanha de publicidade, branding e marketing da empresa. O plano de comunicação deve entregar a mensagem pelo menos sete vezes de sete maneiras diferentes a cada ano."*
@@ -3267,13 +3267,13 @@ Fonte: Kaplan & Norton (The Execution Premium, 2008, p.155): *"O plano de comuni
 
 |  #  |      Mensagem         | WIIFM (What's In It For Me)                                                                                       |  Fase   |
 |-----|----------------------|--------------------------------------------------------------------------------------------------------------------|---------|
-| M1  | Por que BSC?         | "ROCE 8% vs 15-20% = R$ 6-11M perdidos. BSC recupera isso → Empresa forte = Empregos seguros + Bônus maiores"      | M0-3    |
-| M2  | O que é BSC?         | "4 perspectivas integradas → Seu trabalho impacta clientes, processos, finanças e seu desenvolvimento"             | M1-3    |
-| M3  | Como funciona?       | "Mapa Estratégico + KPIs + Iniciativas → Você saberá exatamente o que fazer e como será medido"                    | M3-6    |
-| M4  | Qual meu papel?      | "Suas metas individuais conectadas à estratégia → Seu trabalho tem propósito e visibilidade"                       | M6-12   |
-| M5  | Quick Wins (M6)      | "R$ 1,15-1,5M economia em 6 meses → Funciona! Você faz parte deste sucesso"                                        | M6      |
-| M6  | Resultados M12       | "EBITDA +R$ 3,65M → Bônus maiores, investimentos em T&D, melhorias no ambiente"                                    | M12     |
-| M7  | Transformação M24    | "ROCE 18-25%, NPS 50-55 → Empresa líder, orgulho de trabalhar aqui, carreira de longo prazo"                       | M24     |
+| M1  | Por que BSC?         | "ROCE 8% vs 15-20% = R$ 6-11M perdidos. BSC recupera isso -> Empresa forte = Empregos seguros + Bônus maiores"      | M0-3    |
+| M2  | O que é BSC?         | "4 perspectivas integradas -> Seu trabalho impacta clientes, processos, finanças e seu desenvolvimento"             | M1-3    |
+| M3  | Como funciona?       | "Mapa Estratégico + KPIs + Iniciativas -> Você saberá exatamente o que fazer e como será medido"                    | M3-6    |
+| M4  | Qual meu papel?      | "Suas metas individuais conectadas à estratégia -> Seu trabalho tem propósito e visibilidade"                       | M6-12   |
+| M5  | Quick Wins (M6)      | "R$ 1,15-1,5M economia em 6 meses -> Funciona! Você faz parte deste sucesso"                                        | M6      |
+| M6  | Resultados M12       | "EBITDA +R$ 3,65M -> Bônus maiores, investimentos em T&D, melhorias no ambiente"                                    | M12     |
+| M7  | Transformação M24    | "ROCE 18-25%, NPS 50-55 -> Empresa líder, orgulho de trabalhar aqui, carreira de longo prazo"                       | M24     |
 
 12 CANAIS DE COMUNICAÇÃO INTEGRADOS
 
@@ -3296,7 +3296,7 @@ Fonte: Kaplan & Norton (The Execution Premium, 2008, p.155): *"O plano de comuni
 
 
 TOTAL EXPOSIÇÕES/COLABORADOR/ANO: 50-70 touchpoints (média 1-1,5/semana)
-REGRA 7x7 CUMPRIDA: ✅ 12 canais x múltiplas frequências = 64-192 exposições
+REGRA 7x7 CUMPRIDA: [OK] 12 canais x múltiplas frequências = 64-192 exposições
 CALENDÁRIO ANUAL DE COMUNICAÇÃO
 FASE 0: MOBILIZAÇÃO (M0-1)
 
@@ -3324,7 +3324,7 @@ FASE 3: EXCELÊNCIA (M12-24)
     Trimestral: Town Halls + Eventos Celebração
     M24: Convenção Anual + Hall da Fama BSC
 
-🎯 CASCATA ESTRATÉGICA (4 NÍVEIS)
+[EMOJI] CASCATA ESTRATÉGICA (4 NÍVEIS)
 MODELO DE CASCATA
 
 **Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.10): *"Cascatear mapas estratégicos pela organização ajuda unidades a internalizar seus papéis duais de otimização local e contribuição corporativa."*
@@ -3381,12 +3381,12 @@ COBERTURA META:
     M12: 100% líderes + 60-80% operacional (140-180 pessoas)
     M24: 100% líderes + 85-90% operacional (180-240 pessoas)
 
-🎓 PROGRAMA DE TREINAMENTO (8 TRILHAS)
+[EMOJI] PROGRAMA DE TREINAMENTO (8 TRILHAS)
 OBJETIVO
 
 **Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.214): *"Programas de treinamento e desenvolvimento de competências devem estar alinhados aos objetivos estratégicos e aos processos críticos do Mapa Estratégico."*
 
-Meta: Elevar de 8-12h/ano → 40h/ano/colaborador (M24)
+Meta: Elevar de 8-12h/ano -> 40h/ano/colaborador (M24)
 8 TRILHAS DE CAPACITAÇÃO
 
 | Trilha                       | Público                      | Duração | Formato                        | Prazo   | Investimento |
@@ -3403,14 +3403,14 @@ Meta: Elevar de 8-12h/ano → 40h/ano/colaborador (M24)
 
 TOTAL INVESTIMENTO: R$ 380K
 TOTAL HORAS: 8.000-10.000h (24 meses)
-MÉDIA/COLABORADOR/ANO: 40-50h ✅
+MÉDIA/COLABORADOR/ANO: 40-50h [OK]
 MODELO 70-20-10
 
     70% Aprendizado no trabalho (projetos, desafios reais)
     20% Aprendizado social (coaching, mentoria, pares)
     10% Aprendizado formal (treinamentos, cursos)
 
-🚧 GESTÃO DE RESISTÊNCIAS
+[EMOJI] GESTÃO DE RESISTÊNCIAS
 8 PASSOS DE KOTTER PARA MUDANÇA
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.344): *"Kotter distingue gestão de liderança: transformações bem-sucedidas são 70-90% liderança e apenas 10-30% gestão."*
@@ -3465,7 +3465,7 @@ Incentivos:
     Prioridade promoções
 
 **Investimento:** R$ 20K
-🎉 ENGAJAMENTO E INCENTIVOS
+[EMOJI] ENGAJAMENTO E INCENTIVOS
 3 PILARES DE ENGAJAMENTO
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.6): *"Muitas empresas ganham ainda mais awareness e comprometimento dos colaboradores ao vincular incentivos e bônus ao atingimento de objetivos individuais, de unidade de negócio e corporativos."*
@@ -3474,7 +3474,7 @@ Incentivos:
 PILAR 1: ALINHAMENTO (Scorecards Individuais)
 
     85-90% colaboradores com metas BSC (M24)
-    Linha de visão clara: Individual → Área → Corporativo
+    Linha de visão clara: Individual -> Área -> Corporativo
     Revisão trimestral + Feedback contínuo
 
 PILAR 2: INCENTIVOS (Remuneração Variável BSC)
@@ -3494,7 +3494,7 @@ Exemplo Gerente (Salário R$ 10.000):
 
     Fixo: R$ 8.000 (80%)
     Variável Alvo: R$ 2.000 (20%)
-    Score 95% → Variável = R$ 1.900
+    Score 95% -> Variável = R$ 1.900
 
 PILAR 3: RECONHECIMENTO (Não-Monetário)
 
@@ -3514,7 +3514,7 @@ RECONHECIMENTO CONTÍNUO:
     Portal BSC (ranking áreas)
 
 Investimento Anual: R$ 20K
-📊 GOVERNANÇA E MÉTRICAS
+[EMOJI] GOVERNANÇA E MÉTRICAS
 DASHBOARD CHANGE MANAGEMENT (10 KPIs)
 
 | KPI                           | Baseline    | Meta M6   | Meta M12   | Meta M24    | Frequência   |
@@ -3559,7 +3559,7 @@ Ciclo Monitoramento (Trimestral):
     Semana 3: Apresentação Comitê
     Semana 4: Implementação + Comunicação
 
-💰 INVESTIMENTO E CRONOGRAMA
+[EMOJI] INVESTIMENTO E CRONOGRAMA
 INVESTIMENTO TOTAL: R$ 550-650K (24 MESES)
 
 | Categoria           |   M0-6   |  M6-12  |  M12-24  |  TOTAL    |
@@ -3574,9 +3574,9 @@ INVESTIMENTO TOTAL: R$ 550-650K (24 MESES)
 
 ROI INDIRETO:
 
-    Redução Turnover (-6-10pp) → Economia R$ 300-500K/ano
-    Aumento Produtividade (+5-8%) → Impacto R$ 800K-1,2M/ano
-    Aceleração Iniciativas (-20% tempo) → Valor R$ 500-800K
+    Redução Turnover (-6-10pp) -> Economia R$ 300-500K/ano
+    Aumento Produtividade (+5-8%) -> Impacto R$ 800K-1,2M/ano
+    Aceleração Iniciativas (-20% tempo) -> Valor R$ 500-800K
     ROI Estimado: 2,0-3,5x
 
 CRONOGRAMA 24 MESES
@@ -3588,7 +3588,7 @@ CRONOGRAMA 24 MESES
 | Consolidação   | M6-12    | Cascata + Treinamento     | Cascata 60-80%, 40h T&D                |
 | Excelência     | M12-24   | Incentivos + Cultura      | Cascata 85-90%, Variável BSC 70-85%    |
 
-🎯 FATORES CRÍTICOS DE SUCESSO
+[EMOJI] FATORES CRÍTICOS DE SUCESSO
 
     Patrocínio CEO Ativo: Town halls trimestrais, decisões <7 dias, 100% presença Comitê BSC
     Comunicação 7x7 Consistente: 12 canais, 50-70 touchpoints/colaborador/ano
@@ -3599,7 +3599,7 @@ CRONOGRAMA 24 MESES
     Gestão Ativa Resistências: Change Champions, Pesquisas Pulso, Planos mitigação
     Cultura Institucionalizada: Governança permanente, Ciclo anual, Aprendizado contínuo
 
-🚀 PRÓXIMOS PASSOS IMEDIATOS
+[EMOJI] PRÓXIMOS PASSOS IMEDIATOS
 
 #### SEMANA 1-2:
 
@@ -3613,14 +3613,14 @@ CRONOGRAMA 24 MESES
 
 
 M2-3: 9. Lançar Portal BSC 10. Publicar Newsletter #1 11. Iniciar T1 (Fundamentos BSC) 12. Pesquisa Pulso M3
-📚 RESUMO EXECUTIVO
+[EMOJI] RESUMO EXECUTIVO
 
 OBJETIVO: Transformar Engelar em Organização Strategy-Focused (Awareness 85-90%, eNPS +15-25, Cascata 85-90%)
 
 ESTRATÉGIA:
 
     Comunicação: 7x7 (12 canais, 50-70 touchpoints/ano)
-    Cascata: 4 níveis (Corporativo → Executivo → Gerencial → Operacional)
+    Cascata: 4 níveis (Corporativo -> Executivo -> Gerencial -> Operacional)
     Treinamento: 8 trilhas (40h/ano/colaborador)
     Resistências: 5 tipos + Kotter 8 Passos
     Engajamento: 3 pilares (Alinhamento, Incentivos, Reconhecimento)
@@ -3629,22 +3629,22 @@ INVESTIMENTO: R$ 550-650K (24 meses)
 
 RESULTADOS ESPERADOS (M24):
 
-    ✅ Awareness: 42% → 85-90% (+43-48pp)
-    ✅ Cascata: 0% → 85-90%
-    ✅ eNPS: -8 a +5 → +15-25 (+15-33 pontos)
-    ✅ T&D: 8-12h → 40h/ano (+233%)
-    ✅ Turnover: 18-22% → <12% (-6-10pp)
+    [OK] Awareness: 42% -> 85-90% (+43-48pp)
+    [OK] Cascata: 0% -> 85-90%
+    [OK] eNPS: -8 a +5 -> +15-25 (+15-33 pontos)
+    [OK] T&D: 8-12h -> 40h/ano (+233%)
+    [OK] Turnover: 18-22% -> <12% (-6-10pp)
 
 PRINCÍPIO CENTRAL:
 
 **Fonte:** Kaplan & Norton (The Strategy-Focused Organization, 2000, p.23): *"Fazer da estratégia o trabalho de todos, todos os dias."*
 
-🎯 PLANO DE COMUNICAÇÃO E CHANGE MANAGEMENT BSC ENGELAR: COMPLETO, INTEGRADO E PRONTO PARA EXECUÇÃO!
+[EMOJI] PLANO DE COMUNICAÇÃO E CHANGE MANAGEMENT BSC ENGELAR: COMPLETO, INTEGRADO E PRONTO PARA EXECUÇÃO!
 
 ----------------------------------------------------------------------------------------------------------------------------
 
-📊 SISTEMA INTEGRADO DE DASHBOARDS EXECUTIVOS BSC ENGELAR
-🎯 VISÃO GERAL EXECUTIVA
+[EMOJI] SISTEMA INTEGRADO DE DASHBOARDS EXECUTIVOS BSC ENGELAR
+[EMOJI] VISÃO GERAL EXECUTIVA
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.184): *"Dashboards automatizados refletem infraestrutura de business intelligence e integração de dados, facilitando a representação visual dos dados subjacentes. Eles permitem que colaboradores façam drill deeper nos dados para análise interativa."*
 
@@ -3653,12 +3653,12 @@ OBJETIVO CENTRAL
 
 Criar um Sistema Integrado de Dashboards BSC com visualização 360° do desempenho estratégico, permitindo:
 
-✅ Visualização em tempo real dos 108 KPIs em 4 perspectivas
-✅ Drill-down multinível (5 níveis: Corporativo → Perspectiva → Objetivo → KPI → Transação)
-✅ Alertas automáticos (sistema 3 cores + notificações inteligentes)
-✅ Acesso universal (Web + Mobile + TV Corporativa)
-✅ Integração completa (15+ sistemas fontes)
-🏗️ ARQUITETURA DO SISTEMA (5 CAMADAS HIERÁRQUICAS)
+[OK] Visualização em tempo real dos 108 KPIs em 4 perspectivas
+[OK] Drill-down multinível (5 níveis: Corporativo -> Perspectiva -> Objetivo -> KPI -> Transação)
+[OK] Alertas automáticos (sistema 3 cores + notificações inteligentes)
+[OK] Acesso universal (Web + Mobile + TV Corporativa)
+[OK] Integração completa (15+ sistemas fontes)
+[EMOJI] ARQUITETURA DO SISTEMA (5 CAMADAS HIERÁRQUICAS)
 
 ┌─────────────────────────────────────────────────────────────┐
 │  CAMADA 1: DASHBOARD ESTRATÉGICO (CEO + Board)             │
@@ -3691,7 +3691,7 @@ Criar um Sistema Integrado de Dashboards BSC com visualização 360° do desempe
 └─────────────────────────────────────────────────────────────┘
 
 **Fonte:** Kaplan & Norton (Strategy Maps, 2004, p.10): *"Scorecards de unidades de negócio e funcionais devem estar alinhados ao scorecard corporativo, mas também incluir objetivos e medidas específicas de suas operações locais."*
-📊 CAMADA 1: DASHBOARD ESTRATÉGICO CORPORATIVO
+[EMOJI] CAMADA 1: DASHBOARD ESTRATÉGICO CORPORATIVO
 LAYOUT (1 TELA - SEM SCROLL)
 
 ╔═══════════════════════════════════════════════════════════════╗
@@ -3699,42 +3699,42 @@ LAYOUT (1 TELA - SEM SCROLL)
 ║           Atualizado: 15/05/2024 08:30 | [Filtros]           ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
-║  🎯 SCORE GERAL BSC: 87/100 ████████████████░░░  [🟢 BOM]   ║
+║  [EMOJI] SCORE GERAL BSC: 87/100 ████████████████░░░  [[EMOJI] BOM]   ║
 ║  Tendência: ↗ +5pp vs M anterior | Projeção M24: 92%         ║
 ║                                                               ║
 ║  ┌────────────────────────┬────────────────────────┐         ║
-║  │ 💰 FINANCEIRA (92%) 🟢│ 👥 CLIENTES (85%) 🟢  │         ║
+║  │ [EMOJI] FINANCEIRA (92%) [EMOJI]│ [EMOJI] CLIENTES (85%) [EMOJI]  │         ║
 ║  ├────────────────────────┼────────────────────────┤         ║
-║  │ F1: ROCE: 22,5% 🟢    │ C1: OTIF: 93% 🟢      │         ║
+║  │ F1: ROCE: 22,5% [EMOJI]    │ C1: OTIF: 93% [EMOJI]      │         ║
 ║  │ Meta: 18-25%           │ Meta: 92-94%           │         ║
 ║  │ ▲ +14,5pp vs M0        │ ▲ +15pp vs M0          │         ║
 ║  │                        │                        │         ║
-║  │ F2: EBITDA: R$21,2M 🟢│ C2: NPS: 52 🟢        │         ║
+║  │ F2: EBITDA: R$21,2M [EMOJI]│ C2: NPS: 52 [EMOJI]        │         ║
 ║  │ Meta: R$18,8-24M       │ Meta: 50-55            │         ║
 ║  │ ▲ +76% vs M0           │ ▲ +24-34 vs M0         │         ║
 ║  │                        │                        │         ║
-║  │ [📊 Drill-Down]        │ [📊 Drill-Down]        │         ║
+║  │ [[EMOJI] Drill-Down]        │ [[EMOJI] Drill-Down]        │         ║
 ║  └────────────────────────┴────────────────────────┘         ║
 ║                                                               ║
 ║  ┌────────────────────────┬────────────────────────┐         ║
-║  │ ⚙️ PROCESSOS (83%) 🟡 │ 📚 APRENDIZADO (88%) 🟢│         ║
+║  │ [EMOJI] PROCESSOS (83%) [EMOJI] │ [EMOJI] APRENDIZADO (88%) [EMOJI]│         ║
 ║  ├────────────────────────┼────────────────────────┤         ║
-║  │ P1: S&OP: 91% 🟢      │ A1: Competências: 82% 🟢│        ║
+║  │ P1: S&OP: 91% [EMOJI]      │ A1: Competências: 82% [EMOJI]│        ║
 ║  │ Meta: 90%              │ Meta: 80%              │         ║
 ║  │ ▲ +31pp vs M0          │ ▲ +82pp vs M0          │         ║
 ║  │                        │                        │         ║
-║  │ P2: OEE: 76% 🟢       │ A2: T&D: 42h/ano 🟢   │         ║
+║  │ P2: OEE: 76% [EMOJI]       │ A2: T&D: 42h/ano [EMOJI]   │         ║
 ║  │ Meta: 75-78%           │ Meta: 40h              │         ║
 ║  │ ▲ +18pp vs M0          │ ▲ +250% vs M0          │         ║
 ║  │                        │                        │         ║
-║  │ [📊 Drill-Down]        │ [📊 Drill-Down]        │         ║
+║  │ [[EMOJI] Drill-Down]        │ [[EMOJI] Drill-Down]        │         ║
 ║  └────────────────────────┴────────────────────────┘         ║
 ║                                                               ║
-║  🚨 ALERTAS CRÍTICOS (2 Ativos)                              ║
-║  • P3: MCE 0,48 vs Meta 0,45-0,50 → Acelerar IP3 (VSM)     ║
-║  • A8: Cascata 83% vs Meta 85-90% → Workshop Gerentes       ║
+║  [EMOJI] ALERTAS CRÍTICOS (2 Ativos)                              ║
+║  • P3: MCE 0,48 vs Meta 0,45-0,50 -> Acelerar IP3 (VSM)     ║
+║  • A8: Cascata 83% vs Meta 85-90% -> Workshop Gerentes       ║
 ║                                                               ║
-║  📈 INICIATIVAS (28 Total): 22 No Prazo 🟢 | 4 Atenção 🟡  ║
+║  [EMOJI] INICIATIVAS (28 Total): 22 No Prazo [EMOJI] | 4 Atenção [EMOJI]  ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 
@@ -3744,9 +3744,9 @@ ELEMENTOS VISUAIS
 
 SEMÁFOROS (Sistema 3 Cores):
 
-    🟢 VERDE: ≥90% meta (Excelente)
-    🟡 AMARELO: 80-89% meta (Atenção)
-    🔴 VERMELHO: <80% meta (Crítico)
+    [EMOJI] VERDE: ≥90% meta (Excelente)
+    [EMOJI] AMARELO: 80-89% meta (Atenção)
+    [EMOJI] VERMELHO: <80% meta (Crítico)
 
 GRÁFICOS:
 
@@ -3755,18 +3755,18 @@ GRÁFICOS:
     Gauges: Velocímetros KPIs críticos
     Heatmaps: Matriz performance por área/período
 
-📊 CAMADA 2: DASHBOARDS POR PERSPECTIVA (4 DASHBOARDS)
+[EMOJI] CAMADA 2: DASHBOARDS POR PERSPECTIVA (4 DASHBOARDS)
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.59): *"Dashboards táticos devem conectar metas, responsáveis e periodicidade de atualização, permitindo análise funcional detalhada por perspectiva."*
 2.1 DASHBOARD FINANCEIRO (CFO)
 
-6 Objetivos | 18 KPIs | Score: 92% 🟢
+6 Objetivos | 18 KPIs | Score: 92% [EMOJI]
 
 KPIs Principais:
 
-    F1: ROCE: 22,5% (Meta: 18-25%) 🟢 | Δ +14,5pp vs M0
-    F2: EBITDA: R21,2M(Meta:R21,2M(Meta:R 18,8-24M) 🟢 | Δ +76% vs M0
-    F4: Margem EBITDA: 27% (Meta: 25-29%) 🟢 | Δ +12pp vs M0
+    F1: ROCE: 22,5% (Meta: 18-25%) [EMOJI] | Δ +14,5pp vs M0
+    F2: EBITDA: R21,2M(Meta:R21,2M(Meta:R 18,8-24M) [EMOJI] | Δ +76% vs M0
+    F4: Margem EBITDA: 27% (Meta: 25-29%) [EMOJI] | Δ +12pp vs M0
 
 Decomposição DuPont (F1: ROCE):
 
@@ -3774,44 +3774,44 @@ ROCE = Margem Líquida × Giro Ativos × Alavancagem
 22,5% = 15% × 1,5x × 1,0x
 
 Drivers:
-• Margem Líquida: 15% (Meta: 12-15%) 🟢
+• Margem Líquida: 15% (Meta: 12-15%) [EMOJI]
   - Receita: R$ 94M (+17% vs M0)
   - EBITDA: R$ 21,2M (Mg: 27%)
   - Lucro Líquido: R$ 14,1M
 
-• Giro Ativos: 1,5x (Meta: 1,42-2,12x) 🟢
+• Giro Ativos: 1,5x (Meta: 1,42-2,12x) [EMOJI]
   - Ativos Totais: R$ 62,7M
   - Estoques otimizados (IP1: S&OP)
 
-• Alavancagem: 1,0x (conservador) 🟢
+• Alavancagem: 1,0x (conservador) [EMOJI]
 
 Iniciativas Relacionadas:
 
-    IF1: ABC Costing - 100% Concluída 🟢 | Impacto: +R$ 1,2M
-    IF2: Hedge Aço - 100% Concluída 🟢 | Impacto: +R$ 1,0M
-    IF4: Redução Custos - 92% 🟢 | Impacto: +R$ 800K
+    IF1: ABC Costing - 100% Concluída [EMOJI] | Impacto: +R$ 1,2M
+    IF2: Hedge Aço - 100% Concluída [EMOJI] | Impacto: +R$ 1,0M
+    IF4: Redução Custos - 92% [EMOJI] | Impacto: +R$ 800K
 
 2.2 DASHBOARD CLIENTES (CCO)
 
-4 Objetivos | 24 KPIs | Score: 85% 🟢
+4 Objetivos | 24 KPIs | Score: 85% [EMOJI]
 
 KPIs Principais:
 
-    C1: OTIF: 93% (Meta: 92-94%) 🟢 | Δ +15pp vs M0
-    C2: NPS: 52 (Meta: 50-55) 🟢 | Δ +24-34 vs M0
-    C3: Receita/Cliente: +16% (Meta: +15%) 🟢 | Δ +16% vs M0
+    C1: OTIF: 93% (Meta: 92-94%) [EMOJI] | Δ +15pp vs M0
+    C2: NPS: 52 (Meta: 50-55) [EMOJI] | Δ +24-34 vs M0
+    C3: Receita/Cliente: +16% (Meta: +15%) [EMOJI] | Δ +16% vs M0
 
 Decomposição OTIF (C1):
 
 OTIF = On-Time × In-Full
 93% = 97% × 96%
 
-• On-Time: 97% (Meta: 95%) 🟢
-  - Baseline: 68-78% → Melhoria +19-29pp
+• On-Time: 97% (Meta: 95%) [EMOJI]
+  - Baseline: 68-78% -> Melhoria +19-29pp
   - Driver: IP1 (S&OP 91%) + IP7 (Field Service)
 
-• In-Full: 96% (Meta: 97%) 🟢
-  - Baseline: ~90% → Melhoria +6pp
+• In-Full: 96% (Meta: 97%) [EMOJI]
+  - Baseline: ~90% -> Melhoria +6pp
   - Driver: P8 (Acurácia Estoque 98%)
 
 Análise NPS (C2):
@@ -3819,89 +3819,89 @@ Análise NPS (C2):
 NPS = 52 (Promotores 62% - Detratores 10%)
 
 Segmentação:
-• Gold (20% clientes): NPS 68 🟢
-• Silver (30% clientes): NPS 54 🟢
-• Bronze (50% clientes): NPS 42 🟡
+• Gold (20% clientes): NPS 68 [EMOJI]
+• Silver (30% clientes): NPS 54 [EMOJI]
+• Bronze (50% clientes): NPS 42 [EMOJI]
 
 Drivers Positivos:
-• OTIF 93% (correlação r=0,78) → +18 pontos NPS
-• CSAT Montagem 4,2/5 (r=0,65) → +8 pontos
-• Portal Cliente (IC3) → +6 pontos
+• OTIF 93% (correlação r=0,78) -> +18 pontos NPS
+• CSAT Montagem 4,2/5 (r=0,65) -> +8 pontos
+• Portal Cliente (IC3) -> +6 pontos
 
 Iniciativas Relacionadas:
 
-    IC1: Programa VoC - 100% Concluída 🟢 | Impacto: +18 pontos NPS
-    IC2: Segmentação ABC - 100% 🟢 | Impacto: +8 pontos
-    IC3: Portal Cliente - 85% 🟢 | Impacto: +6 pontos
+    IC1: Programa VoC - 100% Concluída [EMOJI] | Impacto: +18 pontos NPS
+    IC2: Segmentação ABC - 100% [EMOJI] | Impacto: +8 pontos
+    IC3: Portal Cliente - 85% [EMOJI] | Impacto: +6 pontos
 
 2.3 DASHBOARD PROCESSOS (COO)
 
-16 Objetivos | 48 KPIs | Score: 83% 🟡
+16 Objetivos | 48 KPIs | Score: 83% [EMOJI]
 
 KPIs Principais:
 
-    P1: S&OP Acurácia: 91% (Meta: 90%) 🟢 | Δ +31pp vs M0
-    P2: OEE: 76% (Meta: 75-78%) 🟢 | Δ +18pp vs M0
-    P3: MCE (Lean): 0,48 (Meta: 0,45-0,50) 🟡 | Δ +0,13 vs M0
+    P1: S&OP Acurácia: 91% (Meta: 90%) [EMOJI] | Δ +31pp vs M0
+    P2: OEE: 76% (Meta: 75-78%) [EMOJI] | Δ +18pp vs M0
+    P3: MCE (Lean): 0,48 (Meta: 0,45-0,50) [EMOJI] | Δ +0,13 vs M0
 
 Decomposição OEE (P2):
 
 OEE = Disponibilidade × Performance × Qualidade
 76% = 88% × 91% × 95%
 
-• Disponibilidade: 88% (Meta: 85-90%) 🟢
-  - MTBF: 180h (Meta: >150h) 🟢
-  - MTTR: 45min (Meta: <60min) 🟢
+• Disponibilidade: 88% (Meta: 85-90%) [EMOJI]
+  - MTBF: 180h (Meta: >150h) [EMOJI]
+  - MTTR: 45min (Meta: <60min) [EMOJI]
   - Driver: IP2 (TPM) + IP10 (Preditiva)
 
-• Performance: 91% (Meta: 88-92%) 🟢
+• Performance: 91% (Meta: 88-92%) [EMOJI]
   - Velocidade Real: 90% nominal
   - Microparadas reduzidas -60%
 
-• Qualidade (FPY): 95% (Meta: 93-96%) 🟢
-  - Scrap: 1,8% (Meta: <2%) 🟢
-  - Retrabalho: 3,2% (Meta: <3%) 🟡
+• Qualidade (FPY): 95% (Meta: 93-96%) [EMOJI]
+  - Scrap: 1,8% (Meta: <2%) [EMOJI]
+  - Retrabalho: 3,2% (Meta: <3%) [EMOJI]
 
 Análise Lean (P3: MCE):
 
 MCE = Tempo Valor Agregado / Lead Time Total
 0,48 = 6,8d / 14,2d
 
-Lead Time: 14,2d (Meta: 8-15d) 🟡
-• Valor Agregado: 6,8d (48%) 🟢
-• Desperdícios: 7,4d (52%) 🟡
-  - Espera: 3,2d (22%) 🔴
-  - Transporte: 2,1d (15%) 🟡
-  - Estoque: 1,4d (10%) 🟡
-  - Outros: 0,7d (5%) 🟢
+Lead Time: 14,2d (Meta: 8-15d) [EMOJI]
+• Valor Agregado: 6,8d (48%) [EMOJI]
+• Desperdícios: 7,4d (52%) [EMOJI]
+  - Espera: 3,2d (22%) [EMOJI]
+  - Transporte: 2,1d (15%) [EMOJI]
+  - Estoque: 1,4d (10%) [EMOJI]
+  - Outros: 0,7d (5%) [EMOJI]
 
-Oportunidade: Reduzir espera 3,2d→1,5d = MCE 0,52 🟢
+Oportunidade: Reduzir espera 3,2d->1,5d = MCE 0,52 [EMOJI]
 
 Iniciativas Relacionadas:
 
-    IP1: S&OP Integrado - 100% 🟢 | Impacto: Acurácia 60%→91%
-    IP2: OEE/TPM - 95% 🟢 | Impacto: OEE 58%→76%
-    IP3: VSM/Lean - 88% 🟢 | Impacto: MCE 0,35→0,48
+    IP1: S&OP Integrado - 100% [EMOJI] | Impacto: Acurácia 60%->91%
+    IP2: OEE/TPM - 95% [EMOJI] | Impacto: OEE 58%->76%
+    IP3: VSM/Lean - 88% [EMOJI] | Impacto: MCE 0,35->0,48
 
 2.4 DASHBOARD APRENDIZADO (CHRO)
 
-8 Objetivos | 18 KPIs | Score: 88% 🟢
+8 Objetivos | 18 KPIs | Score: 88% [EMOJI]
 
 KPIs Principais:
 
-    A1: Competências Críticas: 82% (Meta: 80%) 🟢 | Δ +82pp vs M0
-    A2: Horas T&D: 42h/ano (Meta: 40h) 🟢 | Δ +250% vs M0
-    A7: Awareness: 87% (Meta: 85-90%) 🟢 | Δ +45pp vs M0
+    A1: Competências Críticas: 82% (Meta: 80%) [EMOJI] | Δ +82pp vs M0
+    A2: Horas T&D: 42h/ano (Meta: 40h) [EMOJI] | Δ +250% vs M0
+    A7: Awareness: 87% (Meta: 85-90%) [EMOJI] | Δ +45pp vs M0
 
 Análise Competências (A1):
 
 Cobertura: 82% (205/250 colaboradores)
 
 Competências Críticas (45 mapeadas):
-• Técnicas: 85% cobertura 🟢
-• Gestão: 78% cobertura 🟡
-• Liderança: 82% cobertura 🟢
-• Comportamentais: 72% cobertura 🟡
+• Técnicas: 85% cobertura [EMOJI]
+• Gestão: 78% cobertura [EMOJI]
+• Liderança: 82% cobertura [EMOJI]
+• Comportamentais: 72% cobertura [EMOJI]
 
 Gaps Críticos (7 competências):
 • Programação CNC: 3 pessoas
@@ -3909,35 +3909,35 @@ Gaps Críticos (7 competências):
 • Six Sigma Green Belt: 5 pessoas
 
 Matriz 9-Box:
-• Alta Criticidade + Baixa Proficiência: 7 🔴 (FOCO)
-• Alta Criticidade + Alta Proficiência: 15 🟢
-• Baixa Criticidade: 23 🟡
+• Alta Criticidade + Baixa Proficiência: 7 [EMOJI] (FOCO)
+• Alta Criticidade + Alta Proficiência: 15 [EMOJI]
+• Baixa Criticidade: 23 [EMOJI]
 
 Trilhas T&D (A2):
 
-42h/colab/ano (Meta: 40h) 🟢
+42h/colab/ano (Meta: 40h) [EMOJI]
 
 8 Trilhas Estruturadas:
-• T1: Fundamentos BSC - 4h | 220 treinados (100%) 🟢
-• T2: Metas Performance - 8h | 210 treinados (100%) 🟢
-• T3: Liderança BSC - 16h | 78 treinados (98%) 🟢
-• T5: S&OP - 16h | 28 treinados (100%) 🟢
-• T6: OEE/TPM - 24h | 38 treinados (100%) 🟢
-• T7: Lean/VSM - 24h | 33 treinados (100%) 🟢
-• T8: Six Sigma GB - 80h | 12 treinados (85%) 🟢
+• T1: Fundamentos BSC - 4h | 220 treinados (100%) [EMOJI]
+• T2: Metas Performance - 8h | 210 treinados (100%) [EMOJI]
+• T3: Liderança BSC - 16h | 78 treinados (98%) [EMOJI]
+• T5: S&OP - 16h | 28 treinados (100%) [EMOJI]
+• T6: OEE/TPM - 24h | 38 treinados (100%) [EMOJI]
+• T7: Lean/VSM - 24h | 33 treinados (100%) [EMOJI]
+• T8: Six Sigma GB - 80h | 12 treinados (85%) [EMOJI]
 
 Total: 651 treinamentos | 9.240h | R$ 380K investido
 ROI T&D: 3,2x (R$ 912K economia vs R$ 285K)
 
 Awareness Estratégia (A7):
 
-87% colaboradores awareness (Meta: 85-90%) 🟢
+87% colaboradores awareness (Meta: 85-90%) [EMOJI]
 
 Funil Maturidade:
-• Nível 1 (Conhece BSC): 92% 🟢
-• Nível 2 (Entende 4 Perspectivas): 85% 🟢
-• Nível 3 (Sabe Contribuição): 78% 🟡
-• Nível 4 (Ensina Outros): 58% 🟡
+• Nível 1 (Conhece BSC): 92% [EMOJI]
+• Nível 2 (Entende 4 Perspectivas): 85% [EMOJI]
+• Nível 3 (Sabe Contribuição): 78% [EMOJI]
+• Nível 4 (Ensina Outros): 58% [EMOJI]
 
 Comunicação (12 canais IA7):
 • Town Halls: 95% participação
@@ -3947,33 +3947,33 @@ Comunicação (12 canais IA7):
 
 Iniciativas Relacionadas:
 
-    IA1: Mapeamento Competências - 100% 🟢 | 45 competências
-    IA2: Trilhas T&D - 95% 🟢 | 42h/colab alcançado
-    IA7: Comunicação - 100% 🟢 | 87% awareness
+    IA1: Mapeamento Competências - 100% [EMOJI] | 45 competências
+    IA2: Trilhas T&D - 95% [EMOJI] | 42h/colab alcançado
+    IA7: Comunicação - 100% [EMOJI] | 87% awareness
 
-📊 CAMADA 3: DASHBOARDS POR OBJETIVO (27 DASHBOARDS)
+[EMOJI] CAMADA 3: DASHBOARDS POR OBJETIVO (27 DASHBOARDS)
 
 **Fonte:** Kaplan & Norton (The Balanced Scorecard, 1996, p.214): *"Cada objetivo deve ter seu próprio dashboard com 3-5 KPIs, permitindo análise detalhada de performance e causas-raiz."*
 ESTRUTURA PADRÃO DASHBOARD OBJETIVO
 
 ┌─────────────────────────────────────────────────────────────┐
-│ 🎯 [CÓDIGO]: [NOME OBJETIVO] - DASHBOARD DETALHADO         │
-│ Score: [XX]/100 [🟢/🟡/🔴] | Peso: [X]% | Responsável     │
+│ [EMOJI] [CÓDIGO]: [NOME OBJETIVO] - DASHBOARD DETALHADO         │
+│ Score: [XX]/100 [[EMOJI]/[EMOJI]/[EMOJI]] | Peso: [X]% | Responsável     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│ 📊 VISÃO GERAL KPIs (3-5 KPIs)                             │
+│ [EMOJI] VISÃO GERAL KPIs (3-5 KPIs)                             │
 │ ┌──────────┬────────┬────────┬────────┬──────┬──────────┐  │
 │ │ KPI      │ Real   │ Meta   │ Bench  │ Score│ Status   │  │
 │ ├──────────┼────────┼────────┼────────┼──────┼──────────┤  │
-│ │ Principal│ [valor]│ [meta] │ [bench]│ XX%  │ 🟢       │  │
-│ │ Secund.1 │ [valor]│ [meta] │ [bench]│ XX%  │ 🟢       │  │
-│ │ Secund.2 │ [valor]│ [meta] │ [bench]│ XX%  │ 🟡       │  │
+│ │ Principal│ [valor]│ [meta] │ [bench]│ XX%  │ [EMOJI]       │  │
+│ │ Secund.1 │ [valor]│ [meta] │ [bench]│ XX%  │ [EMOJI]       │  │
+│ │ Secund.2 │ [valor]│ [meta] │ [bench]│ XX%  │ [EMOJI]       │  │
 │ └──────────┴────────┴────────┴────────┴──────┴──────────┘  │
 │                                                             │
-│ 📈 EVOLUÇÃO TEMPORAL (Últimos 24 Meses)                    │
+│ [EMOJI] EVOLUÇÃO TEMPORAL (Últimos 24 Meses)                    │
 │ [Gráfico Linha: Real vs Meta vs Benchmark vs Baseline]     │
 │                                                             │
-│ 🔍 ANÁLISE DRILL-DOWN (10 Dimensões)                       │
+│ [EMOJI] ANÁLISE DRILL-DOWN (10 Dimensões)                       │
 │ • Por Área/Departamento                                     │
 │ • Por Produto/Linha                                         │
 │ • Por Cliente/Segmento                                      │
@@ -3985,66 +3985,66 @@ ESTRUTURA PADRÃO DASHBOARD OBJETIVO
 │ • Por Projeto/Iniciativa                                    │
 │ • Por Causa Raiz (Pareto)                                   │
 │                                                             │
-│ 🎯 INICIATIVAS RELACIONADAS (X Ativas)                     │
-│ • [Código]: [Nome] - [%] | Impacto: [Valor] | Status 🟢   │
+│ [EMOJI] INICIATIVAS RELACIONADAS (X Ativas)                     │
+│ • [Código]: [Nome] - [%] | Impacto: [Valor] | Status [EMOJI]   │
 │ [Gráfico Gantt: Timeline]                                   │
 │                                                             │
-│ 🔗 RELAÇÕES CAUSA-EFEITO (Mapa Estratégico)                │
-│ [Diagrama: Objetivos Habilitadores → Este → Impactados]    │
+│ [EMOJI] RELAÇÕES CAUSA-EFEITO (Mapa Estratégico)                │
+│ [Diagrama: Objetivos Habilitadores -> Este -> Impactados]    │
 │                                                             │
-│ 📋 COMENTÁRIOS E AÇÕES                                      │
+│ [EMOJI] COMENTÁRIOS E AÇÕES                                      │
 │ Responsável: [Nome] | Atualizado: [Data]                   │
 │ Status: [Narrativa]                                         │
 │ Próximos Passos: [Lista com prazos]                        │
 └─────────────────────────────────────────────────────────────┘
 
-📊 CAMADA 4: DASHBOARDS POR KPI (108 DASHBOARDS)
+[EMOJI] CAMADA 4: DASHBOARDS POR KPI (108 DASHBOARDS)
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.184): *"Dashboards operacionais focam no desempenho local departamental, funcional e de processos, permitindo drill deeper nos dados para análise interativa."*
 ESTRUTURA PADRÃO DASHBOARD KPI
 
 ┌─────────────────────────────────────────────────────────────┐
-│ 📊 [CÓDIGO KPI]: [NOME KPI] - DASHBOARD DETALHADO          │
-│ Valor: [XX] | Meta: [YY] | Score: [ZZ]/100 [🟢/🟡/🔴]     │
+│ [EMOJI] [CÓDIGO KPI]: [NOME KPI] - DASHBOARD DETALHADO          │
+│ Valor: [XX] | Meta: [YY] | Score: [ZZ]/100 [[EMOJI]/[EMOJI]/[EMOJI]]     │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│ 🎯 FICHA TÉCNICA                                            │
+│ [EMOJI] FICHA TÉCNICA                                            │
 │ • Fórmula: [Matemática detalhada]                          │
 │ • Unidade: [%, R$, dias, pontos]                           │
 │ • Polaridade: [↑ Maior melhor | ↓ Menor melhor]           │
 │ • Frequência: [Diária, Semanal, Mensal]                    │
 │ • Fonte Dados: [Sistema]                                    │
 │ • Responsável: [Nome + Cargo]                              │
-│ • Thresholds: 🟢 ≥[X] | 🟡 [Y]-[X] | 🔴 <[Y]             │
+│ • Thresholds: [EMOJI] ≥[X] | [EMOJI] [Y]-[X] | [EMOJI] <[Y]             │
 │                                                             │
-│ 📈 EVOLUÇÃO TEMPORAL (Múltiplas Granularidades)            │
+│ [EMOJI] EVOLUÇÃO TEMPORAL (Múltiplas Granularidades)            │
 │ [Tabs: Diário | Semanal | Mensal | Trimestral]            │
 │ [Gráfico: Real vs Meta vs Benchmark vs Ano Anterior]       │
 │                                                             │
-│ 📊 DECOMPOSIÇÃO KPI (Waterfall/Components)                 │
+│ [EMOJI] DECOMPOSIÇÃO KPI (Waterfall/Components)                 │
 │ [Exemplo OEE: Disponib. × Performance × Qualidade]         │
 │                                                             │
-│ 🔍 ANÁLISE MULTIDIMENSIONAL (10 Dimensões)                 │
+│ [EMOJI] ANÁLISE MULTIDIMENSIONAL (10 Dimensões)                 │
 │ [Filtros dinâmicos + Gráficos interativos]                 │
 │                                                             │
-│ 📉 ANÁLISE ESTATÍSTICA                                      │
+│ [EMOJI] ANÁLISE ESTATÍSTICA                                      │
 │ • Média/Mediana/Desvio/CV                                   │
 │ • Tendência (Regressão) + R²                                │
 │ • Sazonalidade                                              │
 │ [Box Plot + Histograma + SPC]                              │
 │                                                             │
-│ 🎯 IMPACTO INICIATIVAS (Antes vs Depois)                   │
+│ [EMOJI] IMPACTO INICIATIVAS (Antes vs Depois)                   │
 │ [Gráfico com anotações lançamento iniciativas]             │
 │                                                             │
-│ 🚨 ALERTAS E NOTIFICAÇÕES (Configuráveis)                  │
-│ • Regra 1: KPI < Threshold Vermelho → Email CEO + SMS      │
-│ • Regra 2: Tendência negativa 7d → Alerta Dashboard        │
+│ [EMOJI] ALERTAS E NOTIFICAÇÕES (Configuráveis)                  │
+│ • Regra 1: KPI < Threshold Vermelho -> Email CEO + SMS      │
+│ • Regra 2: Tendência negativa 7d -> Alerta Dashboard        │
 │ [Histórico alertas últimos 30 dias]                        │
 │                                                             │
-│ 📋 PLANO DE AÇÃO (Quando fora da meta)                     │
+│ [EMOJI] PLANO DE AÇÃO (Quando fora da meta)                     │
 │ [Tabela: Ação | Responsável | Prazo | Status | Impacto]   │
 │                                                             │
-│ 💬 COMENTÁRIOS (Colaborativo)                               │
+│ [EMOJI] COMENTÁRIOS (Colaborativo)                               │
 │ [Feed estilo rede social com @menções]                     │
 └─────────────────────────────────────────────────────────────┘
 
@@ -4052,43 +4052,43 @@ EXEMPLO COMPLETO: DRILL-DOWN OEE (5 NÍVEIS)
 
 NÍVEL 1: Dashboard Estratégico
 
-P2: OEE: 76% | Meta: 75-78% 🟢
+P2: OEE: 76% | Meta: 75-78% [EMOJI]
 [Clique para drill-down]
 
 NÍVEL 2: Dashboard Processos
 
-P2: OEE = 76% (Meta: 75-78%) 🟢
+P2: OEE = 76% (Meta: 75-78%) [EMOJI]
 Decomposição:
-• Disponibilidade: 88% (Meta: 85-90%) 🟢 [Clique]
-• Performance: 91% (Meta: 88-92%) 🟢 [Clique]
-• Qualidade: 95% (Meta: 93-96%) 🟢 [Clique]
+• Disponibilidade: 88% (Meta: 85-90%) [EMOJI] [Clique]
+• Performance: 91% (Meta: 88-92%) [EMOJI] [Clique]
+• Qualidade: 95% (Meta: 93-96%) [EMOJI] [Clique]
 
 NÍVEL 3: Dashboard OEE Detalhado
 
 OEE por Equipamento (Top 10):
-• Linha Solda 1: 82% 🟢 [Clique]
-• Linha Solda 2: 78% 🟢
-• Corte CNC 1: 74% 🟡 [Clique]
-• Dobradeira 1: 72% 🟡
-• Pintura 1: 68% 🟡
+• Linha Solda 1: 82% [EMOJI] [Clique]
+• Linha Solda 2: 78% [EMOJI]
+• Corte CNC 1: 74% [EMOJI] [Clique]
+• Dobradeira 1: 72% [EMOJI]
+• Pintura 1: 68% [EMOJI]
 
 Perdas OEE (Pareto):
-1. Setup: 180h (28%) 🔴 [Clique]
-2. Quebras: 140h (22%) 🔴
-3. Microparadas: 95h (15%) 🟡
+1. Setup: 180h (28%) [EMOJI] [Clique]
+2. Quebras: 140h (22%) [EMOJI]
+3. Microparadas: 95h (15%) [EMOJI]
 
 NÍVEL 4: Análise Setup (Clique em "Setup: 180h")
 
 Setup Detalhado (180h perdidas):
-• Dobradeira 1: 65h (36%) - Troca ferramentas 🔴
-• Corte CNC 1: 48h (27%) - Calibração laser 🟡
-• Linha Solda 2: 42h (23%) - Troca eletrodo 🟡
-• Outros: 25h (14%) 🟢
+• Dobradeira 1: 65h (36%) - Troca ferramentas [EMOJI]
+• Corte CNC 1: 48h (27%) - Calibração laser [EMOJI]
+• Linha Solda 2: 42h (23%) - Troca eletrodo [EMOJI]
+• Outros: 25h (14%) [EMOJI]
 
 Tempo Médio Setup:
-• Dobradeira: 45min (Meta: 20min) → Gap -25min 🔴
+• Dobradeira: 45min (Meta: 20min) -> Gap -25min [EMOJI]
 • Ação: SMED (IP2) - Prazo: M12
-• Impacto Esperado: -60% tempo → +5pp OEE
+• Impacto Esperado: -60% tempo -> +5pp OEE
 
 NÍVEL 5: Transações Setup (Clique em "Dobradeira 1: 65h")
 
@@ -4096,47 +4096,47 @@ Eventos Setup Dobradeira 1 (Último mês - 65h):
 ┌──────┬──────────┬──────────┬─────────┬──────────┐
 │ Data │ Turno    │ Duração  │ Causa   │ Operador │
 ├──────┼──────────┼──────────┼─────────┼──────────┤
-│ 01/05│ Manhã    │ 52min 🔴 │ Troca   │ João     │
-│ 03/05│ Tarde    │ 48min 🔴 │ Troca   │ Maria    │
-│ 05/05│ Noite    │ 38min 🟡 │ Ajuste  │ Carlos   │
+│ 01/05│ Manhã    │ 52min [EMOJI] │ Troca   │ João     │
+│ 03/05│ Tarde    │ 48min [EMOJI] │ Troca   │ Maria    │
+│ 05/05│ Noite    │ 38min [EMOJI] │ Ajuste  │ Carlos   │
 │ [...] │ [...]    │ [...]    │ [...]   │ [...]    │
 └──────┴──────────┴──────────┴─────────┴──────────┘
 
 [Ver 40 eventos restantes]
 [Exportar Excel] [Criar Alerta] [Escalar]
 
-📊 CAMADA 5: DASHBOARDS OPERACIONAIS + SCORECARDS
+[EMOJI] CAMADA 5: DASHBOARDS OPERACIONAIS + SCORECARDS
 5.1 DASHBOARD OPERACIONAL PRODUÇÃO (Tempo Real)
 
 ╔═══════════════════════════════════════════════════════════════╗
-║  ⚡ LINHA 3 - SOLDA - DASHBOARD TEMPO REAL                   ║
+║  [FAST] LINHA 3 - SOLDA - DASHBOARD TEMPO REAL                   ║
 ║  Turno: Manhã | Operador: Carlos | 14:05:32                 ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
-║  OEE Atual: 74% 🟡 (Meta: 75%)                               ║
-║  • Disponibilidade: 85% 🟡  • Performance: 89% 🟢            ║
-║  • Qualidade: 98% 🟢                                         ║
+║  OEE Atual: 74% [EMOJI] (Meta: 75%)                               ║
+║  • Disponibilidade: 85% [EMOJI]  • Performance: 89% [EMOJI]            ║
+║  • Qualidade: 98% [EMOJI]                                         ║
 ║                                                               ║
 ║  Produção Turno: 64/75 peças (85%) | Faltam: 11 peças       ║
 ║  Qualidade: 60 OK | 3 Retrabalho | 1 Refugo                 ║
 ║                                                               ║
-║  ⏱️ PARADAS TURNO (3 eventos - 105min total)                 ║
-║  1. Setup Solda: 45min 🔴 (08:15-09:00)                      ║
-║  2. Ajuste Parâmetros: 20min 🟡 (11:30-11:50)               ║
-║  3. Espera Material: 20min 🟡 (13:20-13:40)                 ║
-║  4. Falta Gás: 20min 🟡 (14:00-14:20 - EM CURSO)            ║
+║  [TIMER] PARADAS TURNO (3 eventos - 105min total)                 ║
+║  1. Setup Solda: 45min [EMOJI] (08:15-09:00)                      ║
+║  2. Ajuste Parâmetros: 20min [EMOJI] (11:30-11:50)               ║
+║  3. Espera Material: 20min [EMOJI] (13:20-13:40)                 ║
+║  4. Falta Gás: 20min [EMOJI] (14:00-14:20 - EM CURSO)            ║
 ║                                                               ║
-║  🔧 STATUS EQUIPAMENTO (Sensores IoT)                        ║
-║  • Temperatura: 68°C 🟢 (Normal: 60-75°C)                    ║
-║  • Vibração: 2,8mm/s 🟢 (Normal: <3,5mm/s)                   ║
-║  • Corrente: 42A 🟢 (Normal: 38-45A)                         ║
-║  • Alerta Preditivo: Nenhum 🟢                               ║
+║  [EMOJI] STATUS EQUIPAMENTO (Sensores IoT)                        ║
+║  • Temperatura: 68°C [EMOJI] (Normal: 60-75°C)                    ║
+║  • Vibração: 2,8mm/s [EMOJI] (Normal: <3,5mm/s)                   ║
+║  • Corrente: 42A [EMOJI] (Normal: 38-45A)                         ║
+║  • Alerta Preditivo: Nenhum [EMOJI]                               ║
 ║                                                               ║
-║  ✅ AÇÕES OPERADOR                                            ║
+║  [OK] AÇÕES OPERADOR                                            ║
 ║  • Trocar cilindro gás (EM CURSO)                            ║
 ║  • Solicitar manutenção preventiva (Fim turno)               ║
 ║                                                               ║
-║  [🔄 Atualizar] [📊 Relatório] [🔔 Alertar Supervisor]      ║
+║  [[EMOJI] Atualizar] [[EMOJI] Relatório] [[EMOJI] Alertar Supervisor]      ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 5.2 SCORECARD INDIVIDUAL (Colaborador)
@@ -4148,60 +4148,60 @@ Eventos Setup Dobradeira 1 (Último mês - 65h):
 ║     Supervisor Produção Linha 1 | Período: M10 (Out/2024)    ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
-║  🎯 SCORE GERAL: 88% ██████████████████░░  [🟢 BOM]          ║
+║  [EMOJI] SCORE GERAL: 88% ██████████████████░░  [[EMOJI] BOM]          ║
 ║  Variável Estimado: R$ 1.760 (88% de R$ 2.000)              ║
 ║                                                               ║
 ║  ┌─────────────────────────────────────────────────────────┐ ║
-║  │ 💼 METAS CORPORATIVAS (Peso: 30% | Score: 79%)         │ ║
+║  │ [EMOJI] METAS CORPORATIVAS (Peso: 30% | Score: 79%)         │ ║
 ║  ├──────────┬────────┬────────┬──────┬──────┬─────────────┤ ║
 ║  │ KPI      │ Real   │ Meta   │ Score│ Peso │ Contrib.    │ ║
 ║  ├──────────┼────────┼────────┼──────┼──────┼─────────────┤ ║
-║  │ ROCE     │ 22,5%  │18-25%  │ 90% 🟢│ 10% │ 9,0%       │ ║
-║  │ NPS      │ 52     │50-55   │ 88% 🟢│ 10% │ 8,8%       │ ║
-║  │ OEE      │ 76%    │75-78%  │ 92% 🟢│ 10% │ 9,2%       │ ║
+║  │ ROCE     │ 22,5%  │18-25%  │ 90% [EMOJI]│ 10% │ 9,0%       │ ║
+║  │ NPS      │ 52     │50-55   │ 88% [EMOJI]│ 10% │ 8,8%       │ ║
+║  │ OEE      │ 76%    │75-78%  │ 92% [EMOJI]│ 10% │ 9,2%       │ ║
 ║  │ SUBTOTAL │        │        │      │      │ 27,0%       │ ║
 ║  └──────────┴────────┴────────┴──────┴──────┴─────────────┘ ║
 ║                                                               ║
 ║  ┌─────────────────────────────────────────────────────────┐ ║
-║  │ 🏭 METAS ÁREA PRODUÇÃO (Peso: 40% | Score: 93%)        │ ║
+║  │ [EMOJI] METAS ÁREA PRODUÇÃO (Peso: 40% | Score: 93%)        │ ║
 ║  ├──────────┬────────┬────────┬──────┬──────┬─────────────┤ ║
-║  │ OEE L1   │ 78%    │ 75%    │ 96% 🟢│ 15% │ 14,4%      │ ║
-║  │ FPY      │ 96%    │ 96%    │ 100%🟢│ 10% │ 10,0%      │ ║
-║  │ Lead Time│ 14d    │12-15d  │ 93% 🟢│ 10% │ 9,3%       │ ║
-║  │ Segurança│ 0      │ 0      │ 100%🟢│ 5%  │ 5,0%       │ ║
+║  │ OEE L1   │ 78%    │ 75%    │ 96% [EMOJI]│ 15% │ 14,4%      │ ║
+║  │ FPY      │ 96%    │ 96%    │ 100%[EMOJI]│ 10% │ 10,0%      │ ║
+║  │ Lead Time│ 14d    │12-15d  │ 93% [EMOJI]│ 10% │ 9,3%       │ ║
+║  │ Segurança│ 0      │ 0      │ 100%[EMOJI]│ 5%  │ 5,0%       │ ║
 ║  │ SUBTOTAL │        │        │      │      │ 38,7%       │ ║
 ║  └──────────┴────────┴────────┴──────┴──────┴─────────────┘ ║
 ║                                                               ║
 ║  ┌─────────────────────────────────────────────────────────┐ ║
-║  │ 👤 METAS INDIVIDUAIS (Peso: 30% | Score: 85%)          │ ║
+║  │ [EMOJI] METAS INDIVIDUAIS (Peso: 30% | Score: 85%)          │ ║
 ║  ├──────────┬────────┬────────┬──────┬──────┬─────────────┤ ║
-║  │ T&D Equipe│ 38h   │ 40h    │ 95% 🟢│ 10% │ 9,5%       │ ║
-║  │ Kaizen   │ 4      │ 4      │ 100%🟢│ 10% │ 10,0%      │ ║
-║  │ Absenteís│ 1,8%   │ <3%    │ 100%🟢│ 10% │ 10,0%      │ ║
+║  │ T&D Equipe│ 38h   │ 40h    │ 95% [EMOJI]│ 10% │ 9,5%       │ ║
+║  │ Kaizen   │ 4      │ 4      │ 100%[EMOJI]│ 10% │ 10,0%      │ ║
+║  │ Absenteís│ 1,8%   │ <3%    │ 100%[EMOJI]│ 10% │ 10,0%      │ ║
 ║  │ SUBTOTAL │        │        │      │      │ 29,5%       │ ║
 ║  └──────────┴────────┴────────┴──────┴──────┴─────────────┘ ║
 ║                                                               ║
-║  💬 FEEDBACK GESTOR (Gerente Produção - 05/10/2024)         ║
+║  [EMOJI] FEEDBACK GESTOR (Gerente Produção - 05/10/2024)         ║
 ║  "Excelente trabalho João! OEE Linha 1 superou meta (78%    ║
 ║  vs 75%). Lead Time melhorou para 14d (dentro da faixa).    ║
 ║  Parabéns pelos 4 eventos Kaizen realizados. Continue       ║
 ║  focando em qualidade (FPY 96%) e segurança (0 acidentes).  ║
 ║  Próxima meta: treinar 2 operadores backup em TPM."         ║
 ║                                                               ║
-║  ✅ PLANO AÇÃO PRÓXIMO MÊS (M11)                             ║
+║  [OK] PLANO AÇÃO PRÓXIMO MÊS (M11)                             ║
 ║  1. Participar workshop VSM (IP3) - Lead Time objetivo 12d  ║
 ║  2. Treinar 2 operadores TPM (IP2) - +8h T&D equipe         ║
 ║  3. Manter OEE >78% e segurança 0 acidentes                  ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 
-🎨 DESIGN E USABILIDADE
+[EMOJI] DESIGN E USABILIDADE
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.59): *"Dashboards devem ser visuais, intuitivos e permitir análise rápida. Use cores (semáforos), gráficos sparkline e drill-down para facilitar tomada de decisão."*
 PRINCÍPIOS DE DESIGN (10 REGRAS)
 
     REGRA 5-SEGUNDOS: Entendimento imediato do status
-    SEMÁFOROS UNIVERSAIS: 🟢 Verde | 🟡 Amarelo | 🔴 Vermelho
+    SEMÁFOROS UNIVERSAIS: [EMOJI] Verde | [EMOJI] Amarelo | [EMOJI] Vermelho
     MENOS É MAIS: Máximo 8-10 elementos/tela
     HIERARQUIA VISUAL: Tamanho/cor indicam importância
     GRÁFICOS ADEQUADOS: Linha (tendência), Coluna (comparação), Pizza (composição)
@@ -4214,19 +4214,19 @@ PRINCÍPIOS DE DESIGN (10 REGRAS)
 PALETA DE CORES ENGELAR BSC
 
 SEMÁFOROS:
-🟢 VERDE:    #28A745 (≥90% meta)
-🟡 AMARELO:  #FFC107 (80-89% meta)
-🔴 VERMELHO: #DC3545 (<80% meta)
+[EMOJI] VERDE:    #28A745 (≥90% meta)
+[EMOJI] AMARELO:  #FFC107 (80-89% meta)
+[EMOJI] VERMELHO: #DC3545 (<80% meta)
 
 PERSPECTIVAS:
-💰 Financeira:   #1E88E5 (Azul)
-👥 Clientes:     #43A047 (Verde)
-⚙️ Processos:    #FB8C00 (Laranja)
-📚 Aprendizado:  #8E24AA (Roxo)
+[EMOJI] Financeira:   #1E88E5 (Azul)
+[EMOJI] Clientes:     #43A047 (Verde)
+[EMOJI] Processos:    #FB8C00 (Laranja)
+[EMOJI] Aprendizado:  #8E24AA (Roxo)
 
 NEUTRAS:
-🔵 Informação:   #007BFF
-⚫ Desabilitado: #6C757D
+[EMOJI] Informação:   #007BFF
+[EMOJI] Desabilitado: #6C757D
 
 TIPOGRAFIA
 
@@ -4235,16 +4235,16 @@ TIPOGRAFIA
     Corpo: Segoe UI Regular, 12-14pt
     Legendas: Segoe UI Light, 10-12pt
 
-🔔 SISTEMA DE ALERTAS AUTOMÁTICOS
+[EMOJI] SISTEMA DE ALERTAS AUTOMÁTICOS
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.249): *"Alertas automáticos permitem resposta rápida a desvios críticos, conectando monitoramento à ação corretiva."*
 3 NÍVEIS DE ALERTAS
 
 | Nível         | Condição                     | Destinatário              | Canal                   | SLA   |
 |:-------------:|:----------------------------|:--------------------------|:------------------------|:------|
-| 🔴 CRÍTICO    | KPI <80% meta por 2 períodos | CEO + C-Level + Dono      | Email + SMS + Push      | <24h  |
-| 🟡 ATENÇÃO    | KPI 80-89% meta por 1 período| C-Level + Dono            | Email + Push            | <48h  |
-| 🟢 CELEBRAÇÃO | KPI ≥95% meta                | Equipe + Área             | Dashboard + Newsletter  | N/A   |
+| [EMOJI] CRÍTICO    | KPI <80% meta por 2 períodos | CEO + C-Level + Dono      | Email + SMS + Push      | <24h  |
+| [EMOJI] ATENÇÃO    | KPI 80-89% meta por 1 período| C-Level + Dono            | Email + Push            | <48h  |
+| [EMOJI] CELEBRAÇÃO | KPI ≥95% meta                | Equipe + Área             | Dashboard + Newsletter  | N/A   |
 
 REGRAS DE ALERTA (Exemplos)
 
@@ -4282,11 +4282,11 @@ ENTÃO
 DASHBOARD CENTRAL DE ALERTAS
 
 ╔═══════════════════════════════════════════════════════════════╗
-║          🚨 CENTRAL DE ALERTAS BSC ENGELAR                   ║
-║     Ativos: 8 | Críticos: 1 🔴 | Atenção: 4 🟡 | Info: 3 🟢 ║
+║          [EMOJI] CENTRAL DE ALERTAS BSC ENGELAR                   ║
+║     Ativos: 8 | Críticos: 1 [EMOJI] | Atenção: 4 [EMOJI] | Info: 3 [EMOJI] ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
-║  🔴 ALERTAS CRÍTICOS (1)                                      ║
+║  [EMOJI] ALERTAS CRÍTICOS (1)                                      ║
 ║  ┌───────────────────────────────────────────────────────┐    ║
 ║  │ P3: MCE 0,48 vs Meta 0,45-0,50 (Abaixo 80% por 2M)    │    ║
 ║  │ Aberto: 01/10 | Duração: 14d | Responsável: COO       │    ║
@@ -4295,25 +4295,25 @@ DASHBOARD CENTRAL DE ALERTAS
 ║  │ [Escalar Board] [Ver Detalhes] [Plano Ação]           │    ║
 ║  └───────────────────────────────────────────────────────┘    ║
 ║                                                               ║
-║  🟡 ALERTAS ATENÇÃO (4)                                       ║
+║  [EMOJI] ALERTAS ATENÇÃO (4)                                       ║
 ║  • A8: Cascata 83% vs Meta 85-90% (Workshop M11)              ║
 ║  • C4: Reclamações 6,2% vs Meta <4% (Certificar parceiros)    ║
 ║  • P7: OTIF Montagem 89% vs Meta 90-92% (Field Service)       ║
 ║  • A4: Turnover 14% vs Meta <12% (Plano Retenção)             ║
 ║                                                               ║
-║  🟢 CELEBRAÇÕES (3)                                          ║
-║  • F1: ROCE 22,5% (Superou meta 18-25%) 🎉                   ║
-║  • C2: NPS 52 (Atingiu meta 50-55%) 🎉                       ║
-║  • P1: S&OP 91% (Superou meta 90%) 🎉                        ║
+║  [EMOJI] CELEBRAÇÕES (3)                                          ║
+║  • F1: ROCE 22,5% (Superou meta 18-25%) [EMOJI]                   ║
+║  • C2: NPS 52 (Atingiu meta 50-55%) [EMOJI]                       ║
+║  • P1: S&OP 91% (Superou meta 90%) [EMOJI]                        ║
 ║                                                               ║
-║  📊 ESTATÍSTICAS (Últimos 30 Dias)                           ║
+║  [EMOJI] ESTATÍSTICAS (Últimos 30 Dias)                           ║
 ║  • Total Gerados: 42 | Resolvidos: 38 (90%)                  ║
 ║  • Tempo Médio Resolução: 2,3 dias                           ║
-║  • Taxa Recorrência: 8% (meta <10%) 🟢                       ║
+║  • Taxa Recorrência: 8% (meta <10%) [EMOJI]                       ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 
-📱 ACESSO MOBILE (APP BSC ENGELAR)
+[EMOJI] ACESSO MOBILE (APP BSC ENGELAR)
 
 **Fonte:** Kaplan & Norton (The Execution Premium, 2008, p.59): *"Acesso mobile aos dashboards permite tomada de decisão em tempo real, independente de localização."*
 10 FUNCIONALIDADES APP
@@ -4332,22 +4332,22 @@ DASHBOARD CENTRAL DE ALERTAS
 TELAS APP (Exemplo)
 
 ┌──────────────────────────────────────────────┐
-│            📱 BSC ENGELAR                    │
+│            [EMOJI] BSC ENGELAR                    │
 │━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━│
 │                                              │
-│       👤 João Silva (Sup. Produção)          │
-│  🎯 Score: 88% 🟢   |   Variável: R$1.7K    │
+│       [EMOJI] João Silva (Sup. Produção)          │
+│  [EMOJI] Score: 88% [EMOJI]   |   Variável: R$1.7K    │
 │                                              │
 │ ┌───────────────────────────────────────┐    │
-│ │ 🚨 ALERTAS (3)                        │    │
-│ │   • MCE 0,48 vs 0,45        🟡        │    │
-│ │   • Lead Time 14d vs 12d    🟡        │    │
-│ │   • OTIF 93% - Meta!        🟢        │    │
+│ │ [EMOJI] ALERTAS (3)                        │    │
+│ │   • MCE 0,48 vs 0,45        [EMOJI]        │    │
+│ │   • Lead Time 14d vs 12d    [EMOJI]        │    │
+│ │   • OTIF 93% - Meta!        [EMOJI]        │    │
 │ │   [Ver Todos]                         │     │
 │ └───────────────────────────────────────┘     │
 │                                               │
 │ ┌───────────────────────────────────────┐     │
-│ │ 📊 MEU SCORECARD (8 KPIs)             │    │
+│ │ [EMOJI] MEU SCORECARD (8 KPIs)             │    │
 │ │   Corporativo: 27,0%   (Meta: 30%)    │     │
 │ │   Área:        38,7%   (Meta: 40%)    │     │
 │ │   Individual:  29,5%   (Meta: 30%)    │     │
@@ -4355,16 +4355,16 @@ TELAS APP (Exemplo)
 │ └───────────────────────────────────────┘     │
 │                                               │
 │ ┌───────────────────────────────────────┐     │
-│ │ ✅ AÇÕES PENDENTES (2)                │     │
+│ │ [OK] AÇÕES PENDENTES (2)                │     │
 │ │   • Workshop VSM (Amanhã 14h)         │     │
 │ │   • Treinamento TPM (Sexta)           │     │
 │ │   [Marcar Concluído]                  │     │
 │ └───────────────────────────────────────┘     │
 │                                               │
-│   [🏠 Home]  [📊 Dash]  [🔔 Alertas]  [👤]  │
+│   [[EMOJI] Home]  [[EMOJI] Dash]  [[EMOJI] Alertas]  [[EMOJI]]  │
 └───────────────────────────────────────────────┘
 
-💾 INTEGRAÇÃO DE DADOS E ETL
+[EMOJI] INTEGRAÇÃO DE DADOS E ETL
 FONTES DE DADOS (15 SISTEMAS)
 
 | Sistema            | Dados                       | Atualização    | Integração   |
@@ -4428,7 +4428,7 @@ QUALIDADE DE DADOS (6 DIMENSÕES)
 | Unicidade | 100% | Deduplicação automática |
 | Validade | ≥98% | Rejeição + Notificação |
 
-💰 INVESTIMENTO E CRONOGRAMA
+[EMOJI] INVESTIMENTO E CRONOGRAMA
 INVESTIMENTO TOTAL: R$ 450-550K (24 MESES)
 
 | Componente | Custo | % | Prazo |
@@ -4454,7 +4454,7 @@ CRONOGRAMA 12 MESES (6 FASES)
 | Fase 5: Scorecards Individuais | M8-12 | Camada 5 (200-250 pessoas) | M12: 100% cascata |
 | Fase 6: App Mobile | M6-9 | iOS + Android | M9: App lançado |
 
-🎯 FATORES CRÍTICOS DE SUCESSO
+[EMOJI] FATORES CRÍTICOS DE SUCESSO
 
 10 FCS DASHBOARDS BSC:
 
@@ -4469,7 +4469,7 @@ CRONOGRAMA 12 MESES (6 FASES)
     Governança Dados: Donos KPIs definidos (27 objetivos × 3-5 KPIs)
     Melhoria Contínua: Feedback trimestral + ajustes (ciclo PDCA)
 
-📊 RESULTADOS ESPERADOS (M24)
+[EMOJI] RESULTADOS ESPERADOS (M24)
 
 | Métrica | Meta M24 | Como Medir |
 |---|---|---|
@@ -4485,13 +4485,13 @@ CRONOGRAMA 12 MESES (6 FASES)
 
 BENEFÍCIOS ESPERADOS:
 
-    ✅ Visibilidade 360°: 100% colaboradores visualizam estratégia
-    ✅ Decisões Data-Driven: 80% decisões baseadas em dados (vs 30% M0)
-    ✅ Agilidade: Tempo resposta alertas críticos <24h (vs 5-7d M0)
-    ✅ Accountability: 100% KPIs com responsável visível
-    ✅ Engajamento: 87% awareness estratégia (vs 42% M0)
+    [OK] Visibilidade 360°: 100% colaboradores visualizam estratégia
+    [OK] Decisões Data-Driven: 80% decisões baseadas em dados (vs 30% M0)
+    [OK] Agilidade: Tempo resposta alertas críticos <24h (vs 5-7d M0)
+    [OK] Accountability: 100% KPIs com responsável visível
+    [OK] Engajamento: 87% awareness estratégia (vs 42% M0)
 
-📚 RESUMO EXECUTIVO
+[EMOJI] RESUMO EXECUTIVO
 
 SISTEMA INTEGRADO DE DASHBOARDS EXECUTIVOS BSC ENGELAR
 
@@ -4499,17 +4499,17 @@ OBJETIVO: Visualização em tempo real do desempenho estratégico com drill-down
 
 ARQUITETURA:
 
-    5 Camadas Hierárquicas: Estratégico (Board) → Perspectivas (C-Level) → Objetivos (27) → KPIs (108) → Operacional/Individual (200-250)
-    5 Níveis Drill-Down: Score Geral → Perspectiva → Objetivo → KPI → Transação
+    5 Camadas Hierárquicas: Estratégico (Board) -> Perspectivas (C-Level) -> Objetivos (27) -> KPIs (108) -> Operacional/Individual (200-250)
+    5 Níveis Drill-Down: Score Geral -> Perspectiva -> Objetivo -> KPI -> Transação
     15 Fontes Dados: ERP, MES, CRM, WMS, TMS, HRIS, FSM, BI, S&OP, CMMS, QMS, Pesquisas, IoT, Portal, MS Project
 
 FUNCIONALIDADES:
 
-    ✅ Semáforos 3 cores (🟢 Verde ≥90% | 🟡 Amarelo 80-89% | 🔴 Vermelho <80%)
-    ✅ Alertas automáticos (3 níveis: Crítico <24h | Atenção <48h | Celebração)
-    ✅ App mobile (iOS + Android, 10 funcionalidades)
-    ✅ Qualidade dados ≥95% (6 dimensões monitoradas)
-    ✅ Atualização tempo real (críticos) + batch diário/semanal
+    [OK] Semáforos 3 cores ([EMOJI] Verde ≥90% | [EMOJI] Amarelo 80-89% | [EMOJI] Vermelho <80%)
+    [OK] Alertas automáticos (3 níveis: Crítico <24h | Atenção <48h | Celebração)
+    [OK] App mobile (iOS + Android, 10 funcionalidades)
+    [OK] Qualidade dados ≥95% (6 dimensões monitoradas)
+    [OK] Atualização tempo real (críticos) + batch diário/semanal
 
 TECNOLOGIA:
 
@@ -4534,11 +4534,11 @@ CRONOGRAMA: 12 meses (6 fases)
 
 RESULTADOS M24:
 
-    ✅ 95% adoção dashboards
-    ✅ 80% líderes usam app mobile semanalmente
-    ✅ 100% alertas críticos <24h
-    ✅ 95% qualidade dados
-    ✅ ROI 3,5x
+    [OK] 95% adoção dashboards
+    [OK] 80% líderes usam app mobile semanalmente
+    [OK] 100% alertas críticos <24h
+    [OK] 95% qualidade dados
+    [OK] ROI 3,5x
 
 FONTES METODOLÓGICAS:
 
@@ -4546,6 +4546,6 @@ FONTES METODOLÓGICAS:
     Kaplan & Norton (The Execution Premium, 2008, p.184): "Dashboards automatizados facilitam drill deeper para análise interativa."
     Kaplan & Norton (Strategy Maps, 2004, p.10): "Scorecards funcionais devem estar alinhados ao corporativo."
 
-🎯 SISTEMA DASHBOARDS EXECUTIVOS BSC ENGELAR: COMPLETO, INTEGRADO E PRONTO PARA IMPLEMENTAÇÃO!
+[EMOJI] SISTEMA DASHBOARDS EXECUTIVOS BSC ENGELAR: COMPLETO, INTEGRADO E PRONTO PARA IMPLEMENTAÇÃO!
 
 160+ Dashboards | 5 Camadas Drill-Down | 15 Fontes Integradas | Tempo Real | Mobile-First | Alertas Inteligentes | ROI 3,5x

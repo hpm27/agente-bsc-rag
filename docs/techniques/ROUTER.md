@@ -1,13 +1,13 @@
 # Router Inteligente (Agentic RAG v2) - Documentação Técnica
 
-**Técnica:** TECH-003 - Query Router Inteligente  
-**Fase:** RAG Avançado - Fase 2A.3  
-**Implementado:** 14/10/2025  
-**Status:** ✅ COMPLETO  
+**Técnica:** TECH-003 - Query Router Inteligente
+**Fase:** RAG Avançado - Fase 2A.3
+**Implementado:** 14/10/2025
+**Status:** [OK] COMPLETO
 
 ---
 
-## 📋 Visão Geral
+## [EMOJI] Visão Geral
 
 O **Router Inteligente** (Agentic RAG v2) é um sistema que classifica queries BSC e escolhe automaticamente a estratégia de retrieval mais adequada, otimizando latência e qualidade de resposta.
 
@@ -35,7 +35,7 @@ Routing inteligente que:
 │                      Query Router                            │
 ├─────────────────────────────────────────────────────────────┤
 │                                                               │
-│  Query → QueryClassifier → Category → Strategy → Retrieval  │
+│  Query -> QueryClassifier -> Category -> Strategy -> Retrieval  │
 │                                                               │
 │  Heuristics (80%)    LLM Fallback (20%)                     │
 │  <50ms               ~500ms                                  │
@@ -53,22 +53,22 @@ Routing inteligente que:
 
 ---
 
-## 🎯 Casos de Uso BSC
+## [EMOJI] Casos de Uso BSC
 
-### **Caso 1: Query Simples Factual** ⚡
+### **Caso 1: Query Simples Factual** [FAST]
 
 **Query:** "O que é BSC?"
 
-**Classificação:** SIMPLE_FACTUAL  
-**Estratégia:** DirectAnswer  
-**Latência:** 70s → **<5s** (-85%)
+**Classificação:** SIMPLE_FACTUAL
+**Estratégia:** DirectAnswer
+**Latência:** 70s -> **<5s** (-85%)
 
 **Workflow:**
 
 1. Detectar query simples (< 30 palavras, padrão "O que é", sem ligações)
 2. Verificar cache (Redis ou dict)
-3. Se cache miss → LLM direto (GPT-5 mini) sem retrieval pesado
-4. Se LLM falhar → Retrieval leve (k=5, sem multilingual)
+3. Se cache miss -> LLM direto (GPT-5 mini) sem retrieval pesado
+4. Se LLM falhar -> Retrieval leve (k=5, sem multilingual)
 
 **Benefícios:**
 
@@ -78,13 +78,13 @@ Routing inteligente que:
 
 ---
 
-### **Caso 2: Query Complexa Multi-Parte** 🔄
+### **Caso 2: Query Complexa Multi-Parte** [EMOJI]
 
 **Query:** "Como implementar BSC considerando perspectivas financeira, clientes e processos?"
 
-**Classificação:** COMPLEX_MULTI_PART  
-**Estratégia:** Decomposition (Query Decomposition - TECH-001)  
-**Latência:** 70s → **70s** (mantida, mas +30-50% qualidade)
+**Classificação:** COMPLEX_MULTI_PART
+**Estratégia:** Decomposition (Query Decomposition - TECH-001)
+**Latência:** 70s -> **70s** (mantida, mas +30-50% qualidade)
 
 **Workflow:**
 
@@ -102,12 +102,12 @@ Routing inteligente que:
 
 ---
 
-### **Caso 3: Query Conceitual/Abstrata** 🌐
+### **Caso 3: Query Conceitual/Abstrata** [EMOJI]
 
 **Query:** "Benefícios do Balanced Scorecard para gestão estratégica"
 
-**Classificação:** CONCEPTUAL_BROAD  
-**Estratégia:** HybridSearch (MVP padrão)  
+**Classificação:** CONCEPTUAL_BROAD
+**Estratégia:** HybridSearch (MVP padrão)
 **Latência:** **79.85s** (baseline MVP)
 
 **Workflow:**
@@ -125,12 +125,12 @@ Routing inteligente que:
 
 ---
 
-### **Caso 4: Query Relacional (Multi-Hop)** 🔗
+### **Caso 4: Query Relacional (Multi-Hop)** [EMOJI]
 
 **Query:** "Qual impacto dos KPIs de aprendizado nos resultados financeiros?"
 
-**Classificação:** RELATIONAL  
-**Estratégia:** MultiHop (Graph RAG - PLACEHOLDER)  
+**Classificação:** RELATIONAL
+**Estratégia:** MultiHop (Graph RAG - PLACEHOLDER)
 **Latência:** 79.85s (fallback para Hybrid atualmente)
 
 **Workflow Atual:**
@@ -149,7 +149,7 @@ Routing inteligente que:
 
 ---
 
-## 🔧 Implementação
+## [EMOJI] Implementação
 
 ### **Componentes Principais**
 
@@ -162,7 +162,7 @@ Classifica queries em 4 categorias usando:
   - Palavras-chave (relação, impacto, causa, efeito)
   - Palavras de ligação (e, também, considerando)
   - Padrões BSC ("4 perspectivas", múltiplas perspectivas mencionadas)
-  
+
 - **LLM Fallback** (20% casos ambíguos, ~500ms):
   - GPT-5 mini com prompt específico
   - Confidence 0.75 (menor que heurística 0.85-0.9)
@@ -174,28 +174,28 @@ class QueryClassifier:
     def classify(self, query: str) -> tuple[QueryCategory, float, int]:
         """
         Classifica query em categoria BSC.
-        
+
         Returns:
             Tupla (categoria, confidence, complexity_score)
         """
         query_lower = query.lower().strip()
         word_count = len(query_lower.split())
-        
+
         # Calcular complexity score (0-10)
         complexity_score = self._calculate_complexity_score(query_lower, word_count)
-        
+
         # Prioridade 1: RELATIONAL (maior especificidade)
         if self._is_relational(query_lower):
             return QueryCategory.RELATIONAL, 0.9, complexity_score
-        
+
         # Prioridade 2: COMPLEX_MULTI_PART
         if self._is_complex_multi_part(query_lower, word_count):
             return QueryCategory.COMPLEX_MULTI_PART, 0.85, complexity_score
-        
+
         # Prioridade 3: SIMPLE_FACTUAL
         if self._is_simple_factual(query_lower, word_count):
             return QueryCategory.SIMPLE_FACTUAL, 0.9, complexity_score
-        
+
         # Prioridade 4: LLM fallback OU CONCEPTUAL_BROAD
         if self.use_llm_fallback and complexity_score >= 3:
             try:
@@ -203,7 +203,7 @@ class QueryClassifier:
                 return category, confidence, complexity_score
             except:
                 pass
-        
+
         # Fallback: CONCEPTUAL_BROAD
         return QueryCategory.CONCEPTUAL_BROAD, 0.7, complexity_score
 ```
@@ -215,7 +215,7 @@ def _is_simple_factual(self, query_lower: str, word_count: int) -> bool:
     """Query simples: < 30 palavras, padrão "O que é", sem ligações."""
     if word_count > 30:
         return False
-    
+
     # Padrões de pergunta direta
     simple_patterns = [
         query_lower.startswith("o que é"),
@@ -223,16 +223,16 @@ def _is_simple_factual(self, query_lower: str, word_count: int) -> bool:
         query_lower.startswith("explique"),
         "?" in query_lower
     ]
-    
+
     if not any(simple_patterns):
         return False
-    
+
     # NÃO contém palavras de ligação (word boundaries)
     linking_words = ["e", "também", "considerando"]
     for word in linking_words:
         if re.search(r'\b' + re.escape(word) + r'\b', query_lower):
             return False
-    
+
     return True
 
 def _is_relational(self, query_lower: str) -> bool:
@@ -256,13 +256,13 @@ class DirectAnswerStrategy(RetrievalStrategy):
         # Prioridade 1: Cache
         if self.cache_enabled and query in self.cache:
             return [SearchResult(content=self.cache[query], source="cache", ...)]
-        
+
         # Prioridade 2: LLM direto (queries triviais)
         if self._is_trivial_query(query):
             llm_answer = self.llm.invoke(f"Responda conciso: {query}").content
             self.cache[query] = llm_answer
             return [SearchResult(content=llm_answer, source="llm_direct", ...)]
-        
+
         # Prioridade 3: Retrieval leve (fallback)
         return retriever.retrieve(query, k=5, multilingual=False)
 ```
@@ -276,7 +276,7 @@ class DecompositionStrategy(RetrievalStrategy):
         # Lida com asyncio event loop (pytest-asyncio, produção)
         try:
             asyncio.get_running_loop()
-            # Já em loop → ThreadPoolExecutor
+            # Já em loop -> ThreadPoolExecutor
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
                     asyncio.run,
@@ -284,7 +284,7 @@ class DecompositionStrategy(RetrievalStrategy):
                 )
                 return future.result()
         except RuntimeError:
-            # Não em loop → asyncio.run() normal
+            # Não em loop -> asyncio.run() normal
             return asyncio.run(retriever.retrieve_with_decomposition(...))
 ```
 
@@ -307,7 +307,7 @@ class HybridSearchStrategy(RetrievalStrategy):
 
 #### **3. QueryRouter** (`src/rag/query_router.py`)
 
-Orquestra classificação → seleção de estratégia → logging:
+Orquestra classificação -> seleção de estratégia -> logging:
 
 ```python
 class QueryRouter:
@@ -319,14 +319,14 @@ class QueryRouter:
             QueryCategory.CONCEPTUAL_BROAD: HybridSearchStrategy(),
             QueryCategory.RELATIONAL: MultiHopStrategy()
         }
-    
+
     def route(self, query: str) -> RoutingDecision:
         # Classificar query
         category, confidence, complexity_score = self.classifier.classify(query)
-        
+
         # Escolher estratégia
         strategy = self.strategies[category]
-        
+
         # Criar decisão
         decision = RoutingDecision(
             query=query,
@@ -336,10 +336,10 @@ class QueryRouter:
             complexity_score=complexity_score,
             ...
         )
-        
+
         # Logar para analytics
         self._log_decision(decision)
-        
+
         return decision
 ```
 
@@ -354,18 +354,18 @@ class Orchestrator:
         # Query Router (feature flag)
         self.enable_query_router = settings.enable_query_router
         self.query_router = QueryRouter() if self.enable_query_router else None
-    
+
     def get_retrieval_strategy_metadata(self, query: str) -> Dict[str, Any]:
         """
         Usa Query Router para obter metadata sobre estratégia.
-        
+
         Metadata é adicionada ao BSCState para analytics.
         """
         if not self.enable_query_router:
             return {"router_enabled": False, "strategy": "HybridSearch", ...}
-        
+
         routing_decision = self.query_router.route(query)
-        
+
         return {
             "router_enabled": True,
             "category": routing_decision.category.value,
@@ -377,22 +377,22 @@ class Orchestrator:
 
 ---
 
-## 📊 Métricas
+## [EMOJI] Métricas
 
 ### **Métricas de Sucesso (Validadas)**
 
 | Métrica | Target | Real | Status |
 |---------|--------|------|--------|
-| **Classifier Accuracy** | >85% | **~92%** | ✅ |
-| **Latência Queries Simples** | <10s | **<5s** | ✅ |
-| **Coverage de Testes** | >85% | **95% (strategies), 81% (router)** | ✅ |
-| **Testes Unitários** | 20+ | **25** | ✅ |
+| **Classifier Accuracy** | >85% | **~92%** | [OK] |
+| **Latência Queries Simples** | <10s | **<5s** | [OK] |
+| **Coverage de Testes** | >85% | **95% (strategies), 81% (router)** | [OK] |
+| **Testes Unitários** | 20+ | **25** | [OK] |
 
 **Observações:**
 
 - Classifier accuracy ~92% validado em 25 testes variados
-- Latência queries simples: 70s → <5s = **-85%** (DirectAnswer com cache)
-- Latência média esperada: 79.85s → ~64s = **-20%** (30% queries simples otimizadas)
+- Latência queries simples: 70s -> <5s = **-85%** (DirectAnswer com cache)
+- Latência média esperada: 79.85s -> ~64s = **-20%** (30% queries simples otimizadas)
 
 ### **Analytics de Produção**
 
@@ -412,7 +412,7 @@ O Router loga TODAS decisões em `logs/routing_decisions.jsonl` (JSON Lines form
 
 ---
 
-## ⚙️ Configuração
+## [EMOJI] Configuração
 
 ### **Settings (`.env` / `config/settings.py`)**
 
@@ -445,7 +445,7 @@ DIRECT_ANSWER_CACHE_TTL=3600            # TTL do cache (1 hora)
 
 ---
 
-## 📚 Uso / Exemplos
+## [EMOJI] Uso / Exemplos
 
 ### **Exemplo 1: Uso Direto do Router**
 
@@ -511,12 +511,12 @@ for query in queries_simples:
     start = time.time()
     direct_results = direct_strategy.execute(query, retriever, k=5)
     direct_time = time.time() - start
-    
+
     # Hybrid
     start = time.time()
     hybrid_results = hybrid_strategy.execute(query, retriever, k=10)
     hybrid_time = time.time() - start
-    
+
     print(f"Query: {query}")
     print(f"  DirectAnswer: {direct_time:.2f}s")
     print(f"  HybridSearch: {hybrid_time:.2f}s")
@@ -525,11 +525,11 @@ for query in queries_simples:
 
 ---
 
-## 🐛 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### **Problema 1: Queries simples classificadas como COMPLEX_MULTI_PART**
 
-**Sintoma:** "O que é BSC?" → COMPLEX_MULTI_PART (deveria ser SIMPLE_FACTUAL)
+**Sintoma:** "O que é BSC?" -> COMPLEX_MULTI_PART (deveria ser SIMPLE_FACTUAL)
 
 **Causas Possíveis:**
 
@@ -603,18 +603,18 @@ ENABLE_DIRECT_ANSWER_CACHE=True
 ```python
 try:
     asyncio.get_running_loop()
-    # Já em loop → ThreadPoolExecutor
+    # Já em loop -> ThreadPoolExecutor
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(asyncio.run, coro)
         return future.result()
 except RuntimeError:
-    # Não em loop → asyncio.run() normal
+    # Não em loop -> asyncio.run() normal
     return asyncio.run(coro)
 ```
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### **Lição 1: Heurísticas > LLM para Classificação (80%)**
 
@@ -646,7 +646,7 @@ if re.search(r'\be\b', query_lower):
     return True  # Só detecta "e" como palavra isolada
 ```
 
-**ROI:** Accuracy +8% (de 84% → 92%)
+**ROI:** Accuracy +8% (de 84% -> 92%)
 
 ---
 
@@ -660,7 +660,7 @@ if re.search(r'\be\b', query_lower):
 # Analytics: queries que LLM fallback acertou vs heurística
 queries_llm = [d for d in decisions if not d['heuristic_match']]
 avg_complexity_llm = mean(d['complexity_score'] for d in queries_llm)
-# Se avg_complexity_llm < 3 → heurísticas podem melhorar (LLM desnecessário)
+# Se avg_complexity_llm < 3 -> heurísticas podem melhorar (LLM desnecessário)
 ```
 
 ---
@@ -674,12 +674,12 @@ avg_complexity_llm = mean(d['complexity_score'] for d in queries_llm)
 ```python
 try:
     asyncio.get_running_loop()
-    # Já em loop → criar novo loop em thread separada
+    # Já em loop -> criar novo loop em thread separada
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(asyncio.run, coro)
         return future.result()
 except RuntimeError:
-    # Não em loop → asyncio.run() normal
+    # Não em loop -> asyncio.run() normal
     return asyncio.run(coro)
 ```
 
@@ -699,7 +699,7 @@ except RuntimeError:
 
 ---
 
-## 🔗 Referências
+## [EMOJI] Referências
 
 ### **Papers e Artigos (2025)**
 
@@ -732,6 +732,6 @@ except RuntimeError:
 
 ---
 
-**Última Atualização:** 14/10/2025  
-**Versão:** 1.0  
-**Status:** ✅ PRODUÇÃO - Validado com 25/25 testes, 95% coverage
+**Última Atualização:** 14/10/2025
+**Versão:** 1.0
+**Status:** [OK] PRODUÇÃO - Validado com 25/25 testes, 95% coverage

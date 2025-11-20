@@ -26,7 +26,7 @@ Tool use: **mcp_brightdata_search_engine**
 
 <details>
           <summary>MCP tool call</summary>
-      
+
 *Called tool*: brightdata - search_engine: Scrape search results from Google, Bing or Yandex. Returns SERP results in markdown (URL, title, description)
 
 *Parameters*:
@@ -34,7 +34,7 @@ Tool use: **mcp_brightdata_search_engine**
   * engine: google
 
 *Result*:
-cursor IDE globalcursorignore exclude file override 2025 - Google Search    
+cursor IDE globalcursorignore exclude file override 2025 - Google Search
 
 # Accessibility Links
 
@@ -100,8 +100,8 @@ More
 
 # Search Results
 
-These are results for [cursor IDE **_global cursorignore_** exclude file override 2025](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=cursor+IDE+global+cursorignore+exclude+file+override+2025&spell=1&sa=X&ved=2ahUKEwitjKiL46SQAxVdkiYFHVnDMN4QkeECKAB6BAgXEAE)  
-Search instead for [cursor IDE globalcursorignore exclude file override 2025](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=cursor+IDE+globalcursorignore+exclude+file+override+2025&nfpr=1&sa=X&ved=2ahUKEwitjKiL46SQAxVdkiYFHVnDMN4QvgUoAXoECBcQAg)  
+These are results for [cursor IDE **_global cursorignore_** exclude file override 2025](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=cursor+IDE+global+cursorignore+exclude+file+override+2025&spell=1&sa=X&ved=2ahUKEwitjKiL46SQAxVdkiYFHVnDMN4QkeECKAB6BAgXEAE)
+Search instead for [cursor IDE globalcursorignore exclude file override 2025](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=cursor+IDE+globalcursorignore+exclude+file+override+2025&nfpr=1&sa=X&ved=2ahUKEwitjKiL46SQAxVdkiYFHVnDMN4QvgUoAXoECBcQAg)
 
 # AI Overview
 
@@ -113,7 +113,7 @@ Searching
 
 ### \[SOLVED\] "Global Ignore Files" setting is missing
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -141,7 +141,7 @@ Missing: IDE ‎| Show results with: [IDE](/search?sca_esv=deb0b5a04aa924a5&hl=e
 
 ### Ignore files | Cursor Docs
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAb1BMVEUUEgsNCgAJBgAkIh1QT0o9OzYfHRgODAAYFg9FRD1ZWFNDQTw7OTRVVE8uLCVKSUQsKiMyMCobGRO8u7r09PTo6Ofh4N+BgX7///+hoJ3W1dLc29hoZ2PIx8R1dHCzsq5gX1tycW1tbGiXlpMAAABPX0V9AAAA0ElEQVR4Ab3RRYLEIAAAQYgnaNyDLP//4khcjzt9LRzwiyB8JMt2XO+e/SCMIoQwuDKEOCKEoE/0rBYlXyNozD6wh1g4xum3mCebQZRm+b4C+xsyVmbVVlFTuEPioHqhvGlcfEBCmJPO1Jb4hJ/Crsjapmn6GJ1x7Gtt595gN3Ttx0SMLiiVUiNK94yRHiZshdbsgM5IIzZaqaFDPljj3YLt34gc7DJ4Xrbv1KCwOf2mYcOguqJUAzM+OGcl0aBTHSUWuMvQTnEDHoLGQPD/vQEqLRggRsFNbQAAAABJRU5ErkJggg==)
 
@@ -169,7 +169,7 @@ Missing: 2025 ‎| Show results with: [2025](/search?sca_esv=deb0b5a04aa924a5&hl
 
 ### Global .cursorignore file - Bug Reports
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -197,7 +197,7 @@ Missing: IDE ‎exclude
 
 ### Global cursorignore - Feature Requests
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -225,7 +225,7 @@ Missing: IDE ‎exclude
 
 ### I don't have a .cursorignore file, but .env files are ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEX////4+Pi3ubtvcnZNUVU+Q0cpLjLr6+x3en0sMTYkKS59gIORk5aUl5n8/Pzw8PFTV1tbX2Pc3d5DSEzn5+g3PECLjpFKTlKFh4qxs7XCxMUuMze/wcLh4uPV1tZzd3o/Q0jOz9CmqKpjZ2qfoaTxAyfNAAABPUlEQVR4AW3TBYKDMBQE0AltAgzuzur9z7ibH5oKfWjc4UEFl6s2Rl8vgcJZGMX04iTEM5UaPomzHA+KkidVAa/WfKNpffMd32oKCHUlWfb27Q19ZSMVrNHGTMDckMtQLqSegdXGpvi3Sf93W9UudRby2WzsEgL4oMvwoqY1AsrQNfFipbXkCGh1BV6oT1pfRwvfOJlo9ZA5NAonStbmB1pawBuDTAgkX4MzV/eC2H3e0C7lk1aBEzd+7SpigJOZVoXx+J5UxzADil+8+KZYoRaK5y2WZxSdgm0j+dakzkIc2kzT6W3IcFnDTzdt4sKbWMqkpNl229IMsfMmg6UaMsJXmv4qCMXDoI4mO5oADwyFDnGoO3KI0jSHQ6E3eJum5TP4Y+EVyUOGXHZjgWd7ZEwOJzZRjbPQt7mF8P4AzsYZpmkFLF4AAAAASUVORK5CYII=)
 
@@ -253,7 +253,7 @@ Missing: IDE ‎override
 
 ### .cursorignore not excluding files from the @ context
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -281,7 +281,7 @@ Missing: global ‎override
 
 ### Using Cursor IDE to Assist Code Development - Elegant Access
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEX2wz/2xT/4xD7ztkDztEDru0LarkfoukPvqUHsj0L0uEDysEDesUapilPFoUzalEf5tT7vmkH1pz/uk0Hxl0DsikLjtUSujlHPpkrTqkiNdlighlWIcVn2viPhry7Ooz7rtyl7ZlW0j0T6/v/u8vqWnLnb3uqDiKhudJmkp77////7+/u1tsbq6u76+vrJytXX19fBwcEC3pNQAAAAhUlEQVR4Ad3StQHDQAwFUEtfdFSGk/33Sxtmjgfwu+5YwF2PYS4S/V1kYtDF96KKqaaTnL4W2S8i5Rw6/ljc5zMN+DrI+L64uopw5eyZZj63xW2S7c6twKVICJpdcVy5qiMkwcmV4opxI4B02AvO4+YtQ9iiJ30YZifsdjv+u8bg/ycBHAFmjg1FebKEvgAAAABJRU5ErkJggg==)
 
@@ -307,7 +307,7 @@ Mar 23, 2025 — _Cursor IDE_ integrates multiple features, simplifying the AI d
 
 ### cursorignore blocks all files and directories in the project
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -339,7 +339,7 @@ Feedback
 
 ### Mastering Cursor IDE: 10 Best Practices (Building a Daily ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAQlBMVEVHcEwAAAAAAAAAAAAAAAAAAABxcXGkpKSUlJQeHh5/f3/Q0ND////e3t6rq6taWlrHx8e0tLQsLCw+Pj7u7u62trYTUwO8AAAABnRSTlMAS8D5/5dwkjMFAAAA1klEQVR4AX3TRQLEIAwFUNoGhypz/6vOJ9SFrAIPFyFE03b0iK5tBELSR0j0o89oRPuNrei+sRNUiYJKa20slXAoqBOSDyG4klqkns6oURNLapD2F+x7VA2cjvqOkwWOZfq+oPLTjiN0zh3nibHHGnYcgJpo8cTosIQdZ4pQJIoRpf6MjncTiRFL8H1/oE3YjTEFF972gZR3k2jH/oILL2kfNl2QsBu7Yl7eeEGF8oq8vLSi56NLA+d88D/ofmW5K5vqy5Upj56VqD+T6gOrPs3qo659hz8m8RNl7wTa8QAAAABJRU5ErkJggg==)
 
@@ -365,7 +365,7 @@ _Exclude_ Unnecessary _Files_ from Indexing — Speed up _Cursor_ and reduce con
 
 ### Cursor ignores everything in .gitignore automatically, no ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEVHcEz/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RgD/RQD+////RQD/PAD/NQD+QgDP3+fb6e7n8PLx9vcKEhX0/f/L1tz+jXL718/+XCr4+vv0e1/olIP6pJDi3N3PqqbfNAn7cU//VgP+9vQyODv1bEb+49rdzc3/v66xu77IXlHlXDhqcHKsLABrLBlRGkQ3AAAADnRSTlMAwkSK1tA47GYdh31HPrF7ujQAAAF5SURBVCiRbZOHcoMwDIahyYUkbW3Z2GbvlT3e/+UqQSCkiY4D5A9bvwaWNdpqYTucO/ZiZf23NYLRnPUL2iyfiEvJl5sn+5khLuJacP41sq85gyNje5joZs7kLWCMhUiHk+fxKu9+YswnuOx1zvd5FZRKHYAc0jzlIAFudwCoU9RLGWHuJEIIABHnx7I85jE6eOHyylqg+DCKwnDPHrYPycd0tpbNIWcfLAduU8hPjDEKymXs07spi2GxKA09/FhyCwNrkzB2FruEFpMqPtO3GgEeC5lKmK4aGRGMRFNplqgM8Fgb1eZ+4l8a3hJseXNBN0e1NqUid9oYE7VDzDYyiTE7San0RSi0Nv6p6zyv606+0boYikC5QOoqpZXXm9JaqRT68vWFh8x1XRVcPe8aKHzN4FH4vmUiDdwgwP10D1JUM7RsaDbw7FDgHrc4ZLzv2GOMfof5gLhO0zoG6Bs2DtH3NHYgh1a+s5lNo7l+Q7OhfoWOvX3+Dn+Ini8glo+XBwAAAABJRU5ErkJggg==)
 
@@ -456,7 +456,7 @@ Tool use: **mcp_brightdata_search_engine**
 
 <details>
           <summary>MCP tool call</summary>
-      
+
 *Called tool*: brightdata - search_engine: Scrape search results from Google, Bing or Yandex. Returns SERP results in markdown (URL, title, description)
 
 *Parameters*:
@@ -464,7 +464,7 @@ Tool use: **mcp_brightdata_search_engine**
   * engine: google
 
 *Result*:
-.cursorignore .globalcursorignore how to unignore specific file - Google Search   
+.cursorignore .globalcursorignore how to unignore specific file - Google Search
 
 # Accessibility links
 
@@ -530,8 +530,8 @@ More
 
 # Search Results
 
-These are results for [.cursorignore .**_global cursorignore_** how to unignore specific file](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=.cursorignore+.global+cursorignore+how+to+unignore+specific+file&spell=1&sa=X&ved=2ahUKEwj6y9yM46SQAxUrgmoFHXOFOGQQkeECKAB6BAgbEAE)  
-Search instead for [.cursorignore .globalcursorignore how to unignore specific file](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=.cursorignore+.globalcursorignore+how+to+unignore+specific+file&nfpr=1&sa=X&ved=2ahUKEwj6y9yM46SQAxUrgmoFHXOFOGQQvgUoAXoECBsQAg)  
+These are results for [.cursorignore .**_global cursorignore_** how to unignore specific file](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=.cursorignore+.global+cursorignore+how+to+unignore+specific+file&spell=1&sa=X&ved=2ahUKEwj6y9yM46SQAxUrgmoFHXOFOGQQkeECKAB6BAgbEAE)
+Search instead for [.cursorignore .globalcursorignore how to unignore specific file](/search?sca_esv=deb0b5a04aa924a5&hl=en&q=.cursorignore+.globalcursorignore+how+to+unignore+specific+file&nfpr=1&sa=X&ved=2ahUKEwj6y9yM46SQAxUrgmoFHXOFOGQQvgUoAXoECBsQAg)
 
 # AI overview
 
@@ -543,7 +543,7 @@ Searching
 
 ### Ignore files | Cursor Docs
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAb1BMVEUUEgsNCgAJBgAkIh1QT0o9OzYfHRgODAAYFg9FRD1ZWFNDQTw7OTRVVE8uLCVKSUQsKiMyMCobGRO8u7r09PTo6Ofh4N+BgX7///+hoJ3W1dLc29hoZ2PIx8R1dHCzsq5gX1tycW1tbGiXlpMAAABPX0V9AAAA0ElEQVR4Ab3RRYLEIAAAQYgnaNyDLP//4khcjzt9LRzwiyB8JMt2XO+e/SCMIoQwuDKEOCKEoE/0rBYlXyNozD6wh1g4xum3mCebQZRm+b4C+xsyVmbVVlFTuEPioHqhvGlcfEBCmJPO1Jb4hJ/Crsjapmn6GJ1x7Gtt595gN3Ttx0SMLiiVUiNK94yRHiZshdbsgM5IIzZaqaFDPljj3YLt34gc7DJ4Xrbv1KCwOf2mYcOguqJUAzM+OGcl0aBTHSUWuMvQTnEDHoLGQPD/vQEqLRggRsFNbQAAAABJRU5ErkJggg==)
 
@@ -569,7 +569,7 @@ Control which files Cursor can access using ._cursorignore_ files for security a
 
 ### How do I disable or remove env file from .cursorignore?
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAAllBMVEVHcEz/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RQD/RgD/RQD+////RQD/PAD/NQD+QgDP3+fb6e7n8PLx9vcKEhX0/f/L1tz+jXL718/+XCr4+vv0e1/olIP6pJDi3N3PqqbfNAn7cU//VgP+9vQyODv1bEb+49rdzc3/v66xu77IXlHlXDhqcHKsLABrLBlRGkQ3AAAADnRSTlMAwkSK1tA47GYdh31HPrF7ujQAAAF5SURBVCiRbZOHcoMwDIahyYUkbW3Z2GbvlT3e/+UqQSCkiY4D5A9bvwaWNdpqYTucO/ZiZf23NYLRnPUL2iyfiEvJl5sn+5khLuJacP41sq85gyNje5joZs7kLWCMhUiHk+fxKu9+YswnuOx1zvd5FZRKHYAc0jzlIAFudwCoU9RLGWHuJEIIABHnx7I85jE6eOHyylqg+DCKwnDPHrYPycd0tpbNIWcfLAduU8hPjDEKymXs07spi2GxKA09/FhyCwNrkzB2FruEFpMqPtO3GgEeC5lKmK4aGRGMRFNplqgM8Fgb1eZ+4l8a3hJseXNBN0e1NqUid9oYE7VDzDYyiTE7San0RSi0Nv6p6zyv606+0boYikC5QOoqpZXXm9JaqRT68vWFh8x1XRVcPe8aKHzN4FH4vmUiDdwgwP10D1JUM7RsaDbw7FDgHrc4ZLzv2GOMfof5gLhO0zoG6Bs2DtH3NHYgh1a+s5lNo7l+Q7OhfoWOvX3+Dn+Ini8glo+XBwAAAABJRU5ErkJggg==)
 
@@ -611,7 +611,7 @@ May 5, 2025
 
 ### You can unignore files in .cursorignore
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA+UlEQVR4AcXQIayEIADGcfpmv0Ay0RzNxkZgMxjoNrORSKS8YLYZzTT7qPRApLBR2K7Ph+U99O7y/etvwPjA1+OPj9T+yAeBbwnKRQ0As7Z6tXGZleCgbilrbkSkEmLi+LwBNehq9njmUgohxphS6gtEVMXjv7SDEruOrX/kA4MFNh3ru34/6el9XFB9Qco61nJ7BO+DgxiW2FPCGCE4+nxwgs0dKR2m4UQD0BU5I3zKP80YxvzVcmPM+SiEkCI/aWaJq6qcXJ4ppTJuWusZXZbVel1y3ltjnRW3deWu13X1zjg3g5fqZd82b51G4F1s095w8KlRgm/3C1clkeinKJHkAAAAAElFTkSuQmCC)
 
@@ -647,7 +647,7 @@ May 7, 2025
 
 ### I don't have a .cursorignore file, but .env files are ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEX////4+Pi3ubtvcnZNUVU+Q0cpLjLr6+x3en0sMTYkKS59gIORk5aUl5n8/Pzw8PFTV1tbX2Pc3d5DSEzn5+g3PECLjpFKTlKFh4qxs7XCxMUuMze/wcLh4uPV1tZzd3o/Q0jOz9CmqKpjZ2qfoaTxAyfNAAABPUlEQVR4AW3TBYKDMBQE0AltAgzuzur9z7ibH5oKfWjc4UEFl6s2Rl8vgcJZGMX04iTEM5UaPomzHA+KkidVAa/WfKNpffMd32oKCHUlWfb27Q19ZSMVrNHGTMDckMtQLqSegdXGpvi3Sf93W9UudRby2WzsEgL4oMvwoqY1AsrQNfFipbXkCGh1BV6oT1pfRwvfOJlo9ZA5NAonStbmB1pawBuDTAgkX4MzV/eC2H3e0C7lk1aBEzd+7SpigJOZVoXx+J5UxzADil+8+KZYoRaK5y2WZxSdgm0j+dakzkIc2kzT6W3IcFnDTzdt4sKbWMqkpNl229IMsfMmg6UaMsJXmv4qCMXDoI4mO5oADwyFDnGoO3KI0jSHQ6E3eJum5TP4Y+EVyUOGXHZjgWd7ZEwOJzZRjbPQt7mF8P4AzsYZpmkFLF4AAAAASUVORK5CYII=)
 
@@ -673,7 +673,7 @@ May 11, 2025 — In Editor Settings - Search for: _Global Cursor Ignore List_ (C
 
 ### Cursor Bypasses Global Cursor Ignore List for .env File · ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAb1BMVEX////4+Pi3ubtvcnZNUVU+Q0cpLjLr6+x3en0sMTYkKS59gIORk5aUl5n8/Pzw8PFTV1tbX2Pc3d5DSEzn5+g3PECLjpFKTlKFh4qxs7XCxMUuMze/wcLh4uPV1tZzd3o/Q0jOz9CmqKpjZ2qfoaTxAyfNAAABPUlEQVR4AW3TBYKDMBQE0AltAgzuzur9z7ibH5oKfWjc4UEFl6s2Rl8vgcJZGMX04iTEM5UaPomzHA+KkidVAa/WfKNpffMd32oKCHUlWfb27Q19ZSMVrNHGTMDckMtQLqSegdXGpvi3Sf93W9UudRby2WzsEgL4oMvwoqY1AsrQNfFipbXkCGh1BV6oT1pfRwvfOJlo9ZA5NAonStbmB1pawBuDTAgkX4MzV/eC2H3e0C7lk1aBEzd+7SpigJOZVoXx+J5UxzADil+8+KZYoRaK5y2WZxSdgm0j+dakzkIc2kzT6W3IcFnDTzdt4sKbWMqkpNl229IMsfMmg6UaMsJXmv4qCMXDoI4mO5oADwyFDnGoO3KI0jSHQ6E3eJum5TP4Y+EVyUOGXHZjgWd7ZEwOJzZRjbPQt7mF8P4AzsYZpmkFLF4AAAAASUVORK5CYII=)
 
@@ -699,7 +699,7 @@ Jul 20, 2025 — I'm reporting a bug in Cursor where it improperly reads the .en
 
 ### Cursor: Excluding Files/Directories
 
-  
+
 
 nstech
 
@@ -723,7 +723,7 @@ Create the _File_: In the root directory of your project, create a _file_ named 
 
 ### Unignore subdirectories of ignored directories in Git
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAA7ElEQVR4AWJwLwC0WwcaCENhFMefoV6hABgEBhDAxN7jAggRPcSeoAcYQFgIInuSIcAlwLqHM45klvtt0PCXO7Pfvu3Gskn7c3AG/WldhNIpwRaNDQJadb9EH9agYiWQ13G55doRPYwFLkKNIpiQ68QcZIqUXHuszUBMo1PJLm2JJ/qoo0FcSKZCBdGc62asd5h8wkRTKxCIkwsvZPMU+h7tQP4VNB5zehNR4LWq6tD+y+N0xHyH8/wzigFbXEA2TColiMed3ODTBMQUPXlzEJP0ZQnWl9t9MyQr8KdiwTy0C2WD4rnzN80MmvcG9xb1UQNO3ZEAAAAASUVORK5CYII=)
 
@@ -753,7 +753,7 @@ Missing: .cursorignore ‎cursorignore
 
 ### Ignore Files
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAABo0lEQVR4Ac3XAWcCcRgG8Au2PkGxJoCyDgj6BgnM1AAEkAB9g4umJIDtU1T6HAWmL5A7LBLchUqePea10Wr/3urmHn6Q3t435727v6XMDdn0TA59CEc+s+U7V88Dteid1oQj1vKdltRcnHt6JZ+g5EvtPZ2VJ5oRLjST31KlQVvClWypoWmOcJiHeNT/c5Wt9DiYO3IJIfMoRb/yRtDI5/OoVqvQD8Fee8lQQNAYjUZYLBZIJpPaAVaUpe+8EDSKxSJ2ux0Y9Ho9Ta1gT8ktTTXF8Xgc4/EYkARBANu2tQNMpbeVo42muFarYT/D4RCxWEwzwEZ6WxVN80QiAdd1sR9eDpRKJc0AxN6Moynqdrs4lslkAl4ezQBNsuanFuRyOfi+j79Sr9c1A8xVA/T7fZjieR64lqoBmpq1M0S7lg5ZFcXaGaJey4p5DWXttBkMBieuoeFGlE6nsVwucU7K5bL5RmS6FRcKha/Va7fbKp1Ox/SgYs+fZGlF+CcBZQyP4zCx14GkyCOEzKVUJF/JIvFSGv5refQPJhE6mkXicBr68fwTVWYuwEfZOWcAAAAASUVORK5CYII=)
 
@@ -793,7 +793,7 @@ Feedback
 
 ### Ignore all files in the dist directory - Learn Cursor
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAACr0lEQVR4Ab2WQ5hdQRCFw1XeLt7N+m1i27Zt27Zt27Zt27ZtJ/1nTr7pJHPnebA4l931V1c1Kl6RtiXjVAE1GtMJ18h2dBzakwNDevA2XPwnvW/Qf7WLFnBuHVLLmAwHoQ3qFzRQHstAqFL/gIF2VAO7Qr+OIOl5VH+w3618QZUCv8A+7ZlsjW1aA8+fcfPnL2YCbX/9oIz08ztNbx5guf77gw7vzVWvwIWTKafRyFAExD2tKrUnlGDmtGocmVKRq7pPLM3I/knIoj7XTtF06mjvYH2fOZ7dHoGCnTkJfKOwINOrw8w6EaoNUyvzS1raCXbPgMNLQUAg8YIZXHBC7buiFAWoUAqmkMmoBUkCC3hjDfz4xjqgGhAGuCRrQyOxEJtzC4sCVBiVGydM7+sHo397rHFfElSRUpjVx+OkmdiODIIpR86RCQaMCmY32b6Ru4qEz2WhySGIEygvY2Vrm1WPW06YJgWQLMaB2gMFcebu0RX2x8rmHQ4o4CmcQNtYAHrIX21Y0AqAfHEG1OIG3LEV0nxO4JxGoB0nFKMH85rsuzKazV6BkqccPjpB+335TNcQYEi7s5rzXoHalJ3Aw2sZtiutubq/kKkTCEzOWZjV7izmsEegdhuF8v+wrujJuz8epzMoRN5OcrWRYwJ40r48ZofH02JGHTY6oTqy1EHQ/0MlzyW9+9O21Aalx+MBvKAlby3UTh5931/Y/LDQYCSYThkgs0cg4FrakU/KoYVq29O/o3XM8x1uQyBgtbEwHXk+axog8bbxXBRUslA5c3s28zVagS38f+mbQIcqGd5e4aNGFnCZqLjreLJgSdUY4FZNc3W8MccbGuSApGd9e3max0DbkAthdT67lVMqK+SA8qoJJrhKDJ2lQDUgn/N0CQXohLtt5WYrOSAs0P6/Ad1DFRTNvOboAAAAAElFTkSuQmCC)
 
@@ -821,7 +821,7 @@ Missing: .global
 
 ### Mastering Cursor for Enterprise: Effective Indexing & Cursor ...
 
-  
+
 
 ![](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcElEQVR4AWP4//8/RZh6BgCZAkDsAMUNWDFCXgDFACCV8J/B+D8pGKwHRAKRAUyQDEMMQAYEUGBAAsiABpwKHjz4/9/BAZ8BDXgNgIMNGyg04MABkg1AeCEgAK8XKA5EiqORooSELykXEJuUBz43AgAIA1ZhBoG9vwAAAABJRU5ErkJggg==)
 
@@ -886,7 +886,7 @@ Tool use: **mcp_brightdata_scrape_as_markdown**
 
 <details>
           <summary>MCP tool call</summary>
-      
+
 *Called tool*: brightdata - scrape_as_markdown: Scrape a single webpage URL with advanced options for content extraction and get back the results in MarkDown language. This tool can unlock any webpage even if it uses bot detection or CAPTCHA.
 
 *Parameters*:
@@ -904,7 +904,7 @@ Ignore files | Cursor Docs
 
 Baseado nas pesquisas realizadas, aqui está como liberar o arquivo `.env` do ignore global do Cursor:
 
-## 📋 Como Liberar .env do Global Cursor Ignore
+## [EMOJI] Como Liberar .env do Global Cursor Ignore
 
 ---
 
@@ -920,9 +920,9 @@ _**Assistant (default)**_
 
 ---
 
-## 📋 Como Liberar .env do Global Cursor Ignore
+## [EMOJI] Como Liberar .env do Global Cursor Ignore
 
-### 🔍 Descobertas da Pesquisa
+### [EMOJI] Descobertas da Pesquisa
 
 Baseado nas informações coletadas, o Cursor ignora arquivos `.env` **por padrão** através da configuração global. Aqui estão as **3 formas** de liberar o arquivo:
 
@@ -987,7 +987,7 @@ Crie ou edite o arquivo `.cursorignore` na **raiz do seu projeto**:
 
 ---
 
-### ⚠️ **IMPORTANTE: Considerações de Segurança**
+### [WARN] **IMPORTANTE: Considerações de Segurança**
 
 A pesquisa do Brightdata revelou discussões importantes na comunidade:
 
@@ -1001,22 +1001,22 @@ A pesquisa do Brightdata revelou discussões importantes na comunidade:
 
 **Se você REALMENTE precisa liberar `.env`:**
 
-✅ **Melhor Prática:**
+[OK] **Melhor Prática:**
 - Use `.env.example` ou `.env.template` com valores dummy
 - Libere **apenas** esses arquivos template no ignore
 - Mantenha `.env` real ignorado
 
-❌ **Evite:**
+[ERRO] **Evite:**
 - Liberar `.env` em projetos públicos/compartilhados
 - Expor credenciais reais no contexto da IA
 - Remover proteção em repositórios com múltiplos colaboradores
 
 ---
 
-### 🧪 Testar se Funcionou
+### [EMOJI] Testar se Funcionou
 
 1. **Verifique o ícone do arquivo:**
-   - No Explorer do Cursor, arquivos ignorados mostram ícone 🚫
+   - No Explorer do Cursor, arquivos ignorados mostram ícone [EMOJI]
    - Após liberar, o ícone deve desaparecer
 
 2. **Teste no Chat:**
@@ -1025,12 +1025,12 @@ A pesquisa do Brightdata revelou discussões importantes na comunidade:
    - Se funcionar, o arquivo foi liberado com sucesso
 
 3. **Verifique Indexing:**
-   - `Ctrl + P` → Digite `.env`
+   - `Ctrl + P` -> Digite `.env`
    - O arquivo deve aparecer nos resultados
 
 ---
 
-### 📝 Exemplo Completo: `.cursorignore`
+### [EMOJI] Exemplo Completo: `.cursorignore`
 
 ```bash
 # .cursorignore - Exemplo Completo
@@ -1057,7 +1057,7 @@ A pesquisa do Brightdata revelou discussões importantes na comunidade:
 
 ---
 
-### 🔗 Fontes (2025)
+### [EMOJI] Fontes (2025)
 
 - [Cursor Docs - Ignore Files](https://cursor.com/docs/context/ignore-files)
 - [Cursor Forum - You can unignore files in .cursorignore](https://forum.cursor.com/t/you-can-unignore-files-in-cursorignore/38074)
@@ -1069,4 +1069,3 @@ A pesquisa do Brightdata revelou discussões importantes na comunidade:
 **Precisa de ajuda para implementar algum dos métodos?** Posso criar os comandos ou arquivos específicos para o seu projeto BSC RAG.
 
 ---
-

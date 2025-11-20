@@ -1,12 +1,12 @@
 # ===================================================================
 # SCRIPT: Reset Completo para Teste - Parar Python + Limpar Cache
 # ===================================================================
-# 
+#
 # USO: .\reset_test.ps1
 #
 # O que faz:
 # 1. Para TODOS os processos Python
-# 2. Limpa __pycache__ 
+# 2. Limpa __pycache__
 # 3. Limpa .pyc files
 # 4. Mostra instruções para reiniciar
 #
@@ -25,7 +25,7 @@ $pythonProcesses = Get-Process python -ErrorAction SilentlyContinue
 
 if ($pythonProcesses) {
     Write-Host "      Encontrados $($pythonProcesses.Count) processo(s) em execução" -ForegroundColor Gray
-    
+
     foreach ($process in $pythonProcesses) {
         try {
             Stop-Process -Id $process.Id -Force -ErrorAction Stop
@@ -79,4 +79,3 @@ Write-Host "  streamlit run app\main.py" -ForegroundColor White
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
-

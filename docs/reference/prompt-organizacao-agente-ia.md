@@ -7,7 +7,7 @@ date: "04/10/2025"
 source: "Extraído de Advance Steel 2019 project (.cursor/rules/)"
 domain: "Agnóstico (adaptável para qualquer tecnologia/projeto)"
 estimated_reading: "30 min"
-tags: 
+tags:
   - "meta-prompt"
   - "knowledge-base-organization"
   - "agent-self-awareness"
@@ -15,24 +15,24 @@ tags:
   - "workflow-automation"
 ---
 
-# 🧠 SISTEMA DE ORGANIZAÇÃO DE AGENTE IA
+# [EMOJI] SISTEMA DE ORGANIZAÇÃO DE AGENTE IA
 
-## 🎯 OBJETIVO DESTE PROMPT
+## [EMOJI] OBJETIVO DESTE PROMPT
 
 Este documento compila **estratégias validadas** para construir um **Agente IA autoconsciente** capaz de:
 
-1. ✅ **Conhecer-se** (Self-Awareness): Saber quais documentos possui, quando usá-los, onde estão
-2. ✅ **Organizar Knowledge Base**: Estruturar documentação de forma navegável e eficiente
-3. ✅ **Workflows Estruturados**: Seguir processos consistentes que economizam tempo
-4. ✅ **Aprender Continuamente**: Documentar lições, antipadrões, decisões técnicas
-5. ✅ **Manter-se Atualizado**: Versionar documentação, rastrear mudanças
+1. [OK] **Conhecer-se** (Self-Awareness): Saber quais documentos possui, quando usá-los, onde estão
+2. [OK] **Organizar Knowledge Base**: Estruturar documentação de forma navegável e eficiente
+3. [OK] **Workflows Estruturados**: Seguir processos consistentes que economizam tempo
+4. [OK] **Aprender Continuamente**: Documentar lições, antipadrões, decisões técnicas
+5. [OK] **Manter-se Atualizado**: Versionar documentação, rastrear mudanças
 
-**Fonte:** Projeto Advance Steel 2019 (Engelar Engenharia, 2024-2025)  
+**Fonte:** Projeto Advance Steel 2019 (Engelar Engenharia, 2024-2025)
 **ROI validado:** 145-150 min economizados por projeto, redução 79% tokens em discovery, 85% mais rápido
 
 ---
 
-## 📋 ÍNDICE
+## [EMOJI] ÍNDICE
 
 1. [Estratégia 1: Self-Awareness do Agente](#estratégia-1-self-awareness-do-agente)
 2. [Estratégia 2: Organização da Knowledge Base](#estratégia-2-organização-da-knowledge-base)
@@ -62,7 +62,7 @@ O agente deve **conhecer-se completamente**: quais rules possui, quando usar cad
 **Estrutura:**
 
 ```markdown
-## 📋 ÍNDICE (com links âncora)
+## [EMOJI] ÍNDICE (com links âncora)
 1. [Workflow Obrigatório](#workflow-obrigatório)
 2. [Lições de Produção](#lições-de-produção)
 3. [Mapa de Rules](#mapa-de-rules)
@@ -74,17 +74,17 @@ O agente deve **conhecer-se completamente**: quais rules possui, quando usar cad
 9. [Princípios Fundamentais](#princípios)
 10. [Localização Rules](#localização)
 
-## 🚨 WORKFLOW OBRIGATÓRIO
+## [EMOJI] WORKFLOW OBRIGATÓRIO
 ANTES de implementar QUALQUER funcionalidade, execute:
-1. 🧠 Sequential Thinking (planeje ANTES de codificar)
-2. 🎯 Discovery (Catalog/Index - descubra O QUE posso fazer)
-3. 🗺️ Navigation (Map - identifique QUAL doc consultar)
-4. 📚 Knowledge Base (doc específico - aprenda COMO fazer)
-5. 📘 Rule Especializada (padrões validados)
-6. ✅ Implementação
-7. 🧪 Validação (testes múltiplos, não apenas um!)
+1. [EMOJI] Sequential Thinking (planeje ANTES de codificar)
+2. [EMOJI] Discovery (Catalog/Index - descubra O QUE posso fazer)
+3. [EMOJI] Navigation (Map - identifique QUAL doc consultar)
+4. [EMOJI] Knowledge Base (doc específico - aprenda COMO fazer)
+5. [EMOJI] Rule Especializada (padrões validados)
+6. [OK] Implementação
+7. [EMOJI] Validação (testes múltiplos, não apenas um!)
 
-## 🗺️ MAPA DE RULES (Quando Usar Cada Uma)
+## [EMOJI] MAPA DE RULES (Quando Usar Cada Uma)
 | Tarefa/Contexto | Rule a Consultar | Quando Usar |
 |----|----|-----|
 | Descobrir capabilities, ROI | @capabilities-catalog | Estimar esforço, decidir o que implementar |
@@ -94,18 +94,18 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 | Troubleshooting | @[domain]-troubleshooting | Resolver erros, evitar antipadrões |
 | Qual doc consultar | @knowledge-map | Navegação na KB |
 
-## 📚 LOCALIZAÇÃO DAS RULES
+## [EMOJI] LOCALIZAÇÃO DAS RULES
 ```
 .cursor/rules/
-├── [domain]-core.mdc                    ← VOCÊ ESTÁ AQUI (router)
-├── [domain]-capabilities-catalog.mdc    ← "O QUE posso fazer"
-├── [domain]-quick-refs.mdc              ← Padrões rápidos 1 página
-├── [domain]-[api/tech]-[name].mdc       ← Rules especializadas
-├── [domain]-troubleshooting.mdc         ← Debug + Antipadrões
-└── [domain]-knowledge-map.mdc           ← Navegação KB
+├── [domain]-core.mdc                    <- VOCÊ ESTÁ AQUI (router)
+├── [domain]-capabilities-catalog.mdc    <- "O QUE posso fazer"
+├── [domain]-quick-refs.mdc              <- Padrões rápidos 1 página
+├── [domain]-[api/tech]-[name].mdc       <- Rules especializadas
+├── [domain]-troubleshooting.mdc         <- Debug + Antipadrões
+└── [domain]-knowledge-map.mdc           <- Navegação KB
 ```
 
-## 🎯 GUIA RÁPIDO POR CENÁRIO
+## [EMOJI] GUIA RÁPIDO POR CENÁRIO
 ### Cenário 1: [Tarefa Tipo A]
 1. Sequential Thinking
 2. Consultar @[rule-X]
@@ -115,11 +115,11 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 ### Cenário 2: [Tarefa Tipo B]
 [workflow específico]
 
-## 📊 MATRIZ DE DECISÃO: PROBLEMA → RULE
+## [EMOJI] MATRIZ DE DECISÃO: PROBLEMA -> RULE
 | Se você tem... | Então consulte... |
 |---|---|
 | Erro [X] | @[rule-Y] + @troubleshooting |
-| Dúvida [A] | @knowledge-map → identificar doc |
+| Dúvida [A] | @knowledge-map -> identificar doc |
 | Tarefa [B] | @quick-refs (padrão rápido) |
 ```
 
@@ -134,13 +134,13 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 **Estrutura:**
 
 ```markdown
-# 🗺️ MAPA DA KNOWLEDGE BASE - [SEU PROJETO]
+# [EMOJI] MAPA DA KNOWLEDGE BASE - [SEU PROJETO]
 
-## 📚 DOCUMENTAÇÃO POR CATEGORIA
+## [EMOJI] DOCUMENTAÇÃO POR CATEGORIA
 
-### 🔍 FERRAMENTAS DE DISCOVERY
+### [EMOJI] FERRAMENTAS DE DISCOVERY
 
-#### 📇 TAGS_INDEX ⭐ NOVO
+#### [EMOJI] TAGS_INDEX ⭐ NOVO
 - Tipo: Índice consolidado navegável
 - Uso: Busca rápida por tags, categorias, complexidade
 - Quando usar: Descobrir docs por palavra-chave, filtrar por complexidade
@@ -148,53 +148,53 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 - Path: knowledge_base/Docs/TAGS_INDEX.md
 - ✨ Benefício: Discovery 50-70% mais rápida
 
-#### 🎯 Capabilities Catalog ⭐ SISTEMA DISCOVERY
+#### [EMOJI] Capabilities Catalog ⭐ SISTEMA DISCOVERY
 - Tipo: Catálogo estruturado de capabilities
 - Uso: Descobrir "O QUE POSSO FAZER" com ROI transparente
 - Quando usar: Planejamento projetos, estimar tempo/ROI
 - Path: .cursor/rules/capabilities-catalog.mdc
 - ✨ Benefício: 79% menos tokens, 85% mais rápido
 
-#### ⚡ Quick Reference Cards ⭐ PADRÕES RÁPIDOS
+#### [FAST] Quick Reference Cards ⭐ PADRÕES RÁPIDOS
 - Tipo: Mini-guias 1 página
 - Uso: Padrões comuns em <5 min
 - Quando usar: 80% casos comuns, troubleshooting rápido
 - Path: .cursor/rules/quick-refs.mdc
 - ✨ Benefício: 80% casos resolvidos <5 min
 
-### 🔧 [CATEGORIA 2: APIs/Tutoriais]
+### [EMOJI] [CATEGORIA 2: APIs/Tutoriais]
 [listar documentação por categoria]
 
-### 💼 [CATEGORIA 3: Exemplos Práticos]
+### [EMOJI] [CATEGORIA 3: Exemplos Práticos]
 [listar samples/exemplos]
 
-## 🏆 GOLDEN STANDARDS (Referências Validadas)
+## [EMOJI] GOLDEN STANDARDS (Referências Validadas)
 - ⭐ [Sample 1]: BEST para [caso de uso X]
 - ⭐ [Sample 2]: VALIDATED [N]x em produção
 - ⭐ [Sample 3]: BASE para [caso de uso Y]
 
-## 🎯 GUIAS DE USO RÁPIDO POR CENÁRIO
-### 🏗️ [CENÁRIO 1]
-1. [Doc A] → Aprenda workflow básico
-2. [Sample B] → Veja código funcional
-3. [Doc C] → Consulte referência técnica
+## [EMOJI] GUIAS DE USO RÁPIDO POR CENÁRIO
+### [EMOJI] [CENÁRIO 1]
+1. [Doc A] -> Aprenda workflow básico
+2. [Sample B] -> Veja código funcional
+3. [Doc C] -> Consulte referência técnica
 
-### ⚡ [CENÁRIO 2]
+### [FAST] [CENÁRIO 2]
 [workflow específico]
 
-## 📊 MATRIZ DE DECISÃO RÁPIDA
+## [EMOJI] MATRIZ DE DECISÃO RÁPIDA
 | Objetivo | Documento Principal | Suporte | Complexidade |
 |---|---|---|---|
 | [Tarefa A] | [Doc 1] | [Doc 2] | ⭐⭐ |
 | [Tarefa B] | [Doc 3] | [Doc 4] | ⭐⭐⭐⭐ |
 
-## 🚨 TROUBLESHOOTING GUIDE
+## [EMOJI] TROUBLESHOOTING GUIDE
 | Problema | Documentos para Consultar |
 |---|---|
 | Erro [X] | [Doc A] + [Doc B] |
 | Problema [Y] | [Doc C] |
 
-## 🔍 PALAVRAS-CHAVE PARA BUSCA SEMÂNTICA
+## [EMOJI] PALAVRAS-CHAVE PARA BUSCA SEMÂNTICA
 - **[Categoria A]:** keyword1, keyword2, keyword3
 - **[Categoria B]:** keyword4, keyword5, keyword6
 ```
@@ -210,9 +210,9 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 **Estrutura:**
 
 ```markdown
-# 📘 CATÁLOGO DE CAPABILITIES - [SEU PROJETO]
+# [EMOJI] CATÁLOGO DE CAPABILITIES - [SEU PROJETO]
 
-## 🗂️ TAXONOMIA DE CAPABILITIES
+## [EMOJI] TAXONOMIA DE CAPABILITIES
 
 ### Categorias Principais
 1. [CATEGORIA 1]: [descrição]
@@ -228,13 +228,13 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 | ⭐⭐⭐⭐ Avançado | 3-6h | 10+ APIs, arquitetura elaborada | [Ex4] |
 | ⭐⭐⭐⭐⭐ Expert | 6h+ | Sistema completo | [Ex5] |
 
-## 📑 ÍNDICE NAVEGÁVEL
+## [EMOJI] ÍNDICE NAVEGÁVEL
 
 ### Quick Reference Table
 | CAP-ID | Nome | Categoria | Complexidade | Tempo | ROI | Prioridade |
 |---|---|---|---|---|---|---|
-| CAP-001 | [Nome 1] | [Cat A] | ⭐⭐⭐ | 20-30h | 100h/ano | 🔥 P0 |
-| CAP-002 | [Nome 2] | [Cat B] | ⭐⭐ | 10-15h | 50h/ano | 🔥 P1 |
+| CAP-001 | [Nome 1] | [Cat A] | ⭐⭐⭐ | 20-30h | 100h/ano | [EMOJI] P0 |
+| CAP-002 | [Nome 2] | [Cat B] | ⭐⭐ | 10-15h | 50h/ano | [EMOJI] P1 |
 
 ### Por Categoria
 #### [CATEGORIA 1]
@@ -242,19 +242,19 @@ ANTES de implementar QUALQUER funcionalidade, execute:
 - [CAP-002: Capability Z] - ⭐⭐ - ROI [W]h/ano - P1
 
 ### Por ROI (Valor Anual)
-#### 🔥🔥🔥 Ultra-Alto (>500h/ano)
+#### [EMOJI][EMOJI][EMOJI] Ultra-Alto (>500h/ano)
 - [CAP-XXX]: [ROI]h/ano
 
-#### 🔥🔥 Alto (200-500h/ano)
+#### [EMOJI][EMOJI] Alto (200-500h/ano)
 - [CAP-YYY]: [ROI]h/ano
 
-## 🚀 CAPABILITIES DETALHADAS
+## [EMOJI] CAPABILITIES DETALHADAS
 
 Cada capability em arquivo separado:
 - capabilities/CAP-001-[nome].md
 - capabilities/CAP-002-[nome].md
 
-## 💰 ROI CONSOLIDADO
+## [EMOJI] ROI CONSOLIDADO
 - Total economia/ano: [X-Y]h
 - Payback financeiro: R$ [Z]k/ano
 - Tempo desenvolvimento total: [A-B]h
@@ -272,7 +272,7 @@ Cada capability em arquivo separado:
 **Estrutura:**
 
 ```markdown
-# 🎯 QUICK REFERENCE CARDS - [SEU PROJETO]
+# [EMOJI] QUICK REFERENCE CARDS - [SEU PROJETO]
 
 ## QR-001: [Tarefa Comum A]
 
@@ -297,9 +297,9 @@ Cada capability em arquivo separado:
 |---|---|---|
 | [erro1] | [causa] | [solução] |
 
-### 📚 Ver também
-- [Doc X] → [quando consultar]
-- [Sample Y] → [quando usar]
+### [EMOJI] Ver também
+- [Doc X] -> [quando consultar]
+- [Sample Y] -> [quando usar]
 
 ---
 
@@ -308,7 +308,7 @@ Cada capability em arquivo separado:
 
 ---
 
-## 🔍 MATRIZ DE QUICK REF
+## [EMOJI] MATRIZ DE QUICK REF
 | Preciso de... | Quick Ref | Complexidade | Tempo |
 |---|---|---|---|
 | [Tarefa A] | QR-001 | ⭐ | 10 min |
@@ -330,41 +330,41 @@ A Knowledge Base deve ser **estruturada hierarquicamente** e **navegável**, com
 ```
 seu_projeto/
 ├── .cursor/
-│   └── rules/                          ← Rules do agente
-│       ├── [domain]-core.mdc           ← Router central (always-applied)
+│   └── rules/                          <- Rules do agente
+│       ├── [domain]-core.mdc           <- Router central (always-applied)
 │       ├── [domain]-capabilities-catalog.mdc
 │       ├── [domain]-quick-refs.mdc
 │       ├── [domain]-knowledge-map.mdc
-│       ├── [domain]-[tech]-api.mdc     ← Rules especializadas
+│       ├── [domain]-[tech]-api.mdc     <- Rules especializadas
 │       ├── [domain]-troubleshooting.mdc
-│       └── capabilities/               ← Capabilities individuais
+│       └── capabilities/               <- Capabilities individuais
 │           ├── CAP-001-[nome].md
 │           ├── CAP-002-[nome].md
 │           └── ...
 │
-├── knowledge_base/                     ← Documentação completa
-│   ├── Docs/                          ← Guias e referências
-│   │   ├── TAGS_INDEX.md              ← Índice de tags (discovery)
-│   │   ├── METADATA_SCHEMA.md         ← Schema de metadados
+├── knowledge_base/                     <- Documentação completa
+│   ├── Docs/                          <- Guias e referências
+│   │   ├── TAGS_INDEX.md              <- Índice de tags (discovery)
+│   │   ├── METADATA_SCHEMA.md         <- Schema de metadados
 │   │   ├── [Doc1]_safe.md
 │   │   ├── [Doc2]_safe.md
 │   │   └── ...
 │   │
-│   ├── Samples/                       ← Exemplos práticos
+│   ├── Samples/                       <- Exemplos práticos
 │   │   └── Projects/
 │   │       ├── [Sample1]/
-│   │       │   ├── README.md          ← Metadados completos
+│   │       │   ├── README.md          <- Metadados completos
 │   │       │   ├── [código]
 │   │       │   └── ...
 │   │       ├── [Sample2]/
 │   │       └── ...
 │   │
-│   └── Audits/                        ← Auditorias e análises
+│   └── Audits/                        <- Auditorias e análises
 │       ├── auditoria_[tema1].md
 │       ├── auditoria_[tema2].md
 │       └── ...
 │
-└── README.md                          ← Overview do projeto
+└── README.md                          <- Overview do projeto
 ```
 
 ### **Componentes-Chave**
@@ -376,16 +376,16 @@ seu_projeto/
 **Estrutura:**
 
 ```markdown
-# 📇 TAGS INDEX - [SEU PROJETO]
+# [EMOJI] TAGS INDEX - [SEU PROJETO]
 
-## 🎯 COMO USAR ESTE ÍNDICE
+## [EMOJI] COMO USAR ESTE ÍNDICE
 
 **3 formas de busca:**
 1. **Por Tag** (Seção 1-5): Browse alfabético ou Ctrl+F
 2. **Por Categoria** (Seção 6): Explorar por tipo de doc
 3. **Quick Search Matrix** (Seção 7): Cenários comuns mapeados
 
-## 📑 SEÇÃO 1: TAGS PRINCIPAIS (A-Z)
+## [EMOJI] SEÇÃO 1: TAGS PRINCIPAIS (A-Z)
 
 ### A
 - **[tag-a]** (Docs: 5, Samples: 2)
@@ -399,15 +399,15 @@ seu_projeto/
 
 [continuar alfabeticamente]
 
-## 📊 SEÇÃO 2: TAGS POR CATEGORIA
+## [EMOJI] SEÇÃO 2: TAGS POR CATEGORIA
 
-### 🔧 [Categoria A]
+### [EMOJI] [Categoria A]
 - [tag1], [tag2], [tag3]
 
-### 📊 [Categoria B]
+### [EMOJI] [Categoria B]
 - [tag4], [tag5], [tag6]
 
-## 🎯 SEÇÃO 3: DOCS POR COMPLEXIDADE
+## [EMOJI] SEÇÃO 3: DOCS POR COMPLEXIDADE
 
 | Complexidade | Docs |
 |---|---|
@@ -415,32 +415,32 @@ seu_projeto/
 | ⭐⭐ Intermediate | [Doc3], [Doc4] |
 | ⭐⭐⭐ Advanced | [Doc5] |
 
-## 🚀 SEÇÃO 4: SAMPLES POR COMPLEXIDADE
+## [EMOJI] SEÇÃO 4: SAMPLES POR COMPLEXIDADE
 
 [estrutura similar]
 
-## 📚 SEÇÃO 5: CAPABILITIES MAPEADAS
+## [EMOJI] SEÇÃO 5: CAPABILITIES MAPEADAS
 
 | Capability | Docs Relacionados | Samples |
 |---|---|---|
 | CAP-001 | [Doc1], [Doc2] | [Sample1] |
 | CAP-002 | [Doc3] | [Sample2], [Sample3] |
 
-## 🔍 SEÇÃO 6: QUICK SEARCH MATRIX
+## [EMOJI] SEÇÃO 6: QUICK SEARCH MATRIX
 
 | "Preciso de..." | Tags | Docs | Samples |
 |---|---|---|---|
 | [Cenário comum 1] | [tags] | [docs] | [samples] |
 | [Cenário comum 2] | [tags] | [docs] | [samples] |
 
-## 🎓 SEÇÃO 7: LEARNING PATHS
+## [EMOJI] SEÇÃO 7: LEARNING PATHS
 
-### 🚶 Beginner Path
+### [EMOJI] Beginner Path
 1. Começar: [Doc A]
 2. Praticar: [Sample B]
 3. Avançar: [Doc C]
 
-### 🏃 Advanced Path
+### [EMOJI] Advanced Path
 1. Review: [Doc D]
 2. Deep dive: [Doc E]
 3. Master: [Sample F]
@@ -474,50 +474,50 @@ validated_in_production: [true/false]
 
 # [Nome do Sample]
 
-## 📋 Overview
+## [EMOJI] Overview
 [Descrição breve 1-2 parágrafos]
 
-## 🎯 Quando Usar
-- ✅ [Cenário A]
-- ✅ [Cenário B]
-- ❌ Não usar para: [Cenário C]
+## [EMOJI] Quando Usar
+- [OK] [Cenário A]
+- [OK] [Cenário B]
+- [ERRO] Não usar para: [Cenário C]
 
-## 🚀 Quick Start
+## [EMOJI] Quick Start
 ```[linguagem]
 [código exemplo mínimo]
 ```
 
-## 📚 Conteúdo
+## [EMOJI] Conteúdo
 - [Arquivo1.ext]: [descrição]
 - [Arquivo2.ext]: [descrição]
 
-## 🔧 Conceitos Demonstrados
+## [EMOJI] Conceitos Demonstrados
 1. [Conceito A]: [explicação]
 2. [Conceito B]: [explicação]
 
-## ⏱️ Tempo Estimado
+## [TIMER] Tempo Estimado
 - Setup: [X] min
 - Entendimento: [Y] min
 - Adaptação: [Z] min
 - Total: [X+Y+Z] min
 
-## 🎓 Pré-requisitos
+## [EMOJI] Pré-requisitos
 - [Requisito 1]
 - [Requisito 2]
 
-## 📖 Documentação Relacionada
+## [EMOJI] Documentação Relacionada
 - [Doc A]: [quando consultar]
 - [Doc B]: [quando consultar]
 
-## 🏆 Status
-- ✅ Validado em produção: [sim/não]
-- ✅ Testes: [N]x consecutivos OK
-- ✅ Antipadrões: 0 detectados
+## [EMOJI] Status
+- [OK] Validado em produção: [sim/não]
+- [OK] Testes: [N]x consecutivos OK
+- [OK] Antipadrões: 0 detectados
 
-## 🔗 Capabilities Relacionadas
+## [EMOJI] Capabilities Relacionadas
 - [CAP-XXX]: [relação]
 
-## 📝 Notas
+## [EMOJI] Notas
 [observações importantes]
 ```
 
@@ -536,30 +536,30 @@ Workflows **consistentes e reproduzíveis** que o agente segue automaticamente, 
 **Estrutura:**
 
 ```markdown
-## 🚨 WORKFLOW OBRIGATÓRIO
+## [EMOJI] WORKFLOW OBRIGATÓRIO
 
 ANTES de implementar QUALQUER funcionalidade:
 
 ```
-1. 🧠 Sequential Thinking
+1. [EMOJI] Sequential Thinking
    └─ Planeje arquitetura, identifique riscos ANTES de codificar
 
-2. 🎯 Discovery (Capabilities/Index)
+2. [EMOJI] Discovery (Capabilities/Index)
    └─ Descubra "O QUE POSSO FAZER" (79% menos tokens)
 
-3. 🗺️ Navigation (Knowledge Map)
+3. [EMOJI] Navigation (Knowledge Map)
    └─ Identifique QUAL documento consultar
 
-4. 📚 Knowledge Base Específica
+4. [EMOJI] Knowledge Base Específica
    └─ Consulte referência detalhada do doc identificado
 
-5. 📘 Rule Especializada
+5. [EMOJI] Rule Especializada
    └─ Escolha rule correta para tipo de tarefa
 
-6. ✅ Implementação
+6. [OK] Implementação
    └─ Use padrões validados
 
-7. 🧪 Validação
+7. [EMOJI] Validação
    └─ Teste [N]x consecutivas (NÃO apenas 1!)
 ```
 
@@ -577,14 +577,14 @@ ANTES de implementar QUALQUER funcionalidade:
 **Estrutura (5 Fases):**
 
 ```markdown
-## 📋 VIBE PLANNING WORKFLOW (Projetos Complexos)
+## [EMOJI] VIBE PLANNING WORKFLOW (Projetos Complexos)
 
 ### Quando usar:
-- ✅ Projeto ≥60 min estimado
-- ✅ Requisitos vagos/incompletos
-- ✅ Projeto multi-fase
-- ✅ Documentação production-grade necessária
-- ✅ Múltiplas sessões (dias/semanas)
+- [OK] Projeto ≥60 min estimado
+- [OK] Requisitos vagos/incompletos
+- [OK] Projeto multi-fase
+- [OK] Documentação production-grade necessária
+- [OK] Múltiplas sessões (dias/semanas)
 
 ### ROI:
 - Médio (60-120 min): +122% a +196%
@@ -611,7 +611,7 @@ ANTES de implementar QUALQUER funcionalidade:
 **Actions:**
 1. Consultar Capabilities Catalog
 2. Gerar lista MoSCoW (Must/Should/Could/Won't)
-3. Adicionar checkboxes para cada feature: `- [ ] ⏸️ Feature`
+3. Adicionar checkboxes para cada feature: `- [ ] ⏸ Feature`
 4. Adicionar seção "Features Breakdown" ao PRD
 5. Confirmar com usuário
 
@@ -733,16 +733,16 @@ Documentar **aprendizados validados** (lições + ROI + validação em produçã
 ### **Estrutura:**
 
 ```markdown
-## 🎯 LIÇÕES DE PRODUÇÃO VALIDADAS
+## [EMOJI] LIÇÕES DE PRODUÇÃO VALIDADAS
 
 Descobertas críticas que economizam ~[X-Y] minutos por projeto:
 
-### 1. ⚡ [Lição 1 - Nome Descritivo] ([X] min economizados)
+### 1. [FAST] [Lição 1 - Nome Descritivo] ([X] min economizados)
 ```[linguagem]
-// ✅ CORRETO: [código correto]
+// [OK] CORRETO: [código correto]
 [exemplo]
 
-// ❌ ERRO: [código errado]
+// [ERRO] ERRO: [código errado]
 [exemplo]
 ```
 **Erro comum:** [descrição]
@@ -751,9 +751,9 @@ Descobertas críticas que economizam ~[X-Y] minutos por projeto:
 
 ---
 
-### 2. ⚡ [Lição 2] ([Y] min economizados)
-- ❌ ERRO: [antipadrão]
-- ✅ CORRETO: [pattern correto]
+### 2. [FAST] [Lição 2] ([Y] min economizados)
+- [ERRO] ERRO: [antipadrão]
+- [OK] CORRETO: [pattern correto]
 - **Por quê:** [explicação]
 
 [repetir para N lições]
@@ -764,24 +764,24 @@ Descobertas críticas que economizam ~[X-Y] minutos por projeto:
 
 ---
 
-## ✅ CHECKLIST ANTIPADRÕES (VERIFICATION)
+## [OK] CHECKLIST ANTIPADRÕES (VERIFICATION)
 
 Esta checklist é executada na fase de Verification.
 
 ### [Categoria 1] (N itens)
 - [ ] **[Antipadrão A]?**
-  - ✅ CORRETO: [descrição]
-  - ❌ ERRO: [descrição]
+  - [OK] CORRETO: [descrição]
+  - [ERRO] ERRO: [descrição]
   - **Economia: [X] min**
 
 - [ ] **[Antipadrão B]?**
-  - ✅ CORRETO: [descrição]
-  - ❌ ERRO: [descrição]
+  - [OK] CORRETO: [descrição]
+  - [ERRO] ERRO: [descrição]
 
 [repetir para todos antipadrões]
 
 **Total itens:** [N]
-**Threshold para aprovar:** [M]/[N] ✅ ([P]%)
+**Threshold para aprovar:** [M]/[N] [OK] ([P]%)
 **Se <[M]/[N]:** Revisar itens falhando antes de prosseguir.
 ```
 
@@ -800,15 +800,15 @@ duration: "[tempo total]"
 outcome: "[sucesso/parcial/falha]"
 ---
 
-# 📚 LIÇÕES APRENDIDAS - [NOME PROJETO]
+# [EMOJI] LIÇÕES APRENDIDAS - [NOME PROJETO]
 
-## 📋 CONTEXTO
+## [EMOJI] CONTEXTO
 - **Projeto:** [nome]
 - **Objetivo:** [descrição breve]
-- **Duração:** [tempo estimado] → [tempo real] ([desvio])
+- **Duração:** [tempo estimado] -> [tempo real] ([desvio])
 - **Resultado:** [sucesso/parcial/falha]
 
-## ✅ O QUE FUNCIONOU BEM
+## [OK] O QUE FUNCIONOU BEM
 1. **[Aspecto A]:**
    - **Por quê:** [explicação]
    - **Impacto:** Economia [X] min/h
@@ -817,7 +817,7 @@ outcome: "[sucesso/parcial/falha]"
 2. **[Aspecto B]:**
    [estrutura similar]
 
-## ❌ O QUE NÃO FUNCIONOU
+## [ERRO] O QUE NÃO FUNCIONOU
 1. **[Problema A]:**
    - **Por quê:** [explicação]
    - **Impacto:** Perda [Y] min/h
@@ -827,24 +827,24 @@ outcome: "[sucesso/parcial/falha]"
 2. **[Problema B]:**
    [estrutura similar]
 
-## 🎓 APRENDIZADOS-CHAVE
+## [EMOJI] APRENDIZADOS-CHAVE
 1. [Aprendizado 1]
 2. [Aprendizado 2]
 3. [Aprendizado 3]
 
-## 🔄 AÇÕES PARA PRÓXIMOS PROJETOS
+## [EMOJI] AÇÕES PARA PRÓXIMOS PROJETOS
 - [ ] [Ação 1]: [descrição]
 - [ ] [Ação 2]: [descrição]
 - [ ] [Ação 3]: [descrição]
 
-## 📊 MÉTRICAS
+## [EMOJI] MÉTRICAS
 | Métrica | Target | Real | Status |
 |---|---|---|---|
-| Tempo dev | [X-Y]h | [Z]h | [🟢/🟡/🔴] |
-| Features entregues | [N] | [M] | [🟢/🟡/🔴] |
-| Bugs encontrados | <[P] | [Q] | [🟢/🟡/🔴] |
+| Tempo dev | [X-Y]h | [Z]h | [[EMOJI]/[EMOJI]/[EMOJI]] |
+| Features entregues | [N] | [M] | [[EMOJI]/[EMOJI]/[EMOJI]] |
+| Bugs encontrados | <[P] | [Q] | [[EMOJI]/[EMOJI]/[EMOJI]] |
 
-## 🔗 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 - Rules usadas: [lista]
 - Samples usados: [lista]
 - Decisões técnicas: [link PRD se existir]
@@ -863,9 +863,9 @@ Estratégias **automatizadas ou semi-automatizadas** para verificar qualidade da
 ### **5.1 Verificação de Links em Documentação**
 
 ```markdown
-## 🔧 VERIFICAÇÃO DE LINKS EM DOCUMENTAÇÃO
+## [EMOJI] VERIFICAÇÃO DE LINKS EM DOCUMENTAÇÃO
 
-### ✅ USAR (Padrões Validados)
+### [OK] USAR (Padrões Validados)
 
 **1. Contar links totais:**
 ```powershell
@@ -874,25 +874,25 @@ Select-String -Path "arquivo.md" -Pattern "texto_simples" | Measure-Object | Sel
 
 **2. Identificar arquivos com links ausentes:**
 ```powershell
-Get-ChildItem [pattern] | ForEach-Object { 
+Get-ChildItem [pattern] | ForEach-Object {
     $hasLink = Select-String -Path $_.Name -Pattern "texto_esperado" -Quiet
-    if (-not $hasLink) { Write-Output $_.Name } 
+    if (-not $hasLink) { Write-Output $_.Name }
 }
 ```
 
 **3. Verificar contexto (grep simples):**
 ```bash
-grep -pattern "texto_literal" -C 1  # ✅ Pattern literal simples
+grep -pattern "texto_literal" -C 1  # [OK] Pattern literal simples
 ```
 
-### 💡 Princípios de Busca
-- ✅ Patterns simples e literais
-- ✅ PowerShell para lógica condicional
-- ✅ Measure-Object para contagens
-- ✅ Evitar expressões calculadas complexas
-- ✅ Comandos simples > Expressões calculadas
+### [EMOJI] Princípios de Busca
+- [OK] Patterns simples e literais
+- [OK] PowerShell para lógica condicional
+- [OK] Measure-Object para contagens
+- [OK] Evitar expressões calculadas complexas
+- [OK] Comandos simples > Expressões calculadas
 
-### ⏱️ ROI
+### [TIMER] ROI
 **Economia:** 5-10 min por verificação (evita 3-4 tentativas falhadas)
 ```
 
@@ -903,7 +903,7 @@ grep -pattern "texto_literal" -C 1  # ✅ Pattern literal simples
 ### **5.2 Checklist de Auditoria**
 
 ```markdown
-## 📊 CHECKLIST DE AUDITORIA DE DOCUMENTAÇÃO
+## [EMOJI] CHECKLIST DE AUDITORIA DE DOCUMENTAÇÃO
 
 ### Meta-informação (10 pontos)
 - [ ] Frontmatter YAML completo (title, type, categories, etc)
@@ -950,22 +950,22 @@ Documentação **viva** que evolui com o projeto, não apenas gerada no final.
 ### **6.1 Versionamento**
 
 ```markdown
-## 📝 CHANGELOG
+## [EMOJI] CHANGELOG
 
 ### v[X.Y] - YYYY-MM-DD ([Descrição da Versão])
 **✨ Adições:**
-- ✅ [Feature A]: [descrição]
-- ✅ [Feature B]: [descrição]
+- [OK] [Feature A]: [descrição]
+- [OK] [Feature B]: [descrição]
 
-**🔧 Modificações:**
-- 🔄 [Mudança A]: [descrição]
-- 🔄 [Mudança B]: [descrição]
+**[EMOJI] Modificações:**
+- [EMOJI] [Mudança A]: [descrição]
+- [EMOJI] [Mudança B]: [descrição]
 
-**🐛 Correções:**
-- ✅ [Bug A]: [descrição]
+**[EMOJI] Correções:**
+- [OK] [Bug A]: [descrição]
 
-**📊 Métricas:**
-- Score Auditoria: [X]% → [Y]% (após [N] correções)
+**[EMOJI] Métricas:**
+- Score Auditoria: [X]% -> [Y]% (após [N] correções)
 - ROI: [impacto da versão]
 
 ---
@@ -995,10 +995,10 @@ keywords: [keyword1, keyword2, keyword3]
 estimated_read_time: [minutos]
 last_updated: "YYYY-MM-DD"
 version: "X.Y"
-related_rules: 
+related_rules:
   - "rule-A.mdc"
   - "rule-B.mdc"
-tags: 
+tags:
   - "tag1"
   - "tag2"
 ---
@@ -1019,43 +1019,43 @@ Processo estruturado em **9 etapas** para integrar novos documentos na knowledge
 ```
 NOVO DOCUMENTO
     ↓
-1. 📄 DETECÇÃO
-   → Usuário adiciona doc em knowledge_base/
-   → Executa: "INTEGRAR_NOVO_DOCUMENTO <path>"
+1. [EMOJI] DETECÇÃO
+   -> Usuário adiciona doc em knowledge_base/
+   -> Executa: "INTEGRAR_NOVO_DOCUMENTO <path>"
     ↓
-2. 🔍 ANÁLISE (7 dimensões)
-   → Tipo, Complexidade, Conceitos-chave
-   → Tags, Capabilities, Dependencies, Golden Status
+2. [EMOJI] ANÁLISE (7 dimensões)
+   -> Tipo, Complexidade, Conceitos-chave
+   -> Tags, Capabilities, Dependencies, Golden Status
     ↓
-3. 📝 VERSIONAMENTO
-   → Adiciona v1.0 + Changelog + Frontmatter YAML
+3. [EMOJI] VERSIONAMENTO
+   -> Adiciona v1.0 + Changelog + Frontmatter YAML
     ↓
-4. 🗂️ ATUALIZAÇÃO DE ÍNDICES
-   → TAGS_INDEX.md
-   → knowledge-map.mdc
-   → capabilities-catalog.mdc (se aplicável)
+4. [EMOJI] ATUALIZAÇÃO DE ÍNDICES
+   -> TAGS_INDEX.md
+   -> knowledge-map.mdc
+   -> capabilities-catalog.mdc (se aplicável)
     ↓
-5. 📘 ATUALIZAÇÃO DE RULES
-   → Rules especializadas (se padrões validados)
-   → Core rule (se descoberta crítica)
+5. [EMOJI] ATUALIZAÇÃO DE RULES
+   -> Rules especializadas (se padrões validados)
+   -> Core rule (se descoberta crítica)
     ↓
-6. ✅ VALIDAÇÃO (5 testes)
-   → Semantic Search, Index Consistency
-   → Cross-Reference, Quick Access, ROI
+6. [OK] VALIDAÇÃO (5 testes)
+   -> Semantic Search, Index Consistency
+   -> Cross-Reference, Quick Access, ROI
     ↓
-7. 💾 MEMÓRIA PERSISTENTE
-   → Cria memória do novo doc
+7. [EMOJI] MEMÓRIA PERSISTENTE
+   -> Cria memória do novo doc
     ↓
-8. 📊 DOCUMENTAÇÃO
-   → Atualiza changelog do índice
-   → Registra integração
+8. [EMOJI] DOCUMENTAÇÃO
+   -> Atualiza changelog do índice
+   -> Registra integração
     ↓
-9. ✅ CONCLUSÃO
-   → Knowledge base atualizada e consciente
+9. [OK] CONCLUSÃO
+   -> Knowledge base atualizada e consciente
 ```
 
-**⏱️ Tempo estimado:** 15-20 min por documento  
-**🎯 ROI:** Zero drift entre docs e índices, KB sempre atualizada
+**[TIMER] Tempo estimado:** 15-20 min por documento
+**[EMOJI] ROI:** Zero drift entre docs e índices, KB sempre atualizada
 
 ---
 
@@ -1088,22 +1088,22 @@ O agente deve executar **7 análises obrigatórias**:
 
 ```markdown
 Categorias possíveis:
-- 📘 API Reference (guia técnico de APIs)
-- 📖 Tutorial (passo-a-passo educacional)
-- 🔬 Sample (código funcional de exemplo)
-- 📋 Guide (guia de implementação)
-- 🛠️ Tool (ferramenta/script automatizado)
-- 📊 Report (relatório/análise)
-- 🎯 Template (modelo reutilizável)
+- [EMOJI] API Reference (guia técnico de APIs)
+- [EMOJI] Tutorial (passo-a-passo educacional)
+- [EMOJI] Sample (código funcional de exemplo)
+- [EMOJI] Guide (guia de implementação)
+- [EMOJI] Tool (ferramenta/script automatizado)
+- [EMOJI] Report (relatório/análise)
+- [EMOJI] Template (modelo reutilizável)
 ```
 
 #### **2.2 Complexidade**
 
 ```markdown
-- 🟢 Beginner: <100 linhas, conceitos básicos
-- 🟡 Intermediate: 100-500 linhas, múltiplos conceitos
-- 🟠 Advanced: 500-1000 linhas, arquitetura complexa
-- 🔴 Expert: >1000 linhas, domínio especializado
+- [EMOJI] Beginner: <100 linhas, conceitos básicos
+- [EMOJI] Intermediate: 100-500 linhas, múltiplos conceitos
+- [EMOJI] Advanced: 500-1000 linhas, arquitetura complexa
+- [EMOJI] Expert: >1000 linhas, domínio especializado
 ```
 
 #### **2.3 Conceitos-Chave**
@@ -1147,10 +1147,10 @@ Identificar pré-requisitos:
 
 ```markdown
 Avaliar se é exemplo de referência:
-- ✅ Production-validated (testado 5-10x)
-- ✅ Best practices implementadas
-- ✅ Documentação completa
-- ✅ Código reusável (>70%)
+- [OK] Production-validated (testado 5-10x)
+- [OK] Best practices implementadas
+- [OK] Documentação completa
+- [OK] Código reusável (>70%)
 ```
 
 #### **Template de Análise**
@@ -1198,12 +1198,12 @@ keywords: [kw1, kw2, kw3]
 estimated_read_time: [minutos]
 last_updated: "YYYY-MM-DD"
 version: "1.0"
-related_docs: 
+related_docs:
   - "[Doc A]"
   - "[Doc B]"
 capabilities:
   - "CAP-XXX"
-tags: 
+tags:
   - "tag1"
   - "tag2"
 golden_standard: [true/false]
@@ -1213,33 +1213,33 @@ golden_standard: [true/false]
 #### **3.2 Adicionar Changelog Inicial**
 
 ```markdown
-## 📝 CHANGELOG
+## [EMOJI] CHANGELOG
 
 ### v1.0 - DD/MM/YYYY (Versão Inicial)
-- ✅ Documento criado e integrado à knowledge base
-- ✅ Análise completa: [Tipo], [Complexidade], [X] conceitos-chave
-- ✅ Mapeamento: [Y] tags, [Z] capabilities relacionadas
-- ✅ Golden Standard: [Sim/Não]
-- 📊 Adicionado aos índices: TAGS_INDEX, Knowledge Map
-- 🔗 Dependencies identificadas: [lista]
+- [OK] Documento criado e integrado à knowledge base
+- [OK] Análise completa: [Tipo], [Complexidade], [X] conceitos-chave
+- [OK] Mapeamento: [Y] tags, [Z] capabilities relacionadas
+- [OK] Golden Standard: [Sim/Não]
+- [EMOJI] Adicionado aos índices: TAGS_INDEX, Knowledge Map
+- [EMOJI] Dependencies identificadas: [lista]
 ```
 
 #### **3.3 Versionamento Futuro**
 
 ```markdown
-## 📋 REGRAS DE VERSIONAMENTO
+## [EMOJI] REGRAS DE VERSIONAMENTO
 
-**Patch (v1.0 → v1.1):**
+**Patch (v1.0 -> v1.1):**
 - Correções de bugs
 - Typos/formatação
 - Links quebrados
 
-**Minor (v1.0 → v1.1, v1.1 → v1.2):**
+**Minor (v1.0 -> v1.1, v1.1 -> v1.2):**
 - Novas seções
 - Exemplos adicionais
 - Melhorias incrementais
 
-**Major (v1.X → v2.0):**
+**Major (v1.X -> v2.0):**
 - Reestruturação completa
 - Breaking changes
 - Mudança de approach técnico
@@ -1256,10 +1256,10 @@ golden_standard: [true/false]
 
 **Ações:**
 1. Adicionar novo doc na seção apropriada:
-   - 📂 Por Categoria (APIs, Guides, Samples, etc)
-   - 🏷️ Por Tag (cada tag individual)
-   - 📊 Por Complexidade (Beginner/Intermediate/Advanced)
-   - 🎯 Por Capability (CAP-XXX)
+   - [EMOJI] Por Categoria (APIs, Guides, Samples, etc)
+   - [EMOJI] Por Tag (cada tag individual)
+   - [EMOJI] Por Complexidade (Beginner/Intermediate/Advanced)
+   - [EMOJI] Por Capability (CAP-XXX)
 
 2. Atualizar contadores:
    - Total de documentos na categoria
@@ -1271,9 +1271,9 @@ golden_standard: [true/false]
 4. Incrementar changelog do TAGS_INDEX:
    ```yaml
    ### vX.Y - DD/MM/YYYY
-   - ✅ Adicionado [Nome Doc] em [Categorias]
-   - 📊 Tags atualizadas: [lista]
-   - 🎯 Capabilities: [lista]
+   - [OK] Adicionado [Nome Doc] em [Categorias]
+   - [EMOJI] Tags atualizadas: [lista]
+   - [EMOJI] Capabilities: [lista]
    ```
 ```
 
@@ -1285,18 +1285,18 @@ golden_standard: [true/false]
 **Ações:**
 1. Adicionar entrada na categoria apropriada:
    ```markdown
-   #### **📘 [Nome do Documento]**
+   #### **[EMOJI] [Nome do Documento]**
    - **Tipo:** [tipo]
    - **Uso:** [quando usar]
    - **Quando usar:** [contextos]
    - **Conceitos-chave:** [lista]
    - **Casos práticos:** [exemplos]
    - **Pré-requisitos:** [dependencies]
-   - **📖 README:** [path] (se for sample)
+   - **[EMOJI] README:** [path] (se for sample)
    ```
 
 2. Atualizar matrizes de decisão:
-   - Matriz "Objetivo → Documento Principal"
+   - Matriz "Objetivo -> Documento Principal"
    - Guias de uso rápido por cenário
 
 3. Atualizar Golden Standards (se aplicável):
@@ -1322,7 +1322,7 @@ golden_standard: [true/false]
    ```markdown
    ### CAP-XXX: [Nome da Capability]
    ...
-   **📚 Documentação:**
+   **[EMOJI] Documentação:**
    - [Doc existente]
    - **[NOVO DOC]** ⭐ NOVO
    ```
@@ -1336,7 +1336,7 @@ golden_standard: [true/false]
    **ROI:** [benefícios]
    **API Type:** [.NET/COM/Hybrid]
    **Maturity:** [Alpha/Beta/Stable]
-   **📚 Documentação:** [novo doc]
+   **[EMOJI] Documentação:** [novo doc]
    ```
 
 3. Incrementar changelog do Catalog
@@ -1349,13 +1349,13 @@ golden_standard: [true/false]
 #### **Quando Atualizar Rules?**
 
 ```markdown
-✅ ATUALIZAR RULES SE:
+[OK] ATUALIZAR RULES SE:
 - Documento valida NOVO PADRÃO técnico
 - Documento identifica ANTIPADRÃO importante
 - Documento economiza >15 min (descoberta crítica)
 - Documento é Golden Standard production-validated
 
-❌ NÃO ATUALIZAR RULES SE:
+[ERRO] NÃO ATUALIZAR RULES SE:
 - Apenas documentação adicional
 - Sem padrões novos validados
 - Redundante com docs existentes
@@ -1380,7 +1380,7 @@ golden_standard: [true/false]
 
 2. Incrementar versão da rule:
    ```yaml
-   version: "X.Y → X.Y+1"
+   version: "X.Y -> X.Y+1"
    ```
 
 3. Atualizar changelog da rule
@@ -1395,14 +1395,14 @@ SE for DESCOBERTA CRÍTICA (>15 min economia):
 
 1. Adicionar em "Lições de Produção Validadas":
    ```markdown
-   ### X. ⚡ [Nome da Lição] ([Y] min economizados)
+   ### X. [FAST] [Nome da Lição] ([Y] min economizados)
    **Descoberta:** [descrição]
    **Solução:** [código/approach]
    **Fonte:** [Novo Doc]
    **ROI:** [economia]
    ```
 
-2. Atualizar contador de lições (Top 5 → Top 6)
+2. Atualizar contador de lições (Top 5 -> Top 6)
 
 3. Atualizar ROI total do workflow
 
@@ -1453,13 +1453,13 @@ SE for DESCOBERTA CRÍTICA (>15 min economia):
 
 **Teste:**
 1. Se novo doc menciona CAP-XXX:
-   → Verificar se CAP-XXX menciona novo doc
+   -> Verificar se CAP-XXX menciona novo doc
 
 2. Se novo doc menciona Sample Y:
-   → Verificar se Sample Y README menciona novo doc (se relevante)
+   -> Verificar se Sample Y README menciona novo doc (se relevante)
 
 3. Se novo doc menciona Rule Z:
-   → Verificar se Rule Z menciona novo doc
+   -> Verificar se Rule Z menciona novo doc
 
 **Critério de Sucesso:** Todas referências bidirecionais corretas
 ```
@@ -1503,21 +1503,21 @@ validation_report:
   date: "YYYY-MM-DD"
   tests:
     semantic_search:
-      status: "[✅ Pass / ❌ Fail]"
+      status: "[[OK] Pass / [ERRO] Fail]"
       notes: "[observações]"
     index_consistency:
-      status: "[✅ Pass / ❌ Fail]"
+      status: "[[OK] Pass / [ERRO] Fail]"
       broken_links: [N]
     cross_reference:
-      status: "[✅ Pass / ❌ Fail]"
+      status: "[[OK] Pass / [ERRO] Fail]"
       missing_refs: [N]
     quick_access:
-      status: "[✅ Pass / ❌ Fail]"
+      status: "[[OK] Pass / [ERRO] Fail]"
       steps_to_discover: [N]
     roi_validation:
-      status: "[✅ Pass / ❌ Fail / N/A]"
+      status: "[[OK] Pass / [ERRO] Fail / N/A]"
       roi_documented: [true/false]
-  overall: "[✅ APPROVED / ⚠️ CONDITIONAL / ❌ REJECTED]"
+  overall: "[[OK] APPROVED / [WARN] CONDITIONAL / [ERRO] REJECTED]"
   issues: [lista de problemas encontrados]
   fixes_applied: [lista de correções]
 ---
@@ -1561,29 +1561,29 @@ validation_report:
 ```markdown
 **TAGS_INDEX.md:**
 ### vX.Y - DD/MM/YYYY
-- ✅ Adicionado [Nome Doc] ([N] tags, [M] capabilities)
-- 📊 Total documentos: [antigo] → [novo]
+- [OK] Adicionado [Nome Doc] ([N] tags, [M] capabilities)
+- [EMOJI] Total documentos: [antigo] -> [novo]
 
 **knowledge-map.mdc:**
 ### vX.Y - DD/MM/YYYY
-- ✅ Adicionado [Nome Doc] em categoria [Cat]
-- 📊 Atualizado [N] matrizes de decisão
+- [OK] Adicionado [Nome Doc] em categoria [Cat]
+- [EMOJI] Atualizado [N] matrizes de decisão
 - ⭐ Golden Standard atualizado (se aplicável)
 
 **capabilities-catalog.mdc (se aplicável):**
 ### vX.Y - DD/MM/YYYY
-- ✅ CAP-XXX atualizado com novo doc
-- 📚 Total docs: [antigo] → [novo]
+- [OK] CAP-XXX atualizado com novo doc
+- [EMOJI] Total docs: [antigo] -> [novo]
 ```
 
 #### **8.2 Criar Entrada no Integration Log**
 
 ```markdown
-## 📊 INTEGRATION LOG (criar se não existir)
+## [EMOJI] INTEGRATION LOG (criar se não existir)
 
 ### [Nome do Documento] - DD/MM/YYYY
 
-**Status:** ✅ Integrado com sucesso
+**Status:** [OK] Integrado com sucesso
 
 **Análise:**
 - Tipo: [tipo]
@@ -1593,18 +1593,18 @@ validation_report:
 - Capabilities: [lista]
 
 **Atualizações Realizadas:**
-- [x] TAGS_INDEX v[old] → v[new]
-- [x] Knowledge Map v[old] → v[new]
-- [x] Capabilities Catalog v[old] → v[new] (N/A)
+- [x] TAGS_INDEX v[old] -> v[new]
+- [x] Knowledge Map v[old] -> v[new]
+- [x] Capabilities Catalog v[old] -> v[new] (N/A)
 - [x] Rules atualizadas: [lista ou N/A]
 - [x] Memória persistente criada
 
 **Validação:**
-- Semantic Search: ✅
-- Index Consistency: ✅
-- Cross-Reference: ✅
-- Quick Access: ✅ ([N] steps)
-- ROI: ✅ / N/A
+- Semantic Search: [OK]
+- Index Consistency: [OK]
+- Cross-Reference: [OK]
+- Quick Access: [OK] ([N] steps)
+- ROI: [OK] / N/A
 
 **Métricas:**
 - Tempo de integração: [X] min
@@ -1623,7 +1623,7 @@ validation_report:
 #### **Checklist Final**
 
 ```markdown
-## ✅ CHECKLIST DE INTEGRAÇÃO COMPLETA
+## [OK] CHECKLIST DE INTEGRAÇÃO COMPLETA
 
 ### Documento
 - [ ] Frontmatter YAML adicionado com versão v1.0
@@ -1662,36 +1662,36 @@ validation_report:
 #### **Mensagem de Conclusão para o Usuário**
 
 ```markdown
-✅ **INTEGRAÇÃO CONCLUÍDA COM SUCESSO!**
+[OK] **INTEGRAÇÃO CONCLUÍDA COM SUCESSO!**
 
-📄 **Documento:** [Nome do Documento]  
-📂 **Path:** [path]  
-🏷️ **Tipo:** [tipo] | **Complexidade:** [nível]  
-⏱️ **Tempo de integração:** [X] min  
+[EMOJI] **Documento:** [Nome do Documento]
+[EMOJI] **Path:** [path]
+[EMOJI] **Tipo:** [tipo] | **Complexidade:** [nível]
+[TIMER] **Tempo de integração:** [X] min
 
-**📊 Atualizações Realizadas:**
-- ✅ TAGS_INDEX v[old] → v[new] ([N] tags adicionadas)
-- ✅ Knowledge Map v[old] → v[new] (categoria [Cat])
-- ✅ Capabilities [lista] atualizadas
-- ✅ [N] rules atualizadas
-- ✅ Memória persistente criada
+**[EMOJI] Atualizações Realizadas:**
+- [OK] TAGS_INDEX v[old] -> v[new] ([N] tags adicionadas)
+- [OK] Knowledge Map v[old] -> v[new] (categoria [Cat])
+- [OK] Capabilities [lista] atualizadas
+- [OK] [N] rules atualizadas
+- [OK] Memória persistente criada
 
-**🎯 Capabilities Relacionadas:**
+**[EMOJI] Capabilities Relacionadas:**
 - [CAP-XXX]: [descrição]
 - [CAP-YYY]: [descrição]
 
-**🔍 Como Usar:**
+**[EMOJI] Como Usar:**
 1. Semantic search: "[conceito-chave]"
 2. Via Knowledge Map: Seção [categoria]
 3. Via TAGS_INDEX: Tags [lista]
 
-**💡 Golden Standard:** [Sim/Não]  
-**⏱️ ROI:** Economiza [X] min em [casos de uso]  
+**[EMOJI] Golden Standard:** [Sim/Não]
+**[TIMER] ROI:** Economiza [X] min em [casos de uso]
 
-**✅ Validação:** Todos os 5 testes passaram  
-**🐛 Issues:** [N] encontradas e corrigidas  
+**[OK] Validação:** Todos os 5 testes passaram
+**[EMOJI] Issues:** [N] encontradas e corrigidas
 
-🎉 Knowledge base agora está **consciente** deste documento!
+[EMOJI] Knowledge base agora está **consciente** deste documento!
 ```
 
 ---
@@ -1701,25 +1701,25 @@ validation_report:
 #### **Script de Integração Semi-Automatizado**
 
 ```markdown
-## 🤖 SCRIPT DE INTEGRAÇÃO (FUTURO)
+## [EMOJI] SCRIPT DE INTEGRAÇÃO (FUTURO)
 
 **Conceito:** Automatizar partes repetitivas do workflow
 
 **Fases Automatizáveis:**
-1. ✅ Detecção de arquivo novo (file watcher)
-2. ✅ Extração de conceitos-chave (NLP/AI)
-3. ✅ Geração de tags (AI-assisted)
-4. ✅ Criação de frontmatter YAML (template)
-5. ✅ Atualização de contadores em índices
-6. ⚠️ Validação de links (semi-automática)
+1. [OK] Detecção de arquivo novo (file watcher)
+2. [OK] Extração de conceitos-chave (NLP/AI)
+3. [OK] Geração de tags (AI-assisted)
+4. [OK] Criação de frontmatter YAML (template)
+5. [OK] Atualização de contadores em índices
+6. [WARN] Validação de links (semi-automática)
 
 **Fases Manuais (Expertise Necessária):**
-- ❌ Avaliação de Golden Standard
-- ❌ Decisão sobre atualização de rules
-- ❌ Cálculo de ROI
-- ❌ Mapeamento de capabilities
+- [ERRO] Avaliação de Golden Standard
+- [ERRO] Decisão sobre atualização de rules
+- [ERRO] Cálculo de ROI
+- [ERRO] Mapeamento de capabilities
 
-**ROI Potencial:** 60-70% automação → 6-8 min por doc (vs 15-20 min manual)
+**ROI Potencial:** 60-70% automação -> 6-8 min por doc (vs 15-20 min manual)
 ```
 
 ---
@@ -1728,28 +1728,28 @@ validation_report:
 
 #### **Problema 1: Semantic Search não retorna novo doc**
 
-**Causa:** Embeddings não atualizados  
+**Causa:** Embeddings não atualizados
 **Solução:** Aguardar reindexação automática ou forçar reindex (depende da ferramenta)
 
 ---
 
 #### **Problema 2: Links quebrados após integração**
 
-**Causa:** Path relativo incorreto  
+**Causa:** Path relativo incorreto
 **Solução:** Usar sempre paths relativos a partir da raiz do workspace
 
 ---
 
 #### **Problema 3: Índices desatualizados**
 
-**Causa:** Esquecimento de atualizar algum índice  
+**Causa:** Esquecimento de atualizar algum índice
 **Solução:** Usar checklist de integração completa (Etapa 9)
 
 ---
 
 #### **Problema 4: Novo doc não aparece em Quick Access**
 
-**Causa:** Knowledge Map não atualizado ou categoria errada  
+**Causa:** Knowledge Map não atualizado ou categoria errada
 **Solução:** Revisar matriz de decisão e guias de uso rápido no Knowledge Map
 
 ---
@@ -1757,7 +1757,7 @@ validation_report:
 ### **7.13 Exemplo Prático Completo**
 
 ```markdown
-## 📖 EXEMPLO: Integrar "Advanced Bolt Patterns API.md"
+## [EMOJI] EXEMPLO: Integrar "Advanced Bolt Patterns API.md"
 
 **1. DETECÇÃO:**
 ```bash
@@ -1793,25 +1793,25 @@ golden_reasons:
 - Changelog v1.0 criado
 
 **4. ATUALIZAÇÃO DE ÍNDICES:**
-- TAGS_INDEX: v2.1 → v2.2
+- TAGS_INDEX: v2.1 -> v2.2
   - Adicionado em "Bolts", "Connections", "COM-API", "Advanced"
-- Knowledge Map: v1.5 → v1.6
-  - Adicionado em "APIs & Desenvolvimento" → "Advance Steel COM API Reference Guide"
-  - Adicionado em "Golden Standards" → "⭐ Advanced Bolt Patterns - BEST para Connections Complexas"
-- Capabilities: v1.2 → v1.3
-  - CAP-002 atualizado: "📚 Documentação: ... + Advanced Bolt Patterns API ⭐ NOVO"
+- Knowledge Map: v1.5 -> v1.6
+  - Adicionado em "APIs & Desenvolvimento" -> "Advance Steel COM API Reference Guide"
+  - Adicionado em "Golden Standards" -> "⭐ Advanced Bolt Patterns - BEST para Connections Complexas"
+- Capabilities: v1.2 -> v1.3
+  - CAP-002 atualizado: "[EMOJI] Documentação: ... + Advanced Bolt Patterns API ⭐ NOVO"
 
 **5. ATUALIZAÇÃO DE RULES:**
-- @advance-steel-com-api.mdc v1.4 → v1.5
+- @advance-steel-com-api.mdc v1.4 -> v1.5
   - Adicionado pattern "Bolt Arrangements Parametrizados"
   - Referência ao novo doc
 
 **6. VALIDAÇÃO:**
-- Semantic Search: ✅ (top 3 para "bolt patterns advanced")
-- Index Consistency: ✅ (0 links quebrados)
-- Cross-Reference: ✅ (CAP-002 ↔ novo doc, BridgeGirder ↔ novo doc)
-- Quick Access: ✅ (2 steps: Sequential Thinking → Knowledge Map → Doc)
-- ROI: ✅ (60-90 min economizados em connections complexas)
+- Semantic Search: [OK] (top 3 para "bolt patterns advanced")
+- Index Consistency: [OK] (0 links quebrados)
+- Cross-Reference: [OK] (CAP-002 <-> novo doc, BridgeGirder <-> novo doc)
+- Quick Access: [OK] (2 steps: Sequential Thinking -> Knowledge Map -> Doc)
+- ROI: [OK] (60-90 min economizados em connections complexas)
 
 **7. MEMÓRIA PERSISTENTE:**
 ```json
@@ -1827,51 +1827,51 @@ golden_reasons:
 
 **9. CONCLUSÃO:**
 ```
-✅ INTEGRAÇÃO CONCLUÍDA COM SUCESSO!
+[OK] INTEGRAÇÃO CONCLUÍDA COM SUCESSO!
 
-📄 Documento: Advanced Bolt Patterns API
-📂 Path: knowledge_base/Docs/AdvancedBoltPatternsAPI.md
-🏷️ Tipo: API Reference | Complexidade: Advanced
-⏱️ Tempo de integração: 18 min
+[EMOJI] Documento: Advanced Bolt Patterns API
+[EMOJI] Path: knowledge_base/Docs/AdvancedBoltPatternsAPI.md
+[EMOJI] Tipo: API Reference | Complexidade: Advanced
+[TIMER] Tempo de integração: 18 min
 
-📊 Atualizações:
-- ✅ TAGS_INDEX v2.1 → v2.2 (4 tags)
-- ✅ Knowledge Map v1.5 → v1.6 (categoria "APIs & Desenvolvimento")
-- ✅ Capabilities CAP-002 atualizado
-- ✅ 1 rule atualizada (@com-api.mdc v1.4 → v1.5)
-- ✅ Memória persistente criada
+[EMOJI] Atualizações:
+- [OK] TAGS_INDEX v2.1 -> v2.2 (4 tags)
+- [OK] Knowledge Map v1.5 -> v1.6 (categoria "APIs & Desenvolvimento")
+- [OK] Capabilities CAP-002 atualizado
+- [OK] 1 rule atualizada (@com-api.mdc v1.4 -> v1.5)
+- [OK] Memória persistente criada
 
-🎯 Capabilities: CAP-002 (Joints Customizados)
-🔍 Como Usar: Semantic search "bolt patterns advanced", Knowledge Map → "APIs & Desenvolvimento", TAGS_INDEX → "bolts"
+[EMOJI] Capabilities: CAP-002 (Joints Customizados)
+[EMOJI] Como Usar: Semantic search "bolt patterns advanced", Knowledge Map -> "APIs & Desenvolvimento", TAGS_INDEX -> "bolts"
 
-💡 Golden Standard: Sim (prod-validated, 85% reusável)
-⏱️ ROI: 60-90 min em connections complexas
+[EMOJI] Golden Standard: Sim (prod-validated, 85% reusável)
+[TIMER] ROI: 60-90 min em connections complexas
 
-✅ Validação: 5/5 testes OK | Issues: 0
+[OK] Validação: 5/5 testes OK | Issues: 0
 
-🎉 Knowledge base consciente do documento!
+[EMOJI] Knowledge base consciente do documento!
 ```
 ```
 
 ---
 
-### **📊 Métricas do Workflow**
+### **[EMOJI] Métricas do Workflow**
 
 | **Métrica** | **Target** | **Real (Exemplo)** | **Status** |
 |---|---|---|---|
-| Tempo de integração | 15-20 min | 18 min | 🟢 |
-| Índices atualizados | 3 | 3 | 🟢 |
-| Testes de validação | 5/5 | 5/5 | 🟢 |
-| Links quebrados | 0 | 0 | 🟢 |
-| Memória criada | Sim | Sim | 🟢 |
+| Tempo de integração | 15-20 min | 18 min | [EMOJI] |
+| Índices atualizados | 3 | 3 | [EMOJI] |
+| Testes de validação | 5/5 | 5/5 | [EMOJI] |
+| Links quebrados | 0 | 0 | [EMOJI] |
+| Memória criada | Sim | Sim | [EMOJI] |
 
 ---
 
-### **🎯 ROI do Workflow**
+### **[EMOJI] ROI do Workflow**
 
 | **Benefício** | **Economia/Impacto** |
 |---|---|
-| Zero drift entre docs e índices | ✅ KB sempre atualizada |
+| Zero drift entre docs e índices | [OK] KB sempre atualizada |
 | Descoberta rápida de novo conteúdo | 50-70% redução tempo busca |
 | Memória persistente do agente | Zero re-análise de docs |
 | Validação sistemática | 90% redução links quebrados |
@@ -1908,7 +1908,7 @@ golden_reasons:
 - Mapa de Rules (quando usar cada uma)
 - Localização das rules
 - Guia rápido por cenário (3-5 cenários principais)
-- Matriz de decisão: Problema → Rule
+- Matriz de decisão: Problema -> Rule
 
 **Templates:** Ver "ESTRATÉGIA 1.1"
 
@@ -2056,31 +2056,31 @@ last_updated: "YYYY-MM-DD"
 version: "1.0"
 ---
 
-# 🧠 [SEU PROJETO] - CORE RULES
+# [EMOJI] [SEU PROJETO] - CORE RULES
 
-## 📋 ÍNDICE
+## [EMOJI] ÍNDICE
 1. [Workflow Obrigatório](#workflow-obrigatório)
 2. [Lições de Produção](#lições-de-produção)
 3. [Mapa de Rules](#mapa-de-rules)
 4. [Guia por Cenário](#guia-por-cenário)
 5. [Localização Rules](#localização-das-rules)
 
-## 🚨 WORKFLOW OBRIGATÓRIO
+## [EMOJI] WORKFLOW OBRIGATÓRIO
 [Ver ESTRATÉGIA 3.1]
 
-## 🎯 LIÇÕES DE PRODUÇÃO
+## [EMOJI] LIÇÕES DE PRODUÇÃO
 [Ver ESTRATÉGIA 4]
 
-## 🗺️ MAPA DE RULES
+## [EMOJI] MAPA DE RULES
 [Ver ESTRATÉGIA 1.1]
 
-## 🎯 GUIA POR CENÁRIO
+## [EMOJI] GUIA POR CENÁRIO
 [Ver ESTRATÉGIA 1.1]
 
-## 📚 LOCALIZAÇÃO DAS RULES
+## [EMOJI] LOCALIZAÇÃO DAS RULES
 [Ver ESTRATÉGIA 1.1]
 
-## 📝 CHANGELOG
+## [EMOJI] CHANGELOG
 [Ver ESTRATÉGIA 6.1]
 ```
 
@@ -2102,23 +2102,23 @@ status: "[experimental/stable/production]"
 
 # CAP-XXX: [Nome da Capability]
 
-## 📋 Overview
+## [EMOJI] Overview
 [Descrição 1-2 parágrafos]
 
-## 🎯 Casos de Uso [SEU CONTEXTO]
+## [EMOJI] Casos de Uso [SEU CONTEXTO]
 1. [Caso A]: [descrição]
 2. [Caso B]: [descrição]
 
-## 🔧 APIs Necessárias
+## [EMOJI] APIs Necessárias
 - [API 1]: [para que serve]
 - [API 2]: [para que serve]
 
-## 💻 Código Exemplo Completo
+## [EMOJI] Código Exemplo Completo
 ```[linguagem]
 [código funcional]
 ```
 
-## 📊 Estimativas
+## [EMOJI] Estimativas
 | Métrica | Valor |
 |---|---|
 | Tempo dev 1ª vez | [X-Y]h |
@@ -2127,15 +2127,15 @@ status: "[experimental/stable/production]"
 | ROI agressivo | [W]h/ano |
 | Break-even | [N] usos |
 
-## 🎓 Pré-requisitos
+## [EMOJI] Pré-requisitos
 - [Req 1]
 - [Req 2]
 
-## 📚 Documentação Relacionada
+## [EMOJI] Documentação Relacionada
 - [Doc A]: [quando consultar]
 - [Sample B]: [quando usar]
 
-## 🔗 [Voltar ao Catálogo](../[domain]-capabilities-catalog.mdc)
+## [EMOJI] [Voltar ao Catálogo](../[domain]-capabilities-catalog.mdc)
 ```
 
 ---
@@ -2165,14 +2165,14 @@ status: "[experimental/stable/production]"
 |---|---|---|
 | [erro1] | [causa] | [solução] |
 
-### 💡 Dica: [Algo Útil]
+### [EMOJI] Dica: [Algo Útil]
 ```[linguagem]
 [código tip]
 ```
 
-### 📚 Ver também
-- [Doc X] → [quando consultar]
-- [Sample Y] → [quando usar]
+### [EMOJI] Ver também
+- [Doc X] -> [quando consultar]
+- [Sample Y] -> [quando usar]
 ```
 
 ---
@@ -2249,7 +2249,7 @@ status: "[experimental/stable/production]"
 
 ---
 
-## 💰 ROI ESPERADO
+## [EMOJI] ROI ESPERADO
 
 | Estratégia | Economia por Uso | Usos/Projeto | Total/Projeto |
 |---|---|---|---|
@@ -2266,7 +2266,7 @@ status: "[experimental/stable/production]"
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 **Fonte original:** Projeto Advance Steel 2019 (Engelar Engenharia, 2024-2025)
 
@@ -2284,7 +2284,7 @@ status: "[experimental/stable/production]"
 
 ---
 
-## 🎓 PRINCÍPIOS FUNDAMENTAIS
+## [EMOJI] PRINCÍPIOS FUNDAMENTAIS
 
 1. **Self-awareness é a base** - Agente deve conhecer-se completamente
 2. **Documentação viva > documentação final** - Evolui com projeto
@@ -2297,7 +2297,7 @@ status: "[experimental/stable/production]"
 
 ---
 
-## 🔄 PRÓXIMOS PASSOS
+## [EMOJI] PRÓXIMOS PASSOS
 
 1. **Adaptar para seu projeto:** Substituir placeholders `[domain]`, `[SEU PROJETO]`
 2. **Implementar Fases 1-8:** Seguir checklist de implementação (16h total)
@@ -2307,22 +2307,22 @@ status: "[experimental/stable/production]"
 
 ---
 
-**Desenvolvido por:** Agente IA - Engelar Engenharia  
-**Compilado de:** Projeto Advance Steel 2019 (.cursor/rules/)  
-**Data:** 04/10/2025  
-**Versão:** 1.0  
+**Desenvolvido por:** Agente IA - Engelar Engenharia
+**Compilado de:** Projeto Advance Steel 2019 (.cursor/rules/)
+**Data:** 04/10/2025
+**Versão:** 1.0
 **Licença:** Uso livre, manter atribuição
 
 ---
 
-**📧 Como Usar:**
+**[EMOJI] Como Usar:**
 1. Copiar este arquivo para `.cursor/rules/` do seu projeto
 2. Adaptar templates substituindo placeholders
 3. Seguir checklist de implementação
 4. Validar workflows com tarefas reais
 5. Documentar ROI e iterar
 
-**🙏 Feedback:**
+**[EMOJI] Feedback:**
 - Documentar melhorias em `@prompt_licao_aprendida.md`
 - Compartilhar ROI observado
 - Contribuir com novos templates/estratégias
@@ -2330,4 +2330,3 @@ status: "[experimental/stable/production]"
 ---
 
 **FIM DO PROMPT**
-

@@ -9,7 +9,6 @@ Este módulo contém todos os prompts usados pelo DiagnosticAgent para:
 Padrão: Few-shot examples + structured output + anti-hallucination
 """
 
-
 # ============================================================================
 # ANÁLISE POR PERSPECTIVA (4 prompts especializados)
 # ============================================================================
@@ -54,7 +53,7 @@ FEW-SHOT EXAMPLES:
 EXEMPLO 1 - Empresa manufatura com EBITDA alto mas custos opacos:
 current_state: "Empresa possui EBITDA de 22% (acima da média do setor 18%), mas falta visibilidade de custos por produto/projeto. Decisões de pricing são baseadas em intuição, não em cost accounting robusto."
 gaps: ["Ausência de ABC costing (Activity-Based Costing) para entender custos reais", "KPIs financeiros não conectados a drivers operacionais (processos)", "Falta de análise de rentabilidade por cliente/produto"]
-opportunities: ["Implementar ABC costing para decisões de pricing data-driven", "Conectar KPIs financeiros a processos (ex: custo por ordem → lead time produção)", "Dashboard financeiro executivo com drill-down por produto/cliente"]
+opportunities: ["Implementar ABC costing para decisões de pricing data-driven", "Conectar KPIs financeiros a processos (ex: custo por ordem -> lead time produção)", "Dashboard financeiro executivo com drill-down por produto/cliente"]
 priority: "HIGH"
 key_insights: ["Kaplan & Norton: 60% empresas falham em conectar finanças a processos operacionais", "Strategy Maps (2004): Custos são resultado de processos, não input isolado"]
 
@@ -125,7 +124,7 @@ current_state: "Retenção de 75% (ótima para e-commerce), NPS de 45 (promoter)
 gaps: ["Ticket médio 40% abaixo do potencial", "Falta de motor de recomendação personalizado", "Share of wallet baixo (cliente compra concorrentes também)"]
 opportunities: ["Implementar ML-based recommendation engine (Amazon-style)", "Criar programa de fidelidade com incentivos para ticket maior", "Mapear customer journey para identificar momentos de upsell"]
 priority: "MEDIUM"
-key_insights: ["Strategy Maps: valor entregue ao cliente → lealdade → crescimento receita", "Kaplan: NPS alto é necessário mas não suficiente para crescimento"]
+key_insights: ["Strategy Maps: valor entregue ao cliente -> lealdade -> crescimento receita", "Kaplan: NPS alto é necessário mas não suficiente para crescimento"]
 
 RETORNE um objeto JSON válido com os campos:
 {{
@@ -279,9 +278,9 @@ INSTRUÇÕES:
 3. Determine a NEXT_PHASE do engajamento (APPROVAL_PENDING, DESIGN, IMPLEMENTATION)
 
 SYNERGIES CROSS-PERSPECTIVE - Exemplos:
-- "Processos manuais (Processos) → custos altos (Financeira) + erros frequentes (Clientes)"
-- "Turnover alto (Aprendizado) → perda conhecimento crítico (Processos) → qualidade inconsistente (Clientes)"
-- "Sistemas legados (Aprendizado) → falta visibilidade financeira (Financeira) + decisões lentas (Processos)"
+- "Processos manuais (Processos) -> custos altos (Financeira) + erros frequentes (Clientes)"
+- "Turnover alto (Aprendizado) -> perda conhecimento crítico (Processos) -> qualidade inconsistente (Clientes)"
+- "Sistemas legados (Aprendizado) -> falta visibilidade financeira (Financeira) + decisões lentas (Processos)"
 
 EXECUTIVE SUMMARY - Estrutura recomendada:
 1. Situação atual geral (2-3 sentenças)
@@ -305,10 +304,10 @@ Learning (HIGH): Turnover 35%, sistemas legados, sem treinamento estruturado
 
 SAÍDA:
 cross_perspective_synergies: [
-    "Processos manuais ineficientes (Processos HIGH) → custos opacos e desperdícios (Financeira HIGH)",
-    "Turnover alto + falta de treinamento (Aprendizado HIGH) → qualidade inconsistente (Processos HIGH) → churn elevado (Clientes MEDIUM)",
-    "Sistemas legados fragmentados (Aprendizado HIGH) → ausência de visibilidade financeira (Financeira HIGH) + decisões lentas (Processos HIGH)",
-    "Falta de segmentação de clientes (Clientes MEDIUM) → pricing não otimizado (Financeira HIGH)"
+    "Processos manuais ineficientes (Processos HIGH) -> custos opacos e desperdícios (Financeira HIGH)",
+    "Turnover alto + falta de treinamento (Aprendizado HIGH) -> qualidade inconsistente (Processos HIGH) -> churn elevado (Clientes MEDIUM)",
+    "Sistemas legados fragmentados (Aprendizado HIGH) -> ausência de visibilidade financeira (Financeira HIGH) + decisões lentas (Processos HIGH)",
+    "Falta de segmentação de clientes (Clientes MEDIUM) -> pricing não otimizado (Financeira HIGH)"
 ]
 executive_summary: "TechCorp Brasil apresenta sólido desempenho financeiro (EBITDA 22%) mas enfrenta desafios estruturais críticos em 3 das 4 perspectivas BSC. Os principais gaps identificados são: (1) custos operacionais opacos por ausência de ABC costing, (2) processos 60% manuais gerando lead time 80% acima do mercado, (3) turnover de 35%/ano causado por falta de programa de desenvolvimento, e (4) sistemas legados impedindo decisões data-driven. As oportunidades prioritárias incluem: (1) implementar ABC costing para visibilidade de custos por produto, (2) automatizar processos gargalo (redução estimada 40% lead time), (3) modernizar stack tecnológico (ERP cloud + CRM integrado), e (4) criar programa estruturado de retenção de talentos. As perspectivas Financeira, Processos e Aprendizado foram classificadas como HIGH priority, indicando necessidade de atenção imediata. Recomenda-se iniciar pela perspectiva Aprendizado (fundação), seguida por Processos (operações) e Financeira (controle). Próximo passo: apresentar diagnóstico para aprovação do board e, se aprovado, iniciar design do Strategy Map BSC."
 next_phase: "APPROVAL_PENDING"
@@ -506,9 +505,8 @@ RETORNE um objeto JSON seguindo EXATAMENTE o schema CompleteDiagnostic:
     "next_phase": "APPROVAL_PENDING" | "DESIGN" | "IMPLEMENTATION"
 }}
 
-IMPORTANTE: 
+IMPORTANTE:
 - Se estratégia é TARGETED ou RECOMMENDATIONS_ONLY, mantenha perspectivas não afetadas IDÊNTICAS ao diagnóstico original
 - Se estratégia é FULL, re-execute análise completa mas incorpore feedback como contexto adicional
 - Sempre atualize executive_summary para refletir melhorias aplicadas
 """
-

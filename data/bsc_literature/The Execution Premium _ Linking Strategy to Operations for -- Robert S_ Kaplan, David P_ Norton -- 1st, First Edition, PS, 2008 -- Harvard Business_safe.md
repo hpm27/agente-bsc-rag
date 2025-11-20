@@ -2,7 +2,7 @@
 
 *Conversão automática com modo seguro*
 
-## 📊 Estatísticas da Conversão
+## [EMOJI] Estatísticas da Conversão
 
 - **Páginas processadas**: 323
 - **Páginas com conteúdo**: 323
@@ -18,18 +18,18 @@
 
 # HARVARD BUSINESS PRESS
 
-# The  
-# EXECUTION  
+# The
+# EXECUTION
 # PREMIUM
 
 ## Linking Strategy to Operations for Competitive Advantage
 
-# ROBERT S. KAPLAN  
+# ROBERT S. KAPLAN
 # DAVID P. NORTON
 
 Authors of worldwide bestsellers The Balanced Scorecard and The Strategy-Focused Organization
 
-[Figura 1: Capa do livro]  
+[Figura 1: Capa do livro]
 - Descrição: Fundo em tom marrom avermelhado com faixa horizontal central em laranja. O título “The EXECUTION PREMIUM” aparece em letras grandes e brancas, com “The” em itálico acima. A faixa laranja contém o subtítulo “Linking Strategy to Operations for Competitive Advantage” em itálico branco. Na parte superior, em letras pequenas, lê-se “HARVARD BUSINESS PRESS”. Na metade inferior, os nomes dos autores “ROBERT S. KAPLAN” e “DAVID P. NORTON” aparecem em letras grandes e brancas, seguidos pela frase “Authors of worldwide bestsellers The Balanced Scorecard and The Strategy-Focused Organization” em itálico menor. Há uma pequena marca/ruído visual próximo ao centro inferior. No canto inferior direito, há a palavra “eagleflyfree” em roxo.
 
 ---
@@ -47,26 +47,26 @@ Authors of worldwide bestsellers The Balanced Scorecard and The Strategy-Focused
   - Publisher line: Small caps, widely spaced characters.
 
 ## Main Title
-THE  
-EXECUTION  
+THE
+EXECUTION
 PREMIUM
 
 ---
 
 ## Subtitle
-LINKING STRATEGY TO OPERATIONS  
+LINKING STRATEGY TO OPERATIONS
 FOR COMPETITIVE ADVANTAGE
 
 ---
 
 ## Authors
-Robert S. Kaplan  
+Robert S. Kaplan
 David P. Norton
 
 ---
 
 ## Publisher
-HARVARD BUSINESS PRESS  
+HARVARD BUSINESS PRESS
 BOSTON, MASSACHUSETTS
 
 ---
@@ -82,23 +82,23 @@ eagleflyfree (watermark in lower-right corner)
 
 Copyright 2008 Harvard Business School Publishing Corporation
 
-All rights reserved.  
-Printed in the United States of America  
+All rights reserved.
+Printed in the United States of America
 12 11 10 09 08   5 4 3 2 1
 
 No part of this publication may be reproduced, stored in or introduced into a retrieval system, or transmitted, in any form, or by any means (electronic, mechanical, photocopying, recording, or otherwise), without the prior permission of the publisher. Requests for permission should be directed to permissions@hbsp.harvard.edu, or mailed to Permissions, Harvard Business School Publishing, 60 Harvard Way, Boston, Massachusetts 02163.
 
 ## Library of Congress Cataloging-in-Publication Data
 
-Kaplan, Robert S.  
-The execution premium: linking strategy to operations for competitive advantage/Robert S. Kaplan, David P. Norton.  
-p. cm.  
-Includes bibliographical references and index.  
-ISBN-13: 978-1-4221-2116-0  
-1. Strategic planning.  2. Business planning.  3. Organizational effectiveness.  
-I. Norton, David P., 1941–  II. Title.  
-HD30.28.K35434   2008  
-658.4'012—dc22  
+Kaplan, Robert S.
+The execution premium: linking strategy to operations for competitive advantage/Robert S. Kaplan, David P. Norton.
+p. cm.
+Includes bibliographical references and index.
+ISBN-13: 978-1-4221-2116-0
+1. Strategic planning.  2. Business planning.  3. Organizational effectiveness.
+I. Norton, David P., 1941–  II. Title.
+HD30.28.K35434   2008
+658.4'012—dc22
 2008004645
 
 The paper used in this publication meets the requirements of the American National Standard for Permanence of Paper for Publications and Documents in Libraries and Archives Z39.48-1992.
@@ -109,27 +109,27 @@ The paper used in this publication meets the requirements of the American Nation
 
 # CONTENTS
 
-Preface vii  
+Preface vii
 Acknowledgments xi
 
-1. Introduction 1  
-2. Develop the Strategy 35  
-3. Plan the Strategy 69  
-4. Strategic Initiatives: Launching the Strategy into Motion 103  
-5. Aligning Organizational Units and Employees 125  
-6. Plan Operations: Align Process Improvement Programs 157  
-7. Plan Operations: Sales Forecasts, Resource Capacity, and Dynamic Budgets 185  
-8. Operational and Strategy Review Meetings 221  
-9. Meetings to Test and Adapt the Strategy 251  
+1. Introduction 1
+2. Develop the Strategy 35
+3. Plan the Strategy 69
+4. Strategic Initiatives: Launching the Strategy into Motion 103
+5. Aligning Organizational Units and Employees 125
+6. Plan Operations: Align Process Improvement Programs 157
+7. Plan Operations: Sales Forecasts, Resource Capacity, and Dynamic Budgets 185
+8. Operational and Strategy Review Meetings 221
+9. Meetings to Test and Adapt the Strategy 251
 10. The Office of Strategy Management 281
 
-Index 305  
+Index 305
 About the Authors 319
 
 Nota visual:
-- Página com grande espaço em branco superior; título “CONTENTS” centralizado no meio da página.  
-- Lista numerada dos capítulos alinhada à esquerda, com números de página alinhados à direita na mesma linha.  
-- Inscrições “Preface” e “Acknowledgments” acima da lista, com números de página em algarismos romanos (“vii” e “xi”) alinhados à direita.  
+- Página com grande espaço em branco superior; título “CONTENTS” centralizado no meio da página.
+- Lista numerada dos capítulos alinhada à esquerda, com números de página alinhados à direita na mesma linha.
+- Inscrições “Preface” e “Acknowledgments” acima da lista, com números de página em algarismos romanos (“vii” e “xi”) alinhados à direita.
 - Rodapé com marca d’água/assinatura “eagleflyfree” no canto inferior direito.
 
 ---
@@ -178,8 +178,8 @@ Since the strategy execution closed-loop management system is a recent developme
 
 ## NOTES
 
-1. R. S. Kaplan and D. P. Norton, “The Balanced Scorecard: Measures that Drive Performance,” Harvard Business Review (January–February 1992): 71–79.  
-2. R. S. Kaplan and D. P. Norton, “Using the Balanced Scorecard as a Strategic Management System,” Harvard Business Review (January–February 1996): 75–85; Part Two, “Managing Business Strategy,” in R. S. Kaplan and D. P. Norton, The Balanced Scorecard: Translating Strategy into Action (Boston: Harvard Business School Press, 1996).  
+1. R. S. Kaplan and D. P. Norton, “The Balanced Scorecard: Measures that Drive Performance,” Harvard Business Review (January–February 1992): 71–79.
+2. R. S. Kaplan and D. P. Norton, “Using the Balanced Scorecard as a Strategic Management System,” Harvard Business Review (January–February 1996): 75–85; Part Two, “Managing Business Strategy,” in R. S. Kaplan and D. P. Norton, The Balanced Scorecard: Translating Strategy into Action (Boston: Harvard Business School Press, 1996).
 3. R. S. Kaplan and D. P. Norton, “The Office of Strategy Management,” Harvard Business Review (October 2005): 72–80.
 
 ---
@@ -190,31 +190,31 @@ Since the strategy execution closed-loop management system is a recent developme
 
 We have benefited greatly from the experiences of the organizations that we cite in this book. Their ability to extend our ideas with sophisticated applications is a true source of managerial innovation and progress. In particular, our thanks go to the following contributors:
 
-- Bank of Tokyo-Mitsubishi  
-- Borealis  
-- Brazilian National Confederation of Industry (CNI)  
-- Canadian Blood Services  
-- Federal Bureau of Investigation  
-- Hillside Family of Agencies  
-- HSBC Rail  
-- KeyCorp  
-- Lockheed Martin  
-- LG Philips LCD  
-- Luxfer Gas Cylinders  
-- Marriott Vacation Club International  
+- Bank of Tokyo-Mitsubishi
+- Borealis
+- Brazilian National Confederation of Industry (CNI)
+- Canadian Blood Services
+- Federal Bureau of Investigation
+- Hillside Family of Agencies
+- HSBC Rail
+- KeyCorp
+- Lockheed Martin
+- LG Philips LCD
+- Luxfer Gas Cylinders
+- Marriott Vacation Club International
 
 Contributors (individuals):
-- Takehiko Nagumo  
-- Thomas Boesen  
-- José Augusto Coelho Fernandes  
-- Graham Sher, Sophie de Viller?, Andy Shaw  
-- Dennis Richardson, Maria Cristalli  
-- Peter Aldridge  
-- Michele Seyranian, Lesa Evans  
-- Ed Meehan, Pamela Santiago  
-- Richard Dinnan, Lance Freedman, Jeff DeLeon, Maria Rasmy, Josh Stalher  
-- Ron Wirahadiraksa  
-- John Rhodes, David Rix  
+- Takehiko Nagumo
+- Thomas Boesen
+- José Augusto Coelho Fernandes
+- Graham Sher, Sophie de Viller?, Andy Shaw
+- Dennis Richardson, Maria Cristalli
+- Peter Aldridge
+- Michele Seyranian, Lesa Evans
+- Ed Meehan, Pamela Santiago
+- Richard Dinnan, Lance Freedman, Jeff DeLeon, Maria Rasmy, Josh Stalher
+- Ron Wirahadiraksa
+- John Rhodes, David Rix
 - Karl Sweeney
 
 ---
@@ -223,31 +223,31 @@ Contributors (individuals):
 
 # Acknowledgments
 
-Motorola GEMS  
-Nemours  
-Nordea  
-Oracle/Latin America  
-Ricoh Corporation  
-SAS International  
-Merck Serono  
-Statoil  
-State Street Corporation  
-Thai Carbon Black  
+Motorola GEMS
+Nemours
+Nordea
+Oracle/Latin America
+Ricoh Corporation
+SAS International
+Merck Serono
+Statoil
+State Street Corporation
+Thai Carbon Black
 University of Leeds
 
-Mark Hurlbert  
-David Bailey  
-Sven Edvinsson  
-Cheryl McDowell  
-Sam Ichioka, Brad Nelson,  
-Marilyn Michaels  
-David Schwerbrock  
-Roland Baumann,  
-Lawrence Ganti  
-Bjarte Bogsnes  
-Jack Klinck  
-S. Srinivasan  
-Michael Arthur,  
+Mark Hurlbert
+David Bailey
+Sven Edvinsson
+Cheryl McDowell
+Sam Ichioka, Brad Nelson,
+Marilyn Michaels
+David Schwerbrock
+Roland Baumann,
+Lawrence Ganti
+Bjarte Bogsnes
+Jack Klinck
+S. Srinivasan
+Michael Arthur,
 Simon Donoghue
 
 We are indebted to the professional staff of the Balanced Scorecard Collaborative and the Palladium Group who, using these approaches, help their clients create execution premiums. In particular, we recognize Kit Jackson, who taught us how to use strategic themes for multiple strategy execution processes and provided invaluable feedback on an early draft of the book; Ed Barrows for his work on the strategy development process; Anne Nevius for her contributions to health care management; and Laura Downing for her contributions to the management of public sector organizations and her constructive feedback as a reviewer of an earlier version of the book. Additional thanks go to Peter LaCasse, Michael Contrada, and Mathias Mangels for their work on initiative management; Cary Greene, Philip Pe...[conteúdo truncado por ser muito longo]
@@ -475,7 +475,7 @@ We have formulated the architecture, shown in Figure 1-3, for a comprehensive an
 
 # THE EXECUTION PREMIUM
 
-## FIGURE 1-3  
+## FIGURE 1-3
 The management system: Linking strategy to operations
 
 ### Descrição detalhada da figura
@@ -776,7 +776,7 @@ Office of strategy management plays three important roles
   - Círculo superior: “The Architect”.
     - Texto à direita deste círculo: “Define and clarify the philosophy of performance management and the processes required to execute.”
   - Círculo inferior esquerdo: “The Process Owner”.
-    - Bloco de texto abaixo (esquerda): 
+    - Bloco de texto abaixo (esquerda):
       - Título implícito: “Define, develop, and oversee the execution of processes required to manage the strategy.”
       - Lista de itens:
         - Develop the strategy.
@@ -1057,17 +1057,17 @@ The strategy execution processes and the organizational infrastructure represent
 
 ## NOTES
 
-1. Anonymous; the quote is widely attributed to Sun Tsu, The Art of War, though a careful reading of several translations does not identify the actual use of this quote.  
-2. M. Porter, “What Is Strategy?” Harvard Business Review (November–December 1996).  
-3. M. Hammer, “Redesigning the Practice of Management,” presentation at Management: The Last Process Frontier, Hammer & Company Conference, Cambridge, MA, December 4, 2006.  
-4. Balanced Scorecard Hall of Fame 2007 (Boston: Harvard Business School Publishing, 2007).  
-5. The eight key processes were customer relationship management, product supply management, new product to market, finance and accounting, human resources, information resources, law, and resort services.  
-6. “Marriott Vacation Club International,” Balanced Scorecard Hall of Fame Report: 2007 (Boston: Harvard Business School Publishing, 2007): 28.  
-7. S. Hawkes, “Thousands of Jobs to Go at BP as Chief Acts to Cut Overheads” The Times (London), Business Section, October 12, 2007.  
-8. We surveyed members of our online community, www.bscoll.com. The members self-select and join the community because of their interest in using the Balanced Scorecard for strategy execution, so the 54 percent figure is almost surely higher than the underlying rate of strategy execution management systems among all private- and public-sector enterprises.  
-9. These processes are drawn from our survey. They should not be confused with our six-stage system for integrating strategy planning and operational execution, which we introduce later in this chapter and elaborate throughout the rest of the book.  
-10. B. Marr, Business Performance Management: Current State of the Art, survey report, Cranfield School of Management and Hyperion, 2004.  
-11. R. Lawson, D. Desroches, and T. Hatch, Scorecard Best Practices: Design, Implementation, and Evaluation (Hoboken, NJ: John Wiley, 2008), 59–60.  
+1. Anonymous; the quote is widely attributed to Sun Tsu, The Art of War, though a careful reading of several translations does not identify the actual use of this quote.
+2. M. Porter, “What Is Strategy?” Harvard Business Review (November–December 1996).
+3. M. Hammer, “Redesigning the Practice of Management,” presentation at Management: The Last Process Frontier, Hammer & Company Conference, Cambridge, MA, December 4, 2006.
+4. Balanced Scorecard Hall of Fame 2007 (Boston: Harvard Business School Publishing, 2007).
+5. The eight key processes were customer relationship management, product supply management, new product to market, finance and accounting, human resources, information resources, law, and resort services.
+6. “Marriott Vacation Club International,” Balanced Scorecard Hall of Fame Report: 2007 (Boston: Harvard Business School Publishing, 2007): 28.
+7. S. Hawkes, “Thousands of Jobs to Go at BP as Chief Acts to Cut Overheads” The Times (London), Business Section, October 12, 2007.
+8. We surveyed members of our online community, www.bscoll.com. The members self-select and join the community because of their interest in using the Balanced Scorecard for strategy execution, so the 54 percent figure is almost surely higher than the underlying rate of strategy execution management systems among all private- and public-sector enterprises.
+9. These processes are drawn from our survey. They should not be confused with our six-stage system for integrating strategy planning and operational execution, which we introduce later in this chapter and elaborate throughout the rest of the book.
+10. B. Marr, Business Performance Management: Current State of the Art, survey report, Cranfield School of Management and Hyperion, 2004.
+11. R. Lawson, D. Desroches, and T. Hatch, Scorecard Best Practices: Design, Implementation, and Evaluation (Hoboken, NJ: John Wiley, 2008), 59–60.
 12. J. Hope and R. Fraser, “Who Needs Budgets?” Harvard Business Review (February 2003): 108–115; T. Hope and J. Hope, Beyond Budgeting: How Managers Can Break Free from the Annual Performance Trap (Boston: Harvard Business School Press, 2003).
 
 ---
@@ -1398,7 +1398,7 @@ The strategic change agenda defined the journey from where CBS was to what it co
   - Coluna da esquerda (título implícito: “from ...”): lista o estado atual/legado em blocos cinza empilhados.
   - Coluna central: lista as categorias/áreas de transformação (e.g., Mission, Funding).
   - Coluna da direita (título implícito: “... to”): lista o estado futuro desejado correspondente, também em blocos cinza empilhados.
-- Fluxo visual: cada linha conecta “from ...” → [categoria] → “... to”, indicando a mudança pretendida por área.
+- Fluxo visual: cada linha conecta “from ...” -> [categoria] -> “... to”, indicando a mudança pretendida por área.
 
 #### [Tabela descritiva do conteúdo do diagrama]
 ## Canadian Blood Services Change Agenda — from ... to
@@ -1541,24 +1541,24 @@ Mission: To provide leadership, institutions, and services to restore and improv
 
 - Ensuring stewardship of the trust and assured financial strength
 
-Stewardship  
+Stewardship
 Financial strength into perpetuity
 
-Customers  
+Customers
 A uniquely satisfying experience
 
 Processes
 
-Impact and Community  
+Impact and Community
 Be a leader in improving children’s health through our integrated health system; becoming a preeminent voice for children.
 
-Service and Quality  
+Service and Quality
 Care for each child as if he or she were our own.
 
-Efficiency and Environment  
+Efficiency and Environment
 Be effective stewards of all of our assets, continually improving them to advance our mission.
 
-People and Learning  
+People and Learning
 Be a great place to work.
 
 - That provide a uniquely satisfying customer experience
@@ -1573,13 +1573,13 @@ Commitment: I will do whatever it takes to make every contact with Nemours a uni
 
 ## FIGURE DESCRIPTION
 - Architecture-style diagram with layered sections from top (Vision/Mission) to bottom (People and Learning).
-- Left margin includes upward arrow markers with the phrases: 
-  1) “That supports our mission” 
-  2) “Ensuring stewardship of the trust and assured financial strength” 
-  3) “That provide a uniquely satisfying customer experience” 
-  4) “To deliver the strategic processes” 
+- Left margin includes upward arrow markers with the phrases:
+  1) “That supports our mission”
+  2) “Ensuring stewardship of the trust and assured financial strength”
+  3) “That provide a uniquely satisfying customer experience”
+  4) “To deliver the strategic processes”
   5) “We will enable our people”.
-- Central stacked boxes in this order: 
+- Central stacked boxes in this order:
   - “Stewardship: Financial strength into perpetuity” under a roof shape with Vision and Mission text.
   - “Customers: A uniquely satisfying experience”.
   - “Processes” containing three side-by-side boxes: “Impact and Community”, “Service and Quality”, “Efficiency and Environment” with the detailed statements above.
@@ -1726,7 +1726,7 @@ The strategic issues guide the agenda for the strategy review meetings described
 
 # THE EXECUTION PREMIUM — Page 52
 
-## FIGURE 2-10  
+## FIGURE 2-10
 The SWOT matrix at Nemours
 
 ## SWOT matrix at Nemours
@@ -2077,12 +2077,12 @@ Strategy formulation resolves the issues and establishes the new directions
 - O item “5. Shopping experience” no bloco de “Strategic Issues” está destacado com um contorno.
 
 ### Strategic Issues
-1. Growth  
-2. Customer  
-3. Merchandising  
-4. Purchasing  
-5. Shopping experience  
-6. Inventory  
+1. Growth
+2. Customer
+3. Merchandising
+4. Purchasing
+5. Shopping experience
+6. Inventory
 7. Organization and people
 
 “How do we make our stores fun?”
@@ -2169,7 +2169,7 @@ eagleflyfree
 
 65
 
-## FIGURE 2-15  
+## FIGURE 2-15
 Triggers of strategy change at Marriott Vacation Club International
 
 - Descrição do gráfico:
@@ -2210,17 +2210,17 @@ If the existing strategy is still functioning effectively, the team may choose t
 
 ## NOTES
 
-1. D. K. Rigby, Management Tools 2007: An Executive’s Guide (Boston: Bain & Company, 2007).  
-2. “Improving Strategic Planning: A McKinsey Survey,” McKinsey Quarterly (September 2006).  
-3. See http://www.novartis.co.uk/about/mission.shtml.  
-4. See http://www.google.com/corporate/.  
-5. Whole Foods values statements are extensive; see http://www.wholefoodsmarket.com/company/corevalues.html.  
-6. Indigo 2007 Annual Report.  
-7. See http://www.earthlink.net/about/cvb/.  
-8. R. Nolan and D. Stoddard, “Cigna Property and Casualty Reengineering (A),” HBS Case # 9-196-059 (August 1995): 3–4.  
-9. R. Kaplan and N. Tempest, “Wells Fargo Online Financial Services (A),” HBS Case # 9-198-146 (June 1999): 4.  
-10. “Our Vision & Purpose,” University of Leeds Strategic Plan 2006: 4.  
-11. J. Collins and J. Porras, Built to Last: Successful Habits of Visionary Companies (New York: Harper Collins, 1994), 9.  
+1. D. K. Rigby, Management Tools 2007: An Executive’s Guide (Boston: Bain & Company, 2007).
+2. “Improving Strategic Planning: A McKinsey Survey,” McKinsey Quarterly (September 2006).
+3. See http://www.novartis.co.uk/about/mission.shtml.
+4. See http://www.google.com/corporate/.
+5. Whole Foods values statements are extensive; see http://www.wholefoodsmarket.com/company/corevalues.html.
+6. Indigo 2007 Annual Report.
+7. See http://www.earthlink.net/about/cvb/.
+8. R. Nolan and D. Stoddard, “Cigna Property and Casualty Reengineering (A),” HBS Case # 9-196-059 (August 1995): 3–4.
+9. R. Kaplan and N. Tempest, “Wells Fargo Online Financial Services (A),” HBS Case # 9-198-146 (June 1999): 4.
+10. “Our Vision & Purpose,” University of Leeds Strategic Plan 2006: 4.
+11. J. Collins and J. Porras, Built to Last: Successful Habits of Visionary Companies (New York: Harper Collins, 1994), 9.
 
 Page number: 66 (footer shows 66).
 
@@ -2230,28 +2230,28 @@ Page number: 66 (footer shows 66).
 
 # DEVELOP THE STRATEGY
 
-12. J. Kotter, Leading Change (Boston: Harvard Business School Press, 1996), 21–22.  
-13. SHRM/Balanced Scorecard Collaborative, Aligning HR with Organization Strategy Survey Research Study 62-17052 (Alexandria, VA: Society for Human Resource Management, 2002); “The Alignment Gap,” CIO Insight, 1 July 2002.  
-14. R. S. Kaplan and D. P. Norton, Strategy Maps (Boston: Harvard Business School Press, 2004); and Kaplan and Norton, The Strategy-Focused Organization (Boston: Harvard Business School Press, 2000).  
-15. Recently, a sixth force, the role of complementors, has been added to the five forces framework. See M. E. Porter, “The Five Competitive Forces That Shape Strategy,” Harvard Business Review (January 2008) 86–87.  
-16. M. E. Porter, Competitive Advantage: Creating and Sustaining Superior Performance (New York: Macmillan, Free Press, 1985), 33–163.  
-17. One of the early SWOT references is E. P. Learned, C. R. Christensen, K. Andrews, and W. D. Guth, Business Policy: Text and Cases (Homewood, IL: Irwin, 1969).  
-18. Numerous articles and books have been written on strategy formulation. Here are some of the most important:  
-Porter, M. E. The Competitive Advantage: Creating and Sustaining Superior Performance. New York: Free Press, 1985. (Republished with a new introduction, 1998.)  
-Porter, M. E. Competitive Strategy: Techniques for Analyzing Industries and Competitors. New York: Free Press, 1980. (Republished with a new introduction, 1998.)  
-Porter, M. E. “What Is Strategy?” Harvard Business Review (November–December 1996).  
-Barney, J. Gaining and Sustaining Competitive Advantage. 3rd ed. Saddle River, NJ: Prentice-Hall, 2006.  
-Barney, J. B., and D. N. Clark. Resource-Based Theory: Creating and Sustaining Competitive Advantage. Oxford: Oxford University Press, 2007.  
-Hamel, G., and C. K. Prahalad. Competing for the Future. Boston: Harvard Business School Press, 1996.  
-Collis, D. J., and C. A. Montgomery. “Competing on Resources: Strategy in the 1990s.” Harvard Business Review (July–August 1995): 118–128.  
-Kim, W. C., and R. Mauborgne. Blue Ocean Strategy. Boston: Harvard Business School Press, 2005.  
-Christensen, C. M., and M. E. Raynor, The Innovator’s Solution: Creating and Sustaining Successful Growth. Boston: Harvard Business School Press, 2003.  
-Zook, C., and J. Allen, Profit from the Core: Growth Strategy in the Age of Turbulence. Boston: Harvard Business School Press, 2001.  
-Mintzberg, H. “Crafting Strategy.” Harvard Business Review (July–August 1987).  
-Hamel, G., “Strategy Innovation and the Quest for Value.” Sloan Management Review (Winter 1998).  
-19. COSO is the abbreviation for the Committee of Sponsoring Organizations of the Treadway Commission, a voluntary private-sector organization that sets standards for business ethics, internal controls, and corporate governance.  
-20. C. Zook and J. Allen, Profit from the Core.  
-21. Kim and Mauborgne, Blue Ocean Strategy.  
+12. J. Kotter, Leading Change (Boston: Harvard Business School Press, 1996), 21–22.
+13. SHRM/Balanced Scorecard Collaborative, Aligning HR with Organization Strategy Survey Research Study 62-17052 (Alexandria, VA: Society for Human Resource Management, 2002); “The Alignment Gap,” CIO Insight, 1 July 2002.
+14. R. S. Kaplan and D. P. Norton, Strategy Maps (Boston: Harvard Business School Press, 2004); and Kaplan and Norton, The Strategy-Focused Organization (Boston: Harvard Business School Press, 2000).
+15. Recently, a sixth force, the role of complementors, has been added to the five forces framework. See M. E. Porter, “The Five Competitive Forces That Shape Strategy,” Harvard Business Review (January 2008) 86–87.
+16. M. E. Porter, Competitive Advantage: Creating and Sustaining Superior Performance (New York: Macmillan, Free Press, 1985), 33–163.
+17. One of the early SWOT references is E. P. Learned, C. R. Christensen, K. Andrews, and W. D. Guth, Business Policy: Text and Cases (Homewood, IL: Irwin, 1969).
+18. Numerous articles and books have been written on strategy formulation. Here are some of the most important:
+Porter, M. E. The Competitive Advantage: Creating and Sustaining Superior Performance. New York: Free Press, 1985. (Republished with a new introduction, 1998.)
+Porter, M. E. Competitive Strategy: Techniques for Analyzing Industries and Competitors. New York: Free Press, 1980. (Republished with a new introduction, 1998.)
+Porter, M. E. “What Is Strategy?” Harvard Business Review (November–December 1996).
+Barney, J. Gaining and Sustaining Competitive Advantage. 3rd ed. Saddle River, NJ: Prentice-Hall, 2006.
+Barney, J. B., and D. N. Clark. Resource-Based Theory: Creating and Sustaining Competitive Advantage. Oxford: Oxford University Press, 2007.
+Hamel, G., and C. K. Prahalad. Competing for the Future. Boston: Harvard Business School Press, 1996.
+Collis, D. J., and C. A. Montgomery. “Competing on Resources: Strategy in the 1990s.” Harvard Business Review (July–August 1995): 118–128.
+Kim, W. C., and R. Mauborgne. Blue Ocean Strategy. Boston: Harvard Business School Press, 2005.
+Christensen, C. M., and M. E. Raynor, The Innovator’s Solution: Creating and Sustaining Successful Growth. Boston: Harvard Business School Press, 2003.
+Zook, C., and J. Allen, Profit from the Core: Growth Strategy in the Age of Turbulence. Boston: Harvard Business School Press, 2001.
+Mintzberg, H. “Crafting Strategy.” Harvard Business Review (July–August 1987).
+Hamel, G., “Strategy Innovation and the Quest for Value.” Sloan Management Review (Winter 1998).
+19. COSO is the abbreviation for the Committee of Sponsoring Organizations of the Treadway Commission, a voluntary private-sector organization that sets standards for business ethics, internal controls, and corporate governance.
+20. C. Zook and J. Allen, Profit from the Core.
+21. Kim and Mauborgne, Blue Ocean Strategy.
 22. C. K. Prahalad and V. Ramaswamy, The Future of Competition: Cocreating Unique Value with Customers (Boston: Harvard Business School Press, 2004).
 
 ---
@@ -2286,7 +2286,7 @@ In this chapter, we address the translation of the strategy into a strategy map,
 
 The strategy map provides an architecture for integrating the strategies and operations of diverse units scattered throughout the enterprise.¹ (If you are new to strategy maps and the Balanced Scorecard, see the brief overview in the appendix to this chapter.) In our latest best practice, we construct strategy maps upon strategic themes—collections of related strategic objectives within the map—as illustrated in Figure 3-3.
 
-—  
+—
 ¹ Footnote marker present; full note appears elsewhere in the book.
 
 ---
@@ -2335,7 +2335,7 @@ The strategy map provides an architecture for integrating the strategies and ope
       - Resource capacity plan
       - Budgeting
     - Seta para “Operating Plan” e seta para “Execution”.
-  - Bloco “Operating Plan” (centro inferior): 
+  - Bloco “Operating Plan” (centro inferior):
     - Dashboards
     - Sales forecast
     - Resource requirements
@@ -2354,13 +2354,13 @@ The strategy map provides an architecture for integrating the strategies and ope
       - Emerging strategies
     - Seta de retorno para o topo direito.
   - Elipse inferior central: “Execution”
-    - Subtítulos internos (parcialmente ofuscados, mas legíveis): 
+    - Subtítulos internos (parcialmente ofuscados, mas legíveis):
       - Process
       - Initiative
     - Conectada a “Plan Operations” e “Operating Plan”.
 
 [Fluxos principais descritos]
-- Sequência primária: 1 Develop the Strategy → 2 Plan the Strategy → Strategic Plan → Operating Plan → Execution.
+- Sequência primária: 1 Develop the Strategy -> 2 Plan the Strategy -> Strategic Plan -> Operating Plan -> Execution.
 - Integrações:
   - “Align the Organization” liga-se ao “Strategic Plan” e alimenta “Plan Operations”.
   - “Test and Adapt” e “Monitor and Learn” recebem “Performance measures” e realimentam o ciclo estratégico.
@@ -2458,15 +2458,15 @@ NeoSystems’ ability to excel at rapid product development depends on the quali
 - (Diagram: an oval labeled “The Value Gap” with an upward arrow labeled “Value” and a rightward arrow labeled “Spectrum.” Three themes connect into the oval.)
 
 ### Theme 1
-- Operations Management  
+- Operations Management
   “Reduce unit cost of service”
 
 ### Theme 2
-- Customer Management  
+- Customer Management
   “Increase revenue per customer”
 
 ### Theme 3
-- Innovative Products  
+- Innovative Products
   “Introduce new products and services”
 
 ## Input
@@ -2566,7 +2566,7 @@ Initiatives:
 - Benefits program
 
 [Note on figure layout]
-- The Strategy Map is a rectangular table with four horizontal sections (Financial, Customer, Process, Learning and Growth). Each section lists a focal capability box on the left (e.g., “Revenue Growth,” “Innovative Products,” “World-Class Internal Product Development,” “Stable and High-Talent Workforce”) with upward arrows indicating causal flow from Learning and Growth → Process → Customer → Financial. Columns to the right enumerate Measures, Target, and Initiatives as itemized above.
+- The Strategy Map is a rectangular table with four horizontal sections (Financial, Customer, Process, Learning and Growth). Each section lists a focal capability box on the left (e.g., “Revenue Growth,” “Innovative Products,” “World-Class Internal Product Development,” “Stable and High-Talent Workforce”) with upward arrows indicating causal flow from Learning and Growth -> Process -> Customer -> Financial. Columns to the right enumerate Measures, Target, and Initiatives as itemized above.
 
 ---
 
@@ -2598,7 +2598,7 @@ In Chapter 1 we describe the convening of the Luxfer Gas Cylinders (LGC) managem
 
 # PLAN THE STRATEGY
 
-## FIGURE 3-5  
+## FIGURE 3-5
 Nemours’ strategy map organized by strategic themes
 
 Vision: Freedom from disabling conditions
@@ -2609,14 +2609,14 @@ Mission: To provide leadership, institutions, and services to restore and improv
 Ensuring stewardship of the trust and assured financial strength
 
 #### Stewardship
-- S1—Create sufficient cash flow and operating margins to achieve our strategic goals  
-- S2—Achieve growth through delivery of impactful services in Florida and the Delaware Valley  
+- S1—Create sufficient cash flow and operating margins to achieve our strategic goals
+- S2—Achieve growth through delivery of impactful services in Florida and the Delaware Valley
 - S3—Manage costs/expenses through process efficiencies and resource decisions
 
 ### That provide a uniquely satisfying customer experience
 
 #### Customers
-- C1—Children and Families: “Create an environment where each child is treated as if they were your own.”  
+- C1—Children and Families: “Create an environment where each child is treated as if they were your own.”
 - C2—Communities: “Be a catalyst for change, as well as a trusted resource for improving children’s health.”
 
 ### To deliver the strategic processes
@@ -2624,28 +2624,28 @@ Ensuring stewardship of the trust and assured financial strength
 #### Processes
 
 ##### Impact and Community
-- P01—Expand our reach in the Delaware Valley and Florida to ensure vitality and viability  
-- P02—Create an integrated system of children’s health  
-- P03—Working with community partners and government, influence issues and drive change relevant to child health and wellness  
+- P01—Expand our reach in the Delaware Valley and Florida to ensure vitality and viability
+- P02—Create an integrated system of children’s health
+- P03—Working with community partners and government, influence issues and drive change relevant to child health and wellness
 - P04—Improve children’s health through research and education
 
 ##### Service and Quality
-- P05—Assure service excellence in order to provide a compassionate, personalized, and informed experience  
-- P06—Achieve exceptional outcomes through coordinated, evidence-based care, health promotion, and improved clinical processes  
-- P07—Leverage technology for process improvement, enhanced quality, safety, and service excellence  
+- P05—Assure service excellence in order to provide a compassionate, personalized, and informed experience
+- P06—Achieve exceptional outcomes through coordinated, evidence-based care, health promotion, and improved clinical processes
+- P07—Leverage technology for process improvement, enhanced quality, safety, and service excellence
 - P08—Partner with physicians and other care providers to create an efficient and effective environment for care
 
 ##### Efficiency and Environment
-- P09—Create and enhance physical environments that are patient-centered and support excellent care  
-- P10—Assure that operations are efficient and effective  
+- P09—Create and enhance physical environments that are patient-centered and support excellent care
+- P10—Assure that operations are efficient and effective
 - P11—Allocate financial and capital resources for efficiency and effectiveness
 
 ### We will enable our people
 
 #### People and Learning
-- L01—Recruit and retain the right people in the right seats  
-- L02—Assure a highly skilled workforce  
-- L03—Align, reward, and encourage our associates’ passion for excellence  
+- L01—Recruit and retain the right people in the right seats
+- L02—Assure a highly skilled workforce
+- L03—Align, reward, and encourage our associates’ passion for excellence
 - L04—Value diversity and foster a culture of trust by living our core values
 
 Core values: • Excel • Respect • Serve • Honor • Learn
@@ -3021,9 +3021,9 @@ The Balanced Scorecard provides actionable measures and targets for the customer
 
 ### Notas adicionais
 - As medidas estão organizadas por blocos que se alinham aos objetivos do mapa à esquerda:
-  - Broaden revenue mix → Revenue mix (New = +10%), Revenue growth (+25%), Share of segment (25%), Share of wallet (50%), Customer satisfaction (90%).
-  - Cross-sell the product line → Cross-sell ratio (2.5), Hours with customer (1hr/Q).
-  - Create organization readiness (suportado por Strategic job, Strategic systems) → Human capital readiness (100%), Strategic application readiness (100%), Goals linked to BSC (100%).
+  - Broaden revenue mix -> Revenue mix (New = +10%), Revenue growth (+25%), Share of segment (25%), Share of wallet (50%), Customer satisfaction (90%).
+  - Cross-sell the product line -> Cross-sell ratio (2.5), Hours with customer (1hr/Q).
+  - Create organization readiness (suportado por Strategic job, Strategic systems) -> Human capital readiness (100%), Strategic application readiness (100%), Goals linked to BSC (100%).
 
 ---
 
@@ -3187,10 +3187,10 @@ The experience of Ricoh provides another example of splitting a value gap into s
 
 ## Financial Perspective (detailed labels and relationships)
 - Productivity:
-  - Reduce cost per customer → Increase net income
+  - Reduce cost per customer -> Increase net income
 - Growth:
-  - Increase revenue per customer → Increase net income
-  - Increase number of customers → Increase net income
+  - Increase revenue per customer -> Increase net income
+  - Increase number of customers -> Increase net income
 
 Arrows in the figure indicate that improvements in Product/Service Attributes, Relationship, and Growth (Customer Perspective) feed into Process Perspective objectives, which in turn drive Financial Perspective outcomes culminating in increased net income.
 
@@ -3237,14 +3237,14 @@ Figure 3-13 summarizes the key elements of the strategy. The small matrix in the
 
 # PLAN THE STRATEGY
 
-## FIGURE 3-13  
+## FIGURE 3-13
 Ricoh decomposed its value gap into four themes
 
 ### Descrição da figura
 - Diagrama principal dividido em duas partes:
   - À esquerda, um gráfico de crescimento de receita ao longo de anos, mostrando múltiplas trajetórias de crescimento correspondentes a quatro temas estratégicos numerados (①, ②, ③, ④). Eixo vertical: “Revenue ($)” com rótulo “Growth gap” e uma caixa “Revenue $X goal”. Eixo horizontal: “Years” com marcações T₀, +1, +2, +3.
   - À direita, uma lista hierárquica “Themes (Substrategies)” com quatro temas e suas substratégias, cada qual associado a um valor monetário (símbolos $aa, $bb, $cc, $dd) e um total $xx.
-- No canto superior esquerdo, um quadrante intitulado implícita/visual de “Products/Services” no eixo vertical (Current → New) e “Channels/Customers” no eixo horizontal (Current → New), contendo quatro caixas numeradas:
+- No canto superior esquerdo, um quadrante intitulado implícita/visual de “Products/Services” no eixo vertical (Current -> New) e “Channels/Customers” no eixo horizontal (Current -> New), contendo quatro caixas numeradas:
   - ① Organic growth
   - ② Channel expansion
   - ③ New products
@@ -3299,7 +3299,7 @@ Establishing targets based on cause-effect scenarios
   - Targets area shows slanted shaded bars for positive targets and plain labels for negative percentages.
 - Axes: N/A (not a graph with axes).
 - Flow:
-  - Learning and Growth → Process → Customer → Financial.
+  - Learning and Growth -> Process -> Customer -> Financial.
   - Each step lists a measure aligned to the objective.
 - Targets shown:
   - Net income: +50% (Value Gap).
@@ -3455,7 +3455,7 @@ The strategy map describes the way the organization intends to create value for 
 ## Overall Layout Description
 - The figure is a layered strategy map flowing from bottom (enablers) to top (financial outcomes), with arrows showing causal links.
 - Left margin lists perspectives vertically: Financial Perspective, Customer Perspective, Process Perspective, Learning and Growth Perspective.
-- Right margin lists a vertical ladder titled “Value Creation Process” with four stacked arrows labeled (from bottom to top): 
+- Right margin lists a vertical ladder titled “Value Creation Process” with four stacked arrows labeled (from bottom to top):
   - We will enable our people
   - To deliver the strategic processes
   - That provide a satisfying customer experience
@@ -3644,7 +3644,7 @@ A portfolio of strategic initiatives should be developed for each theme
 ## Figure 4-2. Strategic Initiative Portfolio
 
 ### [Descrição da figura]
-- A figura apresenta uma tabela ampla dividida em três blocos principais, organizada por temas do “Strategy Map (Theme)”, com colunas correspondentes do “Balanced Scorecard” (Measures e Targets) e do “Action Plan” (Initiative e Budget). 
+- A figura apresenta uma tabela ampla dividida em três blocos principais, organizada por temas do “Strategy Map (Theme)”, com colunas correspondentes do “Balanced Scorecard” (Measures e Targets) e do “Action Plan” (Initiative e Budget).
 - À esquerda há uma coluna vertical com balões/etapas de temas estratégicos conectados por linhas curvas, listando: “Broaden revenue mix”, “Increase customer confidence in our financial advice”, “Cross-sell the product line”, “Strategic job — Financial planner”, “Strategic systems — Portfolio planning”, “Create organization readiness”.
 - No centro, a coluna “Balanced Scorecard” subdivide-se em “Measures” e “Targets”, apresentando métricas e metas numéricas.
 - À direita, a coluna “Action Plan” subdivide-se em “Initiative” e “Budget”, listando iniciativas correspondentes e um orçamento genérico “$XXX”.
@@ -3711,7 +3711,7 @@ Companies test the alignment of their initiatives to strategic themes and object
 [Descrição da figura]
 - A figura é uma matriz grande com linhas representando “Strategic Themes/Initiative Portfolios” e colunas representando diferentes “Programs/Projects”.
 - No topo, um título “Programs/Projects”.
-- As colunas, da esquerda para a direita, possuem rótulos verticais: 
+- As colunas, da esquerda para a direita, possuem rótulos verticais:
   1) Procurement redesign
   2) Sales force training
   3) Warehouse upgrades
@@ -3722,16 +3722,16 @@ Companies test the alignment of their initiatives to strategic themes and object
   8) Initiative “n”
 - As linhas (temas estratégicos) à esquerda:
   - Enhance Service Delivery
-    • Objective 1  
+    • Objective 1
     • Objective 2
   - Grow Partner Relationships
-    • Objective 3  
+    • Objective 3
     • Objective 4
   - Drive Future Value
     • Objective 5
   - Meet Regulatory Standards
   - Grow our customer focus capabilities
-    • Objective 7  
+    • Objective 7
     • Objective 8
 - Dentro das células, alguns “X” indicam alinhamento entre iniciativas e objetivos. Há também dois balões ovais:
   - Um oval central, entre as colunas “Warehouse upgrades” e “Identification of quality needs”, com o texto: “Initiative serving no themes”, e setas apontando para cima e para baixo (indicando desconexão com temas).
@@ -3871,64 +3871,64 @@ The University of Leeds, a U.K.-based education and research institute whose vis
 
 # THE EXECUTION PREMIUM
 
-## FIGURE 4-6  
+## FIGURE 4-6
 Initiative scoring at Canadian Blood Services
 
-- 2x Strategic fit  
-  1. Low  
-  5. Medium  
+- 2x Strategic fit
+  1. Low
+  5. Medium
   9. High
 
-- 2x Value provided  
-  1. Low to modest impact  
-  5. Significant value  
+- 2x Value provided
+  1. Low to modest impact
+  5. Significant value
   9. Breakthrough result
 
-  - • <10% impact on closing performance gap against specific measure(s)  
-    • Impact of no action—L  
-    • 11–25% impact on closing performance gap against specific measure(s)  
-    • Impact of no action—M  
-    • >25% impact on closing performance gap against specific measure(s)  
+  - • <10% impact on closing performance gap against specific measure(s)
+    • Impact of no action—L
+    • 11–25% impact on closing performance gap against specific measure(s)
+    • Impact of no action—M
+    • >25% impact on closing performance gap against specific measure(s)
     • Impact of no action—H
 
-- 1x Time to implement  
-  1. >24 months  
-  3. 18–24 months  
-  5. 12–18 months  
-  7. 6–12 months  
+- 1x Time to implement
+  1. >24 months
+  3. 18–24 months
+  5. 12–18 months
+  7. 6–12 months
   9. <6 months
 
-- 1x Total cost to implement  
-  1. >2,500  
-  3. 1,000–2,500  
-  5. 500–1,000  
-  7. 250–500  
+- 1x Total cost to implement
+  1. >2,500
+  3. 1,000–2,500
+  5. 500–1,000
+  7. 250–500
   9. <250
 
-- 1x Project team  
-  1. Insufficient CBS staff/skills; external resources difficult to source  
-  5. Insufficient CBS staff/skills; external resources available  
-     or  
-     Sufficient CBS staff/skills; difficult to source internal resources  
+- 1x Project team
+  1. Insufficient CBS staff/skills; external resources difficult to source
+  5. Insufficient CBS staff/skills; external resources available
+     or
+     Sufficient CBS staff/skills; difficult to source internal resources
   9. Sufficient CBS staff/skills; internal resources available
 
-- 1x Project risk  
-  1. High risk  
-  5. Medium risk  
+- 1x Project risk
+  1. High risk
+  5. Medium risk
   9. Low risk
 
-- 1x Depth and breadth of change  
-  1. High degree of organizational change required  
-  5. Modest change  
+- 1x Depth and breadth of change
+  1. High degree of organizational change required
+  5. Modest change
   9. Little change
 
 = Total Score
 
 thousand undergraduate and graduate students.3 Upon becoming vice-chancellor, Michael Arthur recognized the need to develop a strategy that would help the university achieve its vision of becoming a top 50 global university by 2015. The university’s strategy team developed the strategy map shown in Figure 4-7. The strategy placed equal importance on research and education, with the differentiating feature being the integration of the two. Leeds based its strategy map on four strategic themes:
 
-- Enhance our international performance and standing.  
-- Achieve an influential world-leading research profile.  
-- Inspire our students to develop their full potential.  
+- Enhance our international performance and standing.
+- Achieve an influential world-leading research profile.
+- Inspire our students to develop their full potential.
 - Enhance enterprise and knowledge transfer.
 
 To accomplish its strategic theme of world-leading research, the university conducted a process to select the dozen or so centers of excellence, which would receive targeted funding to launch them into world-class status. Figure 4-8 illustrates the structure used to implement the third theme, “Inspire our students to develop their full potential.” This theme would
@@ -4091,7 +4091,7 @@ Companies have long distinguished between operational and capital funds to segre
 
 # THE EXECUTION PREMIUM — Page 116
 
-## FIGURE 4-9  
+## FIGURE 4-9
 Funding strategic initiatives
 
 - Diagram description:
@@ -4223,14 +4223,14 @@ At Luxfer Gas Cylinders, theme owners have the following responsibilities:
 
 # THE EXECUTION PREMIUM
 
-2. Identify key issues and situations that could affect strategic implementation, and propose appropriate actions and accountabilities.  
-3. Act as a center of theme competency, a mentor to his or her own team, and a liaison to other theme teams to facilitate teaching, learning, and understanding.  
-4. Ensure that theme measures and initiatives align with theme objectives, and propose changes when necessary in collaboration with other members of the team.  
+2. Identify key issues and situations that could affect strategic implementation, and propose appropriate actions and accountabilities.
+3. Act as a center of theme competency, a mentor to his or her own team, and a liaison to other theme teams to facilitate teaching, learning, and understanding.
+4. Ensure that theme measures and initiatives align with theme objectives, and propose changes when necessary in collaboration with other members of the team.
 5. Sponsor new initiatives or changes to existing initiatives, and place these proposed changes on the management agenda.
 
 Each theme owner leads a theme team—a collection of individuals drawn from multiple business, regional, and support units—whose job is to link the theme’s strategic objectives to operational tasks. Theme team members can be dedicated to the strategic theme, or they may be part-time, with team membership added to their normal jobs and responsibilities. They join the team because of their competencies and process expertise. President John Rhodes described the roles of theme teams at Luxfer Gas Cylinders:
 
-When we started working with cross-functional teams, we had considerable dissonance for a time. Teams pass through phases: forming, storming, norming, and—finally—performing. Sounds a bit like members of a rock band learning how to play together.  
+When we started working with cross-functional teams, we had considerable dissonance for a time. Teams pass through phases: forming, storming, norming, and—finally—performing. Sounds a bit like members of a rock band learning how to play together.
 
 We teach members of theme teams to be communicators, influencers, and persuaders—not dictators and demanders. The whole point of themes is to make people want to work differently, smarter, more collaboratively, and more productively together to accomplish our strategic objectives. People need to be sold, not just told.7
 
@@ -4298,7 +4298,7 @@ The executive team can now move to the next stages of the management system: ali
 
 ## NOTES
 
-1. See R. S. Kaplan and N. Tempest, “Wells Fargo Online Financial Services (B),” Case 9-199-019 (Boston: Harvard Business School, 1998). This case illustrates a process of selecting strategic initiatives independently, without considering their interrelationships; see also R. S. Kaplan and D. P. Norton, The Strategy-Focused Organization (Harvard Business School Press, 2000), 297–300.  
+1. See R. S. Kaplan and N. Tempest, “Wells Fargo Online Financial Services (B),” Case 9-199-019 (Boston: Harvard Business School, 1998). This case illustrates a process of selecting strategic initiatives independently, without considering their interrelationships; see also R. S. Kaplan and D. P. Norton, The Strategy-Focused Organization (Harvard Business School Press, 2000), 297–300.
 2. For a more extensive treatment of initiative generation and evaluation, see P. LaCasse and T. Manzione, “Initiative Management: Putting Strategy into Action,” Balanced Scorecard Report (November–December 2007): 7–10, and T. Brown and
 
 ---
@@ -4309,10 +4309,10 @@ The executive team can now move to the next stages of the management system: ali
 
 M. Gill, “Charting New Horizons with Initiative Management,” Balanced Scorecard Report (September–October 2006): 13–16.
 
-3. University of Leeds Strategic Plan, 2006, www.leeds.ac.uk.  
-4. M. Arthur, “Foreword by the Vice-Chancellor,” University of Leeds Strategic Plan, 2006, p. 2.  
-5. Rankings published at http://www.topuniversities.com/worlduniversityrankings/results/2007/overall_rankings/top_100_universities/.  
-6. T. Copeland and P. Tufano, “A Real-World Way to Manage Real Options,” Harvard Business Review (March 2004); T. A. Luehrman, “Investment Opportunities as Real Options: Getting Started on the Numbers.” Harvard Business Review (July–August 1998): 51–67.  
+3. University of Leeds Strategic Plan, 2006, www.leeds.ac.uk.
+4. M. Arthur, “Foreword by the Vice-Chancellor,” University of Leeds Strategic Plan, 2006, p. 2.
+5. Rankings published at http://www.topuniversities.com/worlduniversityrankings/results/2007/overall_rankings/top_100_universities/.
+6. T. Copeland and P. Tufano, “A Real-World Way to Manage Real Options,” Harvard Business Review (March 2004); T. A. Luehrman, “Investment Opportunities as Real Options: Getting Started on the Numbers.” Harvard Business Review (July–August 1998): 51–67.
 7. J. Rhodes, speech at Balanced Scorecard European Summit, Prague, June 2007.
 
 ---
@@ -4351,7 +4351,7 @@ Descrição detalhada da figura:
 - Dois blocos centrais: “Strategic Plan” (acima) e “Operating Plan” (abaixo), ambos gerando “Results”.
 - Elipse “Execution” na base, com subtítulos “Process” e “Initiative”, recebendo entradas do “Operating Plan” e retornando feedback ao ciclo.
 - Setas:
-  - De “Develop the Strategy” para “Plan the Strategy” (feedback, numerado 1→2).
+  - De “Develop the Strategy” para “Plan the Strategy” (feedback, numerado 1->2).
   - De “Plan the Strategy” para “Strategic Plan”.
   - De “Align the Organization” para “Strategic Plan”.
   - De “Plan Operations” para “Operating Plan”.
@@ -4453,11 +4453,11 @@ Building the corporate scorecard
 Diagrama em duas metades conectadas:
 - Topo: uma caixa “Corporate” ligada a uma faixa “Line Businesses”, que se desdobra em quatro SBUs: SBU A, SBU B, SBU C, SBU D.
 - Centro-esquerda: coluna “The Corporate Scorecard (Creating Organizational Value)” com quatro categorias de sinergias e suas perguntas orientadoras.
-- Centro: coluna “Corporate value proposition” conectando-se horizontalmente às quatro colunas das SBUs. Em cada linha (perspectiva), há células rotuladas com letras correspondentes (por exemplo, F0 → FA, FB, FC, FD).
+- Centro: coluna “Corporate value proposition” conectando-se horizontalmente às quatro colunas das SBUs. Em cada linha (perspectiva), há células rotuladas com letras correspondentes (por exemplo, F0 -> FA, FB, FC, FD).
 - Centro-direita: colunas das SBUs (A, B, C, D) contêm caixas vazias por perspectiva, rotuladas com abreviações.
 - Direita: coluna “The Business Unit Scorecard (Creating Customer Value)” com quatro perspectivas e perguntas orientadoras.
 - Setas:
-  - Da coluna corporativa para as SBUs em cada linha (F0 → FA, etc.).
+  - Da coluna corporativa para as SBUs em cada linha (F0 -> FA, etc.).
   - Da coluna direita (perspectivas do Business Unit Scorecard) curvando-se para as caixas das SBUs nas quatro linhas.
   - Na base, setas bidirecionais conectam as caixas de L (aprendizado e crescimento) entre SBUs e retornam à caixa L0.
 
@@ -4520,7 +4520,7 @@ Diagrama em duas metades conectadas:
   - SBU B: LB
   - SBU C: LC
   - SBU D: LD
-  - Observação visual: seta da caixa L0 para LA–LD; setas curvas da coluna “Learning and Growth” para cada caixa LA–LD; setas horizontais na base conectando LA ↔ LB ↔ LC ↔ LD e retornando a L0, indicando compartilhamento de ativos intangíveis entre unidades.
+  - Observação visual: seta da caixa L0 para LA–LD; setas curvas da coluna “Learning and Growth” para cada caixa LA–LD; setas horizontais na base conectando LA <-> LB <-> LC <-> LD e retornando a L0, indicando compartilhamento de ativos intangíveis entre unidades.
 
 ## Observações visuais adicionais
 - A coluna “Corporate value proposition” fica entre a coluna “The Corporate Scorecard” (com as perguntas) e as colunas das SBUs.
@@ -4815,22 +4815,22 @@ RidgeStone Bank Credit and Loan Operations agrees to provide the following key s
 #### Commercial and Personal Banking
 
 ##### Credit Administration Services
-1. For new commercial loan requests, provide accurate and timely turnaround of credit analysis package within five (5) business days from receipt of complete analysis request.  
-2. Provide ninety (90) days from maturity notification on credits to the Lending Office.  
+1. For new commercial loan requests, provide accurate and timely turnaround of credit analysis package within five (5) business days from receipt of complete analysis request.
+2. Provide ninety (90) days from maturity notification on credits to the Lending Office.
 3. On approved renewals, gather information from client and provide review packages thirty (30) days prior to maturity to the Lending Officer.
 
 ##### Documentation Services
-4. Complete and accurate loan documentation ready for review 24 hours before closing to enable the lender to proof documents.  
-5. Maintenance of accurate and timely loan information detail in the Loans-in-Process tracking system.  
+4. Complete and accurate loan documentation ready for review 24 hours before closing to enable the lender to proof documents.
+5. Maintenance of accurate and timely loan information detail in the Loans-in-Process tracking system.
 6. Staffing availability during closings for documentation, check preparation, and copying as needed.
 
 ##### Loan Servicing
-7. Complete, timely, and accurate maintenance of loan accounts within 24 hours of receipt of request from either SBUs or external clients, with rework and service defects completed same day or as soon as system allows.  
-8. Complete and accurate data entry of loan activity onto ITI by conclusion of next business day after closing, including all third-party payments and filing of collateral perfection and lien filing documentation.  
+7. Complete, timely, and accurate maintenance of loan accounts within 24 hours of receipt of request from either SBUs or external clients, with rework and service defects completed same day or as soon as system allows.
+8. Complete and accurate data entry of loan activity onto ITI by conclusion of next business day after closing, including all third-party payments and filing of collateral perfection and lien filing documentation.
 9. Personal Banking: accurate, timely booking and shipping of complete fundable package to investors by next business day from closing or date of rescission, with no avoidable errors or omissions.
 
 ##### Quality Control
-10. Monitor daily activity for loan non-posts, exceptions, paid loans, and new loans.  
+10. Monitor daily activity for loan non-posts, exceptions, paid loans, and new loans.
 11. Within three (3) business days of booking a loan, the editing of the documentation and system input coding will be cross-checked for accuracy.
 
 ---
@@ -4966,7 +4966,7 @@ At the Bank of Tokyo-Mitsubishi, Americas, the leadership team used a modified s
 
 # THE EXECUTION PREMIUM — Page 150
 
-## FIGURE 5-10  
+## FIGURE 5-10
 Bank of Tokyo-Mitsubishi, Americas, had to bridge two distinct cultures
 
 ### Descrição da figura
@@ -5017,7 +5017,7 @@ Lockheed Martin Internal IT Group has developed an award-winning communication p
 
 # THE EXECUTION PREMIUM — Page 144
 
-## FIGURE 5-11  
+## FIGURE 5-11
 One company’s strategy communications plan
 
 Objective: Identify specific messages for each targeted audience and the mix of channels through which messages will be conveyed.
@@ -5036,8 +5036,8 @@ Approach: Leverage the in-house communication team and existing communication ve
 | Permanent Framed Posters        | Corporate/division scorecard displayed in high-traffic areas, primary conference rooms, etc. | • Top-of-mind every day • Post measures, goals, trends • Signed by CEO |
 | Video | CEO states importance of initiative; reinforces commitment         | • No “talking heads” • Effective training tool • High-energy opening/closing or updates |
 
-Two basic but critical requirements of effective communication:  
-• Every communication had to answer the WIIFM employee question, “What’s in it for me?”  
+Two basic but critical requirements of effective communication:
+• Every communication had to answer the WIIFM employee question, “What’s in it for me?”
 • Each distinct phase or initiative had to be synchronized with the cascading of the Balanced Scorecard to that unit or department.
 
 Source: Balanced Scorecard Report, May–June 2002.
@@ -5093,8 +5093,8 @@ Rodapé impresso na margem inferior direita da página: “eagleflyfree”.
 ## Internal IT Group poster campaign, phase 2—Execution: “Think strategically, act locally”
 
 ### Descrição geral da página
-- A página apresenta a Figura 5-14 com quatro posters de uma campanha interna do Grupo de TI (fase 2).  
-- Tema central: “Think strategically, act locally”.  
+- A página apresenta a Figura 5-14 com quatro posters de uma campanha interna do Grupo de TI (fase 2).
+- Tema central: “Think strategically, act locally”.
 - Cada poster mostra uma cena corporativa distinta com pessoas em ambientes de escritório, acompanhada de um slogan/legenda na parte inferior.
 
 ### Poster 1 (à esquerda)
@@ -5118,8 +5118,8 @@ Rodapé impresso na margem inferior direita da página: “eagleflyfree”.
 - Rodapé: Texto pequeno com uma frase iniciando por “A [future/progressive] workforce …” seguido de insígnias/selos similares aos demais posters.
 
 ### Observações visuais adicionais
-- Cada poster tem um layout fotográfico com faixa inferior curva onde aparecem as legendas e pequenos logotipos/selos.  
-- Os balões de fala contêm pontos de ação/estratégia, mas muitos trechos são ilegíveis devido à baixa resolução.  
+- Cada poster tem um layout fotográfico com faixa inferior curva onde aparecem as legendas e pequenos logotipos/selos.
+- Os balões de fala contêm pontos de ação/estratégia, mas muitos trechos são ilegíveis devido à baixa resolução.
 - O conjunto reforça mensagens de: pensamento estratégico, execução local, excelência operacional, comunicação e desenvolvimento de talentos.
 
 Nota: Partes do texto em quadros e balões estão indistintas na imagem fornecida; acima, preserva-se todo conteúdo legível.
@@ -5480,7 +5480,7 @@ The management system: Linking strategy to operational planning
 - Emerging strategies
 
 - Overall flow:
-  - 1 → 2 → 3 → Strategic Plan → Operating Plan → Execution.
+  - 1 -> 2 -> 3 -> Strategic Plan -> Operating Plan -> Execution.
   - Monitor and Learn (5) receives performance measures from Operating Plan and feeds back to Test and Adapt (6) and to earlier steps.
   - Test and Adapt (6) analyzes and informs earlier stages. Cyclical feedback is indicated throughout.
 
@@ -5735,18 +5735,18 @@ Using the Balanced Scorecard with the catchball process
   - Saída para baixo do hexágono, com uma caixa à esquerda:
     - Review with next level
   - Decisão:
-    - Yes → seta para a direita até a caixa:
+    - Yes -> seta para a direita até a caixa:
       - Pass the ball to the next level. Are targets attainable?
-    - No → seta para a direita até a caixa:
+    - No -> seta para a direita até a caixa:
       - Address and resolve barriers
       - (desta caixa, uma seta retorna para a caixa “Pass the ball to the next level. Are targets attainable?”)
   - Da caixa “Pass the ball to the next level. Are targets attainable?” uma seta desce para a caixa:
     - Targets attainable or new targets agreed to?
   - Decisão a partir desta caixa:
-    - Yes → seta para baixo até a caixa:
+    - Yes -> seta para baixo até a caixa:
       - Commitments reviewed with leadership
       - Implement, measure results, and report
-    - No → seta para a direita de volta à caixa:
+    - No -> seta para a direita de volta à caixa:
       - Address and resolve barriers
 
 Texto corrido:
@@ -6035,12 +6035,12 @@ Moreover, at a fundamental level, the bank was unsure what “comfortable” ban
 
 ## TD Canada Trust’s existing customer dashboard
 
-CSI Quarterly Report  
-BRANCH # 1020  
-KING & BAY PAVILION  
+CSI Quarterly Report
+BRANCH # 1020
+KING & BAY PAVILION
 MEASUREMENT PERIOD: AUG’03 to OCT’03
 
-TD Canada Trust  
+TD Canada Trust
 2003 TARGET: 81.8
 
 Base: Total # Interviews
@@ -6050,18 +6050,18 @@ Base: Total # Interviews
 - Regional
 - National
 
-Year End 2002 to Jan’03  
-Feb’03 to Apr’03  
-May ’03 to Jul ’03  
-Aug ’03 to Oct ’03  
-Year Ending Oct ’03  
-Net Change**  
-Year End 2003  
+Year End 2002 to Jan’03
+Feb’03 to Apr’03
+May ’03 to Jul ’03
+Aug ’03 to Oct ’03
+Year Ending Oct ’03
+Net Change**
+Year End 2003
 Year End 2003
 
-Base (Interviews):  
-- Branch: 200, 50, 50, 50, 200  
-- Regional: 26934  
+Base (Interviews):
+- Branch: 200, 50, 50, 50, 200
+- Regional: 26934
 - National: 194514
 
 Unidades: % (percentual)
@@ -6069,63 +6069,63 @@ Unidades: % (percentual)
 ### Customer Satisfaction:
 Percent who give a rating of 6 or 7 on a 7-point numeric scale where 7=Excellent and 1=Poor
 
-- Overall In-Branch:  
+- Overall In-Branch:
   - 75.7, 69.6, 79.7, 69.3, 89.9, 77.1, +1.4, 81.5, 85.6
-- At Teller*:  
+- At Teller*:
   - 76.9, 72.3, 77.5, 70.0, 92.9, 78.2, +1.3, 81.9, 85.9
-- At Side-Counter+:  
+- At Side-Counter+:
   - 70.8, 58.3, 88.9, 66.7, 77.8, 72.9, -2.1, 80.2, 84.3
 
 ### Customer Commitment:
 † Percent giving 4 or 5 rating based on 5 point scale
 
-- Recommend TD/CT To Friend or Colleague†:  
+- Recommend TD/CT To Friend or Colleague†:
   - 68.6, 78.0, 75.1, 65.0, 81.6, 74.9, +6.3, 76.2, 79.3
-- Continue using TD/CT Over Next 12 Months†:  
+- Continue using TD/CT Over Next 12 Months†:
   - 86.0, 89.9, 86.0, 81.5, 88.1, 86.4, +0.4, 88.4, 90.6
 
 ### Did The Teller/Representative (Side-Counter)+ ?
-- Appreciate your business:  
+- Appreciate your business:
   - 86.6, 90.2, 91.8, 85.6, 95.6, 90.8, +4.2, 91.9, 93.3
-- Process your transaction quickly*:  
+- Process your transaction quickly*:
   - 95.0, 92.7, 95.1, 97.4, 100.0, 96.3, +1.3, 96.0, 97.3
-- Have the ability to handle your request:  
+- Have the ability to handle your request:
   - 96.0, 96.0, 98.1, 95.7, 95.7, 96.4, -0.5, 95.8, 96.7
-- Wait time acceptable:  
+- Wait time acceptable:
   - 91.0, 87.7, 87.7, 86.2, 94.1, 88.9, -2.1, 84.8, 89.9
-- Give you his/her individual attention:  
+- Give you his/her individual attention:
   - 93.4, 95.4, 87.7, 98.1, 97.8, 93.8, -0.4, 91.6, 94.7
-- Make you feel like a person not number*:  
+- Make you feel like a person not number*:
   - 92.3, 92.5, 94.9, 94.0, 100.0, 95.6, +2.2, 92.9, 95.1
-- Smile:  
+- Smile:
   - 89.1, 96.0, 92.3, 90.0, 96.0, 93.6, +4.5, 91.8, 93.6
-- Handle accts & transactions accurately+:  
+- Handle accts & transactions accurately+:
   - 88.9, 85.9, 88.9, 100.0, 91.7, 95.0, 95.8
-- Process your transaction accurately*:  
+- Process your transaction accurately*:
   - 97.4, 95.1, 95.1, 97.4, 96.2, 96.6, 97.6
-- Appear knowledgeable about services:  
+- Appear knowledgeable about services:
   - 90.0, 89.7, 89.9, 94.0, 90.9, 91.6, 93.5
-- Show interest in you as a person*:  
+- Show interest in you as a person*:
   - 88.2, 77.8, 91.7, 88.9, 88.9, 86.8, -1.4, 89.2, 92.1
-- Promptly acknowledge your presence*:  
+- Promptly acknowledge your presence*:
   - 85.4, 88.9, 69.4, 100.0, 100.0, 89.6, +4.2, 84.2, 86.7
-- Greet you pleasantly:  
+- Greet you pleasantly:
   - 95.6, 98.1, 100.0, 97.9, 100.0, 95.9, +2.4, 96.7, 97.8
-- Encourage you to ask questions*:  
+- Encourage you to ask questions*:
   - 86.1, 77.8, 72.2, 77.8, 58.3, 83.8, -1.6, 75.2, 93.4
-- Explain services ... easy to understand*:  
+- Explain services ... easy to understand*:
   - 84.0, 88.9, 88.9, 88.9, 100.0, 91.7, +7.7, 92.2, 93.4
-- Treat you in a respectful manner:  
+- Treat you in a respectful manner:
   - 98.9, 97.2, 97.8, 97.2, 100.0, 98.4, -0.4, 97.8, 98.6
-- Address you by name:  
+- Address you by name:
   - 70.9, 62.4, 63.8, 65.6, 82.2, 68.5, -4.4, 71.9, 73.2
-- Thank you for your business:  
+- Thank you for your business:
   - 84.9, 90.0, 87.5, 85.9, 90.0, 88.4, +3.5, 87.6, 86.8
-- Give advice or...based on your needs+:  
+- Give advice or...based on your needs+:
   - 86.1, 77.8, 61.1, 69.4, 69.4, 96.4, -16.7, 77.2, 79.6
-- Conduct banking privately:  
+- Conduct banking privately:
   - 93.6, 93.7, 91.6, 93.8, 96.0, 93.8, +0.2, 92.4, 94.6
-- Recommend additional services+:  
+- Recommend additional services+:
   - 72.9, 61.1, 55.6, 77.8, 50.0, 61.7, -11.8, 54.8, 53.3
 
 Notas:
@@ -6319,7 +6319,7 @@ Quality and other process improvement programs play a critical role in enabling 
 
 # PLAN OPERATIONS
 
-Sales Forecasts, Resource Capacity,  
+Sales Forecasts, Resource Capacity,
 and Dynamic Budgets
 
 A COMPANY’S SPENDING on the strategic initiatives and process improvements discussed in Chapters 4 and 6 is essential for effective strategy implementation. But the spending on initiatives, projects, and process improvements typically accounts for only 10 percent or less of overall corporate spending. The remaining 90-plus percent enables the company to produce and deliver products and services to customers and to perform corporate support functions. In this chapter, we present an integrated approach for linking the strategic plan to forecasts for spending on operating and capital resources. This process (described in the second row of Figure 6-2 in Chapter 6) ensures that resource capacity, operational plans, and budgets reflect the direction and needs of the strategy.
@@ -6495,8 +6495,8 @@ Companies need updated forecasts for several purposes. First, public companies w
 
 #### Forecasts made for:
 
-- Year 2: Q1, Q2, Q3, Q4  
-- Year 3: Q1, Q2, Q3, Q4  
+- Year 2: Q1, Q2, Q3, Q4
+- Year 3: Q1, Q2, Q3, Q4
 - Year 4: Q1, Q2
 
 #### Forecasts made on:
@@ -6512,10 +6512,10 @@ Legenda da figura:
 - Light rectangle indicates a forecast period; dark rectangle indicates actual results known at time of forecast.
 
 Descrição detalhada da figura:
-- A figura apresenta um diagrama em grade representando um processo de previsão contínua de 5 trimestres.  
-- As linhas correspondem aos momentos em que a previsão é realizada (por exemplo, “Year 1 Q4”, “Year 2 Q1”, etc.).  
-- As colunas correspondem aos trimestres futuros para os quais as previsões são feitas, abrangendo do Year 2 Q1 até o Year 4 Q2.  
-- Cada célula da grade é um retângulo: retângulos claros indicam períodos ainda a serem previstos; retângulos escuros indicam resultados reais já conhecidos no momento da previsão.  
+- A figura apresenta um diagrama em grade representando um processo de previsão contínua de 5 trimestres.
+- As linhas correspondem aos momentos em que a previsão é realizada (por exemplo, “Year 1 Q4”, “Year 2 Q1”, etc.).
+- As colunas correspondem aos trimestres futuros para os quais as previsões são feitas, abrangendo do Year 2 Q1 até o Year 4 Q2.
+- Cada célula da grade é um retângulo: retângulos claros indicam períodos ainda a serem previstos; retângulos escuros indicam resultados reais já conhecidos no momento da previsão.
 - À medida que se avança um trimestre na linha do tempo, a janela móvel de 5 trimestres também avança: os trimestres mais antigos tornam-se resultados reais (retângulos escuros) e novos trimestres futuros entram como períodos de previsão (retângulos claros).
 
 ---
@@ -6552,7 +6552,7 @@ product line by brand and by SKU (size, flavor, formulation, etc.) within each b
 
 For the upcoming period, the company attempts to quantify the impact of its marketing programs, such as new product launches, advertising, promotions, distribution of samples, in-store displays, and product-line extensions. The company estimates the impact of each of these marketing elements on retaining existing customers, persuading existing customers to try new products, and acquiring new customers. All these statistical relationships are aggregated into sales forecasts, by product and perhaps even SKUs within each product category, for end-use consumers. In summary, the company develops its sales forecast from the following six key drivers:
 
-1. New product performance: The percentage of the targeted population (those willing to try) who would convert to the new product even before major marketing investments  
+1. New product performance: The percentage of the targeted population (those willing to try) who would convert to the new product even before major marketing investments
 2. Advertising performance: The impact of advertising spending on repeat and new purchases
 
 ## Figure 7-3 — Developing a driver-based forecasting model at a consumer goods company
@@ -6607,9 +6607,9 @@ Etapas e elementos descritos, na ordem:
 
 # PLAN OPERATIONS: SALES FORECASTS, CAPACITY, BUDGETS 195
 
-3. Sales promotion: The impact of in-store promotions on product sales  
-4. Price performance: The impact on demand of price changes, either plus or minus  
-5. Sampling performance: The impact on steady-state demand of delivering product samples directly to end-use consumers  
+3. Sales promotion: The impact of in-store promotions on product sales
+4. Price performance: The impact on demand of price changes, either plus or minus
+5. Sampling performance: The impact on steady-state demand of delivering product samples directly to end-use consumers
 6. Distribution: The impact on end-use sales of retail product availability
 
 The company also models the existing stock of products held by the trade channel (distributors, wholesalers, and retailers) and by end-use consumers. Most consumers will not purchase a new item until they deplete their current stock of the item. Using estimates of end-use forecast demand and of the existing stock of products in the supply-chain pipeline, the company then estimates its production and distribution plan for the upcoming period.
@@ -6737,7 +6737,7 @@ Figure 7-6 shows how the TDABC model has enabled Towerton Financial to translate
 
 # THE EXECUTION PREMIUM — Page 200
 
-## FIGURE 7-6  
+## FIGURE 7-6
 Towerton Financial estimates of resources required to fulfill the operating plan
 
 Time Utilization (hours)
@@ -7023,7 +7023,7 @@ TFS builds a time-driven ABC model using the following sequence of steps. First,
 
 ### FIGURE 7A-2
 
-Time-driven activity-based costing step 1:  
+Time-driven activity-based costing step 1:
 Calculate the cost per unit time of supplying resource capacity
 
 - Título descritivo: Cálculo da taxa de custo de capacidade para corretores
@@ -7112,7 +7112,7 @@ hours per month), or $0.12 per MIPS processed ($6 per hour divided by 50 MIPS pe
 
 For the peak period, the numerator—the cost of supplying capacity for the eight hours—includes 76 servers × $6 per hour × 8 hours. But in addition, the cost of supplying the peak capacity includes the cost of 57 idle servers (76 − 19) for 16 hours of slack (also at $6 per hour). Peak load capacity is much more expensive, because the resources are used for only one-third of their available capacity. Here is the full calculation for the cost of providing peak capacity:
 
-Peak Hour Rate: 
+Peak Hour Rate:
 $$\frac{[(76 \times 8\ \text{hours}) + ((76 - 19) \times 16\ \text{hours})] \times \$6}{[76\ \text{servers} \times 8\ \text{hours} \times 50\ \text{MIPS/hour}]}
 = \$0.30/\text{MIPS}$$
 
@@ -7284,16 +7284,16 @@ The as-is TDABC model described in this appendix usually reveals unprofitable pr
 
 ## NOTES
 
-1. H. T. Johnson and R. S. Kaplan, Relevance Lost: The Rise and Fall of Management Accounting (Boston: Harvard Business School Press, 1987), 100–112.  
-2. A. Dunlap with B. Andleman, Mean Business: How I Save Bad Companies and Make Good Companies Great (New York: Random House, 1996); J. A. Byrne, Chainsaw: The Notorious Career of Al Dunlap in the Era of Profit-At-Any-Price (New York: Collins, 2003).  
-3. Anonymous WORLDCOM executive as quoted on Beyond Budgeting Roundtable Web site http://www.bbrt.org/beybud.htm (accessed February 17, 2008).  
-4. J. Hope and R. Fraser, “Who Needs Budgets?” Harvard Business Review (February 2003): 108–115; Hope and Fraser, Beyond Budgeting: How Managers Can Break Free from the Annual Performance Trap (Boston: Harvard Business School Press, 2003).  
-5. B. Bogsnes, “Blowing up the Budget: Statoil’s Journey Beyond Budgeting,” Palladium Planning and Budgeting Conference, Amsterdam (October 2006).  
-6. B. Jorgenson and R. S. Kaplan, “Borealis,” Case 102-048 (Boston: Harvard Business School, 2001).  
-7. Ibid., 4.  
-8. Ibid.  
-9. Ibid., 6.  
-10. Ibid., 7.  
+1. H. T. Johnson and R. S. Kaplan, Relevance Lost: The Rise and Fall of Management Accounting (Boston: Harvard Business School Press, 1987), 100–112.
+2. A. Dunlap with B. Andleman, Mean Business: How I Save Bad Companies and Make Good Companies Great (New York: Random House, 1996); J. A. Byrne, Chainsaw: The Notorious Career of Al Dunlap in the Era of Profit-At-Any-Price (New York: Collins, 2003).
+3. Anonymous WORLDCOM executive as quoted on Beyond Budgeting Roundtable Web site http://www.bbrt.org/beybud.htm (accessed February 17, 2008).
+4. J. Hope and R. Fraser, “Who Needs Budgets?” Harvard Business Review (February 2003): 108–115; Hope and Fraser, Beyond Budgeting: How Managers Can Break Free from the Annual Performance Trap (Boston: Harvard Business School Press, 2003).
+5. B. Bogsnes, “Blowing up the Budget: Statoil’s Journey Beyond Budgeting,” Palladium Planning and Budgeting Conference, Amsterdam (October 2006).
+6. B. Jorgenson and R. S. Kaplan, “Borealis,” Case 102-048 (Boston: Harvard Business School, 2001).
+7. Ibid., 4.
+8. Ibid.
+9. Ibid., 6.
+10. Ibid., 7.
 11. S. G. Makridakis, S. C. Wheelwright, and R. J. Hyndman, Forecasting: Methods and Applications (New York: John Wiley, 1998).
 
 ---
@@ -7559,58 +7559,58 @@ The daily income statement proved a big hit. Every morning, the employees had an
 ## The 3B daily income statement
 
 ### SALES
-- Steam  
-  - + 600 # — 87,938 lb/hr — $/dy 8,416  
-  - + 160 # — 11,972 lb/hr — $/dy 1,068  
-  - − pyro — 24,516 lb/hr — $/dy 2,368  
-  - − 30 # — 11,624 lb/hr — $/dy 1,037  
+- Steam
+  - + 600 # — 87,938 lb/hr — $/dy 8,416
+  - + 160 # — 11,972 lb/hr — $/dy 1,068
+  - − pyro — 24,516 lb/hr — $/dy 2,368
+  - − 30 # — 11,624 lb/hr — $/dy 1,037
   - Net — 63,770 — $/dy $6,079
 
-- Ethylene:  
-  - High Grade — 776,042 lb/day — $/dy 124,167  
-  - Low Grade — 0 lb/day — $/dy 0 — 0 % out  
-  - Waste — 0 lb/day — $/dy 0  
+- Ethylene:
+  - High Grade — 776,042 lb/day — $/dy 124,167
+  - Low Grade — 0 lb/day — $/dy 0 — 0 % out
+  - Waste — 0 lb/day — $/dy 0
   - Total — 776,042 — $/dy $124,167
 
-- Propylene:  
-  - High Grade — 358,280 lb/day — $/dy 68,073  
-  - Low Grade — 32,429 lb/day — $/dy 3,081 — 8.3 % out  
-  - Waste lb/day — 0 lb/day — $/dy -  
+- Propylene:
+  - High Grade — 358,280 lb/day — $/dy 68,073
+  - Low Grade — 32,429 lb/day — $/dy 3,081 — 8.3 % out
+  - Waste lb/day — 0 lb/day — $/dy -
   - Total — 390,708 — $/dy $71,154
 
-- Hydrogen, capacity — 7 lines — $/dy $57,708  
-- Methane, capacity — 9 lines — $/dy $5,058  
+- Hydrogen, capacity — 7 lines — $/dy $57,708
+- Methane, capacity — 9 lines — $/dy $5,058
 - Heavies (fixed for now) — $/dy $ 1,732
 
 - TOTAL SALES — $/dy $265,898
 
 ### COSTS
-- Feedstock: Ethane — 227,865 lb — $/dy 6,471  
-  Propane — 1,595,066 lb — $/dy 108,305  
+- Feedstock: Ethane — 227,865 lb — $/dy 6,471
+  Propane — 1,595,066 lb — $/dy 108,305
   Total — 1,822,930 lb — $/dy $114,776
 
 - Maintenence and repair — (1987 Average) — $/dy $4,168
 
-- Utilities:  
-  - Electricity — 1,234 amps — $/dy $8,359  
-  - Cooling water — 4.8 lines — $/dy $4,109  
-  - Natural gas — 3.1 lines — $/dy $3,442  
-  - Other (typical) — — $/dy $607  
+- Utilities:
+  - Electricity — 1,234 amps — $/dy $8,359
+  - Cooling water — 4.8 lines — $/dy $4,109
+  - Natural gas — 3.1 lines — $/dy $3,442
+  - Other (typical) — — $/dy $607
   - Total utilities — — $/dy $16,517
 
 - Other costs — $/dy $45,714
 
 - Total cost of goods sold — $/dy $181,175
 
-- Loan repayment — $/dy 0  
+- Loan repayment — $/dy 0
 - Mortgage — $/dy $ 54,946
 
 - Total costs — $/dy $236,122
 
-- Gross profit — $/dy $29,776  
+- Gross profit — $/dy $29,776
 - Less taxes @ 35% — $/dy $10,422
 
-- NET PROFIT — $/dy $19,354 /day  
+- NET PROFIT — $/dy $19,354 /day
   (equivalent to $541,923/period profit)
 
 Source: “Texas Eastman Case” Case #190-039 (Boston: Harvard Business School), Exhibit 10, page 22.
@@ -7665,12 +7665,12 @@ The second-generation committee supplemented the EC by adding twenty new people 
 
 # OPERATIONAL AND STRATEGY REVIEW MEETINGS
 
-## FIGURE 8-4  
+## FIGURE 8-4
 Evolution of the strategy council at Canadian Blood Services (CBS)
 
 ### Attempt 1
 - EC Only
-- 10 People  
+- 10 People
   Quarterly
 
 Observations:
@@ -7679,7 +7679,7 @@ Observations:
 
 ### Attempt 2
 - Expanded EC
-- 30 People  
+- 30 People
   Quarterly
 
 Observations:
@@ -7688,7 +7688,7 @@ Observations:
 
 ### Attempt 3
 - Strategy Council (each theme)...
-- 3 New People  
+- 3 New People
   Quarterly
 
 Observations:
@@ -7966,8 +7966,8 @@ Diagrama tipo mapa estratégico com quatro áreas alinhadas verticalmente (da ba
 
 # THE EXECUTION PREMIUM — Page 249
 
-- Amber: Everything is OK or under control. This could include an objective that is on track but whose target has not yet been achieved. Alternatively, it could be an objective that is off track but that is not yet critical and does not require management attention at this review.  
-- Red: The company is off track on this objective, and it requires management attention because of critical issues relating to this objective. The strategy council should spend time during the strategy review meeting understanding the issue and ways to resolve it.  
+- Amber: Everything is OK or under control. This could include an objective that is on track but whose target has not yet been achieved. Alternatively, it could be an objective that is off track but that is not yet critical and does not require management attention at this review.
+- Red: The company is off track on this objective, and it requires management attention because of critical issues relating to this objective. The strategy council should spend time during the strategy review meeting understanding the issue and ways to resolve it.
 - Gray: This objective has not been assessed.
 
 Each theme’s section also contains evaluations and commentary from the theme owner about any performance gaps, along with proposed actions for addressing them.
@@ -8128,10 +8128,10 @@ Participants in operational and strategy review meetings share the same assumpti
 
 ## NOTES
 
-1. Remarks at “Office of Strategy Management Workshop,” The Balanced Scorecard Collaborative, November 2006.  
-2. Material for this section was drawn from J. Heskett, “NYPD New,” Case 396-293 (Boston: Harvard Business School, June 22, 1999), and J. Buntin, “Assertive Policing, Plummeting Crime: The NYPD Takes on Crime in New York City,” Case C16-99-1530.0 (Boston: Harvard University Kennedy School of Government, 1999).  
-3. Data from R. Giuliani, Leadership (New York: Hyperion, 2002), 79–80.  
-4. Ibid., 82–91.  
+1. Remarks at “Office of Strategy Management Workshop,” The Balanced Scorecard Collaborative, November 2006.
+2. Material for this section was drawn from J. Heskett, “NYPD New,” Case 396-293 (Boston: Harvard Business School, June 22, 1999), and J. Buntin, “Assertive Policing, Plummeting Crime: The NYPD Takes on Crime in New York City,” Case C16-99-1530.0 (Boston: Harvard University Kennedy School of Government, 1999).
+3. Data from R. Giuliani, Leadership (New York: Hyperion, 2002), 79–80.
+4. Ibid., 82–91.
 5. Heskett, “NYPD New.”
 
 ---
@@ -8501,23 +8501,23 @@ One of the estimated pathways in this model indicated that improving employee at
 
 # MEETINGS TO TEST AND ADAPT THE STRATEGY — Page 269
 
-## FIGURE 9-7  
+## FIGURE 9-7
 Sears identified the 10 key questions about being a “compelling place to work”
 
 Responses to these 10 questions on the 70-question employee survey had the highest impact on employee behavior (and therefore on customer satisfaction).
 
 ### Lista de questões (em dois blocos conforme diagrama original)
 
-1. I like the kind of work I do.  
-2. My work gives me a sense of accomplishment.  
-3. I am proud to say I work at Sears.  
-4. How does the amount of work you are expected to do influence your overall attitude about your job?  
-5. How do your physical working conditions influence your overall attitude about your job?  
+1. I like the kind of work I do.
+2. My work gives me a sense of accomplishment.
+3. I am proud to say I work at Sears.
+4. How does the amount of work you are expected to do influence your overall attitude about your job?
+5. How do your physical working conditions influence your overall attitude about your job?
 6. How does the way you are treated by those who supervise you influence your overall attitude about your job?
 
-7. I feel good about the future of the company.  
-8. Sears is making the changes necessary to compete effectively.  
-9. I understand our business strategy.  
+7. I feel good about the future of the company.
+8. Sears is making the changes necessary to compete effectively.
+9. I understand our business strategy.
 10. Do you see a connection between the work you do and the company’s strategic objectives?
 
 ### Descrição do diagrama (Figura 9-7)
@@ -8528,7 +8528,7 @@ Responses to these 10 questions on the 70-question employee survey had the highe
 
 ---
 
-## FIGURE 9-8  
+## FIGURE 9-8
 Sears revised employee–customer–profit chain model
 
 The rectangles represent survey information; the ovals, hard data. The measurements in gray are collected and distributed in the form of the Sears Total Performance Indicators.
@@ -8571,8 +8571,8 @@ As setas mostram relações causais; retângulos são informações de pesquisa 
 ---
 
 Legenda visual adicional:
-- Retângulos: itens baseados em pesquisa (survey).  
-- Ovais: métricas de dados “hard”.  
+- Retângulos: itens baseados em pesquisa (survey).
+- Ovais: métricas de dados “hard”.
 - Itens em cinza (sombreado): medidas coletadas e distribuídas como Sears Total Performance Indicators.
 
 Marca d’água/rodapé visível: “eagleflyfree”.
@@ -8883,11 +8883,11 @@ The examples presented so far in this chapter have discussed the use of internal
 
 LG Philips LCD (LPL), a South Korean joint venture between LG and Philips, designs and produces high-technology liquid crystal display (LCD) screens for application in television, information technology, and special displays. LPL hosts a quarterly BSC “war game” meeting to assess and adjust its strategic hypotheses. Executives and team leaders of planning departments from each function attend this meeting, where they address six key questions:
 
-1. Is our strategy appropriate?  
-2. Is our strategy superior to those of our competitors?  
-3. Do all of our members acknowledge and accept our strategy?  
-4. Are we trying hard enough to execute the strategy?  
-5. What are the risks associated with executing the strategy, and how will we deal with them?  
+1. Is our strategy appropriate?
+2. Is our strategy superior to those of our competitors?
+3. Do all of our members acknowledge and accept our strategy?
+4. Are we trying hard enough to execute the strategy?
+5. What are the risks associated with executing the strategy, and how will we deal with them?
 6. Do we have strategic scenarios in executing the strategy?
 
 Before the meeting, the LPL planning group selects the situation to be subjected to the war game. The situation might be entry into a new geographical market, dealing with direct competitors in existing markets, or introduction of a new strategy with a major existing or potential
@@ -9715,13 +9715,13 @@ Companies that follow the recommendations we have laid out in this book will hav
 
 ## NOTES
 
-1. G. Sher, “How to Wield Influence and Stay Informed,” Harvard Business Review (October 2005): 78.  
-2. The ideas in this section appeared originally in R. S. Kaplan and D. P. Norton, “The Office of Strategy Management,” Harvard Business Review (October 2005) and have been extended through our work with OSM working groups of private, public, and nonprofit enterprises in North America and Europe.  
-3. M. Beer and R. Eisenstat, “The Silent Killers of Strategy Implementation and Learning,” Sloan Management Review (Summer 2000): 29–40.  
-4. For more detail see A. Field, “Catalyst for Global Growth: The Strategy Management Office at Serono,” Balanced Scorecard Report (January–February 2006): 10–12.  
-5. Roland Baumann, “Strategic Management: Turning Concept into Reality,” Sustaining Winning Performance: Balanced Scorecard Leadership Conference, Boston, July 12–14, 2006.  
-6. Ibid.  
-7. Ibid.  
+1. G. Sher, “How to Wield Influence and Stay Informed,” Harvard Business Review (October 2005): 78.
+2. The ideas in this section appeared originally in R. S. Kaplan and D. P. Norton, “The Office of Strategy Management,” Harvard Business Review (October 2005) and have been extended through our work with OSM working groups of private, public, and nonprofit enterprises in North America and Europe.
+3. M. Beer and R. Eisenstat, “The Silent Killers of Strategy Implementation and Learning,” Sloan Management Review (Summer 2000): 29–40.
+4. For more detail see A. Field, “Catalyst for Global Growth: The Strategy Management Office at Serono,” Balanced Scorecard Report (January–February 2006): 10–12.
+5. Roland Baumann, “Strategic Management: Turning Concept into Reality,” Sustaining Winning Performance: Balanced Scorecard Leadership Conference, Boston, July 12–14, 2006.
+6. Ibid.
+7. Ibid.
 8. Ibid.
 
 ---
@@ -9730,43 +9730,43 @@ Companies that follow the recommendations we have laid out in this book will hav
 
 # INDEX
 
-accountability. See also ownership  
-- funding and, 115  
-- at Nordea, 30–31  
+accountability. See also ownership
+- funding and, 115
+- at Nordea, 30–31
 - for strategic initiatives, 103–104, 115, 119–123
 
 account share, 72, 100
 
-activity-based costing (ABC), 6–7. See also time-driven activity-based costing (TDABC)  
-- forecasting costs and expenses in, 195–196  
-- operations planning and, 189  
-- origins of, 259  
+activity-based costing (ABC), 6–7. See also time-driven activity-based costing (TDABC)
+- forecasting costs and expenses in, 195–196
+- operations planning and, 189
+- origins of, 259
 - value chain analysis with, 49
 
-adaptation, 9, 16–18, 265–273. See also strategy testing and adapting  
-- meetings; testing  
-- environment assessment in, 17  
-- feedback for, 253–254  
+adaptation, 9, 16–18, 265–273. See also strategy testing and adapting
+- meetings; testing
+- environment assessment in, 17
+- feedback for, 253–254
 - office of strategy management in, 292
 
-advantage, 59–60  
-- competitive advantage framework, 6, 54  
+advantage, 59–60
+- competitive advantage framework, 6, 54
 - OAS statements and, 59–60
 
 advertising, performance of, 194
 
 Aldridge, Peter, 62–63, 244–245
 
-alignment, 8, 11–13  
-- business units, 12, 125–136  
-- cascading in, 129–130, 132–134  
-- CEOs in, 21  
-- employee, 12–13  
-- horizontal, 129, 130, 154  
-- office of strategy management in, 18–20, 291, 299–300  
-- as process, 140  
-- strategy and operations, 1–3  
-- support units, 12, 136–140  
+alignment, 8, 11–13
+- business units, 12, 125–136
+- cascading in, 129–130, 132–134
+- CEOs in, 21
+- employee, 12–13
+- horizontal, 129, 130, 154
+- office of strategy management in, 18–20, 291, 299–300
+- as process, 140
+- strategy and operations, 1–3
+- support units, 12, 136–140
 - vertical, 129, 130, 134–136, 154
 
 Alignment (Kaplan and Norton), vii–viii, 125
@@ -9775,11 +9775,11 @@ Allen, J., 67n
 
 ambiguity, metrics for reducing, 85–86
 
-analysis  
-- PESTEL, 9, 17, 47–49, 254–255  
-- statistical, 265–273  
-- strategic, 9–10, 47–53  
-- SWOT, 6, 17, 49–53, 50–51  
+analysis
+- PESTEL, 9, 17, 47–49, 254–255
+- statistical, 265–273
+- strategic, 9–10, 47–53
+- SWOT, 6, 17, 49–53, 50–51
 - value chain, 49
 
 analytic modeling, 6–7
@@ -9798,9 +9798,9 @@ AT&T Canada, 63, 237–238
 
 Bain & Company, 35–36, 54
 
-Balanced Scorecard  
-- building, 128  
-- business unit alignment with, 129–130  
+Balanced Scorecard
+- building, 128
+- business unit alignment with, 129–130
 - catchall with, 166–168
 
 ---
@@ -9809,126 +9809,126 @@ Balanced Scorecard
 
 # Index (Página 310)
 
-Balanced Scorecard (continued)  
-- customer perspective, 78, 98, 100, 160–162  
-- dashboards compared with, 177  
-- employees’ personal, 149–150  
-- financial perspective, 78, 93, 98, 100, 137  
-- Hall of Fame, 22–31, 33  
-- learning and growth perspective, 70, 79, 87–88, 100, 128–129, 251–252  
-- management based on, 6  
-- on metrics selection, 84–86  
-- office of strategy management and, 299  
-- operations planning and, 188  
-- prevalence of, 6  
-- process perspective, 70, 72, 100, 138, 159–160, 175–176  
-- reviewing, 252–253  
-- six sigma compared with, 165–166  
-- strategic versus vital processes in, 164–166  
-- in strategy review meetings, 236–237  
-- support units and, 136  
-- SWOT analysis and, 50–51  
+Balanced Scorecard (continued)
+- customer perspective, 78, 98, 100, 160–162
+- dashboards compared with, 177
+- employees’ personal, 149–150
+- financial perspective, 78, 93, 98, 100, 137
+- Hall of Fame, 22–31, 33
+- learning and growth perspective, 70, 79, 87–88, 100, 128–129, 251–252
+- management based on, 6
+- on metrics selection, 84–86
+- office of strategy management and, 299
+- operations planning and, 188
+- prevalence of, 6
+- process perspective, 70, 72, 100, 138, 159–160, 175–176
+- reviewing, 252–253
+- six sigma compared with, 165–166
+- strategic versus vital processes in, 164–166
+- in strategy review meetings, 236–237
+- support units and, 136
+- SWOT analysis and, 50–51
 
-Bank of Tokyo-Mitsubishi, UFJ, 57–59, 141–142  
+Bank of Tokyo-Mitsubishi, UFJ, 57–59, 141–142
 
-Barney, J., 67n  
+Barney, J., 67n
 
-Baumann, Roland, 298, 300, 301, 307n  
+Baumann, Roland, 298, 300, 301, 307n
 
-Bausch & Lomb, 54  
+Bausch & Lomb, 54
 
-Beer, M., 307n  
+Beer, M., 307n
 
-benchmarks, 93–94  
-- dashboards with, 177  
-- external, 93  
-- internal, 94  
-- target setting and, 93–94  
+benchmarks, 93–94
+- dashboards with, 177
+- external, 93
+- internal, 94
+- target setting and, 93–94
 
-Bertarelli, Ernesto, 297  
+Bertarelli, Ernesto, 297
 
-Bertarelli, Fabio, 297  
+Bertarelli, Fabio, 297
 
-best practices, 35, 37  
-- communication, 143  
-- employee competency development, 152–154  
-- office of strategy management and, 295  
-- sharing, 181–183  
-- synergies and, 129  
+best practices, 35, 37
+- communication, 143
+- employee competency development, 152–154
+- office of strategy management and, 295
+- sharing, 181–183
+- synergies and, 129
 
-beyond budgeting movement, 7, 186–187  
+beyond budgeting movement, 7, 186–187
 
-blue ocean strategies, 6, 54, 55, 56  
+blue ocean strategies, 6, 54, 55, 56
 
-BMW Group Financial Services, 235  
+BMW Group Financial Services, 235
 
-Boesen, Thomas, 187  
+Boesen, Thomas, 187
 
-Bogsnes, Bjarte, 186–187, 222n  
+Bogsnes, Bjarte, 186–187, 222n
 
-Borealis, 186, 187–190  
+Borealis, 186, 187–190
 
-Bratton, William, 227  
+Bratton, William, 227
 
-Brazil, economic development in, 80–84, 96  
+Brazil, economic development in, 80–84, 96
 
-British Petroleum (BP), 3  
+British Petroleum (BP), 3
 
-Brown, Donaldson, 185  
+Brown, Donaldson, 185
 
-Brown, T., 123–124n  
+Brown, T., 123–124n
 
-budgets, 185–190  
-- CAPEX, 14–15, 115–117, 203–206  
-- capital, 14–15  
-- definition of, 203  
-- functions of, 186  
-- funding initiatives in, 114–119  
-- linking to strategy, 3–4, 14–15  
-- operating, 14–15  
-- OPEX, 14–15, 115–117, 190–208, 203–206  
-- prevalent use of, 7  
-- STRATEX, 11, 116–117, 121, 205–206, 293  
-- weaknesses of, 186–187  
+budgets, 185–190
+- CAPEX, 14–15, 115–117, 203–206
+- capital, 14–15
+- definition of, 203
+- functions of, 186
+- funding initiatives in, 114–119
+- linking to strategy, 3–4, 14–15
+- operating, 14–15
+- OPEX, 14–15, 115–117, 190–208, 203–206
+- prevalent use of, 7
+- STRATEX, 11, 116–117, 121, 205–206, 293
+- weaknesses of, 186–187
 
-Buntin, J., 252n  
+Buntin, J., 252n
 
-burning platforms, 63  
+burning platforms, 63
 
-business intelligence software, 7  
+business intelligence software, 7
 
-business units  
-- aligning, 12, 125–136  
-- support units and, 137–138  
-- synergies in, 126–129  
+business units
+- aligning, 12, 125–136
+- support units and, 137–138
+- synergies in, 126–129
 
-Byrne, J. A., 222n  
+Byrne, J. A., 222n
 
-Campbell, Dennis, xiii, 184n, 283n  
+Campbell, Dennis, xiii, 184n, 283n
 
-Canadian Blood Services (CBS), 42–43  
-- cascading at, 132–134, 135  
-- emergent strategies at, 275–276  
-- initiatives at, 109, 110  
-- office of strategy management at, 284–286  
-- strategy review meetings at, 234–235  
+Canadian Blood Services (CBS), 42–43
+- cascading at, 132–134, 135
+- emergent strategies at, 275–276
+- initiatives at, 109, 110
+- office of strategy management at, 284–286
+- strategy review meetings at, 234–235
 
-Canon, 296  
+Canon, 296
 
-capital expense (CAPEX) budgets, 14–15  
-- forecasting, 203–206  
-- in initiatives funding, 115–117  
+capital expense (CAPEX) budgets, 14–15
+- forecasting, 203–206
+- in initiatives funding, 115–117
 
-career planning, 152  
+career planning, 152
 
-cascading, 132–134, 155  
-- corporate role and, 130–131  
-- office of strategy management in, 291  
-- process improvement and, 168  
+cascading, 132–134, 155
+- corporate role and, 130–131
+- office of strategy management in, 291
+- process improvement and, 168
 
-catchball, 6, 166–168, 169  
+catchball, 6, 166–168, 169
 
-Catucci, Bill, 237–238  
+Catucci, Bill, 237–238
 
 cause-and-effect logic, target setting with, 86, 91–93
 
@@ -9940,17 +9940,17 @@ cause-and-effect logic, target setting with, 86, 91–93
 
 centers of excellence, 110, 112
 
-CEOs  
-- challenges facing, 284–286  
-- necessary and sufficient leadership by, 20–21  
+CEOs
+- challenges facing, 284–286
+- necessary and sufficient leadership by, 20–21
 - office of strategy management and, 295
 
-change  
-- agenda development for, 10, 42–45  
-- CEOs in, 21  
-- creating the case for, 36  
-- incremental versus transformational, 62–66  
-- mobilizing, vii  
+change
+- agenda development for, 10, 42–45
+- CEOs in, 21
+- creating the case for, 36
+- incremental versus transformational, 62–66
+- mobilizing, vii
 - office of strategy management in, 296–297
 
 Chase, 65–66
@@ -9977,27 +9977,27 @@ command-and-control executives, 186
 
 Committee of Sponsoring Organizations (COSO) of the Treadway Commission, 54, 55, 67
 
-communication  
-- with CEOs, 284–286  
-- with employees, 140, 141–143  
-- leadership and, 142–143  
-- at Lockheed Martin, 143–149  
-- office of strategy management in, 294  
+communication
+- with CEOs, 284–286
+- with employees, 140, 141–143
+- leadership and, 142–143
+- at Lockheed Martin, 143–149
+- office of strategy management in, 294
 - of strategy, 155–156
 
-competencies, 6, 53  
-- core competencies, 6, 53  
-- definition of, 155  
-- developing employee, 151–154  
-- office of strategy management, 296–297, 300–301  
-- strategic themes and, 77  
-- strategy selection and, 57  
+competencies, 6, 53
+- core competencies, 6, 53
+- definition of, 155
+- developing employee, 151–154
+- office of strategy management, 296–297, 300–301
+- strategic themes and, 77
+- strategy selection and, 57
 - synergies and, 129
 
 competitive advantage framework, 6, 54
 
-competitors. See also PESTEL (political, environmental, social, technological, environmental, regulatory) analysis  
-- assessment of, 48–49  
+competitors. See also PESTEL (political, environmental, social, technological, environmental, regulatory) analysis
+- assessment of, 48–49
 - information on, strategy testing and, 273–274
 
 CompStat, 227–230
@@ -10028,33 +10028,33 @@ culture, shaping, 141–142, 172
 
 customer management theme, 105–106
 
-customer perspective, 98, 100  
-- process management and, 160–162  
+customer perspective, 98, 100
+- process management and, 160–162
 - in SWOT analysis, 50–51
 
-customer relationship management, 6–7  
-- benefits time frame for, 72  
+customer relationship management, 6–7
+- benefits time frame for, 72
 - at Consumer Bank, 87, 88
 
-customers  
-- in benchmarking, 93  
-- benefits time frame for, 72  
-- identification of, 57  
-- intimacy strategy for, 266–272  
-- loyalty of, 252  
-- microeconomics of, 255  
-- process improvement and, 168  
-- profitability of, 206–207, 215–218, 255–260  
-- satisfaction of, 252, 264  
-- support unit, 137–138  
-- synergies with, 128, 129  
+customers
+- in benchmarking, 93
+- benefits time frame for, 72
+- identification of, 57
+- intimacy strategy for, 266–272
+- loyalty of, 252
+- microeconomics of, 255
+- process improvement and, 168
+- profitability of, 206–207, 215–218, 255–260
+- satisfaction of, 252, 264
+- support unit, 137–138
+- synergies with, 128, 129
 - value proposition for, 10, 72
 
-dashboards, 7, 175–181, 183  
-- data from, 19  
-- definition of, 175  
-- operational review meetings and, 226  
-- process improvement with, 13–14  
+dashboards, 7, 175–181, 183
+- data from, 19
+- definition of, 175
+- operational review meetings and, 226
+- process improvement with, 13–14
 - at TD Canada Trust, 177–181
 
 eagleflyfree
@@ -10065,124 +10065,124 @@ eagleflyfree
 
 # Index (Página 312)
 
-data  
-- collecting, 272–273  
-- external, incorporating, 273–274  
-- office of strategy management and, 19  
-- operational review meetings, 248  
-- statistical analysis of, 265–273  
-- in strategy review meetings, 65, 248  
-- for strategy testing meetings, 254–255, 265–273  
+data
+- collecting, 272–273
+- external, incorporating, 273–274
+- office of strategy management and, 19
+- operational review meetings, 248
+- statistical analysis of, 265–273
+- in strategy review meetings, 65, 248
+- for strategy testing meetings, 254–255, 265–273
 
-Datar, S., 283n  
+Datar, S., 283n
 
-Desroches, D., 32n  
+Desroches, D., 32n
 
-development, strategy. See strategy development  
+development, strategy. See strategy development
 
-development programs, employee, 141, 152  
+development programs, employee, 141, 152
 
-diagnostic systems, 166  
+diagnostic systems, 166
 
-differentiation, 56–57  
+differentiation, 56–57
 
-direction statements, 60–62  
+direction statements, 60–62
 
-discretionary spending forecasts, 205–206  
+discretionary spending forecasts, 205–206
 
-disruptive strategies, 6  
+disruptive strategies, 6
 
-distribution, 195  
+distribution, 195
 
-dot-com boom, 64  
+dot-com boom, 64
 
-do-wells, 61  
+do-wells, 61
 
-driver-based planning, 193–196  
+driver-based planning, 193–196
 
-Dunlap, Al, 186, 222n  
+Dunlap, Al, 186, 222n
 
-Earthlink, 39–40  
+Earthlink, 39–40
 
-Ebbers, Bernie, 186  
+Ebbers, Bernie, 186
 
-Eckerson, W. W., 184n  
+Eckerson, W. W., 184n
 
-economic analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis  
+economic analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis
 
-economies of scale, 129  
+economies of scale, 129
 
-Edvinsson, Sven, 30, 31  
+Edvinsson, Sven, 30, 31
 
-EFQM programs, 6–7  
+EFQM programs, 6–7
 
-Eisenstat, R., 307n  
+Eisenstat, R., 307n
 
-emergent strategy, 54, 55, 275–276  
+emergent strategy, 54, 55, 275–276
 
-employees  
-- aligning, 12–13, 127, 140–154  
-- Balanced Scorecards for, 149–150  
-- capacity cost of, 211–212  
-- developing competencies of, 151–154  
-- motivating, 140–154  
-- objectives of, 140, 149–151, 290  
-- profitability of, 219, 261–265  
-- shared understanding among, 275  
-- strategy knowledge of, 4  
+employees
+- aligning, 12–13, 127, 140–154
+- Balanced Scorecards for, 149–150
+- capacity cost of, 211–212
+- developing competencies of, 151–154
+- motivating, 140–154
+- objectives of, 140, 149–151, 290
+- profitability of, 219, 261–265
+- shared understanding among, 275
+- strategy knowledge of, 4
 
-enterprise resource planning (ERP) systems, 197–198  
+enterprise resource planning (ERP) systems, 197–198
 
-environmental analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis  
+environmental analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis
 
-environment assessment, 9–10, 47–49. See also strategic analysis  
-- external, 9, 47–49  
-- internal, 9  
-- reviewing, 253, 254  
-- in strategy testing/adapting, 17  
+environment assessment, 9–10, 47–49. See also strategic analysis
+- external, 9, 47–49
+- internal, 9
+- reviewing, 253, 254
+- in strategy testing/adapting, 17
 
-European Foundation for Quality Management (EFQM), 159, 170–171  
+European Foundation for Quality Management (EFQM), 159, 170–171
 
-evaluation  
-- budgets for, 7  
-- of strategic initiatives, 108–109  
+evaluation
+- budgets for, 7
+- of strategic initiatives, 108–109
 
-exceptions, management by, 166  
+exceptions, management by, 166
 
-execution  
-- office of strategy management in, 18–20  
-- theme teams in, 11  
+execution
+- office of strategy management in, 18–20
+- theme teams in, 11
 
-execution premiums, 22–31  
-- Bank of Tokyo-Mitsubishi, UFJ, 59  
-- Canadian Blood Services, 286  
-- definition of, 2  
-- Hillside Family of Agencies, 182–183  
-- HSBC Rail, 245  
-- KeyCorp, 154  
-- LG Philips LCD, 274  
-- Lockheed Martin, 148–149  
-- Luxfer Gas Cylinders, 26  
-- Marriott Vacation Club International, 3  
-- Mobistar, 171  
-- Motorola GEM, 170  
-- Nemours, 74  
-- Nordea, 30–31  
-- Ricoh, 24  
-- Serono, 301  
-- Thai Carbon Black, 169  
-- University of Leeds, 114  
+execution premiums, 22–31
+- Bank of Tokyo-Mitsubishi, UFJ, 59
+- Canadian Blood Services, 286
+- definition of, 2
+- Hillside Family of Agencies, 182–183
+- HSBC Rail, 245
+- KeyCorp, 154
+- LG Philips LCD, 274
+- Lockheed Martin, 148–149
+- Luxfer Gas Cylinders, 26
+- Marriott Vacation Club International, 3
+- Mobistar, 171
+- Motorola GEM, 170
+- Nemours, 74
+- Nordea, 30–31
+- Ricoh, 24
+- Serono, 301
+- Thai Carbon Black, 169
+- University of Leeds, 114
 
-execution processes, 4–6  
-- management system for, 7–18  
-- performance and, 4–5  
+execution processes, 4–6
+- management system for, 7–18
+- performance and, 4–5
 
-executive committees, 234–235  
+executive committees, 234–235
 
-executives  
-- budget use by, 185–186  
-- in office of strategy management, 18–20, 281–303  
-- priorities of, 3  
+executives
+- budget use by, 185–186
+- in office of strategy management, 18–20, 281–303
+- priorities of, 3
 
 experience cocreation, 54, 55, 56
 
@@ -10194,17 +10194,17 @@ experience cocreation, 54, 55, 56
 
 Federal Bureau of Investigation (FBI), 43–45
 
-feedback, 221. See also strategy review meetings  
-- operational, 254–279  
+feedback, 221. See also strategy review meetings
+- operational, 254–279
 - for strategy testing and adapting meetings, 253–254
 
 Fernandes, José Augusto Coelho, 84, 100n
 
 Field, A., 307n
 
-financial perspective, 98, 100  
-- external benchmarking in, 93  
-- support units and, 137  
+financial perspective, 98, 100
+- external benchmarking in, 93
+- support units and, 137
 - in SWOT analysis, 50–51
 
 financial synergies, 127
@@ -10213,21 +10213,21 @@ fixed costs, controlling, 190
 
 focused factory approach, 77
 
-forecasting, 7, 157, 158  
-- budgets in, 186  
-- costs and expenses, 195–196  
-- discretionary spending, 205–206  
-- resource capacity, 198–203  
-- rolling financial forecasts, 187–196, 206–207  
+forecasting, 7, 157, 158
+- budgets in, 186
+- costs and expenses, 195–196
+- discretionary spending, 205–206
+- resource capacity, 198–203
+- rolling financial forecasts, 187–196, 206–207
 - sales, 14, 191–198
 
 Fraser, R., 32n, 222n
 
-funding, 11  
-- authorization for, 205–206  
-- discretionary, 117  
-- initiatives, 114–119  
-- at Ricoh, 118–119  
+funding, 11
+- authorization for, 205–206
+- discretionary, 117
+- initiatives, 114–119
+- at Ricoh, 118–119
 - top-down, 117
 
 Ganti, Lawrence, 300–301
@@ -10298,8 +10298,8 @@ Hosoe, Sam, 23–24
 
 HSBC Rail, 62–63, 243–245
 
-human capital, 10, 252  
-- readiness, initiatives for, 105–106  
+human capital, 10, 252
+- readiness, initiatives for, 105–106
 - synergies and, 129
 
 human resource departments, 293–294
@@ -10310,9 +10310,9 @@ Ichioka, Susumu “Sam,” 23, 90
 
 improvement, continuous, 6–7
 
-incentive compensation  
-- biased forecasting and, 202–203  
-- in internalizing and achieving targets, 95–96  
+incentive compensation
+- biased forecasting and, 202–203
+- in internalizing and achieving targets, 95–96
 - linking to strategy, 4, 140, 149–151
 
 Indigo, 39
@@ -10325,16 +10325,16 @@ information capital, 252
 
 initiatives. See strategic initiatives
 
-innovation  
-- in Brazilian economic development, 82–83  
-- at Consumer Bank, 87, 88  
-- disruptive, 54, 55  
+innovation
+- in Brazilian economic development, 82–83
+- at Consumer Bank, 87, 88
+- disruptive, 54, 55
 - as strategic theme, 72–74
 
 Institute of Management Accountants, 6
 
-integration  
-- corporate strategy and degree of, 130–132  
+integration
+- corporate strategy and degree of, 130–132
 - management system for, 7–18
 
 eagleflyfree
@@ -10345,94 +10345,94 @@ eagleflyfree
 
 # INDEX (Page 314)
 
-integration (continued)  
-- management tools and, 6–7  
-- office of strategy management in, 18–20, 288, 292–295  
-- strategy and operations, 1–3  
+integration (continued)
+- management tools and, 6–7
+- office of strategy management in, 18–20, 288, 292–295
+- strategy and operations, 1–3
 
-Intel, 64, 275  
-interactive systems, 166  
-internal controls, 54, 55  
-International Organization for Standardization (ISO), 54, 55  
-investment management, 189–190  
-Isom, Gerry, 41  
+Intel, 64, 275
+interactive systems, 166
+internal controls, 54, 55
+International Organization for Standardization (ISO), 54, 55
+investment management, 189–190
+Isom, Gerry, 41
 
-John Deere, 56  
-Johnson, H. T., 222n  
-Johnson, L., 155n  
-Jones, O., 282n  
-Jorgenson, B., 222n  
-just-in-time, 159  
+John Deere, 56
+Johnson, H. T., 222n
+Johnson, L., 155n
+Jones, O., 282n
+Jorgenson, B., 222n
+just-in-time, 159
 
-kaizen programs, 6–7  
-Kelvin, Lord (William Thomson), 84, 85, 100n  
-Kemps, 257–258, 259, 260  
-Kennedy, John F., 40  
-KeyCorp, 152–154  
-key processes, 10  
-- identifying, 36  
-- improving, 13–14, 157–172  
-- at LowCost Airlines, 160–162  
-- office of strategy management and, 295  
+kaizen programs, 6–7
+Kelvin, Lord (William Thomson), 84, 85, 100n
+Kemps, 257–258, 259, 260
+Kennedy, John F., 40
+KeyCorp, 152–154
+key processes, 10
+- identifying, 36
+- improving, 13–14, 157–172
+- at LowCost Airlines, 160–162
+- office of strategy management and, 295
 
-Kim, W. C., 67n  
-Kirn, S. P., 282n  
-Klinck, Jack, 142–143  
-knowledge, 151  
-Kotter, J., 67n  
-Kulp, S., 283n  
+Kim, W. C., 67n
+Kirn, S. P., 282n
+Klinck, Jack, 142–143
+knowledge, 151
+Kotter, J., 67n
+Kulp, S., 283n
 
-LG Philips LCD, 56, 273–274  
-LaCasse, P., 123n  
-Lawson, R., 32n  
-leadership, 302  
-- change agenda and, 42–45  
-- communication and, 142–143  
-- necessary and sufficient, 20–21  
-- office of strategy management in development of, 297  
-- performance and, 157  
-- transformational strategy and, 63  
-- vision and, 41  
+LG Philips LCD, 56, 273–274
+LaCasse, P., 123n
+Lawson, R., 32n
+leadership, 302
+- change agenda and, 42–45
+- communication and, 142–143
+- necessary and sufficient, 20–21
+- office of strategy management in development of, 297
+- performance and, 157
+- transformational strategy and, 63
+- vision and, 41
 
-lean management, 159  
-lean manufacturing, 54, 55  
-Learned, Edmund P., 67n  
-learning, 15–16, 290  
-learning and growth perspective, 100  
-- at Consumer Bank, 87, 88  
-- hypotheses in, 251–252  
-- at Luxfer Gas Cylinders, 79  
-- strategic themes on, 70  
-- support unit, 138  
-- in SWOT analysis, 50–51  
-- synergies in, 128, 129  
+lean management, 159
+lean manufacturing, 54, 55
+Learned, Edmund P., 67n
+learning, 15–16, 290
+learning and growth perspective, 100
+- at Consumer Bank, 87, 88
+- hypotheses in, 251–252
+- at Luxfer Gas Cylinders, 79
+- strategic themes on, 70
+- support unit, 138
+- in SWOT analysis, 50–51
+- synergies in, 128, 129
 
-learning organizations, 54, 55  
-legal analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis  
-Liljedahl, Arne, 30  
-Lockheed Martin Corporation, 138–140, 143–149  
-LoFrumento, T., 282n  
-Loveman, G. W., 282n  
-LowCost Airlines, 160–162, 163, 175  
-Luehrman, T. A., 124n  
-Luxfer Gas Cylinders (LGC), 24–27  
-- strategic themes at, 74–80  
-- theme owners at, 119–121  
+learning organizations, 54, 55
+legal analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis
+Liljedahl, Arne, 30
+Lockheed Martin Corporation, 138–140, 143–149
+LoFrumento, T., 282n
+Loveman, G. W., 282n
+LowCost Airlines, 160–162, 163, 175
+Luehrman, T. A., 124n
+Luxfer Gas Cylinders (LGC), 24–27
+- strategic themes at, 74–80
+- theme owners at, 119–121
 
-Makridakis, S. G., 222n  
-Malcolm Baldrige National Quality Award, 6–7, 159  
+Makridakis, S. G., 222n
+Malcolm Baldrige National Quality Award, 6–7, 159
 
-management. See also office of strategy management (OSM)  
-- budgets in, 186  
-- business unit, 125, 126  
-- communication in, 142–143, 144  
-- cross-functional, 301  
-- by exception, 166  
-- of initiatives, 121–123  
-- integrating strategy and execution with, 7–18  
-- lean, 159  
-- linking strategy to operational planning in, 157, 158  
-- office of strategy management and, 18–20, 281–303  
+management. See also office of strategy management (OSM)
+- budgets in, 186
+- business unit, 125, 126
+- communication in, 142–143, 144
+- cross-functional, 301
+- by exception, 166
+- of initiatives, 121–123
+- integrating strategy and execution with, 7–18
+- lean, 159
+- linking strategy to operational planning in, 157, 158
+- office of strategy management and, 18–20, 281–303
 - in operational and strategy review meetings, 221–249
 
 ---
@@ -10570,7 +10570,7 @@ eagleflyfree
 
 ## Página 316
 
-Desculpe, mas não consigo ver o conteúdo da “página 316” a partir da imagem enviada — a captura mostra a página 312 (Index) no canto superior esquerdo. 
+Desculpe, mas não consigo ver o conteúdo da “página 316” a partir da imagem enviada — a captura mostra a página 312 (Index) no canto superior esquerdo.
 
 Para converter fielmente a página 316 para Markdown conforme suas diretrizes, envie:
 - Uma imagem nítida da página 316 inteira, ou
@@ -10588,108 +10588,108 @@ Se preferir, posso:
 
 technological, environmental, regulatory) analysis
 
-Porcher Industries, 235  
-Porras, J., 66n  
-Porter, Michael, 1, 6, 32n  
-- competitive advantage framework, 6, 54  
-- five forces, 48, 67n  
-- positioning, 53  
-- value chain analysis, 49  
+Porcher Industries, 235
+Porras, J., 66n
+Porter, Michael, 1, 6, 32n
+- competitive advantage framework, 6, 54
+- five forces, 48, 67n
+- positioning, 53
+- value chain analysis, 49
 
-positioning, 53  
-Possin, Barbara, 295  
-Prahalad, C. K., 67n  
-preliminary measures, 61  
-price performance, 195  
-pricing, 259–260  
+positioning, 53
+Possin, Barbara, 295
+Prahalad, C. K., 67n
+preliminary measures, 61
+price performance, 195
+pricing, 259–260
 
-processes  
-- catchball with, 166–168  
-- CEOs in improvement of, 21  
-- critical, 13–14, 252  
-- dashboards for, 175–181  
-- identifying for improvement, 162–164  
-- improvement programs, 159  
-- improving, 13–14, 157–172  
-- at Information and Communications Mobile, 166–168  
-- key, 10, 13–14, 36, 157–172, 160–162, 295  
-- managing, 160–162  
-- at Mobistar, 170–172  
-- modeling, 199  
-- at Motorola GEMS, 169–170  
-- office of strategy management and, 18–20  
-- ownership of, 19, 287–288, 290–292  
-- priority setting for, 172–175  
-- sharing best practices in, 181–183  
-- strategic, 164–166, 252  
-- strategic versus vital, 164–166  
-- synergies in, 128, 129  
-- at Thai Carbon Black, 169  
+processes
+- catchball with, 166–168
+- CEOs in improvement of, 21
+- critical, 13–14, 252
+- dashboards for, 175–181
+- identifying for improvement, 162–164
+- improvement programs, 159
+- improving, 13–14, 157–172
+- at Information and Communications Mobile, 166–168
+- key, 10, 13–14, 36, 157–172, 160–162, 295
+- managing, 160–162
+- at Mobistar, 170–172
+- modeling, 199
+- at Motorola GEMS, 169–170
+- office of strategy management and, 18–20
+- ownership of, 19, 287–288, 290–292
+- priority setting for, 172–175
+- sharing best practices in, 181–183
+- strategic, 164–166, 252
+- strategic versus vital, 164–166
+- synergies in, 128, 129
+- at Thai Carbon Black, 169
 
-process perspective, 100  
-- benefits time frame for, 72  
-- dashboards with, 175, 176  
-- strategic themes on, 70  
-- support unit, 138  
-- synergies in, 128, 129  
-- value propositions and, 159–160  
+process perspective, 100
+- benefits time frame for, 72
+- dashboards with, 175, 176
+- strategic themes on, 70
+- support unit, 138
+- synergies in, 128, 129
+- value propositions and, 159–160
 
-products  
-- microeconomics of, 255  
-- performance of new, 194, 216, 218  
-- profitability of, 206–207  
+products
+- microeconomics of, 255
+- performance of new, 194, 216, 218
+- profitability of, 206–207
 
-profitability  
-- activity-based reports on, 17  
-- assumptions around, 252  
-- calculating, 206–207  
-- customer, 206–207, 215–218, 255–260  
-- product, 215–218  
-- strategic themes and, 72  
-- 20-80 rule and, 258  
+profitability
+- activity-based reports on, 17
+- assumptions around, 252
+- calculating, 206–207
+- customer, 206–207, 215–218, 255–260
+- product, 215–218
+- strategic themes and, 72
+- 20-80 rule and, 258
 
-profit-from-the-core, 53–54, 55  
+profit-from-the-core, 53–54, 55
 
-quality improvement programs, 159  
-- linking strategy to, 166–168  
-- process improvement and, 168–172  
-- strategic versus vital processes in, 164–166  
+quality improvement programs, 159
+- linking strategy to, 166–168
+- process improvement and, 168–172
+- strategic versus vital processes in, 164–166
 
-Quinn, R. T., 282n  
+Quinn, R. T., 282n
 
-Ramaswamy, V., 67n  
-Raynor, M. E., 67n  
-reengineering programs, 13, 159  
-regression analysis, 94  
-Reichheld, F., 282n  
+Ramaswamy, V., 67n
+Raynor, M. E., 67n
+reengineering programs, 13, 159
+regression analysis, 94
+Reichheld, F., 282n
 
-research and development effectiveness index (RDEI), 172, 174  
+research and development effectiveness index (RDEI), 172, 174
 
-resource-based view, 53, 57  
+resource-based view, 53, 57
 
-resource capacity plans, 14–15, 157, 158, 190–208  
-- forecasting and, 198–203  
-- material resource planning and, 204–205  
-- office of strategy management and, 290, 293–294  
-- peak and seasonal capacity in, 213–215  
-- revenue forecasts and, 202–203  
+resource capacity plans, 14–15, 157, 158, 190–208
+- forecasting and, 198–203
+- material resource planning and, 204–205
+- office of strategy management and, 290, 293–294
+- peak and seasonal capacity in, 213–215
+- revenue forecasts and, 202–203
 
-resources  
-- allocating, 159  
+resources
+- allocating, 159
 
-revenue growth through innovation theme, 72–74  
+revenue growth through innovation theme, 72–74
 
-revenue models, 193–196  
+revenue models, 193–196
 
-revenue planning, driver-based, 191–196  
+revenue planning, driver-based, 191–196
 
-Rhodes, John, 25–27, 76, 77, 80, 120, 124n  
+Rhodes, John, 25–27, 76, 77, 80, 120, 124n
 
-Ricoh, 22–24, 64  
-- best practices sharing at, 181–183  
-- initiative funding at, 118–119  
-- strategy review meetings at, 245–247  
-- target setting at, 88–91  
+Ricoh, 22–24, 64
+- best practices sharing at, 181–183
+- initiative funding at, 118–119
+- strategy review meetings at, 245–247
+- target setting at, 88–91
 
 Rigby, D. K., 66n
 
@@ -10697,7 +10697,7 @@ Rigby, D. K., 66n
 
 ## Página 318
 
-Desculpe, mas não consigo ver a página 318 no conteúdo enviado. A imagem anexada mostra apenas uma página numerada como 314 (INDEX). 
+Desculpe, mas não consigo ver a página 318 no conteúdo enviado. A imagem anexada mostra apenas uma página numerada como 314 (INDEX).
 
 Para que eu faça a conversão fiel e completa da página 318 para Markdown seguindo todas as diretrizes, por favor:
 
@@ -10715,7 +10715,7 @@ Assim que receber a página 318, farei a conversão imediatamente com:
 
 ## Página 319
 
-Desculpe, não consigo ver a página 319 a partir da imagem fornecida. A imagem visível mostra a página 315 do índice. 
+Desculpe, não consigo ver a página 319 a partir da imagem fornecida. A imagem visível mostra a página 315 do índice.
 
 Para converter fielmente a página 319 para Markdown seguindo todas as diretrizes, por favor envie:
 - Uma imagem nítida da página 319 inteira, ou
@@ -10734,21 +10734,21 @@ Assim que receber a página correta, farei a conversão completa com:
 
 # INDEX (Página 320)
 
-strategy testing and adapting meetings,  
-(continued)  
-- external data in, 273–274  
-- feedback in, 253–254  
-- operational feedback in, 254–279  
-- operational linkages and, 260–265  
-- output of, 253  
-- at Store 24, 266–272  
+strategy testing and adapting meetings,
+(continued)
+- external data in, 273–274
+- feedback in, 253–254
+- operational feedback in, 254–279
+- operational linkages and, 260–265
+- output of, 253
+- at Store 24, 266–272
 - TDABC and, 255–260
 
 STRATEX. See strategic expenditures (STRATEX)
 
 stretch goals, 40, 41, 95–96
 
-support units  
+support units
 - aligning, 12, 127, 136–140
 
 2007 Survey of Management Tools, 35–36
@@ -10759,7 +10759,7 @@ Svenska Handelsbanken, 186
 
 Sweeney, Karl, 62, 64–65, 68n
 
-SWOT (strengths, weaknesses, opportunities, threats) analysis, 6, 49–53  
+SWOT (strengths, weaknesses, opportunities, threats) analysis, 6, 49–53
 - strategic analysis and, 9–10
 
 Syfert, Pam, 238–243
@@ -10768,16 +10768,16 @@ Symnetics, 172, 174
 
 synergies, 126–129, 154
 
-target setting, 86–96  
-- benchmarking in, 93–94  
-- cause-and-effect logic in, 86, 91–93  
-- at Cigna Property and Casualty, 88  
-- at Mobil US Marketing and Refining, 95–96  
-- results timetables in, 88  
-- at Ricoh, 88–91  
-- sandbagging and, 96, 101  
-- selecting targets in, 10–11, 86  
-- value gap assignment in, 86–88  
+target setting, 86–96
+- benchmarking in, 93–94
+- cause-and-effect logic in, 86, 91–93
+- at Cigna Property and Casualty, 88
+- at Mobil US Marketing and Refining, 95–96
+- results timetables in, 88
+- at Ricoh, 88–91
+- sandbagging and, 96, 101
+- selecting targets in, 10–11, 86
+- value gap assignment in, 86–88
 - at Vista Retail, 94–95
 
 TDABC. See time-driven activity-based costing (TDABC)
@@ -10786,48 +10786,48 @@ TD Canada Trust, 177–181
 
 technological analysis. See PESTEL (political, environmental, social, technological, environmental, regulatory) analysis
 
-technology  
-- enablers, 10  
-- sales forecasts and, 197–198  
-- synergies and, 129  
+technology
+- enablers, 10
+- sales forecasts and, 197–198
+- synergies and, 129
 - transformational strategy and, 64
 
 Tempest, N., 66n, 123n
 
-testing, 9, 16–18, 251–279  
-- operational linkages, 260–265  
+testing, 9, 16–18, 251–279
+- operational linkages, 260–265
 - statistical, 266–273
 
 Texas Eastman, 230–233
 
 Thai Carbon Black (TCB), 169
 
-theme owners, 11  
-- initiative accountability and, 119–121  
-- responsibilities of, 119–121  
+theme owners, 11
+- initiative accountability and, 119–121
+- responsibilities of, 119–121
 - in strategy review meetings, 16
 
-theme teams, 11, 120–122  
-- initiative review by, 108–109  
+theme teams, 11, 120–122
+- initiative review by, 108–109
 - responsibilities of, 120–122
 
 Thomas, H., 155n
 
 3M Corporation, 275
 
-time-driven activity-based costing (TDABC), 14, 190–208  
-- company information for, 209–211  
-- customer profitability and, 255–260  
-- developing, 209–219  
-- discretionary spending forecasts in, 205–206  
-- forecasting costs and expenses in, 195–196  
-- influencing future costs in, 199–201  
-- resource capacity plans forecasting and, 198–203  
+time-driven activity-based costing (TDABC), 14, 190–208
+- company information for, 209–211
+- customer profitability and, 255–260
+- developing, 209–219
+- discretionary spending forecasts in, 205–206
+- forecasting costs and expenses in, 195–196
+- influencing future costs in, 199–201
+- resource capacity plans forecasting and, 198–203
 - sales forecasts in, 191–196
 
 time horizons, 40, 41
 
-total quality management (TQM), 6, 13, 54, 55, 159, 169  
+total quality management (TQM), 6, 13, 54, 55, 159, 169
 - continuous improvement and, 6–7
 
 Towerton Financial Services, 196–197, 199–201, 203–204, 206–207, 209–219
@@ -10860,8 +10860,8 @@ value creation, 70–71, 129–130
 
 # INDEX
 
-value gaps, 86–88, 281  
-- at Cigna, 88, 90  
+value gaps, 86–88, 281
+- at Cigna, 88, 90
 - at Ricoh, 90–91
 
 value propositions, 159–160

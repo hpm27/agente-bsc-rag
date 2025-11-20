@@ -94,6 +94,7 @@ Pode complementar com 1-2 objetivos em cada perspectiva faltante?"""
 # MENSAGENS DE CONFIRMAÇÃO (STEP COMPLETO)
 # ============================================================================
 
+
 def generate_company_info_confirmation(company_name: str, industry: str, size: str) -> str:
     """
     Gera confirmação após completar Company Info.
@@ -107,7 +108,7 @@ def generate_company_info_confirmation(company_name: str, industry: str, size: s
         str: Mensagem de confirmação personalizada
     """
     return (
-        f"✓ Perfeito! Empresa **{company_name}** no setor de **{industry}** registrada.\n"
+        f"[OK] Perfeito! Empresa **{company_name}** no setor de **{industry}** registrada.\n"
         f"   Porte: {size}"
     )
 
@@ -126,7 +127,7 @@ def generate_challenges_confirmation(num_challenges: int, challenges: list[str])
     challenges_summary = "\n".join([f"   {i+1}. {ch}" for i, ch in enumerate(challenges[:3])])
 
     return (
-        f"✓ Excelente! Identifiquei **{num_challenges} desafios estratégicos** principais:\n\n"
+        f"[OK] Excelente! Identifiquei **{num_challenges} desafios estratégicos** principais:\n\n"
         f"{challenges_summary}"
     )
 
@@ -145,7 +146,7 @@ def generate_objectives_confirmation(num_objectives: int, objectives: list[str])
     objectives_summary = "\n".join([f"   {i+1}. {obj}" for i, obj in enumerate(objectives[:5])])
 
     return (
-        f"✓ Ótimo! **{num_objectives} objetivos estratégicos** definidos nas perspectivas BSC:\n\n"
+        f"[OK] Ótimo! **{num_objectives} objetivos estratégicos** definidos nas perspectivas BSC:\n\n"
         f"{objectives_summary}"
     )
 
@@ -154,7 +155,7 @@ def generate_objectives_confirmation(num_objectives: int, objectives: list[str])
 # MENSAGEM DE CONCLUSÃO (ONBOARDING COMPLETO)
 # ============================================================================
 
-ONBOARDING_COMPLETE_MESSAGE = """✅ **Onboarding Completo!**
+ONBOARDING_COMPLETE_MESSAGE = """[OK] **Onboarding Completo!**
 
 Perfeito! Tenho todas as informações necessárias para começarmos o diagnóstico estratégico.
 
@@ -179,6 +180,7 @@ Quanto mais específico, melhor será a análise estratégica que poderei fazer.
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
+
 
 def get_initial_question(step: int) -> str:
     """
@@ -257,7 +259,7 @@ def get_confirmation_message(step: int, extraction: dict[str, Any]) -> str:
     Example:
         >>> extraction = {"name": "Empresa X", "industry": "Tecnologia", "size": "50-200"}
         >>> get_confirmation_message(1, extraction)
-        "✓ Perfeito! Empresa Empresa X no setor de Tecnologia registrada..."
+        "[OK] Perfeito! Empresa Empresa X no setor de Tecnologia registrada..."
     """
     if step == 1:  # COMPANY_INFO
         return generate_company_info_confirmation(
@@ -266,13 +268,12 @@ def get_confirmation_message(step: int, extraction: dict[str, Any]) -> str:
             extraction.get("size", "não especificado"),
         )
 
-    elif step == 2:  # CHALLENGES
+    if step == 2:  # CHALLENGES
         challenges = extraction.get("challenges", [])
         return generate_challenges_confirmation(len(challenges), challenges)
 
-    elif step == 3:  # OBJECTIVES
+    if step == 3:  # OBJECTIVES
         objectives = extraction.get("objectives", [])
         return generate_objectives_confirmation(len(objectives), objectives)
 
-    return "✓ Informações registradas!"
-
+    return "[OK] Informações registradas!"

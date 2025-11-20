@@ -1,14 +1,14 @@
 # Onboarding Conversacional - Design Document
 
-**Projeto:** Agente BSC RAG  
-**Componente:** Onboarding Agent - Redesign Conversacional  
-**Data:** 2025-10-24  
-**Status:** ✅ Implementado e Validado (39/39 testes passando)  
-**Sessões:** 2 (MANHÃ: BLOCO 1, TARDE: BLOCO 2)  
+**Projeto:** Agente BSC RAG
+**Componente:** Onboarding Agent - Redesign Conversacional
+**Data:** 2025-10-24
+**Status:** [OK] Implementado e Validado (39/39 testes passando)
+**Sessões:** 2 (MANHÃ: BLOCO 1, TARDE: BLOCO 2)
 
 ---
 
-## 📋 Contexto
+## [EMOJI] Contexto
 
 O Onboarding Agent original seguia um modelo de **Formulário Sequencial Rígido** com 8 perguntas fixas, resultando em uma experiência de usuário frustrante e mecânica. A refatoração implementou um modelo **Conversacional Inteligente** com extração oportunística e respostas contextualizadas.
 
@@ -29,7 +29,7 @@ O Onboarding Agent original seguia um modelo de **Formulário Sequencial Rígido
 
 ---
 
-## 🎯 Solução Implementada
+## [EMOJI] Solução Implementada
 
 ### Arquitetura: 3 Componentes Core
 
@@ -76,7 +76,7 @@ Gera respostas personalizadas e contextualizadas baseadas no estado atual.
 
 ---
 
-## 🏗️ Implementação Técnica
+## [EMOJI] Implementação Técnica
 
 ### Mudanças no Código
 
@@ -93,7 +93,7 @@ Gera respostas personalizadas e contextualizadas baseadas no estado atual.
 #### `src/prompts/client_profile_prompts.py`
 - **Adicionado**: 3 novos prompts ICL
   - `EXTRACT_ALL_ENTITIES_PROMPT`: 185 linhas
-  - `ANALYZE_CONVERSATION_PROMPT`: 105 linhas  
+  - `ANALYZE_CONVERSATION_PROMPT`: 105 linhas
   - `GENERATE_CONTEXTUAL_RESPONSE_PROMPT`: 123 linhas
 
 ### Testes Implementados
@@ -127,16 +127,16 @@ Gera respostas personalizadas e contextualizadas baseadas no estado atual.
 
 ---
 
-## 📊 Resultados e Métricas
+## [EMOJI] Resultados e Métricas
 
 ### Métricas Pós-Implementação
 
 | Métrica | Baseline | Target | Alcançado | Status |
 |---------|----------|--------|-----------|--------|
-| **Turns médios** | 10-15 | 6-8 | **7** | ✅ |
-| **Reconhecimento** | 0% | 60%+ | **67%** | ✅ |
-| **Completion/turn** | 12.5% | 16.7% | **14.3%** | ✅ |
-| **Satisfação** | Baixa | Alta | **Alta** | ✅ |
+| **Turns médios** | 10-15 | 6-8 | **7** | [OK] |
+| **Reconhecimento** | 0% | 60%+ | **67%** | [OK] |
+| **Completion/turn** | 12.5% | 16.7% | **14.3%** | [OK] |
+| **Satisfação** | Baixa | Alta | **Alta** | [OK] |
 
 ### Exemplos de Melhoria
 
@@ -155,7 +155,7 @@ User: 50 pessoas
 ```
 Bot: Olá! Vou ajudá-lo a configurar o BSC. Pode me contar sobre sua empresa?
 User: Somos a TechCorp, uma empresa de tecnologia com 50 funcionários focada em IA
-Bot: Excelente! A TechCorp sendo do setor de tecnologia com foco em IA tem desafios únicos. 
+Bot: Excelente! A TechCorp sendo do setor de tecnologia com foco em IA tem desafios únicos.
      Quais são os principais desafios estratégicos que vocês enfrentam?
 User: Escalabilidade e retenção de talentos são nossos maiores desafios
 [... 3 mais interações contextualizadas ...]
@@ -163,7 +163,7 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### 1. **LLM Testing Strategy**
 - Fixtures separadas para mock vs real LLM
@@ -187,7 +187,7 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 
 ---
 
-## 🔄 Decision Records
+## [EMOJI] Decision Records
 
 ### DR-001: Extração Oportunística vs Pergunta Direta
 
@@ -201,9 +201,9 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 - Custo adicional mínimo (mesmo LLM call)
 
 **Consequências**:
-- ✅ UX muito melhor
-- ✅ Onboarding mais rápido
-- ⚠️ Complexidade adicional no merge
+- [OK] UX muito melhor
+- [OK] Onboarding mais rápido
+- [WARN] Complexidade adicional no merge
 
 ### DR-002: Três Componentes Separados vs Monolítico
 
@@ -218,9 +218,9 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 - Reutilização em outros contextos
 
 **Consequências**:
-- ✅ Código mais manutenível
-- ✅ Testes mais simples
-- ⚠️ 3 LLM calls ao invés de 1
+- [OK] Código mais manutenível
+- [OK] Testes mais simples
+- [WARN] 3 LLM calls ao invés de 1
 
 ### DR-003: GPT-5 mini vs GPT-5 full
 
@@ -235,17 +235,17 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 - Qualidade equivalente para extração/análise
 
 **Consequências**:
-- ✅ ~$9.90/dia economizados (1000 queries)
-- ✅ Latência adequada (<2s por call)
-- ✅ Qualidade mantida
+- [OK] ~$9.90/dia economizados (1000 queries)
+- [OK] Latência adequada (<2s por call)
+- [OK] Qualidade mantida
 
 ---
 
-## 🚀 Próximos Passos
+## [EMOJI] Próximos Passos
 
 ### Curto Prazo (Sprint Atual)
-1. ✅ **CONCLUÍDO**: Deploy em produção
-2. ✅ **CONCLUÍDO**: Monitorar métricas reais
+1. [OK] **CONCLUÍDO**: Deploy em produção
+2. [OK] **CONCLUÍDO**: Monitorar métricas reais
 3. ⏳ **PENDENTE**: A/B testing com usuários
 
 ### Médio Prazo (Q1 2026)
@@ -260,7 +260,7 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Documentação Interna
 - [Plano de Refatoração](.cursor/plans/Plano_refatoracao_onboarding_conversacional.md) - 1.730 linhas
@@ -280,12 +280,12 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 
 ---
 
-## 📈 Impacto no Negócio
+## [EMOJI] Impacto no Negócio
 
 ### ROI Estimado
 
 1. **Redução de Custos**
-   - -40% em tempo de onboarding (10min → 6min)
+   - -40% em tempo de onboarding (10min -> 6min)
    - -$9.90/dia em custos de LLM (GPT-5 mini)
    - -30% em taxa de abandono
 
@@ -307,6 +307,6 @@ User: Escalabilidade e retenção de talentos são nossos maiores desafios
 
 ---
 
-**Documento criado por:** Hugo (Agente AI)  
-**Revisado por:** N/A  
+**Documento criado por:** Hugo (Agente AI)
+**Revisado por:** N/A
 **Última atualização:** 2025-10-24

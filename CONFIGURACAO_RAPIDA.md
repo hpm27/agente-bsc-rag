@@ -277,6 +277,6 @@ Problemas ou dúvidas:
 
 ---
 
-**Última Atualização:** Outubro 2025  
-**Versão do Projeto:** 1.0.0  
+**Última Atualização:** Outubro 2025
+**Versão do Projeto:** 1.0.0
 **Python Requerido:** 3.9+

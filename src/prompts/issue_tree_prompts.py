@@ -22,12 +22,12 @@ Created: 2025-10-19 (FASE 3.3)
 
 def build_company_context(company_name: str, sector: str, size: str) -> str:
     """Constroi contexto da empresa para prompts.
-    
+
     Args:
         company_name: Nome da empresa
         sector: Setor de atuacao
         size: Porte da empresa
-        
+
     Returns:
         String formatada com contexto empresa
     """
@@ -37,22 +37,27 @@ def build_company_context(company_name: str, sector: str, size: str) -> str:
 - Porte: {size}"""
 
 
-def build_strategic_context(
-    current_challenges: list[str],
-    strategic_objectives: list[str]
-) -> str:
+def build_strategic_context(current_challenges: list[str], strategic_objectives: list[str]) -> str:
     """Constroi contexto estrategico para prompts.
-    
+
     Args:
         current_challenges: Desafios atuais da empresa
         strategic_objectives: Objetivos estrategicos definidos
-        
+
     Returns:
         String formatada com contexto estrategico
     """
-    challenges_text = "\n".join(f"- {c}" for c in current_challenges) if current_challenges else "Nao especificados"
-    objectives_text = "\n".join(f"- {o}" for o in strategic_objectives) if strategic_objectives else "Nao especificados"
-    
+    challenges_text = (
+        "\n".join(f"- {c}" for c in current_challenges)
+        if current_challenges
+        else "Nao especificados"
+    )
+    objectives_text = (
+        "\n".join(f"- {o}" for o in strategic_objectives)
+        if strategic_objectives
+        else "Nao especificados"
+    )
+
     return f"""CONTEXTO ESTRATEGICO:
 
 Desafios Atuais:
@@ -64,16 +69,16 @@ Objetivos Estrategicos:
 
 def build_bsc_knowledge_context(rag_context: str) -> str:
     """Constroi contexto conhecimento BSC recuperado via RAG.
-    
+
     Args:
         rag_context: Contexto recuperado dos specialist agents
-        
+
     Returns:
         String formatada com conhecimento BSC
     """
     if not rag_context or rag_context.strip() == "":
         return ""
-    
+
     return f"""CONHECIMENTO BSC (Literatura Kaplan & Norton):
 {rag_context}
 
@@ -82,13 +87,13 @@ Use este conhecimento para enriquecer a decomposicao com frameworks BSC."""
 
 def build_nodes_hierarchy_text(nodes: list) -> str:
     """Constroi representacao hierarquica dos nodes existentes.
-    
+
     Args:
         nodes: Lista de IssueNode ja criados
-        
+
     Returns:
         String formatada em arvore (indentacao por nivel)
-        
+
     Example:
         >>> nodes = [
         ...     IssueNode(text="Baixa lucratividade", level=0),
@@ -102,13 +107,13 @@ def build_nodes_hierarchy_text(nodes: list) -> str:
     """
     if not nodes:
         return "(Nenhum node criado ainda)"
-    
+
     lines = []
     for node in sorted(nodes, key=lambda n: (n.level, n.text)):
         indent = "   " * node.level
         marker = "[LEAF]" if node.is_leaf or len(node.children_ids) == 0 else ""
         lines.append(f"{indent}{node.level}. {node.text} {marker}".strip())
-    
+
     return "\n".join(lines)
 
 
@@ -126,14 +131,14 @@ PRINCIPIO MECE:
 - Quantidade ideal: 2-4 sub-problemas por nivel (nao menos de 2, nao mais de 4)
 
 EXEMPLOS MECE VALIDOS:
-1. "Baixa lucratividade" → [Receita baixa, Custos altos] (2 branches, ME+CE)
-2. "Receita baixa" → [Preco baixo, Volume baixo, Mix produtos inadequado] (3 branches, ME+CE)
-3. "Custos altos" → [Custos fixos, Custos variaveis] (2 branches, ME+CE)
+1. "Baixa lucratividade" -> [Receita baixa, Custos altos] (2 branches, ME+CE)
+2. "Receita baixa" -> [Preco baixo, Volume baixo, Mix produtos inadequado] (3 branches, ME+CE)
+3. "Custos altos" -> [Custos fixos, Custos variaveis] (2 branches, ME+CE)
 
 EXEMPLOS NAO-MECE (EVITAR):
-- "Baixa lucratividade" → [Receita baixa] (FALTA CE, nao cobre custos)
-- "Receita baixa" → [Marketing fraco, Vendas baixas, Leads insuficientes] (OVERLAP ME, leads causa vendas)
-- "Custos altos" → [Salarios, Materias-primas, Aluguel, Energia, Impostos] (>4 branches, muito granular)
+- "Baixa lucratividade" -> [Receita baixa] (FALTA CE, nao cobre custos)
+- "Receita baixa" -> [Marketing fraco, Vendas baixas, Leads insuficientes] (OVERLAP ME, leads causa vendas)
+- "Custos altos" -> [Salarios, Materias-primas, Aluguel, Energia, Impostos] (>4 branches, muito granular)
 
 {company_context}
 
@@ -223,10 +228,10 @@ def build_facilitate_prompt(
     current_level: int,
     max_depth: int,
     nodes_hierarchy: str,
-    rag_context: str = ""
+    rag_context: str = "",
 ) -> str:
     """Constroi prompt completo de facilitacao com todos contextos.
-    
+
     Args:
         company_name: Nome da empresa
         sector: Setor de atuacao
@@ -238,14 +243,14 @@ def build_facilitate_prompt(
         max_depth: Profundidade maxima permitida
         nodes_hierarchy: Representacao textual da arvore existente
         rag_context: Conhecimento BSC (opcional)
-        
+
     Returns:
         Prompt completo formatado
     """
     company_ctx = build_company_context(company_name, sector, size)
     strategic_ctx = build_strategic_context(current_challenges, strategic_objectives)
     bsc_ctx = build_bsc_knowledge_context(rag_context)
-    
+
     return FACILITATE_ISSUE_TREE_PROMPT.format(
         company_context=company_ctx,
         strategic_context=strategic_ctx,
@@ -253,7 +258,7 @@ def build_facilitate_prompt(
         parent_problem=parent_problem,
         current_level=current_level,
         max_depth=max_depth,
-        nodes_hierarchy=nodes_hierarchy
+        nodes_hierarchy=nodes_hierarchy,
     )
 
 
@@ -266,10 +271,10 @@ def build_synthesize_prompt(
     root_problem: str,
     nodes_hierarchy: str,
     leaf_nodes_text: str,
-    rag_context: str = ""
+    rag_context: str = "",
 ) -> str:
     """Constroi prompt completo de sintese com todos contextos.
-    
+
     Args:
         company_name: Nome da empresa
         sector: Setor de atuacao
@@ -280,20 +285,19 @@ def build_synthesize_prompt(
         nodes_hierarchy: Representacao textual da arvore completa
         leaf_nodes_text: Representacao textual apenas dos leaf nodes
         rag_context: Conhecimento BSC (opcional)
-        
+
     Returns:
         Prompt completo formatado
     """
     company_ctx = build_company_context(company_name, sector, size)
     strategic_ctx = build_strategic_context(current_challenges, strategic_objectives)
     bsc_ctx = build_bsc_knowledge_context(rag_context)
-    
+
     return SYNTHESIZE_SOLUTION_PATHS_PROMPT.format(
         company_context=company_ctx,
         strategic_context=strategic_ctx,
         bsc_knowledge=bsc_ctx,
         root_problem=root_problem,
         nodes_hierarchy=nodes_hierarchy,
-        leaf_nodes_text=leaf_nodes_text
+        leaf_nodes_text=leaf_nodes_text,
     )
-

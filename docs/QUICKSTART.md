@@ -1,17 +1,17 @@
-# 🚀 Guia de Início Rápido - Agente BSC RAG
+# [EMOJI] Guia de Início Rápido - Agente BSC RAG
 
-> **Objetivo**: Colocar o sistema BSC RAG funcionando em **menos de 10 minutos** ⏱️
+> **Objetivo**: Colocar o sistema BSC RAG funcionando em **menos de 10 minutos** [TIMER]
 
 Este guia cobre:
-1. ✅ Instalação e configuração inicial
-2. ✅ Primeira execução e query
-3. ✅ Verificação de funcionamento
-4. ✅ Troubleshooting comum
-5. ✅ Próximos passos
+1. [OK] Instalação e configuração inicial
+2. [OK] Primeira execução e query
+3. [OK] Verificação de funcionamento
+4. [OK] Troubleshooting comum
+5. [OK] Próximos passos
 
 ---
 
-## 📋 Pré-requisitos
+## [EMOJI] Pré-requisitos
 
 Antes de começar, certifique-se de ter:
 
@@ -20,18 +20,18 @@ Antes de começar, certifique-se de ter:
 | **Python** | 3.12+ | `python --version` |
 | **Docker Desktop** | Qualquer | Abra o Docker Desktop |
 | **Git** | Qualquer | `git --version` |
-| **RAM** | 8GB+ | Gerenciador de Tarefas → Performance |
+| **RAM** | 8GB+ | Gerenciador de Tarefas -> Performance |
 
 **API Keys Necessárias**:
-- ✅ **OpenAI API Key** - [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
-- ✅ **Cohere API Key** - [dashboard.cohere.com/api-keys](https://dashboard.cohere.com/api-keys)
-- ✅ **Anthropic API Key** - [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+- [OK] **OpenAI API Key** - [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- [OK] **Cohere API Key** - [dashboard.cohere.com/api-keys](https://dashboard.cohere.com/api-keys)
+- [OK] **Anthropic API Key** - [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
 
-💡 **Dica**: As 3 plataformas oferecem créditos gratuitos para novos usuários.
+[EMOJI] **Dica**: As 3 plataformas oferecem créditos gratuitos para novos usuários.
 
 ---
 
-## 🔧 Instalação em 4 Passos
+## [EMOJI] Instalação em 4 Passos
 
 ### Passo 1: Clone o Repositório
 
@@ -70,7 +70,7 @@ O script `setup.ps1` faz **TUDO automaticamente**:
 [DONE] Setup completo! Configure suas API keys no .env
 ```
 
-⏱️ **Tempo estimado**: 2-3 minutos
+[TIMER] **Tempo estimado**: 2-3 minutos
 
 ### Passo 3: Configure API Keys
 
@@ -86,7 +86,7 @@ ANTHROPIC_API_KEY=sk-ant-XXXXX...
 
 3. Salve o arquivo (Ctrl+S)
 
-💡 **Dica**: Se estiver usando VS Code, o arquivo `.env` será aberto automaticamente após o setup.
+[EMOJI] **Dica**: Se estiver usando VS Code, o arquivo `.env` será aberto automaticamente após o setup.
 
 **Validar configuração**:
 
@@ -131,13 +131,13 @@ python scripts/build_knowledge_base.py
 [OK] Knowledge base pronta para uso!
 ```
 
-⏱️ **Tempo estimado**: 10-15 minutos (depende da API Anthropic)
+[TIMER] **Tempo estimado**: 10-15 minutos (depende da API Anthropic)
 
-💡 **Dica**: Se já tiver processado antes, o cache será usado e levará apenas ~30 segundos.
+[EMOJI] **Dica**: Se já tiver processado antes, o cache será usado e levará apenas ~30 segundos.
 
 ---
 
-## 🎉 Primeira Execução
+## [EMOJI] Primeira Execução
 
 ### Iniciar a Interface Streamlit
 
@@ -165,11 +165,11 @@ streamlit run app/main.py
   Network URL: http://192.168.1.100:8501
 ```
 
-🌐 **A interface abrirá automaticamente no navegador.**
+[EMOJI] **A interface abrirá automaticamente no navegador.**
 
 ---
 
-## 💬 Primeira Query
+## [EMOJI] Primeira Query
 
 ### Exemplo 1: Query Simples (Perspectiva Única)
 
@@ -253,7 +253,7 @@ O que é Balanced Scorecard?
 
 ---
 
-## ✅ Verificação de Funcionamento
+## [OK] Verificação de Funcionamento
 
 ### Checklist de Validação
 
@@ -287,23 +287,23 @@ python scripts/valida_env.py
 
 #### 4. Interface Streamlit carregando?
 
-- ✅ Abre em [http://localhost:8501](http://localhost:8501)
-- ✅ Sidebar com configurações BSC visível
-- ✅ Campo de input de query funcional
-- ✅ Histórico de conversação vazio
+- [OK] Abre em [http://localhost:8501](http://localhost:8501)
+- [OK] Sidebar com configurações BSC visível
+- [OK] Campo de input de query funcional
+- [OK] Histórico de conversação vazio
 
 #### 5. Query retorna resultado?
 
-- ✅ Digite uma query e pressione Enter
-- ✅ Veja "Processando..." aparecer
-- ✅ Resposta é exibida em 30-120 segundos
-- ✅ Perspectivas consultadas aparecem
-- ✅ Fontes com scores são exibidas
-- ✅ Avaliação do Judge aparece (score, feedback)
+- [OK] Digite uma query e pressione Enter
+- [OK] Veja "Processando..." aparecer
+- [OK] Resposta é exibida em 30-120 segundos
+- [OK] Perspectivas consultadas aparecem
+- [OK] Fontes com scores são exibidas
+- [OK] Avaliação do Judge aparece (score, feedback)
 
 ---
 
-## 🐛 Troubleshooting Comum
+## [EMOJI] Troubleshooting Comum
 
 ### Problema 1: `ModuleNotFoundError: No module named 'X'`
 
@@ -403,14 +403,14 @@ ENABLE_EMBEDDING_CACHE=true
 
 ---
 
-## 📚 Próximos Passos
+## [EMOJI] Próximos Passos
 
 Agora que o sistema está funcionando, explore:
 
 ### 1. Interface Streamlit (Uso Básico)
 
-- 📖 **Guia Completo**: [STREAMLIT_GUIDE.md](STREAMLIT_GUIDE.md)
-- 💡 Aprenda a:
+- [EMOJI] **Guia Completo**: [STREAMLIT_GUIDE.md](STREAMLIT_GUIDE.md)
+- [EMOJI] Aprenda a:
   - Interpretar perspectivas BSC
   - Ajustar parâmetros de retrieval
   - Entender scores do Judge
@@ -418,8 +418,8 @@ Agora que o sistema está funcionando, explore:
 
 ### 2. Uso Programático (API)
 
-- 📖 **Referência Completa**: [API_REFERENCE.md](API_REFERENCE.md)
-- 💡 Exemplo básico:
+- [EMOJI] **Referência Completa**: [API_REFERENCE.md](API_REFERENCE.md)
+- [EMOJI] Exemplo básico:
 
 ```python
 from src.graph.workflow import get_workflow
@@ -435,8 +435,8 @@ print(result['final_response'])
 
 ### 3. Customização
 
-- 📖 **Tutorial Avançado**: [TUTORIAL.md](TUTORIAL.md)
-- 💡 Aprenda a:
+- [EMOJI] **Tutorial Avançado**: [TUTORIAL.md](TUTORIAL.md)
+- [EMOJI] Aprenda a:
   - Adicionar novos documentos BSC
   - Modificar prompts de agentes
   - Ajustar thresholds do Judge
@@ -444,8 +444,8 @@ print(result['final_response'])
 
 ### 4. Testes e Validação
 
-- 📖 **Guia de Testes**: [TESTING_GUIDE.md](TESTING_GUIDE.md)
-- 💡 Execute testes E2E:
+- [EMOJI] **Guia de Testes**: [TESTING_GUIDE.md](TESTING_GUIDE.md)
+- [EMOJI] Execute testes E2E:
 
 ```powershell
 pytest tests/integration/test_e2e.py -v
@@ -453,35 +453,35 @@ pytest tests/integration/test_e2e.py -v
 
 ### 5. Deploy em Produção
 
-- 📖 **Guia de Deployment**: [DEPLOYMENT.md](DEPLOYMENT.md)
-- 💡 Opções:
+- [EMOJI] **Guia de Deployment**: [DEPLOYMENT.md](DEPLOYMENT.md)
+- [EMOJI] Opções:
   - Deploy local (systemd service)
   - Deploy Docker (container otimizado)
   - Deploy Cloud (AWS/Azure/GCP)
 
 ---
 
-## 🎓 Recursos Adicionais
+## [EMOJI] Recursos Adicionais
 
 ### Documentação Oficial
 
-- 📘 [README.md](../README.md) - Overview completo do projeto
-- 📗 [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura detalhada
-- 📕 [LANGGRAPH_WORKFLOW.md](LANGGRAPH_WORKFLOW.md) - Workflow LangGraph
+- [EMOJI] [README.md](../README.md) - Overview completo do projeto
+- [EMOJI] [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura detalhada
+- [EMOJI] [LANGGRAPH_WORKFLOW.md](LANGGRAPH_WORKFLOW.md) - Workflow LangGraph
 
 ### Otimizações e Performance
 
-- ⚡ [MULTILINGUAL_OPTIMIZATION_SUMMARY.md](../MULTILINGUAL_OPTIMIZATION_SUMMARY.md) - Busca cross-lingual
-- 📊 [VECTOR_DB_COMPARISON.md](VECTOR_DB_COMPARISON.md) - Benchmark Qdrant vs Weaviate
+- [FAST] [MULTILINGUAL_OPTIMIZATION_SUMMARY.md](../MULTILINGUAL_OPTIMIZATION_SUMMARY.md) - Busca cross-lingual
+- [EMOJI] [VECTOR_DB_COMPARISON.md](VECTOR_DB_COMPARISON.md) - Benchmark Qdrant vs Weaviate
 
 ### Exemplos Práticos
 
-- 💻 [examples/run_workflow_example.py](../examples/run_workflow_example.py) - Uso programático
-- 📋 [tests/integration/test_queries.json](../tests/integration/test_queries.json) - 20 queries BSC de exemplo
+- [EMOJI] [examples/run_workflow_example.py](../examples/run_workflow_example.py) - Uso programático
+- [EMOJI] [tests/integration/test_queries.json](../tests/integration/test_queries.json) - 20 queries BSC de exemplo
 
 ---
 
-## 💡 Dicas Pro
+## [EMOJI] Dicas Pro
 
 ### Atalhos de Produtividade
 
@@ -530,12 +530,12 @@ python scripts/valida_env.py
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Se encontrar problemas não cobertos neste guia:
 
-1. 📖 Consulte [TROUBLESHOOTING.md](TROUBLESHOOTING.md) (se existir)
-2. 🔍 Busque em [Issues abertas](https://github.com/seu-usuario/agente-bsc-rag/issues)
+1. [EMOJI] Consulte [TROUBLESHOOTING.md](TROUBLESHOOTING.md) (se existir)
+2. [EMOJI] Busque em [Issues abertas](https://github.com/seu-usuario/agente-bsc-rag/issues)
 3. 🆕 Abra uma [Nova Issue](https://github.com/seu-usuario/agente-bsc-rag/issues/new) com:
    - Descrição do problema
    - Mensagem de erro completa
@@ -544,7 +544,7 @@ Se encontrar problemas não cobertos neste guia:
 
 ---
 
-## ✅ Checklist Final
+## [OK] Checklist Final
 
 Antes de considerar o setup completo, verifique:
 
@@ -564,6 +564,6 @@ Antes de considerar o setup completo, verifique:
 ---
 
 <p align="center">
-  <strong>🎉 Parabéns! Você está pronto para usar o Agente BSC RAG!</strong><br>
+  <strong>[EMOJI] Parabéns! Você está pronto para usar o Agente BSC RAG!</strong><br>
   <em>Próximo passo: Explore <a href="TUTORIAL.md">TUTORIAL.md</a> para uso avançado</em>
 </p>

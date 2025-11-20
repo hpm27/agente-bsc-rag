@@ -1,12 +1,12 @@
 # FASE 4.5 - Feedback Collection System: Design Técnico
 
-**Data Início:** 2025-11-19  
-**Versão:** 1.0  
-**Status:** 📐 DESIGN APROVADO - Pronto para implementação
+**Data Início:** 2025-11-19
+**Versão:** 1.0
+**Status:** [EMOJI] DESIGN APROVADO - Pronto para implementação
 
 ---
 
-## 🎯 Objetivos
+## [EMOJI] Objetivos
 
 Implementar sistema de coleta de feedback dos usuários sobre diagnósticos BSC gerados:
 
@@ -16,23 +16,23 @@ Implementar sistema de coleta de feedback dos usuários sobre diagnósticos BSC 
 4. **Integração Workflow** - Coleta automática após diagnósticos
 5. **Análise e Insights** - Agregação de feedback para melhorias
 
-**Estimativa:** 1.5h (conforme plano original)  
-**Dependências:** FASE 4.4 completa (Analytics Dashboard) ✅
+**Estimativa:** 1.5h (conforme plano original)
+**Dependências:** FASE 4.4 completa (Analytics Dashboard) [OK]
 
 ---
 
-## 📊 Stack Tecnológico (Decisões Fundamentadas - Brightdata Nov 2025)
+## [EMOJI] Stack Tecnológico (Decisões Fundamentadas - Brightdata Nov 2025)
 
 ### **1. Schema Pydantic para Feedback**
 
-**Escolha:** Schema estruturado com rating numérico + texto opcional  
+**Escolha:** Schema estruturado com rating numérico + texto opcional
 **Alternativas consideradas:** Apenas texto livre, apenas rating binário (thumbs up/down)
 
 **Razões:**
-- ✅ **Rating numérico (1-5)**: Quantificável, permite análise estatística
-- ✅ **Texto opcional**: Captura contexto qualitativo quando necessário
-- ✅ **Metadata rica**: Timestamp, user_id, diagnostic_id, phase
-- ✅ **Alinhado com best practices**: Helicone AI, Winder.AI (2025)
+- [OK] **Rating numérico (1-5)**: Quantificável, permite análise estatística
+- [OK] **Texto opcional**: Captura contexto qualitativo quando necessário
+- [OK] **Metadata rica**: Timestamp, user_id, diagnostic_id, phase
+- [OK] **Alinhado com best practices**: Helicone AI, Winder.AI (2025)
 
 **Estrutura proposta:**
 ```python
@@ -54,14 +54,14 @@ class Feedback(BaseModel):
 
 ### **2. Armazenamento Mem0**
 
-**Escolha:** Mem0 para persistência de feedback histórico  
+**Escolha:** Mem0 para persistência de feedback histórico
 **Alternativas consideradas:** Redis (volátil), PostgreSQL (overhead)
 
 **Razões:**
-- ✅ **Já integrado**: Mem0 já usado para ClientProfile
-- ✅ **Persistência garantida**: Não perdemos feedback histórico
-- ✅ **Busca e análise**: Mem0 permite queries estruturadas
-- ✅ **Consistência**: Mesmo storage layer do resto do sistema
+- [OK] **Já integrado**: Mem0 já usado para ClientProfile
+- [OK] **Persistência garantida**: Não perdemos feedback histórico
+- [OK] **Busca e análise**: Mem0 permite queries estruturadas
+- [OK] **Consistência**: Mesmo storage layer do resto do sistema
 
 **Estrutura Mem0:**
 ```
@@ -79,7 +79,7 @@ Content: comment (texto opcional)
 
 ### **3. API REST Endpoints**
 
-**Escolha:** FastAPI endpoints seguindo padrão FASE 4.3  
+**Escolha:** FastAPI endpoints seguindo padrão FASE 4.3
 **Estrutura:**
 - `POST /api/v1/feedback` - Criar novo feedback
 - `GET /api/v1/feedback/{feedback_id}` - Buscar feedback específico
@@ -95,7 +95,7 @@ Content: comment (texto opcional)
 
 ### **4. Integração Workflow LangGraph**
 
-**Escolha:** Coleta automática após fase DISCOVERY completa  
+**Escolha:** Coleta automática após fase DISCOVERY completa
 **Trigger:** Quando diagnóstico é gerado e apresentado ao usuário
 
 **Fluxo:**
@@ -109,7 +109,7 @@ Content: comment (texto opcional)
 
 ---
 
-## 🔧 Arquitetura de Implementação
+## [EMOJI] Arquitetura de Implementação
 
 ### **Componentes Principais**
 
@@ -133,9 +133,9 @@ Content: comment (texto opcional)
 
 ---
 
-## 📋 Plano de Implementação (5 Etapas)
+## [EMOJI] Plano de Implementação (5 Etapas)
 
-### **Etapa 0: Design Técnico** ✅ (COMPLETO)
+### **Etapa 0: Design Técnico** [OK] (COMPLETO)
 
 **Arquivos:**
 - `docs/architecture/FASE_4_5_FEEDBACK_COLLECTION_DESIGN.md` (este documento)
@@ -269,7 +269,7 @@ Content: comment (texto opcional)
 
 ---
 
-## 📊 Métricas Esperadas
+## [EMOJI] Métricas Esperadas
 
 | Métrica | Target | Status |
 |---------|--------|--------|
@@ -284,7 +284,7 @@ Content: comment (texto opcional)
 
 ---
 
-## 🎓 Best Practices Aplicadas (Brightdata Nov 2025)
+## [EMOJI] Best Practices Aplicadas (Brightdata Nov 2025)
 
 ### **1. Rating Numérico vs Binário**
 
@@ -326,7 +326,7 @@ Content: comment (texto opcional)
 
 ---
 
-## 🔗 Referências (Brightdata Nov 2025)
+## [EMOJI] Referências (Brightdata Nov 2025)
 
 ### **Feedback Collection:**
 1. **Helicone AI (May 2025):** "How to Track LLM User Feedback to Improve Your AI Applications"
@@ -342,7 +342,7 @@ Content: comment (texto opcional)
 
 ---
 
-## ✅ Checklist de Implementação
+## [OK] Checklist de Implementação
 
 - [ ] Etapa 0: Design Técnico completo
 - [ ] Etapa 1: Schema Pydantic Feedback
@@ -355,7 +355,6 @@ Content: comment (texto opcional)
 
 ---
 
-**Última Atualização:** 2025-11-19  
-**Status:** 📐 DESIGN APROVADO - Pronto para implementação  
+**Última Atualização:** 2025-11-19
+**Status:** [EMOJI] DESIGN APROVADO - Pronto para implementação
 **Próximo:** Etapa 1 - Schema Pydantic
-

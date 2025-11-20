@@ -1,27 +1,27 @@
 # [OBSOLETO - 2025-10-20] Workflow Design Sequencial
 
-**ARQUIVADO EM:** 2025-10-20  
-**RAZÃO:** Este documento reflete o design original do onboarding sequencial (formulário fixo).  
-**SUBSTITUÍDO POR:** `docs/consulting/onboarding-conversational-design.md`  
+**ARQUIVADO EM:** 2025-10-20
+**RAZÃO:** Este documento reflete o design original do onboarding sequencial (formulário fixo).
+**SUBSTITUÍDO POR:** `docs/consulting/onboarding-conversational-design.md`
 **REFATORAÇÃO:** Implementação de onboarding conversacional inteligente com 3 fases:
 - FASE 1: Opportunistic Extraction
-- FASE 2: Intelligent Validation  
+- FASE 2: Intelligent Validation
 - FASE 3: Periodic Confirmation
 
 Arquivado para referência histórica. Não usar este design para novas implementações.
 
 ---
 
-# 🎯 BSC Consulting Agent - Workflow Design v2.0
+# [EMOJI] BSC Consulting Agent - Workflow Design v2.0
 
-**Data**: 2025-10-15  
-**Versão**: 2.0 (MVP - Fase 2)  
-**Status**: Design Aprovado  
+**Data**: 2025-10-15
+**Versão**: 2.0 (MVP - Fase 2)
+**Status**: Design Aprovado
 **Implementação**: FASE 2.1 Completa
 
 ---
 
-## 📋 EXECUTIVE SUMMARY
+## [EMOJI] EXECUTIVE SUMMARY
 
 ### Objetivo
 
@@ -45,7 +45,7 @@ Transformar **Agente BSC RAG** (Q&A sobre literatura BSC) em **Agente Consultor 
 
 ---
 
-## 🗺️ STATE MACHINE DIAGRAM
+## [EMOJI] STATE MACHINE DIAGRAM
 
 ### Diagrama Visual (Mermaid)
 
@@ -55,24 +55,24 @@ stateDiagram-v2
 
     IDLE --> ONBOARDING: Novo cliente\n(sem ClientProfile)
     IDLE --> DISCOVERY: Cliente existente\n(profile completo)
-    
+
     ONBOARDING --> DISCOVERY: Profile completo\n(5-7 perguntas OK)
     ONBOARDING --> ERROR: Falha persistência\nou validação
-    
+
     DISCOVERY --> APPROVAL_PENDING: Diagnóstico completo\n(1+ ferramenta executada)
     DISCOVERY --> DISCOVERY: Refinar análise\n(usuário solicita)
     DISCOVERY --> ERROR: Falha execução\nferramenta
-    
+
     APPROVAL_PENDING --> SOLUTION_DESIGN: Aprovado\n(Fase futura)
     APPROVAL_PENDING --> DISCOVERY: Rejeitado\n(refinar diagnóstico)
     APPROVAL_PENDING --> ERROR: Timeout 24h\nou falha
-    
+
     SOLUTION_DESIGN --> IMPLEMENTATION: Solução aprovada\n(Fase futura)
     SOLUTION_DESIGN --> APPROVAL_PENDING: Revisar solução
-    
+
     IMPLEMENTATION --> [*]: Projeto concluído
     IMPLEMENTATION --> IMPLEMENTATION: Ciclo iterativo
-    
+
     ERROR --> IDLE: Recovery falhou\n(reset completo)
     ERROR --> ONBOARDING: Recovery sucesso\n(last stable: onboarding)
     ERROR --> DISCOVERY: Recovery sucesso\n(last stable: discovery)
@@ -122,7 +122,7 @@ stateDiagram-v2
 
 ---
 
-## 📊 ESTADOS DETALHADOS
+## [EMOJI] ESTADOS DETALHADOS
 
 ### 1. IDLE (Estado Inicial)
 
@@ -295,14 +295,14 @@ stateDiagram-v2
 def suggest_tool(client_profile: ClientProfile) -> str:
     """Sugere ferramenta consultiva mais adequada."""
     challenge = client_profile.strategic_context.main_challenge.lower()
-    
+
     # Heurísticas baseadas em palavras-chave
     if "problema" in challenge or "issue" in challenge:
         return "IssueTree_Analyzer"  # Decomposição
-    
+
     if "causa" in challenge or "root cause" in challenge:
         return "FiveWhys_Facilitator"  # Root cause
-    
+
     # Default: SWOT (mais abrangente)
     return "SWOT_Builder"
 ```
@@ -330,18 +330,18 @@ async def approval_node(state: ConsultingState):
     """Node de aprovação com interrupt."""
     # Formatar diagnóstico para apresentação
     diagnostic_report = format_diagnostic(state["tool_outputs"])
-    
+
     # interrupt() pausa graph e retorna controle ao usuário
     user_decision = interrupt({
         "type": "approval_request",
         "report": diagnostic_report,
         "options": ["approve", "reject", "modify"]
     })
-    
+
     # Quando usuário responde, graph resume aqui
     state["approval_status"] = ApprovalStatus(user_decision["action"])
     state["approval_feedback"] = user_decision.get("feedback", "")
-    
+
     return state
 ```
 
@@ -393,14 +393,14 @@ async def approval_node(state: ConsultingState):
 **Responsabilidades** (Fase 6-7):
 - Criar strategy map completo (objetivos + causa-efeito)
 - Definir KPIs SMART para cada objetivo
-- Validar alinhamento entre perspectivas (Financial → Customer → Process → Learning)
+- Validar alinhamento entre perspectivas (Financial -> Customer -> Process -> Learning)
 
 **Ferramentas**:
 - `Strategy_Map_Designer`: Objetivos nas 4 perspectivas
 - `KPI_Definer`: Métricas SMART
 - `Alignment_Validator`: Verifica causa-efeito
 
-**Transição**: `SOLUTION_DESIGN → IMPLEMENTATION` (quando aprovado)
+**Transição**: `SOLUTION_DESIGN -> IMPLEMENTATION` (quando aprovado)
 
 ---
 
@@ -413,7 +413,7 @@ async def approval_node(state: ConsultingState):
 - Integrar Asana (tasks) e Google Calendar (meetings) via MCPs
 - Monitoring dashboard com progresso
 
-**Transição**: `IMPLEMENTATION → IDLE` (projeto concluído)
+**Transição**: `IMPLEMENTATION -> IDLE` (projeto concluído)
 
 ---
 
@@ -471,7 +471,7 @@ async def approval_node(state: ConsultingState):
 
 ---
 
-## 🔄 TRANSITION RULES (Regras de Transição)
+## [EMOJI] TRANSITION RULES (Regras de Transição)
 
 ### Tabela Completa de Transições
 
@@ -492,7 +492,7 @@ async def approval_node(state: ConsultingState):
 
 ### Validações por Transição
 
-#### ONBOARDING → DISCOVERY
+#### ONBOARDING -> DISCOVERY
 
 ```python
 def validate_profile_complete(state: ConsultingState) -> bool:
@@ -500,18 +500,18 @@ def validate_profile_complete(state: ConsultingState) -> bool:
     profile = state.get("client_profile")
     if not profile:
         return False
-    
+
     # Campos obrigatórios: company, industry, main_challenge, objectives
     company = profile.get("company", {})
     context = profile.get("strategic_context", {})
-    
+
     required_fields = [
         company.get("name"),
         company.get("industry"),
         context.get("main_challenge"),
         context.get("objectives")
     ]
-    
+
     # Todos campos não vazios
     return all(
         field is not None and len(str(field).strip()) > 0
@@ -519,28 +519,28 @@ def validate_profile_complete(state: ConsultingState) -> bool:
     )
 ```
 
-#### DISCOVERY → APPROVAL_PENDING
+#### DISCOVERY -> APPROVAL_PENDING
 
 ```python
 def validate_diagnostic_complete(state: ConsultingState) -> bool:
     """Valida se diagnóstico está completo."""
     tool_outputs = state.get("tool_outputs", {})
-    
+
     # Pelo menos 1 ferramenta executada
     if len(tool_outputs) == 0:
         return False
-    
+
     # Quality score >= 0.70 (validado por ValidatorAgent)
     quality_score = state.get("diagnostic_quality_score", 0.0)
     if quality_score < 0.70:
         return False
-    
+
     return True
 ```
 
 ---
 
-## 🛠️ IMPLEMENTAÇÃO LANGGRAPH
+## [EMOJI] IMPLEMENTAÇÃO LANGGRAPH
 
 ### Estrutura do StateGraph
 
@@ -656,13 +656,13 @@ def route_from_discovery(state: ConsultingState) -> str:
 def route_from_approval(state: ConsultingState) -> str:
     """Rota de APPROVAL para DISCOVERY (rejected) ou save (approved)."""
     approval_status = state.get("approval_status")
-    
+
     if approval_status == ApprovalStatus.REJECTED:
         return "discovery"
     elif approval_status == ApprovalStatus.APPROVED:
         return "save_memory"
     else:
-        # PENDING ou TIMEOUT → ERROR
+        # PENDING ou TIMEOUT -> ERROR
         return "error"
 
 def route_from_error(state: ConsultingState) -> str:
@@ -670,9 +670,9 @@ def route_from_error(state: ConsultingState) -> str:
     error_info = state.get("error_info")
     if not error_info:
         return "load_memory"  # Reset
-    
+
     last_stable = error_info.get("last_stable_phase")
-    
+
     if last_stable == ConsultingPhase.ONBOARDING:
         return "onboarding"
     elif last_stable == ConsultingPhase.DISCOVERY:
@@ -685,14 +685,14 @@ def route_from_error(state: ConsultingState) -> str:
 
 ---
 
-## 📊 MÉTRICAS DE SUCESSO
+## [EMOJI] MÉTRICAS DE SUCESSO
 
 ### Métricas Técnicas (Objetivas)
 
 | Métrica | Target MVP | Como Medir |
 |---------|------------|------------|
 | **Onboarding Completion Rate** | >= 80% | % usuários que completam 5-7 perguntas |
-| **Time-to-First-Insight** | < 30 min | Tempo de IDLE → APPROVAL_PENDING |
+| **Time-to-First-Insight** | < 30 min | Tempo de IDLE -> APPROVAL_PENDING |
 | **Diagnostic Quality Score** | >= 0.75 | ValidatorAgent score médio |
 | **Approval Rate** | >= 60% | % diagnósticos aprovados na 1ª tentativa |
 | **Error Recovery Success** | >= 90% | % errors recuperados sem reset completo |
@@ -715,34 +715,34 @@ def route_from_error(state: ConsultingState) -> str:
 | **Return Rate** | >= 60% | % clientes que retornam (sessão 2+) |
 | **Tool Usage** | >= 2 ferramentas/sessão | Média de tool_outputs por sessão |
 | **Completion Rate** | >= 70% | % sessões que chegam a APPROVAL_PENDING |
-| **Refinement Rate** | < 30% | % sessões que voltam de APPROVAL → DISCOVERY |
+| **Refinement Rate** | < 30% | % sessões que voltam de APPROVAL -> DISCOVERY |
 
 ---
 
-## 🎯 CASOS DE USO PRÁTICOS
+## [EMOJI] CASOS DE USO PRÁTICOS
 
 ### Caso 1: Startup SaaS (Novo Cliente)
 
 **Contexto**: Startup de 50 funcionários, crescendo 3x a.a., quer estruturar estratégia.
 
 **Fluxo**:
-1. **IDLE → ONBOARDING** (5 min)
+1. **IDLE -> ONBOARDING** (5 min)
    - Perguntas: Nome, indústria, desafio ("Escalar sem perder qualidade"), objetivos
-   
-2. **ONBOARDING → DISCOVERY** (15 min)
+
+2. **ONBOARDING -> DISCOVERY** (15 min)
    - Ferramenta sugerida: SWOT_Builder
    - Output: 12 pontos (3 Strengths, 4 Weaknesses, 3 Opportunities, 2 Threats)
    - Quality score: 0.82
-   
-3. **DISCOVERY → APPROVAL_PENDING** (Immediate)
+
+3. **DISCOVERY -> APPROVAL_PENDING** (Immediate)
    - Report formatado apresentado
    - Usuário aprova com pequenos ajustes (MODIFY)
-   
-4. **APPROVAL_PENDING → save_memory** (Immediate)
+
+4. **APPROVAL_PENDING -> save_memory** (Immediate)
    - Profile + diagnóstico salvos no Mem0
    - Próxima sessão: Cliente existente, pula onboarding
 
-**Tempo Total**: ~20 min  
+**Tempo Total**: ~20 min
 **Métricas**: Completion rate: 100%, Approval: 1ª tentativa, NPS: 9/10
 
 ---
@@ -752,22 +752,22 @@ def route_from_error(state: ConsultingState) -> str:
 **Contexto**: Manufatura 500 funcionários, já tem BSC implantado, quer refinar perspectiva Learning & Growth.
 
 **Fluxo**:
-1. **IDLE → DISCOVERY** (Immediate, profile existente)
-   
+1. **IDLE -> DISCOVERY** (Immediate, profile existente)
+
 2. **DISCOVERY** (20 min)
    - Ferramenta sugerida: IssueTree_Analyzer (foco em L&G)
    - Output: Problema decomposto em 3 níveis
    - Usuário solicita: "Adicionar benchmarks de L&G no setor"
    - Parallel_Research executado (Brightdata)
    - Diagnóstico enriquecido
-   
-3. **DISCOVERY → APPROVAL_PENDING** (Após refinamento)
+
+3. **DISCOVERY -> APPROVAL_PENDING** (Após refinamento)
    - Report com benchmarks apresentado
    - Usuário aprova
-   
-4. **APPROVAL_PENDING → save_memory** (Immediate)
 
-**Tempo Total**: ~25 min (incluindo refinamento)  
+4. **APPROVAL_PENDING -> save_memory** (Immediate)
+
+**Tempo Total**: ~25 min (incluindo refinamento)
 **Métricas**: Refinement rate: 1x (esperado), Approval: 2ª tentativa, NPS: 8/10
 
 ---
@@ -777,34 +777,34 @@ def route_from_error(state: ConsultingState) -> str:
 **Contexto**: Cliente em DISCOVERY, Mem0 API timeout durante save.
 
 **Fluxo**:
-1. **DISCOVERY → ERROR** (Timeout detectado)
+1. **DISCOVERY -> ERROR** (Timeout detectado)
    - Error severity: MEDIUM
    - Retry 3x (2s, 4s, 8s)
    - Retry 2 sucesso!
-   
-2. **ERROR → DISCOVERY** (Recovery success)
+
+2. **ERROR -> DISCOVERY** (Recovery success)
    - Estado restaurado
    - Usuário notificado: "Conexão restaurada, continuando diagnóstico"
-   
-3. **DISCOVERY → APPROVAL_PENDING** (Continua normal)
 
-**Tempo Total**: +14s latência (retry)  
+3. **DISCOVERY -> APPROVAL_PENDING** (Continua normal)
+
+**Tempo Total**: +14s latência (retry)
 **Métricas**: Error recovery success: 100%, User impact: Mínimo
 
 ---
 
-## 🔮 ROADMAP DE EXPANSÃO
+## [EMOJI] ROADMAP DE EXPANSÃO
 
-### Fase 2 (MVP) - 4-5 Semanas ✅ EM ANDAMENTO
+### Fase 2 (MVP) - 4-5 Semanas [OK] EM ANDAMENTO
 
-- [x] FASE 2.1: Design Workflow States ✅
+- [x] FASE 2.1: Design Workflow States [OK]
 - [ ] FASE 2.2: Expand ConsultingState
 - [ ] FASE 2.3: ClientProfileAgent
 - [ ] FASE 2.4: OnboardingAgent
 - [ ] FASE 2.5: DiagnosticAgent
 - [ ] FASE 2.6-2.10: Nodes + Orchestrator + E2E Tests
 
-**Entregável**: Workflow IDLE → ONBOARDING → DISCOVERY → APPROVAL funcional
+**Entregável**: Workflow IDLE -> ONBOARDING -> DISCOVERY -> APPROVAL funcional
 
 ---
 
@@ -850,7 +850,7 @@ def route_from_error(state: ConsultingState) -> str:
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Papers e Artigos (2024-2025)
 
@@ -886,8 +886,7 @@ def route_from_error(state: ConsultingState) -> str:
 
 ---
 
-**Última Atualização**: 2025-10-15  
-**Versão**: 2.0 (FASE 2.1 Design Completo)  
-**Status**: ✅ Aprovado para Implementação  
+**Última Atualização**: 2025-10-15
+**Versão**: 2.0 (FASE 2.1 Design Completo)
+**Status**: [OK] Aprovado para Implementação
 **Próximo**: FASE 2.2 - Expand ConsultingState (implementação código)
-

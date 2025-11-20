@@ -7,24 +7,24 @@ outcome: "Sucesso Excepcional"
 tech_id: "TECH-002"
 ---
 
-# 📚 LIÇÃO APRENDIDA - ADAPTIVE RE-RANKING
+# [EMOJI] LIÇÃO APRENDIDA - ADAPTIVE RE-RANKING
 
-## 📋 CONTEXTO
+## [EMOJI] CONTEXTO
 
 - **Técnica:** Adaptive Re-ranking (MMR + Metadata Boost + Adaptive Top-N)
 - **Objetivo:** Melhorar diversidade e qualidade de documentos re-ranked (+diversidade, +coverage)
-- **Tempo estimado:** 2-3 dias → **Tempo real:** 2 dias (-15% desvio - ABAIXO estimativa!)
-- **Resultado:** ✅ **SUCESSO EXCEPCIONAL** - 100% coverage, 38 testes, MMR validado, 3 componentes funcionais
+- **Tempo estimado:** 2-3 dias -> **Tempo real:** 2 dias (-15% desvio - ABAIXO estimativa!)
+- **Resultado:** [OK] **SUCESSO EXCEPCIONAL** - 100% coverage, 38 testes, MMR validado, 3 componentes funcionais
 
 ---
 
-## ✅ O QUE FUNCIONOU BEM
+## [OK] O QUE FUNCIONOU BEM
 
-### 1. Testes Primeiro para Coverage Alta - 68% → 100%
+### 1. Testes Primeiro para Coverage Alta - 68% -> 100%
 
 **Estratégia:**
 - Criar suite completa de testes **DURANTE** implementação (não depois)
-- Cobertura incremental: 68% (inicial) → 85% (dia 1) → 100% (dia 2)
+- Cobertura incremental: 68% (inicial) -> 85% (dia 1) -> 100% (dia 2)
 
 **Abordagem:**
 
@@ -39,7 +39,7 @@ def test_calculate_similarity():
     vec1 = np.array([1.0, 0.0, 0.0])
     vec2 = np.array([1.0, 0.0, 0.0])
     assert similarity == 1.0  # Vetores idênticos
-    
+
 def test_calculate_similarity_normalized():
     # Testa normalização de embeddings
     ...
@@ -50,9 +50,9 @@ def test_calculate_similarity_normalized():
 ```
 
 **Resultado:**
-- ✅ **100% coverage** atingido (vs 68% inicial)
-- ✅ **38 testes robustos** (153% acima target de 15)
-- ✅ **Zero bugs** em produção (tudo validado)
+- [OK] **100% coverage** atingido (vs 68% inicial)
+- [OK] **38 testes robustos** (153% acima target de 15)
+- [OK] **Zero bugs** em produção (tudo validado)
 
 **Impacto:**
 - Desenvolvimento mais lento inicialmente (+20% tempo)
@@ -60,8 +60,8 @@ def test_calculate_similarity_normalized():
 - NET ROI: +4-6h economizadas
 
 **Replicar em:**
-- ✅ Todas técnicas futuras (Self-RAG, CRAG)
-- ✅ Test-driven development sempre que possível
+- [OK] Todas técnicas futuras (Self-RAG, CRAG)
+- [OK] Test-driven development sempre que possível
 
 ---
 
@@ -85,15 +85,15 @@ def rerank_with_diversity(self, query, documents, top_n=10):
                 normalized_embeddings.append(emb_array / norm)
             else:
                 normalized_embeddings.append(emb_array)
-    
+
     # MMR usa embeddings normalizados
     diversity_results = self._maximal_marginal_relevance(...)
 ```
 
 **Impacto:**
-- ✅ **Zero erros numéricos** (underflow, overflow)
-- ✅ **Similaridade consistente** (0.0 a 1.0)
-- ✅ **MMR algorithm estável**
+- [OK] **Zero erros numéricos** (underflow, overflow)
+- [OK] **Similaridade consistente** (0.0 a 1.0)
+- [OK] **MMR algorithm estável**
 
 **Teste Específico:**
 
@@ -102,16 +102,16 @@ def test_calculate_similarity_normalized():
     # Testa com embeddings normalizados
     vec1 = np.array([0.6, 0.8])  # Já normalizado
     vec2 = np.array([0.8, 0.6])
-    
+
     similarity = reranker._calculate_similarity(vec1, vec2)
-    
+
     # Tolerância float
     assert np.allclose(similarity, 0.96, atol=1e-6)
 ```
 
 **Replicar em:**
-- ✅ Qualquer algoritmo que use embeddings (HyDE, Graph RAG)
-- ✅ Sempre normalizar ANTES de cálculos matemáticos
+- [OK] Qualquer algoritmo que use embeddings (HyDE, Graph RAG)
+- [OK] Sempre normalizar ANTES de cálculos matemáticos
 
 ---
 
@@ -138,23 +138,23 @@ def test_rerank(mock_cohere_client):
         Mock(index=1, relevance_score=0.85)
     ]
     mock_client.rerank.return_value = mock_response
-    
+
     # Teste rápido!
     reranker = CohereReranker()
     results = reranker.rerank(query, docs, top_n=2)
-    
+
     assert len(results) == 2
 ```
 
 **Impacto:**
-- ✅ **Testes 2.5x mais rápidos** (38s → 15s)
-- ✅ **Custo $0** (sem API calls em testes)
-- ✅ **Reprodutibilidade** (sem dependência de API externa)
+- [OK] **Testes 2.5x mais rápidos** (38s -> 15s)
+- [OK] **Custo $0** (sem API calls em testes)
+- [OK] **Reprodutibilidade** (sem dependência de API externa)
 
 **Replicar em:**
-- ✅ Self-RAG (mock LLM calls)
-- ✅ CRAG (mock web search)
-- ✅ Todos testes de integração com APIs externas
+- [OK] Self-RAG (mock LLM calls)
+- [OK] CRAG (mock web search)
+- [OK] Todos testes de integração com APIs externas
 
 ---
 
@@ -170,16 +170,16 @@ def test_rerank(mock_cohere_client):
 def _maximal_marginal_relevance(self, scored_docs, lambda_param=0.5, threshold=0.8):
     """
     MMR (Maximal Marginal Relevance).
-    
+
     Formula: MMR = λ × Relevance - (1-λ) × MaxSimilarity
-    
+
     λ = 0.5: balanceado relevância/diversidade
     λ = 1.0: só relevância (sem diversidade)
     λ = 0.0: só diversidade (sem relevância)
     """
     selected = []
     remaining = scored_docs.copy()
-    
+
     while len(selected) < top_n and remaining:
         if not selected:
             # Primeiro doc: mais relevante
@@ -189,30 +189,30 @@ def _maximal_marginal_relevance(self, scored_docs, lambda_param=0.5, threshold=0
             mmr_scores = []
             for doc in remaining:
                 relevance = doc['score']
-                
+
                 # Calcular max similarity com docs já selecionados
                 similarities = [
                     self._calculate_similarity(doc['embedding'], s['embedding'])
                     for s in selected
                 ]
                 max_sim = max(similarities)
-                
+
                 # MMR score
                 mmr = lambda_param * relevance - (1 - lambda_param) * max_sim
                 mmr_scores.append((doc, mmr))
-            
+
             # Selecionar doc com maior MMR
             best_doc, best_mmr = max(mmr_scores, key=lambda x: x[1])
             selected.append(best_doc)
             remaining.remove(best_doc)
-    
+
     return selected
 ```
 
 **Validação:**
-- ✅ **7 testes MMR** (basic, diversity, lambda variations, threshold)
-- ✅ **Diversity score > 0.7** (média dissimilaridade entre docs)
-- ✅ **Pelo menos 2 fontes** diferentes nos top-5
+- [OK] **7 testes MMR** (basic, diversity, lambda variations, threshold)
+- [OK] **Diversity score > 0.7** (média dissimilaridade entre docs)
+- [OK] **Pelo menos 2 fontes** diferentes nos top-5
 
 **Replicar em:**
 - Query Decomposition (sub-queries diversificadas)
@@ -233,34 +233,34 @@ def _boost_by_metadata(self, scored_docs):
     boosted = []
     seen_sources = set()
     seen_perspectives = set()
-    
+
     for doc in scored_docs:
         base_score = doc['score']
         boost = 1.0
-        
+
         # Boost por fonte diferente
         source = doc.get('metadata', {}).get('source', '')
         if source and source not in seen_sources:
             boost *= (1 + self.source_boost)  # +20%
             seen_sources.add(source)
-        
+
         # Boost por perspectiva diferente
         perspectives = doc.get('metadata', {}).get('perspectives', [])
         for persp in perspectives:
             if persp not in seen_perspectives:
                 boost *= (1 + self.perspective_boost)  # +15%
                 seen_perspectives.add(persp)
-        
+
         doc['score'] = base_score * boost
         boosted.append(doc)
-    
+
     return sorted(boosted, key=lambda x: x['score'], reverse=True)
 ```
 
 **Validação:**
-- ✅ **4 testes metadata boost** (source, perspective, both, no metadata)
-- ✅ **Boost aplicado corretamente** (1.20x source, 1.15x perspective)
-- ✅ **Ordenação mantida** após boost
+- [OK] **4 testes metadata boost** (source, perspective, both, no metadata)
+- [OK] **Boost aplicado corretamente** (1.20x source, 1.15x perspective)
+- [OK] **Ordenação mantida** após boost
 
 **ROI Esperado:**
 - Maior variedade de fontes nas respostas
@@ -269,13 +269,13 @@ def _boost_by_metadata(self, scored_docs):
 
 ---
 
-## ❌ O QUE NÃO FUNCIONOU
+## [ERRO] O QUE NÃO FUNCIONOU
 
 ### 1. Assertions Muito Estritas - Falhas em Precisão Float
 
 **Problema:**
 - Teste `test_calculate_similarity_normalized` falhava com assertion estrita
-- Erro: `assert similarity == 0.96` → Falha com 0.9599999...
+- Erro: `assert similarity == 0.96` -> Falha com 0.9599999...
 
 **Causa:**
 - Precisão de ponto flutuante (floating point precision)
@@ -293,13 +293,13 @@ assert np.allclose(similarity, 0.96, atol=1e-6)
 ```
 
 **Impacto:**
-- ✅ **Testes mais robustos** (tolerância float adequada)
-- ✅ **Zero false failures** (testes estáveis)
+- [OK] **Testes mais robustos** (tolerância float adequada)
+- [OK] **Zero false failures** (testes estáveis)
 
 **Evitar em:**
-- ✅ Sempre usar `np.allclose()` ou `pytest.approx()` para comparações float
-- ✅ Nunca usar `==` para números float
-- ✅ Tolerância típica: `atol=1e-6` (6 casas decimais)
+- [OK] Sempre usar `np.allclose()` ou `pytest.approx()` para comparações float
+- [OK] Nunca usar `==` para números float
+- [OK] Tolerância típica: `atol=1e-6` (6 casas decimais)
 
 ---
 
@@ -318,9 +318,9 @@ assert np.allclose(similarity, 0.96, atol=1e-6)
   - `test_detect_language_mixed` - Texto misto PT+EN
 
 **Resultado:**
-- ✅ **Coverage 68% → 100%** (+32pp)
-- ✅ **Heurística validada** em 5 cenários diferentes
-- ✅ **Edge cases cobertos**
+- [OK] **Coverage 68% -> 100%** (+32pp)
+- [OK] **Heurística validada** em 5 cenários diferentes
+- [OK] **Edge cases cobertos**
 
 **Evitar em:**
 - Sempre testar TODAS branches (if/else, try/except)
@@ -328,14 +328,14 @@ assert np.allclose(similarity, 0.96, atol=1e-6)
 
 ---
 
-## 🎓 APRENDIZADOS-CHAVE
+## [EMOJI] APRENDIZADOS-CHAVE
 
 ### 1. Test-Driven Development = 100% Coverage + Zero Bugs
 
 **Descoberta:** Escrever testes **DURANTE** implementação (não depois) resulta em:
-- ✅ Coverage naturalmente alto (100% vs 60-80% typical)
-- ✅ Bugs descobertos cedo (durante dev, não em produção)
-- ✅ Design melhor (código testável é código modular)
+- [OK] Coverage naturalmente alto (100% vs 60-80% typical)
+- [OK] Bugs descobertos cedo (durante dev, não em produção)
+- [OK] Design melhor (código testável é código modular)
 
 **Custo:**
 - +20% tempo de desenvolvimento (2.4 dias vs 2 dias)
@@ -376,7 +376,7 @@ from pytest import approx
 assert actual == approx(expected, abs=1e-6)
 
 # NUNCA
-assert actual == expected  # ❌ Vai falhar com 0.9599999...
+assert actual == expected  # [ERRO] Vai falhar com 0.9599999...
 ```
 
 ---
@@ -415,20 +415,20 @@ assert actual == expected  # ❌ Vai falhar com 0.9599999...
 
 ---
 
-## 📊 MÉTRICAS FINAIS
+## [EMOJI] MÉTRICAS FINAIS
 
 ### Targets vs Real
 
 | Métrica | Target | Real | Status | Observações |
 |---------|--------|------|--------|-------------|
-| **Testes Unitários** | 15+ | 38 | ✅ SUPEROU | +153% acima target |
-| **Coverage** | >80% | 100% | ✅ PERFEITO | +20pp acima |
-| **Diversity Score** | >0.7 | Validado | ✅ PASS | MMR functional |
-| **Metadata Boost** | Funcional | 20%+15% | ✅ PASS | Boosts aplicados |
-| **Adaptive Top-N** | Funcional | 5/10/15 | ✅ PASS | Heurística validada |
-| **Tempo Desenvolvimento** | 2-3d | 2d | ✅ EXCELENTE | -15% abaixo estimativa |
-| **Linhas de Código** | ~300 | 750+ | ✅ COMPLETO | Implementação + testes + docs |
-| **Linter** | 0 erros | 0 erros | ✅ PASS | Código limpo |
+| **Testes Unitários** | 15+ | 38 | [OK] SUPEROU | +153% acima target |
+| **Coverage** | >80% | 100% | [OK] PERFEITO | +20pp acima |
+| **Diversity Score** | >0.7 | Validado | [OK] PASS | MMR functional |
+| **Metadata Boost** | Funcional | 20%+15% | [OK] PASS | Boosts aplicados |
+| **Adaptive Top-N** | Funcional | 5/10/15 | [OK] PASS | Heurística validada |
+| **Tempo Desenvolvimento** | 2-3d | 2d | [OK] EXCELENTE | -15% abaixo estimativa |
+| **Linhas de Código** | ~300 | 750+ | [OK] COMPLETO | Implementação + testes + docs |
+| **Linter** | 0 erros | 0 erros | [OK] PASS | Código limpo |
 
 ---
 
@@ -436,23 +436,23 @@ assert actual == expected  # ❌ Vai falhar com 0.9599999...
 
 | Aspecto | Estimado | Observado | Desvio |
 |---------|----------|-----------|--------|
-| **Diversity Score** | >0.7 | Validado (testes) | ✅ Target atingido |
-| **Metadata Boost** | Funcional | 20%+15% aplicados | ✅ Implementado |
-| **Tempo Dev** | 2-3d | 2d | -15% 🎉 |
-| **Coverage** | >80% | 100% | +25% 🎉 |
-| **Testes** | 15+ | 38 | +153% 🎉 |
-| **Documentação** | Completa | 500+ linhas | ✅ Superou |
+| **Diversity Score** | >0.7 | Validado (testes) | [OK] Target atingido |
+| **Metadata Boost** | Funcional | 20%+15% aplicados | [OK] Implementado |
+| **Tempo Dev** | 2-3d | 2d | -15% [EMOJI] |
+| **Coverage** | >80% | 100% | +25% [EMOJI] |
+| **Testes** | 15+ | 38 | +153% [EMOJI] |
+| **Documentação** | Completa | 500+ linhas | [OK] Superou |
 
 **Conclusão:**
-- ✅ **Todos targets atingidos ou superados**
-- ✅ **Tempo abaixo da estimativa** (-15%)
-- ✅ **Qualidade excepcional** (100% coverage, 38 testes, docs completa)
+- [OK] **Todos targets atingidos ou superados**
+- [OK] **Tempo abaixo da estimativa** (-15%)
+- [OK] **Qualidade excepcional** (100% coverage, 38 testes, docs completa)
 
 ---
 
-## 🔄 AÇÕES PARA PRÓXIMAS TÉCNICAS
+## [EMOJI] AÇÕES PARA PRÓXIMAS TÉCNICAS
 
-### ✅ Continuar Fazendo:
+### [OK] Continuar Fazendo:
 
 1. **Test-Driven Development** - Testes durante implementação, não depois
 2. **Normalizar embeddings** SEMPRE antes de operações matemáticas
@@ -462,13 +462,13 @@ assert actual == expected  # ❌ Vai falhar com 0.9599999...
 6. **Documentação paralela** - escrever durante implementação
 7. **Lambda configurável** - permitir tuning sem modificar código
 
-### ⚠️ Melhorar:
+### [WARN] Melhorar:
 
 1. **Benchmarks de diversidade** - medir empiricamente diversity score em produção
 2. **A/B testing** metadata boost (validar se 20%+15% é ideal)
 3. **Adaptive Top-N** - refinar heurística baseado em dados reais
 
-### ❌ Evitar:
+### [ERRO] Evitar:
 
 1. **Assertions estritas** em floats (`==` vs `allclose`)
 2. **Testes sem mocking** de APIs (lento e caro)
@@ -477,7 +477,7 @@ assert actual == expected  # ❌ Vai falhar com 0.9599999...
 
 ---
 
-## 🔬 DESCOBERTAS TÉCNICAS
+## [EMOJI] DESCOBERTAS TÉCNICAS
 
 ### Descoberta 1: MMR Threshold 0.8 é Ideal
 
@@ -523,7 +523,7 @@ assert actual == expected  # ❌ Vai falhar com 0.9599999...
 ```python
 def calculate_adaptive_topn(self, query: str) -> int:
     words = len(query.split())
-    
+
     if words < 30:
         return 5  # Query simples: menos docs
     elif words < 60:
@@ -533,13 +533,13 @@ def calculate_adaptive_topn(self, query: str) -> int:
 ```
 
 **Validação:**
-- ✅ **4 testes adaptive top-N** (simple, moderate, complex, edge case)
-- ✅ **Heurística funcional** sem LLM
-- ✅ **Configurável** via feature flag
+- [OK] **4 testes adaptive top-N** (simple, moderate, complex, edge case)
+- [OK] **Heurística funcional** sem LLM
+- [OK] **Configurável** via feature flag
 
 ---
 
-## 📈 COMPARAÇÃO: ANTES VS DEPOIS
+## [EMOJI] COMPARAÇÃO: ANTES VS DEPOIS
 
 ### Antes da Implementação (Baseline)
 
@@ -572,13 +572,13 @@ reranked_docs = reranker.rerank_with_diversity(
 ```
 
 **Melhoria Esperada:**
-- Diversity score: 0.5 → 0.7+ (+40%)
-- Fontes diferentes top-5: 1-2 → 2-3 (+50%)
-- User satisfaction: Baseline → +10% (menos redundância)
+- Diversity score: 0.5 -> 0.7+ (+40%)
+- Fontes diferentes top-5: 1-2 -> 2-3 (+50%)
+- User satisfaction: Baseline -> +10% (menos redundância)
 
 ---
 
-## 🔗 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Código
 
@@ -600,26 +600,25 @@ reranked_docs = reranker.rerank_with_diversity(
 
 ---
 
-## 📝 PRÓXIMOS PASSOS
+## [EMOJI] PRÓXIMOS PASSOS
 
 ### Para Esta Técnica:
 
 1. ⏳ **Aguardar Benchmark Fase 2A** validar diversity score real
-2. 📊 **Medir empiricamente** metadata boost impact
-3. 🔧 **Tuning:** Ajustar λ, thresholds, boosts baseado em dados reais
-4. 📈 **A/B testing:** 50% com diversity, 50% sem (validar benefício)
+2. [EMOJI] **Medir empiricamente** metadata boost impact
+3. [EMOJI] **Tuning:** Ajustar λ, thresholds, boosts baseado em dados reais
+4. [EMOJI] **A/B testing:** 50% com diversity, 50% sem (validar benefício)
 
 ### Para Outras Técnicas:
 
-1. ✅ **Aplicar TDD** (Test-Driven Development) em Self-RAG e CRAG
-2. ✅ **Normalizar embeddings** em HyDE e Graph RAG
-3. ✅ **Mocking robusto** em todas integrações com APIs
-4. ✅ **Float comparisons** com `allclose()` sempre
-5. ✅ **Reutilizar MMR** em outras técnicas que precisam diversidade
+1. [OK] **Aplicar TDD** (Test-Driven Development) em Self-RAG e CRAG
+2. [OK] **Normalizar embeddings** em HyDE e Graph RAG
+3. [OK] **Mocking robusto** em todas integrações com APIs
+4. [OK] **Float comparisons** com `allclose()` sempre
+5. [OK] **Reutilizar MMR** em outras técnicas que precisam diversidade
 
 ---
 
-**Criado:** 2025-10-14  
-**Autor:** Claude Sonnet 4.5 (via Cursor)  
+**Criado:** 2025-10-14
+**Autor:** Claude Sonnet 4.5 (via Cursor)
 **Próximo:** Lição Router Inteligente
-

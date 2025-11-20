@@ -1,8 +1,8 @@
-# 📚 Lições Aprendidas - Agente BSC RAG 2025
+# [EMOJI] Lições Aprendidas - Agente BSC RAG 2025
 
-## 📅 Sessão: 10/10/2025 - Implementação LangGraph Workflow
+## [EMOJI] Sessão: 10/10/2025 - Implementação LangGraph Workflow
 
-### ✅ **Sucessos Técnicos**
+### [OK] **Sucessos Técnicos**
 
 1. **LangGraph Workflow Completo**
    - Implementação de grafo de estados com 5 nós + 1 edge condicional
@@ -18,32 +18,32 @@
    - Documentação completa (506 linhas)
 
 3. **Testes 100% Passando**
-   - Inicialização: ✓
-   - Singleton: ✓
-   - Visualização: ✓
+   - Inicialização: [OK]
+   - Singleton: [OK]
+   - Visualização: [OK]
    - Zero erros após correções
 
 ---
 
-### ❌ **Falha Crítica de Processo**
+### [ERRO] **Falha Crítica de Processo**
 
 #### **Problema: Emojis em Código Python**
 
 **O que aconteceu:**
 
-- Criei 5 arquivos Python novos com 31+ emojis Unicode (✅, ❌, 🚀, 🎯, 📊, etc.)
+- Criei 5 arquivos Python novos com 31+ emojis Unicode ([OK], [ERRO], [EMOJI], [EMOJI], [EMOJI], etc.)
 - Todos falharam em runtime com `UnicodeEncodeError` no Windows (cp1252)
 - Tempo perdido: 30-40 minutos corrigindo manualmente
 
 **Arquivos afetados:**
 
 1. `src/graph/workflow.py` - 10+ emojis em logs
-2. `test_workflow_quick.py` - Emoji ⏭️ no sumário
-3. `src/agents/orchestrator.py` - Emoji 🚀
-4. `src/agents/financial_agent.py` - 5 emojis (📊💰🎯📈💡)
-5. `src/agents/customer_agent.py` - 6 emojis (👥🎯📊🌟💼🆕)
-6. `src/agents/learning_agent.py` - 6 emojis (🎓🤝💻💡📚🌟)
-7. `src/tools/rag_tools.py` - 6 emojis (🔍✅🎯)
+2. `test_workflow_quick.py` - Emoji ⏭ no sumário
+3. `src/agents/orchestrator.py` - Emoji [EMOJI]
+4. `src/agents/financial_agent.py` - 5 emojis ([EMOJI][EMOJI][EMOJI][EMOJI][EMOJI])
+5. `src/agents/customer_agent.py` - 6 emojis ([EMOJI][EMOJI][EMOJI][EMOJI][EMOJI]🆕)
+6. `src/agents/learning_agent.py` - 6 emojis ([EMOJI][EMOJI][EMOJI][EMOJI][EMOJI][EMOJI])
+7. `src/tools/rag_tools.py` - 6 emojis ([EMOJI][OK][EMOJI])
 
 **Por que aconteceu:**
 
@@ -53,7 +53,7 @@
 
 ---
 
-### 🔍 **Root Cause Analysis**
+### [EMOJI] **Root Cause Analysis**
 
 #### **Gap Identificado: Memórias Passivas vs Ativas**
 
@@ -67,18 +67,18 @@
 
 ---
 
-### 🛡️ **Solução Implementada**
+### [EMOJI] **Solução Implementada**
 
 #### **1. Checklist Obrigatório (Nova Memória)**
 
 Criado checklist de 5 pontos que DEVE ser consultado ANTES de criar qualquer arquivo `.py`, `.ps1`, `.js`, `.ts`:
 
 ```
-✓ [1] ZERO EMOJIS - [OK], [ERRO], [WARN], [INFO], etc.
-✓ [2] ZERO UNICODE ESPECIAL - Evitar setas, símbolos, aspas curvas
-✓ [3] ENCODING UTF-8 COM BOM - Se necessário
-✓ [4] TESTE MENTAL - "Rodaria em cmd.exe Windows?"
-✓ [5] SEGURANÇA - Emojis são vetores de ataque em AI (2025)
+[OK] [1] ZERO EMOJIS - [OK], [ERRO], [WARN], [INFO], etc.
+[OK] [2] ZERO UNICODE ESPECIAL - Evitar setas, símbolos, aspas curvas
+[OK] [3] ENCODING UTF-8 COM BOM - Se necessário
+[OK] [4] TESTE MENTAL - "Rodaria em cmd.exe Windows?"
+[OK] [5] SEGURANÇA - Emojis são vetores de ataque em AI (2025)
 ```
 
 #### **2. Memória de Lições Aprendidas**
@@ -102,7 +102,7 @@ Reforçada com:
 
 ---
 
-### 🔬 **Insights de Pesquisa (2025)**
+### [EMOJI] **Insights de Pesquisa (2025)**
 
 #### **Emojis em AI: Não Apenas Encoding, Mas Segurança**
 
@@ -121,7 +121,7 @@ Pesquisa recente (2025) revelou:
 
 ---
 
-### 📊 **Métricas do Incidente**
+### [EMOJI] **Métricas do Incidente**
 
 | Métrica | Valor |
 |---------|-------|
@@ -134,25 +134,25 @@ Pesquisa recente (2025) revelou:
 
 ---
 
-### 🎯 **Ações Preventivas Futuras**
+### [EMOJI] **Ações Preventivas Futuras**
 
 #### **Para o AI Assistant (Eu)**
 
-1. ✅ **Consultar Checklist ANTES** de criar arquivo Python/PowerShell
-2. ✅ **Revisar Código Gerado** procurando emojis ANTES de apresentar
-3. ✅ **Tratar como Bug P0** se encontrar emoji em código
-4. ✅ **Referenciar Memória** [[9776249]] proativamente
+1. [OK] **Consultar Checklist ANTES** de criar arquivo Python/PowerShell
+2. [OK] **Revisar Código Gerado** procurando emojis ANTES de apresentar
+3. [OK] **Tratar como Bug P0** se encontrar emoji em código
+4. [OK] **Referenciar Memória** [[9776249]] proativamente
 
 #### **Para o Desenvolvedor (Você)**
 
-1. ✅ **Pre-commit Hook**: Adicionar hook que bloqueia commits com emojis em `.py`/`.ps1`
-2. ✅ **Linter Config**: Configurar linter para detectar Unicode não-ASCII em código
-3. ✅ **CI/CD Check**: Adicionar step que falha se encontrar emojis em código
-4. ✅ **Code Review**: Adicionar item no template: "Código livre de emojis?"
+1. [OK] **Pre-commit Hook**: Adicionar hook que bloqueia commits com emojis em `.py`/`.ps1`
+2. [OK] **Linter Config**: Configurar linter para detectar Unicode não-ASCII em código
+3. [OK] **CI/CD Check**: Adicionar step que falha se encontrar emojis em código
+4. [OK] **Code Review**: Adicionar item no template: "Código livre de emojis?"
 
 ---
 
-### 💡 **Meta-Lições (Processo de AI Learning)**
+### [EMOJI] **Meta-Lições (Processo de AI Learning)**
 
 #### **O que Aprendi sobre Como Aprender**
 
@@ -174,13 +174,13 @@ Este padrão de "erro apesar de memória existente" pode se repetir em:
 
 ---
 
-### 🏆 **Resultado Final**
+### [EMOJI] **Resultado Final**
 
-✅ **Workflow LangGraph 100% funcional**  
-✅ **Zero erros de encoding**  
-✅ **Memórias reforçadas e estruturadas**  
-✅ **Processo de prevenção estabelecido**  
-✅ **Documentação completa desta lição**
+[OK] **Workflow LangGraph 100% funcional**
+[OK] **Zero erros de encoding**
+[OK] **Memórias reforçadas e estruturadas**
+[OK] **Processo de prevenção estabelecido**
+[OK] **Documentação completa desta lição**
 
 **ROI da Reflexão**:
 
@@ -190,7 +190,7 @@ Este padrão de "erro apesar de memória existente" pode se repetir em:
 
 ---
 
-## 📝 **Template para Próximas Lições**
+## [EMOJI] **Template para Próximas Lições**
 
 Quando algo semelhante acontecer:
 
@@ -203,9 +203,9 @@ Quando algo semelhante acontecer:
 
 ---
 
-## 📅 Sessão: 15/10/2025 - Fase 2A Completa + TIER 3 Organização
+## [EMOJI] Sessão: 15/10/2025 - Fase 2A Completa + TIER 3 Organização
 
-### ✅ **Sucessos Técnicos**
+### [OK] **Sucessos Técnicos**
 
 1. **Auto-Geração de Metadados com GPT-4o-mini**
    - Implementação de extração automatizada de metadados (título, autores, ano, tópicos, perspectivas)
@@ -235,12 +235,12 @@ Quando algo semelhante acontecer:
 
 5. **Testes E2E 100%**
    - 22/22 testes passing após correção de precisão
-   - Correção crítica: `time.time()` → `time.perf_counter()` para medir cache speedup
+   - Correção crítica: `time.time()` -> `time.perf_counter()` para medir cache speedup
    - Sistema 100% validado para produção
 
 ---
 
-### 🎓 **Lições Aprendidas - Novas**
+### [EMOJI] **Lições Aprendidas - Novas**
 
 #### **1. Precisão Temporal em Testes de Performance**
 
@@ -266,8 +266,8 @@ speedup = time_without_cache / max(time_with_cache, 1e-9)
 ```
 
 **Regra Geral:**
-- `time.time()` → Timestamps absolutos (logs, timestamps de arquivos)
-- `time.perf_counter()` → Benchmarks de performance (qualquer medição < 100ms)
+- `time.time()` -> Timestamps absolutos (logs, timestamps de arquivos)
+- `time.perf_counter()` -> Benchmarks de performance (qualquer medição < 100ms)
 
 **ROI:** Evita falsos negativos em testes de cache/otimização.
 
@@ -276,8 +276,8 @@ speedup = time_without_cache / max(time_with_cache, 1e-9)
 #### **2. RAGAS Métricas sem Ground Truth**
 
 **Descoberta:** Métricas RAGAS têm diferentes requisitos:
-- `answer_relevancy`, `faithfulness` → Funcionam SEM ground truth
-- `context_precision`, `context_recall` → Exigem ground truth (referências manuais)
+- `answer_relevancy`, `faithfulness` -> Funcionam SEM ground truth
+- `context_precision`, `context_recall` -> Exigem ground truth (referências manuais)
 
 **Problema Real:**
 ```python
@@ -362,7 +362,7 @@ def retrieve_by_perspective(self, query: str, perspective: str, k: int = 10):
             {"key": "perspectives", "match": {"value": perspective}}
         ]
     }
-    
+
     # 2. Query enrichment
     keywords = {
         "financial": "ROI revenue profitability cash flow",
@@ -371,11 +371,11 @@ def retrieve_by_perspective(self, query: str, perspective: str, k: int = 10):
         "learning": "skills training knowledge culture"
     }
     enriched_query = f"{query} {keywords.get(perspective, '')}"
-    
+
     # 3. Retrieval híbrido (semântico + BM25 + filtros)
     return self.vector_store.similarity_search(
-        enriched_query, 
-        k=k, 
+        enriched_query,
+        k=k,
         filter=metadata_filter
     )
 ```
@@ -402,7 +402,7 @@ Fase 3 (30+ docs): Índice navegável (DOCS_INDEX.md) + Tags + Quick Search Matr
 **Estrutura Eficiente do DOCS_INDEX.md:**
 1. **Tags A-Z** - Busca rápida por tópico
 2. **Categorias Temáticas** - Techniques, Patterns, History, Guides
-3. **Quick Search Matrix** - "Preciso de X → Consultar Y"
+3. **Quick Search Matrix** - "Preciso de X -> Consultar Y"
 4. **Cross-references** - Links bidirecionais entre documentos relacionados
 
 **Exemplo de Quick Search Matrix:**
@@ -411,14 +411,14 @@ Fase 3 (30+ docs): Índice navegável (DOCS_INDEX.md) + Tags + Quick Search Matr
 |--------------|-------------|
 | Implementar Query Decomposition | `docs/techniques/QUERY_DECOMPOSITION.md` |
 | Entender por que Query Decomposition funciona | `docs/lessons/lesson-query-decomposition-2025-10-14.md` |
-| Ver código pronto de Query Decomposition | `.cursor/rules/rag-recipes.mdc` → RECIPE-004 |
+| Ver código pronto de Query Decomposition | `.cursor/rules/rag-recipes.mdc` -> RECIPE-004 |
 ```
 
 **ROI:** 15-20 min economizados por consulta de documentação (50 consultas/ano = 12.5h economizadas).
 
 ---
 
-### 📊 **Métricas da Sessão**
+### [EMOJI] **Métricas da Sessão**
 
 - **Tempo Total:** ~6 horas
 - **Arquivos Criados:** 12
@@ -431,11 +431,11 @@ Fase 3 (30+ docs): Índice navegável (DOCS_INDEX.md) + Tags + Quick Search Matr
 
 ---
 
-### 🎯 **Próximos Passos Recomendados**
+### [EMOJI] **Próximos Passos Recomendados**
 
 **Decisão Crítica: Fase 2B (Self-RAG + CRAG) ou Produção?**
 
-**Recomendação:** Ir direto para **PRODUÇÃO** ✅
+**Recomendação:** Ir direto para **PRODUÇÃO** [OK]
 
 **Justificativa:**
 - Fase 2A atingiu targets (+3.1% latência, +2.1% relevância)
@@ -452,13 +452,13 @@ Fase 3 (30+ docs): Índice navegável (DOCS_INDEX.md) + Tags + Quick Search Matr
 
 ---
 
-### 📖 **Documentação Completa desta Sessão**
+### [EMOJI] **Documentação Completa desta Sessão**
 
 Para histórico detalhado completo (60+ páginas), consultar:
 - [`docs/history/FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md`](docs/history/FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md)
 
 ---
 
-**Última Atualização**: 15/10/2025  
-**Status**: ✅ FASE 2A COMPLETA + TIER 3 COMPLETO + PRONTO PARA PRODUÇÃO  
+**Última Atualização**: 15/10/2025
+**Status**: [OK] FASE 2A COMPLETA + TIER 3 COMPLETO + PRONTO PARA PRODUÇÃO
 **Próxima Revisão**: Após decisão Fase 2B vs Produção

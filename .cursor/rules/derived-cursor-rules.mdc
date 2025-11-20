@@ -292,7 +292,7 @@ else:
 - **Taxa de Sucesso**: 100% problemas identificados e resolvidos
 - **Qualidade**: Soluções baseadas em evidências da comunidade
 
-**FONTES**: 
+**FONTES**:
 - `docs/lessons/lesson-e2e-testing-debugging-methodology-2025-10-27.md`
 - Mem0 Issue #3284 (GitHub)
 - Bunnyshell E2E Testing Best Practices 2025
@@ -352,7 +352,7 @@ class Recommendation(BaseModel):
     priority: Literal["HIGH", "MEDIUM", "LOW"]
     timeframe: str
     next_steps: list[str]
-    
+
     class Config:
         json_schema_extra = {
             "example": {  # ✅ Objeto completo válido
@@ -400,7 +400,7 @@ ANTES de criar QUALQUER prompt com structured output:
 class MyOutput(BaseModel):
     field1: str = Field(description="...", examples=["exemplo1", "exemplo2"])
     field2: Literal["A", "B", "C"] = Field(description="...", examples=["A"])
-    
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -450,7 +450,7 @@ except Exception as e:
 **9. Verificar property/método existe**:
 *   **SEMPRE** usar `grep "@property\|def method_name" src/file.py` before de usar em código
 *   **Exemplo validado (2025-10-16)**: Assumiu `client_profile_agent` property existia → `AttributeError`
-*   **Prevenção**: 
+*   **Prevenção**:
     ```bash
     grep "@property" src/graph/workflow.py | grep "client_profile_agent"
     # Se não retornar nada, property não existe - criar ou usar alternativa
@@ -465,7 +465,7 @@ except Exception as e:
     class BSCWorkflow:
         def __init__(self):
             self._onboarding_sessions: dict[str, dict[str, Any]] = {}
-        
+
         def handler(self, state):
             user_id = state.user_id
             # Load session
@@ -502,15 +502,15 @@ except Exception as e:
     ```python
     def test_existing_functionality_not_broken():
         """CRÍTICO: Validar que funcionalidade X não quebrou com nova feature Y.
-        
+
         Este teste previne REGRESSÃO!
         """
         # Setup: Cliente/estado existente (não novo)
         mock_existing_state()
-        
+
         # Action: Executar workflow tradicional
         result = workflow.run_traditional_flow(...)
-        
+
         # Assert: Comportamento mantido
         assert traditional_method.called
         assert not new_feature_method.called  # Nova feature NÃO interferiu
@@ -518,7 +518,7 @@ except Exception as e:
 *   **ROI**: Crítico (previne breaking changes, economiza horas de rollback)
 
 **13. Implementation-First Testing para APIs desconhecidas (validado FASE 3.1 - 2025-10-19)**
-*   Quando implementar tool/agent NOVO com API desconhecida, SEMPRE ler implementação ANTES de escrever testes. 
+*   Quando implementar tool/agent NOVO com API desconhecida, SEMPRE ler implementação ANTES de escrever testes.
 *   Pattern: (1) `grep "def " src/module/file.py` (descobre métodos disponíveis), (2) `grep "def method_name" src/module/file.py -A 15` (lê signature completa), (3) `grep "class SchemaName" src/memory/schemas.py -A 30` (verifica schemas Pydantic usados), (4) Escrever testes alinhados com API real.
 *   RAZÃO: TDD funciona quando você CONHECE a API. Para APIs desconhecidas, assumir estrutura causa reescrita completa de testes.
 *   **ROI**: 30-40 min economizados por implementação.
@@ -539,16 +539,16 @@ except Exception as e:
     def mock_with_cycle():
         """Mock com itertools.cycle - múltiplos valores sequenciais."""
         mock_obj = MagicMock()
-        
+
         # Step 1: Definir valores esperados em ordem
         values_order = [value1, value2, value3, value4]
         values_cycle = cycle(values_order)
-        
+
         # Step 2: side_effect usa next(cycle)
         def side_effect_fn(*args, **kwargs):
             """Retorna próximo valor na sequência."""
             return next(values_cycle)
-        
+
         mock_obj.method.side_effect = side_effect_fn
         return mock_obj
     ```
@@ -561,10 +561,10 @@ except Exception as e:
     def mock_llm() -> MagicMock:
         """Mock LLM que retorna KPIs com perspectiva correta sequencialmente."""
         llm = MagicMock(spec=["invoke", "with_structured_output"])
-        
+
         class KPIListOutput(BaseModel):
             kpis: list[KPIDefinition]
-    
+
         # Define KPIs mock para cada perspectiva
         kpis_by_perspective = {
             "Financeira": [KPIDefinition(name="ARR", perspective="Financeira", ...)],
@@ -572,7 +572,7 @@ except Exception as e:
             "Processos Internos": [KPIDefinition(name="Lead Time", perspective="Processos Internos", ...)],
             "Aprendizado e Crescimento": [KPIDefinition(name="Retencao", perspective="Aprendizado e Crescimento", ...)]
         }
-        
+
         # SOLUCAO: itertools.cycle alinhado com ordem de chamadas da tool
         # Tool chama: Financeira → Clientes → Processos → Aprendizado (linhas 152-156)
         perspective_order = [
@@ -583,13 +583,13 @@ except Exception as e:
             "Aprendizado e Crescimento"
         ]
         perspective_cycle = cycle(perspective_order)
-        
+
         def mock_invoke_side_effect(prompt: str):
             """Retorna KPIs da próxima perspectiva na sequência."""
             perspective = next(perspective_cycle)
             kpis = kpis_by_perspective[perspective]
             return KPIListOutput(kpis=kpis)
-        
+
         mock_structured_llm = MagicMock()
         mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
         llm.with_structured_output.return_value = mock_structured_llm

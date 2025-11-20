@@ -14,7 +14,7 @@
 <!-- Perspectivas BSC -->
 <section>
     <h2>Análise por Perspectiva</h2>
-    
+
     <!-- Perspectiva Financeira -->
     <div class="perspective">
         <div class="perspective-header">
@@ -23,10 +23,10 @@
                 Prioridade: {{ diagnostic.financial.priority }}
             </span>
         </div>
-        
+
         <h4>Estado Atual</h4>
         <p>{{ diagnostic.financial.current_state }}</p>
-        
+
         {% if diagnostic.financial.gaps %}
         <h4>Gaps Identificados</h4>
         <ul>
@@ -35,7 +35,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        
+
         {% if diagnostic.financial.opportunities %}
         <h4>Oportunidades</h4>
         <ul>
@@ -45,7 +45,7 @@
         </ul>
         {% endif %}
     </div>
-    
+
     <!-- Perspectiva Clientes -->
     <div class="perspective">
         <div class="perspective-header">
@@ -54,10 +54,10 @@
                 Prioridade: {{ diagnostic.customer.priority }}
             </span>
         </div>
-        
+
         <h4>Estado Atual</h4>
         <p>{{ diagnostic.customer.current_state }}</p>
-        
+
         {% if diagnostic.customer.gaps %}
         <h4>Gaps Identificados</h4>
         <ul>
@@ -66,7 +66,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        
+
         {% if diagnostic.customer.opportunities %}
         <h4>Oportunidades</h4>
         <ul>
@@ -76,7 +76,7 @@
         </ul>
         {% endif %}
     </div>
-    
+
     <!-- Perspectiva Processos Internos -->
     <div class="perspective">
         <div class="perspective-header">
@@ -85,10 +85,10 @@
                 Prioridade: {{ diagnostic.process.priority }}
             </span>
         </div>
-        
+
         <h4>Estado Atual</h4>
         <p>{{ diagnostic.process.current_state }}</p>
-        
+
         {% if diagnostic.process.gaps %}
         <h4>Gaps Identificados</h4>
         <ul>
@@ -97,7 +97,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        
+
         {% if diagnostic.process.opportunities %}
         <h4>Oportunidades</h4>
         <ul>
@@ -107,7 +107,7 @@
         </ul>
         {% endif %}
     </div>
-    
+
     <!-- Perspectiva Aprendizado e Crescimento -->
     <div class="perspective">
         <div class="perspective-header">
@@ -116,10 +116,10 @@
                 Prioridade: {{ diagnostic.learning.priority }}
             </span>
         </div>
-        
+
         <h4>Estado Atual</h4>
         <p>{{ diagnostic.learning.current_state }}</p>
-        
+
         {% if diagnostic.learning.gaps %}
         <h4>Gaps Identificados</h4>
         <ul>
@@ -128,7 +128,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        
+
         {% if diagnostic.learning.opportunities %}
         <h4>Oportunidades</h4>
         <ul>
@@ -147,11 +147,11 @@
 <section>
     <h2>Recomendações Priorizadas</h2>
     <p><strong>Total:</strong> {{ diagnostic.recommendations | length }} recomendações identificadas</p>
-    
+
     {% for rec in diagnostic.recommendations %}
     <div class="recommendation">
         <h4>{{ loop.index }}. {{ rec.title }}</h4>
-        
+
         <div class="recommendation-meta">
             <span class="badge {{ rec.impact | lower | priority_badge }}">
                 Impacto: {{ rec.impact }}
@@ -166,12 +166,12 @@
             <span class="badge badge-high">Quick Win</span>
             {% endif %}
         </div>
-        
+
         <p><strong>Descrição:</strong></p>
         <p>{{ rec.description }}</p>
-        
+
         <p><strong>Timeframe:</strong> {{ rec.timeframe }}</p>
-        
+
         {% if rec.expected_outcomes %}
         <p><strong>Resultados Esperados:</strong></p>
         <ul>
@@ -201,7 +201,7 @@
 <section>
     <h2>Próximos Passos</h2>
     <p><strong>Fase Recomendada:</strong> {{ diagnostic.next_phase }}</p>
-    
+
     <ol>
         <li>Validar diagnóstico com liderança executiva</li>
         <li>Priorizar iniciativas por impacto vs esforço</li>
@@ -221,4 +221,3 @@
     </p>
 </section>
 {% endblock %}
-

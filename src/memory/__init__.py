@@ -13,14 +13,14 @@ Schemas disponíveis:
 
 Example:
     >>> from src.memory import ClientProfile, CompanyInfo
-    >>> 
+    >>>
     >>> company = CompanyInfo(
     ...     name="TechCorp Brasil",
     ...     sector="Tecnologia",
     ...     size="média"
     ... )
     >>> profile = ClientProfile(company=company)
-    >>> 
+    >>>
     >>> # Serializar para Mem0
     >>> mem0_data = profile.to_mem0()
 """
@@ -37,9 +37,8 @@ from .schemas import (
 __all__ = [
     "ClientProfile",
     "CompanyInfo",
-    "StrategicContext",
-    "EngagementState",
     "DiagnosticData",
+    "EngagementState",
     "SWOTAnalysis",
+    "StrategicContext",
 ]
-

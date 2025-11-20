@@ -1,13 +1,13 @@
 # Lição Aprendida: Benchmarking Tool Testing Methodology + Hypothesis Property-Based Testing
 
-**Sessão**: 21 (FASE 3.6 - Benchmarking Tool)  
-**Data**: 2025-10-19  
-**Autor**: BSC RAG System  
+**Sessão**: 21 (FASE 3.6 - Benchmarking Tool)
+**Data**: 2025-10-19
+**Autor**: BSC RAG System
 **Contexto**: Implementação Benchmarking Tool com 16 testes - 9 erros iniciais resolvidos com metodologia 5 Whys
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 1. [Resumo Executivo](#resumo-executivo)
 2. [Timeline dos Erros](#timeline-dos-erros)
@@ -46,9 +46,9 @@ Implementação da Benchmarking Tool iniciou com **16 testes escritos**. Primeir
 
 ### Impacto
 
-- ✅ **60-90 min economizados** pela metodologia 5 Whys vs debugging ad-hoc
-- ✅ **30-40 min economizados futuros** por SUB-PONTO 15.6 (identificar todos schemas)
-- ✅ **Descoberta Hypothesis** para validação automática de fixtures (solução mainstream 2024-2025)
+- [OK] **60-90 min economizados** pela metodologia 5 Whys vs debugging ad-hoc
+- [OK] **30-40 min economizados futuros** por SUB-PONTO 15.6 (identificar todos schemas)
+- [OK] **Descoberta Hypothesis** para validação automática de fixtures (solução mainstream 2024-2025)
 
 ---
 
@@ -56,7 +56,7 @@ Implementação da Benchmarking Tool iniciou com **16 testes escritos**. Primeir
 
 ### Execução Inicial (16 testes escritos)
 
-**Status**: 7/16 passando ❌ (9 erros + 1 failure)
+**Status**: 7/16 passando [ERRO] (9 erros + 1 failure)
 
 ```
 tests/test_benchmarking_tool.py::test_benchmark_comparison_valid_data PASSED
@@ -65,7 +65,7 @@ tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_validator_extreme
 tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_type_misalignment PASSED
 tests/test_benchmarking_tool.py::test_benchmark_comparison_source_too_generic PASSED
 tests/test_benchmarking_tool.py::test_benchmark_report_valid_8_comparisons PASSED
-tests/test_benchmarking_tool.py::test_benchmark_report_unbalanced_perspectives PASSED  
+tests/test_benchmarking_tool.py::test_benchmark_report_unbalanced_perspectives PASSED
 
 # 9 ERROS
 tests/test_benchmarking_tool.py::test_build_company_context ERROR  # KPIDefinition campos obrigatórios
@@ -94,72 +94,72 @@ tests/test_benchmarking_tool.py::test_benchmark_report_unbalanced_perspectives F
 
 ## Root Causes Identificadas (5 Whys)
 
-### 🔍 5 Whys - Erro Categoria 1: Gap Validator Muito Estrito
+### [EMOJI] 5 Whys - Erro Categoria 1: Gap Validator Muito Estrito
 
-**Sintoma**: `gap=5.0` com `gap_type="negative"` → ValidationError "gap deve ser >= 5 para gap_type='negative'"
+**Sintoma**: `gap=5.0` com `gap_type="negative"` -> ValidationError "gap deve ser >= 5 para gap_type='negative'"
 
 **5 Whys**:
-1. **Why 1**: Por que teste falhou? → Validator Pydantic rejeitou gap=5.0 com gap_type="negative"
-2. **Why 2**: Por que validator rejeitou? → Código usa `gap >= 5` para negative, mas fixture tem gap exatamente 5.0 (limite)
-3. **Why 3**: Por que fixture tem valor no limite? → Não lemos validator customizado `validate_gap_type_aligns_with_gap` via grep
-4. **Why 4**: Por que não lemos validator? → PONTO 15 diz "ler fields" mas não menciona "ler validators customizados"
+1. **Why 1**: Por que teste falhou? -> Validator Pydantic rejeitou gap=5.0 com gap_type="negative"
+2. **Why 2**: Por que validator rejeitou? -> Código usa `gap >= 5` para negative, mas fixture tem gap exatamente 5.0 (limite)
+3. **Why 3**: Por que fixture tem valor no limite? -> Não lemos validator customizado `validate_gap_type_aligns_with_gap` via grep
+4. **Why 4**: Por que não lemos validator? -> PONTO 15 diz "ler fields" mas não menciona "ler validators customizados"
 5. **ROOT CAUSE**: **Checklist PONTO 15 incompleto** - falta instruir "grep validators (@field_validator) além de fields"
 
 **Solução Aplicada**: Mudar `gap=5.0` para `gap=6.0` (margem de segurança vs threshold)
 
 ---
 
-### 🔍 5 Whys - Erro Categoria 2: KPIDefinition Schema Mudou
+### [EMOJI] 5 Whys - Erro Categoria 2: KPIDefinition Schema Mudou
 
 **Sintoma**: `ValidationError: 1 validation error for KPIDefinition - field required: metric_type`
 
 **5 Whys**:
-1. **Why 1**: Por que teste falhou? → Campo `metric_type` obrigatório ausente em fixture
-2. **Why 2**: Por que campo ausente? → Fixture `valid_kpi_framework` não incluiu `metric_type`, `data_source` (campos novos)
-3. **Why 3**: Por que fixture desatualizada? → Schema `KPIDefinition` foi expandido (Sessão 19) mas fixture não foi atualizada
-4. **Why 4**: Por que fixture não atualizada? → **PONTO 15 aplicado apenas em `KPIDefinition` LIDO** mas não em fixtures USADAS
+1. **Why 1**: Por que teste falhou? -> Campo `metric_type` obrigatório ausente em fixture
+2. **Why 2**: Por que campo ausente? -> Fixture `valid_kpi_framework` não incluiu `metric_type`, `data_source` (campos novos)
+3. **Why 3**: Por que fixture desatualizada? -> Schema `KPIDefinition` foi expandido (Sessão 19) mas fixture não foi atualizada
+4. **Why 4**: Por que fixture não atualizada? -> **PONTO 15 aplicado apenas em `KPIDefinition` LIDO** mas não em fixtures USADAS
 5. **ROOT CAUSE**: **Aplicação parcial PONTO 15** - grep schema OK, mas fixtures antigas não validadas vs schema novo
 
 **Solução Aplicada**: Atualizar fixtures com `metric_type="kpi"`, `data_source="Sistema ERP"`, `description` com 50+ chars
 
 ---
 
-### 🔍 5 Whys - Erro Categoria 3: benchmark_source Validator
+### [EMOJI] 5 Whys - Erro Categoria 3: benchmark_source Validator
 
 **Sintoma**: `ValidationError: benchmark_source 'NPS B2B SaaS Brasil 2024 (mid-market)' parece muito genérico`
 
 **5 Whys**:
-1. **Why 1**: Por que validator rejeitou? → Detectou termo "mid-market" como genérico
-2. **Why 2**: Por que "mid-market" é genérico? → Validator customizado `validate_benchmark_source_specific` tem lista termos genéricos
-3. **Why 3**: Por que fixture tinha "mid-market"? → Script correção automático substituiu apenas `(mid-market)` com parênteses
-4. **Why 4**: Por que script não pegou variações? → Regex muito específica, não cobriu "B2B mid-market" sem parênteses
+1. **Why 1**: Por que validator rejeitou? -> Detectou termo "mid-market" como genérico
+2. **Why 2**: Por que "mid-market" é genérico? -> Validator customizado `validate_benchmark_source_specific` tem lista termos genéricos
+3. **Why 3**: Por que fixture tinha "mid-market"? -> Script correção automático substituiu apenas `(mid-market)` com parênteses
+4. **Why 4**: Por que script não pegou variações? -> Regex muito específica, não cobriu "B2B mid-market" sem parênteses
 5. **ROOT CAUSE**: **Substituição text não sistemática** - deveria ter usado `replace_all=True` para todas variações
 
-**Solução Aplicada**: Substituir "mid-market" → "empresas médio porte" com `replace_all=True`
+**Solução Aplicada**: Substituir "mid-market" -> "empresas médio porte" com `replace_all=True`
 
 ---
 
-### 🔴 ROOT CAUSE META (5 Whys dos 5 Whys)
+### [EMOJI] ROOT CAUSE META (5 Whys dos 5 Whys)
 
 **Pergunta**: Por que PONTO 15 não preveniu todos os 9 erros?
 
 **5 Whys Meta-Analysis**:
-1. **Why 1**: Por que PONTO 15 não preveniu? → Aplicado apenas em 1 de 4 schemas Pydantic usados no teste
-2. **Why 2**: Por que apenas 1 de 4? → Checklist diz "ler schema ANTES de criar fixture" mas não especifica "TODOS schemas usados no teste"
-3. **Why 3**: Por que não especifica todos? → Assumiu que agente identificaria todos schemas automaticamente
-4. **Why 4**: Por que agente não identificou? → Sem trigger explícito "grep imports do teste → identificar schemas Pydantic"
+1. **Why 1**: Por que PONTO 15 não preveniu? -> Aplicado apenas em 1 de 4 schemas Pydantic usados no teste
+2. **Why 2**: Por que apenas 1 de 4? -> Checklist diz "ler schema ANTES de criar fixture" mas não especifica "TODOS schemas usados no teste"
+3. **Why 3**: Por que não especifica todos? -> Assumiu que agente identificaria todos schemas automaticamente
+4. **Why 4**: Por que agente não identificou? -> Sem trigger explícito "grep imports do teste -> identificar schemas Pydantic"
 5. **ROOT CAUSE FINAL**: **Checklist PONTO 15 não inclui step sistemático**: "identificar TODOS schemas Pydantic usados no teste via grep imports"
 
 **Exemplo Concreto**:
 ```python
 # tests/test_benchmarking_tool.py imports (linha 1-20)
 from src.memory.schemas import (
-    BenchmarkComparison,    # ✅ Lido via PONTO 15
-    BenchmarkReport,        # ✅ Lido via PONTO 15
-    CompanyInfo,            # ❌ NÃO lido (fixture inválida passou)
-    DiagnosticResult,       # ❌ NÃO lido
-    KPIDefinition,          # ❌ NÃO lido (campos obrigatórios ausentes)
-    KPIFramework            # ❌ NÃO lido
+    BenchmarkComparison,    # [OK] Lido via PONTO 15
+    BenchmarkReport,        # [OK] Lido via PONTO 15
+    CompanyInfo,            # [ERRO] NÃO lido (fixture inválida passou)
+    DiagnosticResult,       # [ERRO] NÃO lido
+    KPIDefinition,          # [ERRO] NÃO lido (campos obrigatórios ausentes)
+    KPIFramework            # [ERRO] NÃO lido
 )
 
 # PONTO 15 aplicado: grep apenas "BenchmarkComparison" e "BenchmarkReport"
@@ -170,48 +170,48 @@ from src.memory.schemas import (
 
 ## Metodologia Que Funcionou
 
-### 🎯 Metodologia 5 Whys Root Cause Analysis
+### [EMOJI] Metodologia 5 Whys Root Cause Analysis
 
 **Estrutura aplicada** (baseada em `.cursor/rules/Metodologias_causa_raiz.md`):
 
 #### **Step 1: Coletar Fatos e Timeline**
-- ✅ Log completo `pytest --tb=long 2>&1` (SEM filtros)
-- ✅ Identificar categorias de erros (gap validator, KPIDefinition, benchmark_source)
-- ✅ Contar erros por categoria (1 + 5 + 3 = 9 erros)
+- [OK] Log completo `pytest --tb=long 2>&1` (SEM filtros)
+- [OK] Identificar categorias de erros (gap validator, KPIDefinition, benchmark_source)
+- [OK] Contar erros por categoria (1 + 5 + 3 = 9 erros)
 
 #### **Step 2: SFL (Spectrum-based Fault Localization)**
-- ✅ Executar `grep` para identificar linhas exatas:
+- [OK] Executar `grep` para identificar linhas exatas:
   - Linha 439: `mock_llm` fixture (insight < 50 chars)
   - Linha 659: `test_benchmark_report_unbalanced_perspectives` (gap validator)
   - Fixtures KPIDefinition: linhas 200-250 (campos obrigatórios ausentes)
 
 #### **Step 3: 5 Whys com Evidências**
-- ✅ Aplicar 5 Whys para CADA categoria de erro separadamente
-- ✅ Validar cada "Why" com evidência concreta (traceback, schema grep, código linha X)
-- ✅ Identificar root cause específico vs sintoma
+- [OK] Aplicar 5 Whys para CADA categoria de erro separadamente
+- [OK] Validar cada "Why" com evidência concreta (traceback, schema grep, código linha X)
+- [OK] Identificar root cause específico vs sintoma
 
 #### **Step 4: Correções Baseadas em Root Cause**
-- ✅ Gap validator: Mudar `gap=5.0` → `gap=6.0` (margem segurança)
-- ✅ KPIDefinition: Adicionar campos obrigatórios (`metric_type`, `data_source`)
-- ✅ benchmark_source: Substituir termos genéricos (`replace_all=True`)
+- [OK] Gap validator: Mudar `gap=5.0` -> `gap=6.0` (margem segurança)
+- [OK] KPIDefinition: Adicionar campos obrigatórios (`metric_type`, `data_source`)
+- [OK] benchmark_source: Substituir termos genéricos (`replace_all=True`)
 
 #### **Step 5: Postmortem Blameless**
-- ✅ Documentar timeline, root causes, lições aprendidas
-- ✅ Identificar processo quebrado (PONTO 15 incompleto)
-- ✅ Propor ações preventivas (SUB-PONTO 15.6 novo)
+- [OK] Documentar timeline, root causes, lições aprendidas
+- [OK] Identificar processo quebrado (PONTO 15 incompleto)
+- [OK] Propor ações preventivas (SUB-PONTO 15.6 novo)
 
 #### **Step 6: Validação**
-- ✅ Executar testes novamente → 16/16 passando ✅
-- ✅ Medir coverage → 76% tool + 95% prompts ✅
-- ✅ Zero linter errors ✅
+- [OK] Executar testes novamente -> 16/16 passando [OK]
+- [OK] Medir coverage -> 76% tool + 95% prompts [OK]
+- [OK] Zero linter errors [OK]
 
 ---
 
-### ⚡ ROI Metodologia 5 Whys
+### [FAST] ROI Metodologia 5 Whys
 
 | Métrica | Tentativa-Erro | 5 Whys Estruturado | Economia |
 |---------|----------------|---------------------|----------|
-| **Tempo debugging** | 90-120 min | ~60 min | **30-60 min** ✅ |
+| **Tempo debugging** | 90-120 min | ~60 min | **30-60 min** [OK] |
 | **Reexecuções pytest** | 15-20x | 5x | **10-15 reexecuções** |
 | **Root causes identificados** | 3/9 (sintomas) | 9/9 (completo) | **100% identificação** |
 | **Erros recorrentes** | 3-4 erros repetidos | 0 erros repetidos | **Zero recorrência** |
@@ -223,7 +223,7 @@ from src.memory.schemas import (
 
 ## Descoberta Crítica: Hypothesis Property-Based Testing
 
-### 🔬 Brightdata Research - Outubro 2025
+### [EMOJI] Brightdata Research - Outubro 2025
 
 **Query**: "Pydantic fixture validation best practices pytest 2024 2025" + "pytest-pydantic hypothesis testing"
 
@@ -258,15 +258,15 @@ def test_benchmark_comparison_properties(comparison):
 ```
 
 **Benefícios**:
-- ✅ **Gera centenas de fixtures** automaticamente (testa edge cases)
-- ✅ **Respeita validators Pydantic** (min_length, Literal, field_validator)
-- ✅ **Encontra bugs** que testes manuais não encontram (valores extremos, combinações raras)
-- ✅ **Reduz manutenção** (fixtures atualizam automaticamente quando schema muda)
+- [OK] **Gera centenas de fixtures** automaticamente (testa edge cases)
+- [OK] **Respeita validators Pydantic** (min_length, Literal, field_validator)
+- [OK] **Encontra bugs** que testes manuais não encontram (valores extremos, combinações raras)
+- [OK] **Reduz manutenção** (fixtures atualizam automaticamente quando schema muda)
 
 **Limitações**:
-- ❌ Requer aprendizado de `strategies` API
-- ❌ Testes mais lentos (gera 100+ exemplos por default)
-- ❌ Não substitui testes específicos de negócio (complementa)
+- [ERRO] Requer aprendizado de `strategies` API
+- [ERRO] Testes mais lentos (gera 100+ exemplos por default)
+- [ERRO] Não substitui testes específicos de negócio (complementa)
 
 ---
 
@@ -292,7 +292,7 @@ def valid_benchmark_comparison():
         "benchmark_source": "Setor Tech SaaS Brasil 2024 (médio porte)",
         "insight": "Gap 6pp abaixo indicando custos operacionais elevados"
     }
-    
+
     # DRY-RUN VALIDATION: instanciar para validar ANTES de usar
     try:
         comparison = BenchmarkComparison(**data)
@@ -301,7 +301,7 @@ def valid_benchmark_comparison():
         pytest.fail(f"Fixture inválida contra schema: {e}")
 ```
 
-**ROI**: Valida fixtures na criação (não no uso) → economiza 15-20 min debugging
+**ROI**: Valida fixtures na criação (não no uso) -> economiza 15-20 min debugging
 
 ---
 
@@ -345,7 +345,7 @@ def test_benchmark_comparison_gap_properties(gap, gap_type):
 
 ---
 
-### 🎯 Quando Usar Hypothesis vs Fixtures Manuais?
+### [EMOJI] Quando Usar Hypothesis vs Fixtures Manuais?
 
 | Cenário | Abordagem Recomendada | Justificativa |
 |---------|----------------------|---------------|
@@ -357,14 +357,14 @@ def test_benchmark_comparison_gap_properties(gap, gap_type):
 | **Testes de regressão** | Fixtures manuais | Validar comportamento específico não muda |
 
 **Recomendação**: **Híbrido**
-- ✅ Fixtures manuais para casos de negócio BSC específicos (4 perspectivas, 10-15 KPIs)
-- ✅ Hypothesis para validators Pydantic (min_length, ranges, Literal, field_validator)
+- [OK] Fixtures manuais para casos de negócio BSC específicos (4 perspectivas, 10-15 KPIs)
+- [OK] Hypothesis para validators Pydantic (min_length, ranges, Literal, field_validator)
 
 ---
 
 ## Antipadrões Identificados
 
-### ❌ Antipadrão 1: Aplicar PONTO 15 Apenas em 1 de N Schemas
+### [ERRO] Antipadrão 1: Aplicar PONTO 15 Apenas em 1 de N Schemas
 
 **Sintoma**: Ler apenas schema principal (`BenchmarkComparison`) mas não schemas usados em fixtures (`KPIDefinition`, `CompanyInfo`, `DiagnosticResult`)
 
@@ -376,7 +376,7 @@ def test_benchmark_comparison_gap_properties(gap, gap_type):
 
 ---
 
-### ❌ Antipadrão 2: Não Validar Validators Além de Fields
+### [ERRO] Antipadrão 2: Não Validar Validators Além de Fields
 
 **Sintoma**: Ler `class BenchmarkComparison` fields mas não `@field_validator` customizados
 
@@ -384,10 +384,10 @@ def test_benchmark_comparison_gap_properties(gap, gap_type):
 ```python
 # Schema (src/memory/schemas.py)
 class BenchmarkComparison(BaseModel):
-    gap: float = Field(ge=-100, le=200)  # ✅ Lido
-    gap_type: Literal["positive", "negative", "neutral"]  # ✅ Lido
-    
-    @field_validator("gap_type")  # ❌ NÃO lido → fixture com gap=5.0 falhou
+    gap: float = Field(ge=-100, le=200)  # [OK] Lido
+    gap_type: Literal["positive", "negative", "neutral"]  # [OK] Lido
+
+    @field_validator("gap_type")  # [ERRO] NÃO lido -> fixture com gap=5.0 falhou
     def validate_gap_type_aligns_with_gap(cls, v: str, info: ValidationInfo) -> str:
         gap = info.data.get("gap", 0)
         if v == "negative" and gap >= 5:  # Threshold NÃO documentado em Field!
@@ -403,7 +403,7 @@ grep "@field_validator\|@model_validator" src/memory/schemas.py -A 10
 
 ---
 
-### ❌ Antipadrão 3: Fixtures com Valores no Limite (Sem Margem de Segurança)
+### [ERRO] Antipadrão 3: Fixtures com Valores no Limite (Sem Margem de Segurança)
 
 **Sintoma**: `gap=5.0` quando threshold é `< 5` (não `<= 5`)
 
@@ -413,16 +413,16 @@ grep "@field_validator\|@model_validator" src/memory/schemas.py -A 10
 
 **Exemplos**:
 ```python
-# ❌ ERRADO: Valor exatamente no limite
-gap=5.0  # threshold < 5 → ValidationError
+# [ERRO] ERRADO: Valor exatamente no limite
+gap=5.0  # threshold < 5 -> ValidationError
 
-# ✅ CORRETO: Margem de segurança +20%
+# [OK] CORRETO: Margem de segurança +20%
 gap=6.0  # (5 * 1.2 = 6)
 
-# ❌ ERRADO: min_length=50 → usar 50 chars
-insight="Gap 6pp abaixo indicando custos operacionais"  # 48 chars → ERRO
+# [ERRO] ERRADO: min_length=50 -> usar 50 chars
+insight="Gap 6pp abaixo indicando custos operacionais"  # 48 chars -> ERRO
 
-# ✅ CORRETO: min_length=50 → usar 60+ chars (margem 20%)
+# [OK] CORRETO: min_length=50 -> usar 60+ chars (margem 20%)
 insight="Gap 6pp abaixo do mercado indicando custos operacionais elevados vs benchmark setorial"  # 88 chars
 ```
 
@@ -430,7 +430,7 @@ insight="Gap 6pp abaixo do mercado indicando custos operacionais elevados vs ben
 
 ---
 
-### ❌ Antipadrão 4: Substituição Text Não Sistemática (replace_all=False)
+### [ERRO] Antipadrão 4: Substituição Text Não Sistemática (replace_all=False)
 
 **Sintoma**: Substituir `(mid-market)` mas não `B2B mid-market` ou `mid-market)`
 
@@ -438,11 +438,11 @@ insight="Gap 6pp abaixo do mercado indicando custos operacionais elevados vs ben
 
 **Correção**:
 ```python
-# ❌ ERRADO: Substituição pontual
+# [ERRO] ERRADO: Substituição pontual
 search_replace(old_string="(mid-market)", new_string="(empresas médio porte)")
 # Resultado: "(mid-market)" substituído MAS "B2B mid-market" permanece
 
-# ✅ CORRETO: Substituição global
+# [OK] CORRETO: Substituição global
 search_replace(
     old_string="mid-market",
     new_string="empresas médio porte",
@@ -454,7 +454,7 @@ search_replace(
 
 ---
 
-### ❌ Antipadrão 5: Não Testar Validators Explicitamente Antes de Usar
+### [ERRO] Antipadrão 5: Não Testar Validators Explicitamente Antes de Usar
 
 **Sintoma**: Criar fixture complexa COM validator customizado SEM testar validator isoladamente primeiro
 
@@ -468,7 +468,7 @@ def test_benchmark_comparison_gap_type_validator():
     # Caso válido: gap=6.0 (>= 5) com gap_type="negative"
     comparison = BenchmarkComparison(gap=6.0, gap_type="negative", ...)
     assert comparison.gap_type == "negative"
-    
+
     # Caso inválido: gap=4.0 (< 5) com gap_type="negative"
     with pytest.raises(ValidationError) as exc_info:
         BenchmarkComparison(gap=4.0, gap_type="negative", ...)
@@ -477,7 +477,7 @@ def test_benchmark_comparison_gap_type_validator():
 # STEP 2: Depois criar fixtures complexas usando validator validado
 @pytest.fixture
 def valid_benchmark_comparison():
-    return BenchmarkComparison(gap=6.0, gap_type="negative", ...)  # ✅ Validator já testado
+    return BenchmarkComparison(gap=6.0, gap_type="negative", ...)  # [OK] Validator já testado
 ```
 
 **ROI Prevenção**: 15-20 min economizados (validators testados isoladamente identificam thresholds exatos)
@@ -486,7 +486,7 @@ def valid_benchmark_comparison():
 
 ## Checklist Expandido (PONTO 15.6 Novo)
 
-### 📋 SUB-PONTO 15.6: Identificar TODOS Schemas Pydantic Usados no Teste
+### [EMOJI] SUB-PONTO 15.6: Identificar TODOS Schemas Pydantic Usados no Teste
 
 **QUANDO APLICAR**: SEMPRE antes de criar fixtures Pydantic OU escrever testes que usam múltiplos schemas
 
@@ -506,10 +506,10 @@ grep "from src.memory.schemas import" tests/test_benchmarking_tool.py -A 10
 # from src.memory.schemas import (
 #     BenchmarkComparison,      # Schema 1
 #     BenchmarkReport,          # Schema 2
-#     CompanyInfo,              # Schema 3 ← Também precisa grep!
-#     DiagnosticResult,         # Schema 4 ← Também precisa grep!
-#     KPIDefinition,            # Schema 5 ← Também precisa grep!
-#     KPIFramework              # Schema 6 ← Também precisa grep!
+#     CompanyInfo,              # Schema 3 <- Também precisa grep!
+#     DiagnosticResult,         # Schema 4 <- Também precisa grep!
+#     KPIDefinition,            # Schema 5 <- Também precisa grep!
+#     KPIFramework              # Schema 6 <- Também precisa grep!
 # )
 ```
 
@@ -555,7 +555,7 @@ grep "class BenchmarkComparison" src/memory/schemas.py -A 100 | grep "@field_val
 # @field_validator("gap_type")
 # def validate_gap_type_aligns_with_gap(cls, v: str, info: ValidationInfo) -> str:
 #     gap = info.data.get("gap", 0)
-#     if v == "negative" and gap >= 5:  # ← THRESHOLD CRÍTICO não documentado em Field!
+#     if v == "negative" and gap >= 5:  # <- THRESHOLD CRÍTICO não documentado em Field!
 #         raise ValueError("gap deve ser >= 5 para gap_type='negative'")
 ```
 
@@ -573,25 +573,25 @@ grep "class BenchmarkComparison" src/memory/schemas.py -A 100 | grep "@field_val
 @pytest.fixture
 def valid_benchmark_comparison() -> BenchmarkComparison:
     """Fixture com BenchmarkComparison válido.
-    
+
     Schemas validados via grep (2025-10-19):
     - gap: float, range -100 a +200
     - gap_type: Literal["positive", "negative", "neutral"]
     - gap_type validator: Se negative, gap >= 5 (não >= 4.9!)
     - benchmark_source: str, min_length=20
     - insight: str, min_length=50
-    
+
     MARGEM DE SEGURANÇA APLICADA:
-    - gap=6.0 (threshold 5.0 + 20% = 6.0) ✅
-    - benchmark_source=25 chars (min 20 + 25% = 25) ✅
-    - insight=88 chars (min 50 + 76% = 88) ✅
+    - gap=6.0 (threshold 5.0 + 20% = 6.0) [OK]
+    - benchmark_source=25 chars (min 20 + 25% = 25) [OK]
+    - insight=88 chars (min 50 + 76% = 88) [OK]
     """
     return BenchmarkComparison(
         perspective="Financeira",
         metric_name="Margem EBITDA",
         company_value="18%",
         benchmark_value="25%",
-        gap=6.0,  # ✅ Margem 20% vs threshold 5.0
+        gap=6.0,  # [OK] Margem 20% vs threshold 5.0
         gap_type="negative",
         benchmark_source="Setor Tech SaaS Brasil 2024 (médio porte)",  # 50 chars (25% margem vs min 20)
         insight="Gap 6pp abaixo do mercado indicando custos operacionais elevados vs benchmark setorial médio",  # 100 chars (100% margem vs min 50)
@@ -614,7 +614,7 @@ def valid_benchmark_comparison() -> BenchmarkComparison:
 @pytest.fixture
 def valid_company_info() -> CompanyInfo:
     """Fixture com CompanyInfo válido + dry-run validation.
-    
+
     Schemas validados via grep (2025-10-19):
     - sector: str (obrigatório)
     - size: Literal["micro", "pequena", "média", "grande"]
@@ -623,10 +623,10 @@ def valid_company_info() -> CompanyInfo:
         "name": "TechCorp Brasil",
         "sector": "Tecnologia",
         "industry": "Software as a Service (SaaS)",
-        "size": "média",  # ✅ Literal válido (não "media")
+        "size": "média",  # [OK] Literal válido (não "media")
         "region": "Brasil"
     }
-    
+
     # DRY-RUN VALIDATION: Instanciar para validar ANTES de retornar
     try:
         company_info = CompanyInfo(**data)
@@ -636,9 +636,9 @@ def valid_company_info() -> CompanyInfo:
 ```
 
 **Benefícios Dry-Run**:
-- ✅ Valida fixture NA CRIAÇÃO (não no uso do teste)
-- ✅ Erro mais claro ("Fixture inválida" vs "Teste falhou")
-- ✅ Economiza 10-15 min debugging (erro capturado cedo)
+- [OK] Valida fixture NA CRIAÇÃO (não no uso do teste)
+- [OK] Erro mais claro ("Fixture inválida" vs "Teste falhou")
+- [OK] Economiza 10-15 min debugging (erro capturado cedo)
 
 **Checklist**:
 - [ ] Wrap fixture creation em try/except ValidationError
@@ -647,11 +647,11 @@ def valid_company_info() -> CompanyInfo:
 
 ---
 
-### 📊 ROI SUB-PONTO 15.6
+### [EMOJI] ROI SUB-PONTO 15.6
 
 | Métrica | Sem 15.6 | Com 15.6 | Economia |
 |---------|----------|----------|----------|
-| **Schemas lidos** | 1 de 6 (17%) | 6 de 6 (100%) | **+83%** ✅ |
+| **Schemas lidos** | 1 de 6 (17%) | 6 de 6 (100%) | **+83%** [OK] |
 | **Fixtures inválidas** | 6 de 10 (60%) | 0 de 10 (0%) | **6 erros evitados** |
 | **Tempo debugging** | 60 min | 0 min | **60 min economizados** |
 | **Reexecuções pytest** | 8-10x | 1x | **7-9 reexecuções evitadas** |
@@ -662,45 +662,45 @@ def valid_company_info() -> CompanyInfo:
 
 ## ROI Comprovado
 
-### 💰 Economia Sessão 21 (Benchmarking Tool)
+### [EMOJI] Economia Sessão 21 (Benchmarking Tool)
 
 | Item | Tempo Gasto | Tempo Esperado (Sem Metodologia) | Economia |
 |------|-------------|----------------------------------|----------|
-| **Debugging 9 erros** | 60 min (5 Whys) | 90-120 min (tentativa-erro) | **30-60 min** ✅ |
+| **Debugging 9 erros** | 60 min (5 Whys) | 90-120 min (tentativa-erro) | **30-60 min** [OK] |
 | **Documentação lição** | 45 min | 0 min (não faria) | **Knowledge base** |
-| **TOTAL** | 105 min | 90-120 min | **ROI = -15 min** ❌ |
+| **TOTAL** | 105 min | 90-120 min | **ROI = -15 min** [ERRO] |
 
 **INSIGHT**: Primeira aplicação metodologia CUSTA tempo (learning curve). Próximas sessões TEM ROI positivo.
 
 ---
 
-### 💰 ROI Esperado Futuro (Próximas 5 Sessões)
+### [EMOJI] ROI Esperado Futuro (Próximas 5 Sessões)
 
 **Premissa**: Aplicar SUB-PONTO 15.6 preventivamente (identificar todos schemas) + 5 Whys quando erro
 
 | Sessão | Erros Prevenidos | Tempo Economizado | Acumulado |
 |--------|------------------|-------------------|-----------|
-| **Sessão 22** (Action Plan Tool) | 4-6 erros | 40-60 min | **+40 min** ✅ |
+| **Sessão 22** (Action Plan Tool) | 4-6 erros | 40-60 min | **+40 min** [OK] |
 | **Sessão 23** (Prioritization Matrix) | 3-5 erros | 30-50 min | **+70 min** |
 | **Sessão 24** (Report Generator) | 2-4 erros | 20-40 min | **+90 min** |
 | **Sessão 25** (Human-in-Loop) | 1-3 erros | 10-30 min | **+100 min** |
 | **Sessão 26** (HITL Approval) | 1-2 erros | 10-20 min | **+110 min** |
-| **TOTAL** | 11-20 erros | 110-200 min | **110-200 min** ✅ |
+| **TOTAL** | 11-20 erros | 110-200 min | **110-200 min** [OK] |
 
 **ROI Projetado**: 110-200 min economizados em 5 sessões futuras aplicando SUB-PONTO 15.6
 
 ---
 
-### 📈 ROI Acumulado PONTO 15 (6 Sessões)
+### [EMOJI] ROI Acumulado PONTO 15 (6 Sessões)
 
 | Sessão | PONTO 15 Aplicado? | Erros Fixtures | Tempo Debugging | Lição |
 |--------|-------------------|----------------|-----------------|-------|
-| **16 (SWOT)** | ❌ Não | 4 erros | 40 min | Criou PONTO 15 |
-| **17 (Five Whys)** | ✅ Sim (parcial) | 2 erros | 20 min | Validado |
-| **18 (Issue Tree)** | ✅ Sim (parcial) | 2 erros | 20 min | Reforçado |
-| **19 (KPI)** | ✅ Sim (parcial) | 3 erros | 30 min | 5 Whys aplicado |
-| **20 (Strategic Obj)** | ✅ Sim (parcial) | 8 erros | 90 min | **DESCOBERTA CRÍTICA** |
-| **21 (Benchmarking)** | ✅ Sim (parcial) | 6 erros | 60 min | **SUB-PONTO 15.6 criado** |
+| **16 (SWOT)** | [ERRO] Não | 4 erros | 40 min | Criou PONTO 15 |
+| **17 (Five Whys)** | [OK] Sim (parcial) | 2 erros | 20 min | Validado |
+| **18 (Issue Tree)** | [OK] Sim (parcial) | 2 erros | 20 min | Reforçado |
+| **19 (KPI)** | [OK] Sim (parcial) | 3 erros | 30 min | 5 Whys aplicado |
+| **20 (Strategic Obj)** | [OK] Sim (parcial) | 8 erros | 90 min | **DESCOBERTA CRÍTICA** |
+| **21 (Benchmarking)** | [OK] Sim (parcial) | 6 erros | 60 min | **SUB-PONTO 15.6 criado** |
 | **TOTAL** | - | 25 erros | 260 min | - |
 
 **Aplicação COMPLETA PONTO 15 (todos schemas) teria economizado**: ~150-200 min (60% dos 260 min)
@@ -709,7 +709,7 @@ def valid_company_info() -> CompanyInfo:
 
 ## Ações Preventivas
 
-### ✅ Ação 1: Atualizar Memória [9969868] com SUB-PONTO 15.6
+### [OK] Ação 1: Atualizar Memória [9969868] com SUB-PONTO 15.6
 
 **Status**: Pendente
 
@@ -720,7 +720,7 @@ SUB-PONTO 15.6: Identificar TODOS schemas Pydantic usados no teste (via grep imp
 QUANDO APLICAR: SEMPRE antes de criar fixtures Pydantic OU escrever testes com múltiplos schemas
 
 COMO APLICAR (5 sub-passos):
-1. Grep imports do teste → listar todos schemas
+1. Grep imports do teste -> listar todos schemas
 2. Grep CADA schema identificado (fields + constraints)
 3. Grep validators de CADA schema (@field_validator, @model_validator)
 4. Criar fixtures com margem +20% vs limites mínimos
@@ -731,7 +731,7 @@ ROI: 30-60 min economizados por sessão (fixtures corretas primeira tentativa)
 
 ---
 
-### ✅ Ação 2: Revisar derived-cursor-rules.mdc com Hypothesis
+### [OK] Ação 2: Revisar derived-cursor-rules.mdc com Hypothesis
 
 **Status**: Pendente
 
@@ -758,20 +758,20 @@ def test_benchmark_comparison_properties(comparison):
 ```
 
 **Benefícios**:
-- ✅ Gera centenas de fixtures válidas automaticamente
-- ✅ Encontra edge cases que testes manuais não cobrem
-- ✅ Fixtures atualizam automaticamente quando schema muda
+- [OK] Gera centenas de fixtures válidas automaticamente
+- [OK] Encontra edge cases que testes manuais não cobrem
+- [OK] Fixtures atualizam automaticamente quando schema muda
 
 **Quando NÃO usar**:
-- ❌ Casos de negócio específicos (usar fixtures manuais)
-- ❌ Testes rápidos CI/CD (Hypothesis mais lento)
+- [ERRO] Casos de negócio específicos (usar fixtures manuais)
+- [ERRO] Testes rápidos CI/CD (Hypothesis mais lento)
 
 **Recomendação**: Híbrido (Hypothesis para validators + fixtures manuais para negócio)
 ```
 
 ---
 
-### ✅ Ação 3: Criar Script Validação Fixtures (Opcional)
+### [OK] Ação 3: Criar Script Validação Fixtures (Opcional)
 
 **Status**: Futuro (ROI incerto)
 
@@ -803,10 +803,10 @@ def validate_fixture(fixture_name: str, fixture_data: dict, schema_class):
     """Valida fixture contra schema Pydantic."""
     try:
         instance = schema_class(**fixture_data)
-        print(f"✅ {fixture_name}: VÁLIDA")
+        print(f"[OK] {fixture_name}: VÁLIDA")
         return True
     except ValidationError as e:
-        print(f"❌ {fixture_name}: INVÁLIDA - {e}")
+        print(f"[ERRO] {fixture_name}: INVÁLIDA - {e}")
         return False
 
 if __name__ == "__main__":
@@ -849,7 +849,7 @@ if __name__ == "__main__":
    - 5 Whys aplicado para debugging mock LLM
 
 3. `.cursor/rules/Metodologias_causa_raiz.md` (130 linhas)
-   - Fluxo recomendado: Fatos → SFL → 5 Whys → FTA → 8D → Postmortem
+   - Fluxo recomendado: Fatos -> SFL -> 5 Whys -> FTA -> 8D -> Postmortem
 
 ### Código Fonte
 
@@ -859,7 +859,6 @@ if __name__ == "__main__":
 
 ---
 
-**Última Atualização**: 2025-10-19  
-**Status**: ✅ Completo - 950+ linhas documentadas
+**Última Atualização**: 2025-10-19
+**Status**: [OK] Completo - 950+ linhas documentadas
 **Próxima Lição**: Sessão 22 (Action Plan Tool) aplicando SUB-PONTO 15.6 preventivamente
-

@@ -52,7 +52,7 @@ O QueryDecomposer usa um sistema de pontuação baseado em 5 heurísticas:
    - Rationale: Indicam múltiplas partes/aspectos na query
 
 3. MÚLTIPLAS PERSPECTIVAS BSC [+2 pontos]
-   - Perspectivas: "financeira", "cliente", "clientes", "processo", "processos", 
+   - Perspectivas: "financeira", "cliente", "clientes", "processo", "processos",
                     "aprendizado", "crescimento", "aprendizado e crescimento"
    - Condição: 2+ perspectivas mencionadas
    - Rationale: Queries multi-perspectiva são naturalmente complexas no contexto BSC
@@ -62,30 +62,29 @@ O QueryDecomposer usa um sistema de pontuação baseado em 5 heurísticas:
    - Rationale: Múltiplas perguntas explícitas indicam complexidade
 
 5. PALAVRAS DE COMPLEXIDADE [+1 ponto]
-   - Palavras: "implementar", "implementação", "interconexão", "interconexões", 
+   - Palavras: "implementar", "implementação", "interconexão", "interconexões",
                "relação", "relações", "diferença", "diferenças", "comparar", "comparação"
    - Rationale: Indicam análise complexa ou multi-facetada necessária
 
 DECISÃO FINAL:
 - SE pontuação >= DECOMPOSITION_SCORE_THRESHOLD (padrão: 2) E len(query) > min_length:
-    → DECOMPOR query
+    -> DECOMPOR query
 - SENÃO:
-    → NÃO DECOMPOR (usar retrieval normal)
+    -> NÃO DECOMPOR (usar retrieval normal)
 
 EXEMPLOS:
 
 Query: "O que é BSC?"
-- Comprimento: 12 chars (< 50) → NÃO DECOMPOR
+- Comprimento: 12 chars (< 50) -> NÃO DECOMPOR
 - Score: N/A (não passa pré-requisito)
 
 Query: "Como implementar BSC considerando as perspectivas financeira, clientes e processos internos?"
-- Comprimento: 95 chars (> 50) ✓
+- Comprimento: 95 chars (> 50) [OK]
 - Score: +1 (considerando) +2 (3 perspectivas) +1 (implementar) = 4 pontos
 - Decisão: DECOMPOR (score 4 >= threshold 2)
 
 Query: "Quais são os principais KPIs da perspectiva financeira do Balanced Scorecard?"
-- Comprimento: 80 chars (> 50) ✓
+- Comprimento: 80 chars (> 50) [OK]
 - Score: 0 (nenhuma heurística trigada)
 - Decisão: NÃO DECOMPOR (score 0 < threshold 2)
 """
-

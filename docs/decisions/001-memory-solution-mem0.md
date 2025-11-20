@@ -1,7 +1,7 @@
 # ADR 001: Solução de Memória Persistente - Mem0 Platform
 
-**Data**: 2025-10-15  
-**Status**: Aceito  
+**Data**: 2025-10-15
+**Status**: Aceito
 **Decisores**: Usuário + Claude (Cursor IDE)
 
 ---
@@ -66,7 +66,7 @@ Agente Consultor BSC precisa de memória persistente para:
 
 ## Justificativa
 
-1. **MVP Speed**: Setup 30 min (Mem0) vs 2-3h (Supabase SQL) → Acelera FASE 1
+1. **MVP Speed**: Setup 30 min (Mem0) vs 2-3h (Supabase SQL) -> Acelera FASE 1
 2. **LLM-Optimized**: Mem0 foi desenhado especificamente para memória de agentes LLM
 3. **Self-Improving**: Research validado (arXiv 2025) mostra +26% accuracy, 91% lower latency
 4. **Semantic Search**: Built-in, não precisa implementar vetores manualmente
@@ -88,7 +88,7 @@ Agente Consultor BSC precisa de memória persistente para:
 
 ## Riscos e Mitigações
 
-**RISCO**: Mem0 ficando caro ($29/mês → $99/mês se crescer)
+**RISCO**: Mem0 ficando caro ($29/mês -> $99/mês se crescer)
 - **Mitigação**: Factory pattern permite migrar para Supabase sem reescrever código
 - **Contingência**: Mem0 open-source self-hosted disponível
 
@@ -101,13 +101,13 @@ Agente Consultor BSC precisa de memória persistente para:
 ## Consequências
 
 **Positivas**:
-- ✅ FASE 1 mais rápida (5-7h vs 7-9h Supabase)
-- ✅ Memória self-improving (melhora com uso)
-- ✅ Menos código boilerplate (API simples vs SQL queries)
+- [OK] FASE 1 mais rápida (5-7h vs 7-9h Supabase)
+- [OK] Memória self-improving (melhora com uso)
+- [OK] Menos código boilerplate (API simples vs SQL queries)
 
 **Negativas**:
-- ❌ Custo recorrente ($0 → $29/mês eventualmente)
-- ❌ Analytics complexos precisarão de Supabase depois (Fase 7)
+- [ERRO] Custo recorrente ($0 -> $29/mês eventualmente)
+- [ERRO] Analytics complexos precisarão de Supabase depois (Fase 7)
 
 **Neutras**:
 - Supabase continua disponível para Fase 7 (auth, files, analytics)
@@ -117,9 +117,9 @@ Agente Consultor BSC precisa de memória persistente para:
 ## Validação
 
 **Checkpoint 1 (Após FASE 1)**:
-- Memória persiste entre sessões? ✅/❌
-- Profile recupera corretamente? ✅/❌
-- Semantic search funciona? ✅/❌
+- Memória persiste entre sessões? [OK]/[ERRO]
+- Profile recupera corretamente? [OK]/[ERRO]
+- Semantic search funciona? [OK]/[ERRO]
 
 Se FALHAR: Rollback para Supabase (contingência documentada)
 
@@ -129,4 +129,3 @@ Se FALHAR: Rollback para Supabase (contingência documentada)
 - Mem0 Research Paper: arXiv 2025 "Building Production-Ready AI Agents"
 - Mem0 Platform: https://mem0.ai
 - 12-Factor Agents: Factor #4 (Backing Services)
-

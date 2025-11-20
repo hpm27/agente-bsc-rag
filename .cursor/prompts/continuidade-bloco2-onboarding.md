@@ -1,46 +1,46 @@
 # PROMPT DE CONTINUIDADE - BLOCO 2 Onboarding Conversacional
 
-**Branch:** `feature/onboarding-conversational-redesign`  
-**Status:** 87% COMPLETO (34/39 testes passando)  
-**Tempo Pendente:** 1h 30min (mocks 30min + benchmark 30min + commit 30min)  
+**Branch:** `feature/onboarding-conversational-redesign`
+**Status:** 87% COMPLETO (34/39 testes passando)
+**Tempo Pendente:** 1h 30min (mocks 30min + benchmark 30min + commit 30min)
 **Data Sessao Anterior:** 23/10/2025 (8h 30min trabalho)
 
 ---
 
-## 🎯 MISSÃO: FINALIZAR BLOCO 2 (13% RESTANTE)
+## [EMOJI] MISSÃO: FINALIZAR BLOCO 2 (13% RESTANTE)
 
 **Objetivo:** Corrigir 5 mocks AsyncMock nos testes E2E, validar 39/39 testes (100%), executar benchmark UX, commit final.
 
 ---
 
-## 📊 STATUS ATUAL (O QUE JÁ FOI FEITO)
+## [EMOJI] STATUS ATUAL (O QUE JÁ FOI FEITO)
 
-### ✅ BLOCO 1 - COMPLETO 100% (5h trabalho)
+### [OK] BLOCO 1 - COMPLETO 100% (5h trabalho)
 
 **Implementado:**
-- ✅ 3 métodos core: `_extract_all_entities()`, `_analyze_conversation_context()`, `_generate_contextual_response()`
-- ✅ 6 métodos helpers: `_calculate_completeness()`, `_calculate_missing_info()`, `_format_conversation_history()`, `_get_fallback_response()`
-- ✅ 2 schemas Pydantic: `ExtractedEntities`, `ConversationContext` (src/memory/schemas.py linhas 2421-2588)
-- ✅ 3 prompts ICL: `EXTRACT_ALL_ENTITIES_PROMPT`, `ANALYZE_CONVERSATION_CONTEXT_PROMPT`, `GENERATE_CONTEXTUAL_RESPONSE_PROMPT` (src/prompts/client_profile_prompts.py linhas 516-929)
-- ✅ 9 smoke tests passando (100% mockados, zero custo API)
-- ✅ 5 bugs pré-existentes resolvidos (mocks sem .model_dump())
+- [OK] 3 métodos core: `_extract_all_entities()`, `_analyze_conversation_context()`, `_generate_contextual_response()`
+- [OK] 6 métodos helpers: `_calculate_completeness()`, `_calculate_missing_info()`, `_format_conversation_history()`, `_get_fallback_response()`
+- [OK] 2 schemas Pydantic: `ExtractedEntities`, `ConversationContext` (src/memory/schemas.py linhas 2421-2588)
+- [OK] 3 prompts ICL: `EXTRACT_ALL_ENTITIES_PROMPT`, `ANALYZE_CONVERSATION_CONTEXT_PROMPT`, `GENERATE_CONTEXTUAL_RESPONSE_PROMPT` (src/prompts/client_profile_prompts.py linhas 516-929)
+- [OK] 9 smoke tests passando (100% mockados, zero custo API)
+- [OK] 5 bugs pré-existentes resolvidos (mocks sem .model_dump())
 
-**Testes:** 33/33 passando (100%)  
-**Coverage:** 19% → 40% (+21pp onboarding_agent.py)  
+**Testes:** 33/33 passando (100%)
+**Coverage:** 19% -> 40% (+21pp onboarding_agent.py)
 **Documentação:** 1.877 linhas (4 documentos)
 
 ---
 
-### ✅ BLOCO 2 - 87% COMPLETO (2h 15min trabalho)
+### [OK] BLOCO 2 - 87% COMPLETO (2h 15min trabalho)
 
 **Implementado:**
-- ✅ **INTEGRAÇÃO COMPLETA** em `collect_client_info()` (src/agents/onboarding_agent.py linhas 294-579):
-  - Linha 350: Chama `_extract_all_entities()` ✅
-  - Linhas 522-525: Chama `_analyze_conversation_context()` ✅
-  - Linhas 535-539: Chama `_generate_contextual_response()` ✅
+- [OK] **INTEGRAÇÃO COMPLETA** em `collect_client_info()` (src/agents/onboarding_agent.py linhas 294-579):
+  - Linha 350: Chama `_extract_all_entities()` [OK]
+  - Linhas 522-525: Chama `_analyze_conversation_context()` [OK]
+  - Linhas 535-539: Chama `_generate_contextual_response()` [OK]
   - Linhas 516-579: Refatoração STEP 6 (substituiu lógica antiga de geração de pergunta)
 
-- ✅ **6 TESTES E2E CRIADOS** (tests/test_onboarding_agent.py linhas 1102-1243):
+- [OK] **6 TESTES E2E CRIADOS** (tests/test_onboarding_agent.py linhas 1102-1243):
   - test_e2e_objectives_before_challenges (linha 1103)
   - test_e2e_all_info_first_turn (linha 1129)
   - test_e2e_incremental_completion (linha 1153)
@@ -48,15 +48,15 @@
   - test_e2e_frustration_recovery (linha 1199)
   - test_e2e_integration_complete (linha 1223)
 
-**Testes:** 34/39 passando (87%)  
-**Coverage:** 17% → 21% (+4pp)  
+**Testes:** 34/39 passando (87%)
+**Coverage:** 17% -> 21% (+4pp)
 **Documentação:** Lesson learned completa (800 linhas)
 
 ---
 
 ## ⏳ TRABALHO PENDENTE (13% RESTANTE - 1h 30min)
 
-### 🔧 PASSO 1: Corrigir 5 Mocks AsyncMock (30 min)
+### [EMOJI] PASSO 1: Corrigir 5 Mocks AsyncMock (30 min)
 
 **PROBLEMA:** 5 testes E2E falhando com `TypeError: object Mock can't be used in 'await' expression`
 
@@ -80,7 +80,7 @@ def mock_llm():
     llm = Mock()
     llm.invoke = Mock(return_value="Test response")
     llm.ainvoke = AsyncMock(return_value=Mock(content="Test async response"))
-    llm.with_structured_output = Mock(return_value=llm)  # ❌ PROBLEMA!
+    llm.with_structured_output = Mock(return_value=llm)  # [ERRO] PROBLEMA!
     return llm
 
 # DEPOIS (CORRETO):
@@ -89,14 +89,14 @@ def mock_llm():
     llm = Mock()
     llm.invoke = Mock(return_value="Test response")
     llm.ainvoke = AsyncMock(return_value=Mock(content="Test async response"))
-    
-    # ✅ CORRECAO: with_structured_output retorna objeto com ainvoke AsyncMock
+
+    # [OK] CORRECAO: with_structured_output retorna objeto com ainvoke AsyncMock
     mock_structured = Mock()
     mock_structured.ainvoke = AsyncMock(
         return_value=Mock(content="Structured async response")
     )
     llm.with_structured_output = Mock(return_value=mock_structured)
-    
+
     return llm
 ```
 
@@ -106,7 +106,7 @@ def mock_llm():
 
 ---
 
-### 🧪 PASSO 2: Validar Suite Completa (15 min)
+### [EMOJI] PASSO 2: Validar Suite Completa (15 min)
 
 **COMANDO:**
 ```bash
@@ -120,7 +120,7 @@ python -m pytest tests/test_onboarding_agent.py -v --tb=long 2>&1
 
 ---
 
-### 📊 PASSO 3: Executar Benchmark UX (30 min)
+### [EMOJI] PASSO 3: Executar Benchmark UX (30 min)
 
 **CRIAR SCRIPT:** `tests/benchmark_onboarding_ux.py`
 
@@ -130,9 +130,9 @@ python -m pytest tests/test_onboarding_agent.py -v --tb=long 2>&1
 \"\"\"Benchmark UX - Validar metricas de onboarding conversacional.
 
 Metricas a validar:
-- Turns medios por onboarding: 10-15 → 6-8 (-40% target)
-- Taxa de reconhecimento: 60% → 100% (+67% target)
-- Taxa de frustracao NAO detectada: 100% → 20% (-80% target)
+- Turns medios por onboarding: 10-15 -> 6-8 (-40% target)
+- Taxa de reconhecimento: 60% -> 100% (+67% target)
+- Taxa de frustracao NAO detectada: 100% -> 20% (-80% target)
 \"\"\"
 
 import asyncio
@@ -142,28 +142,28 @@ from config.settings import settings
 
 # Dataset: 20 queries BSC variadas
 BENCHMARK_QUERIES = [
-    # 5 queries "fora de ordem" (objectives → challenges)
+    # 5 queries "fora de ordem" (objectives -> challenges)
     "Queremos crescer 50% e aumentar NPS para 80.",
-    
+
     # 5 queries "tudo de uma vez"
     "Sou da TechCorp, startup com 50 funcionarios. Desafios: rotatividade alta. Objetivos: crescer 40%.",
-    
+
     # 5 queries "com frustracao"
     "Como mencionei antes, somos do setor de tecnologia!",
-    
+
     # 5 queries "padrao sequencial"
     "Sou da MegaCorp, empresa de manufatura.",
 ]
 
 async def run_benchmark():
     agent = OnboardingAgent(llm=settings.get_onboarding_llm(), ...)
-    
+
     results = []
     for query in BENCHMARK_QUERIES:
         state = BSCState(...)
         result = await agent.collect_client_info("test_user", query, state)
         results.append(result)
-    
+
     # Analisar resultados
     analyze_results(results)
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
 ---
 
-### 💾 PASSO 4: Commit e PR (30 min)
+### [EMOJI] PASSO 4: Commit e PR (30 min)
 
 **COMANDOS:**
 
@@ -199,7 +199,7 @@ git commit -m "feat: implementa onboarding conversacional inteligente (BLOCO 1+2
 - Documentacao completa (3.294 linhas, 5 docs)
 
 Testes: 39/39 passando (100%)
-Coverage: 17% → 21% (+4pp)
+Coverage: 17% -> 21% (+4pp)
 Timeline: 8h 30min (vs 7h 45min estimado, +10%)
 
 Referencias:
@@ -216,7 +216,7 @@ git push origin feature/onboarding-conversational-redesign
 
 ---
 
-## 🔍 CONTEXTO TÉCNICO DETALHADO
+## [EMOJI] CONTEXTO TÉCNICO DETALHADO
 
 ### Descoberta Crítica: Arquitetura Dual
 
@@ -226,17 +226,17 @@ git push origin feature/onboarding-conversational-redesign
 # MÉTODO NOVO (OFICIAL) - linha 294:
 async def collect_client_info(user_id: str, user_message: str, state: BSCState):
     \"\"\"Coleta informacoes usando Opportunistic Extraction (FASE 1).\"\"\"
-    # ✅ USA _extract_all_entities() (linha 350)
-    # ✅ USA _analyze_conversation_context() (linha 522)
-    # ✅ USA _generate_contextual_response() (linha 535)
-    # ✅ Context-aware, adaptive, intelligent
+    # [OK] USA _extract_all_entities() (linha 350)
+    # [OK] USA _analyze_conversation_context() (linha 522)
+    # [OK] USA _generate_contextual_response() (linha 535)
+    # [OK] Context-aware, adaptive, intelligent
 
 # MÉTODO ANTIGO (LEGACY) - linha 1228:
 def _extract_information(user_message: str, current_step: int, state: BSCState):
     \"\"\"Extrai informacoes usando ClientProfileAgent (LEGACY).\"\"\"
-    # ❌ USA profile_agent (design antigo)
-    # ❌ Mono-processamento (1 entidade por turn)
-    # ❌ Usado por process_turn() (sera deprecado FASE 2B)
+    # [ERRO] USA profile_agent (design antigo)
+    # [ERRO] Mono-processamento (1 entidade por turn)
+    # [ERRO] Usado por process_turn() (sera deprecado FASE 2B)
 ```
 
 **DECISÃO:** Trabalhar APENAS em `collect_client_info()`. NÃO modificar `_extract_information()` (deprecação planejada para FASE 2B).
@@ -259,7 +259,7 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 
 ### Integrações Realizadas
 
-**ARQUIVO:** `src/agents/onboarding_agent.py`  
+**ARQUIVO:** `src/agents/onboarding_agent.py`
 **MÉTODO:** `collect_client_info()` (linhas 294-579)
 
 **STEP 6 REFATORADO (linhas 512-579):**
@@ -289,16 +289,16 @@ state.metadata["conversation_history"] = conversation_history
 
 ---
 
-## 📋 PRÓXIMOS PASSOS ESPECÍFICOS
+## [EMOJI] PRÓXIMOS PASSOS ESPECÍFICOS
 
 ### PASSO 1: Corrigir Mock LLM (10 min)
 
-**ARQUIVO:** `tests/test_onboarding_agent.py`  
+**ARQUIVO:** `tests/test_onboarding_agent.py`
 **LOCALIZAÇÃO:** Fixture `mock_llm` (linha ~18-30)
 
 **PROBLEMA EXATO:**
 ```
-ERROR src.agents.onboarding_agent:onboarding_agent.py:772 [EXTRACT_ALL] 
+ERROR src.agents.onboarding_agent:onboarding_agent.py:772 [EXTRACT_ALL]
 TypeError: object Mock can't be used in 'await' expression
 ```
 
@@ -309,20 +309,20 @@ TypeError: object Mock can't be used in 'await' expression
 def mock_llm():
     \"\"\"Mock de LLM com suporte completo a async e structured output.\"\"\"
     llm = Mock()
-    
+
     # Metodo sincrono
     llm.invoke = Mock(return_value="Test response")
-    
+
     # Metodo assincrono
     llm.ainvoke = AsyncMock(return_value=Mock(content="Test async response"))
-    
-    # ✅ CORRECAO: with_structured_output retorna objeto COM ainvoke AsyncMock
+
+    # [OK] CORRECAO: with_structured_output retorna objeto COM ainvoke AsyncMock
     mock_structured = Mock()
     mock_structured.ainvoke = AsyncMock(
         return_value=Mock(content="Structured async response")
     )
     llm.with_structured_output = Mock(return_value=mock_structured)
-    
+
     return llm
 ```
 
@@ -381,9 +381,9 @@ python -m pytest tests/test_onboarding_agent.py -v --tb=line 2>&1 | Select-Objec
 - 5 queries "padrão sequencial"
 
 **MÉTRICAS A VALIDAR:**
-- Turns médios: 10-15 → 6-8 (-40%)
-- Taxa de reconhecimento: 60% → 100% (+67%)
-- Taxa de frustração NÃO detectada: 100% → 20% (-80%)
+- Turns médios: 10-15 -> 6-8 (-40%)
+- Taxa de reconhecimento: 60% -> 100% (+67%)
+- Taxa de frustração NÃO detectada: 100% -> 20% (-80%)
 
 **SE NÃO HOUVER TEMPO:** Pular benchmark (pode ser feito em sessão futura). Priorizar: testes 39/39 + commit.
 
@@ -429,7 +429,7 @@ git commit -m "feat: implementa onboarding conversacional inteligente (BLOCO 1+2
 - Documentacao completa (3.294 linhas, 5 docs)
 
 Testes: 39/39 passando (100%)
-Coverage: 17% → 21% (+4pp)
+Coverage: 17% -> 21% (+4pp)
 Timeline: 8h 30min
 
 Referencias:
@@ -444,7 +444,7 @@ git push origin feature/onboarding-conversational-redesign
 
 ---
 
-## 📚 REFERÊNCIAS PARA LEITURA
+## [EMOJI] REFERÊNCIAS PARA LEITURA
 
 ### Documentação OBRIGATÓRIA (LER ANTES DE COMEÇAR)
 
@@ -476,7 +476,7 @@ git push origin feature/onboarding-conversational-redesign
 
 ---
 
-## 🧠 MEMÓRIAS E LIÇÕES APLICÁVEIS
+## [EMOJI] MEMÓRIAS E LIÇÕES APLICÁVEIS
 
 ### Memórias Críticas
 
@@ -488,15 +488,15 @@ git push origin feature/onboarding-conversational-redesign
 
 ### Antipadrões a Evitar
 
-1. ❌ **Mock() para métodos async** → Usar AsyncMock
-2. ❌ **Mocks Pydantic sem .model_dump()** → Adicionar .model_dump() E .dict()
-3. ❌ **Filtros PowerShell em pytest** → Comando direto sem pipes
-4. ❌ **Assumir estrutura de código** → Ler via grep ANTES de modificar
-5. ❌ **Structured output para free-form text** → Usar ainvoke() direto
+1. [ERRO] **Mock() para métodos async** -> Usar AsyncMock
+2. [ERRO] **Mocks Pydantic sem .model_dump()** -> Adicionar .model_dump() E .dict()
+3. [ERRO] **Filtros PowerShell em pytest** -> Comando direto sem pipes
+4. [ERRO] **Assumir estrutura de código** -> Ler via grep ANTES de modificar
+5. [ERRO] **Structured output para free-form text** -> Usar ainvoke() direto
 
 ---
 
-## 🎯 CRITÉRIO DE SUCESSO (100% COMPLETO)
+## [EMOJI] CRITÉRIO DE SUCESSO (100% COMPLETO)
 
 **Checklist Obrigatório:**
 
@@ -511,7 +511,7 @@ git push origin feature/onboarding-conversational-redesign
 
 ---
 
-## ⚡ QUICK START (COMANDO INICIAL)
+## [FAST] QUICK START (COMANDO INICIAL)
 
 **COPIE E EXECUTE ESTE BLOCO:**
 
@@ -534,7 +534,7 @@ code tests/test_onboarding_agent.py
 
 ---
 
-## 💡 DICAS PARA SUCESSO
+## [EMOJI] DICAS PARA SUCESSO
 
 1. **LER DOCUMENTAÇÃO PRIMEIRO** (15 min investimento economiza 1-2h debugging)
    - Lesson learned tem TOP 5 lições + TOP 5 antipadrões (linhas 250-450)
@@ -548,9 +548,9 @@ code tests/test_onboarding_agent.py
    - Após cada mudança: `read_lints(["arquivo.py"])`
 
 4. **COMMITS INCREMENTAIS** (não um commit gigante final)
-   - Mock corrigido → commit
-   - Testes passando → commit
-   - Benchmark executado → commit
+   - Mock corrigido -> commit
+   - Testes passando -> commit
+   - Benchmark executado -> commit
 
 5. **USAR SEQUENTIAL THINKING** (planejamento antes de implementar)
    - Planejar 5-6 thoughts ANTES de modificar código
@@ -558,7 +558,7 @@ code tests/test_onboarding_agent.py
 
 ---
 
-## ❓ TROUBLESHOOTING
+## [?] TROUBLESHOOTING
 
 ### Se testes continuarem falhando após corrigir mock_llm:
 
@@ -572,7 +572,7 @@ code tests/test_onboarding_agent.py
 
 @pytest.mark.asyncio
 async def test_e2e_objectives_before_challenges(
-    onboarding_agent,  # ← Depende de mock_llm, mock_profile_agent, mock_memory_client
+    onboarding_agent,  # <- Depende de mock_llm, mock_profile_agent, mock_memory_client
     initial_state
 ):
     # Se falhar, verificar quais fixtures estão configuradas
@@ -608,7 +608,7 @@ pre-commit run --all-files
 
 ---
 
-## 🏁 RESULTADO ESPERADO FINAL
+## [EMOJI] RESULTADO ESPERADO FINAL
 
 **Após 1h 30min de trabalho:**
 
@@ -635,26 +635,26 @@ PR: #XXX (criado, aguardando review)
 
 ---
 
-## 📝 INSTRUÇÕES DE USO
+## [EMOJI] INSTRUÇÕES DE USO
 
 **COPIE O BLOCO ABAIXO E COLE NO NOVO CHAT:**
 
 ---
 
-# Continue BLOCO 2 - Onboarding Conversacional (87% → 100%)
+# Continue BLOCO 2 - Onboarding Conversacional (87% -> 100%)
 
-**Branch:** `feature/onboarding-conversational-redesign`  
-**Status:** 87% completo (34/39 testes passando)  
+**Branch:** `feature/onboarding-conversational-redesign`
+**Status:** 87% completo (34/39 testes passando)
 **Trabalho Pendente:** 1h 30min (mocks AsyncMock + validação + commit)
 
 ## CONTEXTO
 
 Sessão anterior (23/10/2025, 8h 30min) implementou **BLOCO 1** (100%) + **BLOCO 2** (87%):
-- ✅ 9 métodos core + helpers (914 linhas)
-- ✅ 3 prompts ICL research 2025 (413 linhas)
-- ✅ 2 schemas Pydantic (ExtractedEntities, ConversationContext)
-- ✅ 15 testes (9 smoke passando + 6 E2E criados)
-- ✅ Integração completa em `collect_client_info()` (src/agents/onboarding_agent.py linhas 294-579)
+- [OK] 9 métodos core + helpers (914 linhas)
+- [OK] 3 prompts ICL research 2025 (413 linhas)
+- [OK] 2 schemas Pydantic (ExtractedEntities, ConversationContext)
+- [OK] 15 testes (9 smoke passando + 6 E2E criados)
+- [OK] Integração completa em `collect_client_info()` (src/agents/onboarding_agent.py linhas 294-579)
 
 **PROBLEMA ATUAL:** 5 testes E2E falhando com `TypeError: object Mock can't be used in 'await' expression`
 
@@ -694,5 +694,4 @@ Sessão anterior (23/10/2025, 8h 30min) implementou **BLOCO 1** (100%) + **BLOCO
 
 ---
 
-**ESTÁ PRONTO! Copie o bloco acima e cole no novo chat para continuar.** 🚀
-
+**ESTÁ PRONTO! Copie o bloco acima e cole no novo chat para continuar.** [EMOJI]

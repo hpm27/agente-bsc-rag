@@ -1,8 +1,8 @@
 # Query Decomposition - Documentação Técnica
 
-**Status:** Implementado (Fase 2A.1)  
-**Data:** 2025-10-14  
-**ROI Esperado:** +30-40% recall, +25-35% precision  
+**Status:** Implementado (Fase 2A.1)
+**Data:** 2025-10-14
+**ROI Esperado:** +30-40% recall, +25-35% precision
 **ROI Real:** Heurística 100% accuracy (ground truth não validável)
 
 ---
@@ -129,7 +129,7 @@ query = "Diferenças entre BSC em manufatura versus serviços?"
 │  4. Múltiplas perguntas (+1 ponto)                               │
 │  5. Palavras de complexidade (+1 ponto)                          │
 │                                                                   │
-│  Decisão: Score >= 1 → DECOMPOR                                  │
+│  Decisão: Score >= 1 -> DECOMPOR                                  │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
@@ -144,10 +144,10 @@ query = "Diferenças entre BSC em manufatura versus serviços?"
 ┌─────────────────────────────────────────────────────────────────┐
 │              Retrieval Paralelo (asyncio.gather)                 │
 │                                                                   │
-│  Sub-query 1 → BSCRetriever.retrieve_async(k=10) → Docs 1       │
-│  Sub-query 2 → BSCRetriever.retrieve_async(k=10) → Docs 2       │
-│  Sub-query 3 → BSCRetriever.retrieve_async(k=10) → Docs 3       │
-│  Sub-query 4 → BSCRetriever.retrieve_async(k=10) → Docs 4       │
+│  Sub-query 1 -> BSCRetriever.retrieve_async(k=10) -> Docs 1       │
+│  Sub-query 2 -> BSCRetriever.retrieve_async(k=10) -> Docs 2       │
+│  Sub-query 3 -> BSCRetriever.retrieve_async(k=10) -> Docs 3       │
+│  Sub-query 4 -> BSCRetriever.retrieve_async(k=10) -> Docs 4       │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
@@ -156,12 +156,12 @@ query = "Diferenças entre BSC em manufatura versus serviços?"
 │                                                                   │
 │  Score(doc) = Σ 1 / (60 + rank(doc))                             │
 │                                                                   │
-│  Fusiona 4 result sets → Top 10 docs únicos                      │
+│  Fusiona 4 result sets -> Top 10 docs únicos                      │
 └─────────────────────────┬───────────────────────────────────────┘
                           │
                           ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│             Cohere Re-ranking (top 10 → top 5)                   │
+│             Cohere Re-ranking (top 10 -> top 5)                   │
 │                                                                   │
 │  Precision final: 75% (3 em 4 docs altamente relevantes)        │
 └─────────────────────────────────────────────────────────────────┘
@@ -184,13 +184,13 @@ from langchain_core.prompts import PromptTemplate
 
 class QueryDecomposer:
     """Decompõe queries BSC complexas em sub-queries independentes."""
-    
+
     # Palavras-chave para heurísticas
     AND_WORDS = [
         "e", "também", "além", "além disso", "além de",
         "considerando", "assim como", "bem como"
     ]
-    
+
     BSC_PERSPECTIVES = [
         "financeira", "financeiro",
         "cliente", "clientes",
@@ -198,7 +198,7 @@ class QueryDecomposer:
         "aprendizado", "crescimento", "aprendizado e crescimento",
         "learning", "growth"
     ]
-    
+
     COMPLEXITY_WORDS = [
         "implementar", "implementação",
         "interconexão", "interconexões",
@@ -207,7 +207,7 @@ class QueryDecomposer:
         "comparar", "comparação",
         "integrar", "integração"
     ]
-    
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -219,16 +219,16 @@ class QueryDecomposer:
         self.enabled = enabled
         self.min_query_length = min_query_length
         self.score_threshold = score_threshold
-        
+
         # Criar prompt template
         self.prompt_template = PromptTemplate(
             template=QUERY_DECOMPOSITION_PROMPT,
             input_variables=["query"]
         )
-    
+
     def should_decompose(self, query: str) -> Tuple[bool, int]:
         """Decide se query deve ser decomposta baseado em heurísticas.
-        
+
         Returns:
             Tupla (should_decompose, score):
                 - should_decompose: True se query deve ser decomposta
@@ -236,24 +236,24 @@ class QueryDecomposer:
         """
         if not self.enabled:
             return False, 0
-        
+
         # Pré-requisito: comprimento mínimo
         if len(query) < self.min_query_length:
             return False, 0
-        
+
         # Calcular score de complexidade
         score = self._calculate_complexity_score(query)
-        
+
         # Decisão: decompor se score >= threshold
         should = score >= self.score_threshold
-        
+
         return should, score
-    
+
     def _calculate_complexity_score(self, query: str) -> int:
         """Calcula score de complexidade baseado em heurísticas."""
         score = 0
         query_lower = query.lower()
-        
+
         # Heurística 1: Palavras de ligação (+1)
         # Usar word boundaries para evitar falsos positivos (ex: "é" não deve ser detectado como "e")
         and_words_found = False
@@ -265,83 +265,83 @@ class QueryDecomposer:
                 break
         if and_words_found:
             score += 1
-        
+
         # Heurística 2: Múltiplas perspectivas BSC (+2)
         perspectives_count = sum(
             1 for perspective in self.BSC_PERSPECTIVES
             if perspective in query_lower
         )
-        
+
         # Também reconhecer padrões como "4 perspectivas", "quatro perspectivas", "todas perspectivas"
         perspective_patterns = [
             r'\b(4|quatro|todas|múltiplas|v[aá]rias)\s+(as\s+)?perspectivas?\b',
             r'\bperspectivas?\s+(do\s+)?bsc\b'
         ]
         multiple_perspectives_pattern = any(
-            re.search(pattern, query_lower) 
+            re.search(pattern, query_lower)
             for pattern in perspective_patterns
         )
-        
+
         if perspectives_count >= 2 or multiple_perspectives_pattern:
             score += 2
-        
+
         # Heurística 3: Múltiplas perguntas (+1)
         question_marks = query.count("?")
         if question_marks >= 2:
             score += 1
-        
+
         # Heurística 4: Palavras de complexidade (+1)
         if any(word in query_lower for word in self.COMPLEXITY_WORDS):
             score += 1
-        
+
         return score
-    
+
     async def decompose(self, query: str) -> List[str]:
         """Decompõe query complexa em 2-4 sub-queries independentes.
-        
+
         Usa LLM com prompt especializado para gerar sub-queries que:
         - São focadas em um único aspecto BSC
         - Não se sobrepõem
         - Juntas cobrem a query original completamente
-        
+
         Returns:
             Lista de 2-4 sub-queries independentes
         """
         try:
             # Gerar prompt
             prompt = self.prompt_template.format(query=query)
-            
+
             # Chamar LLM para decomposição
             response = await asyncio.to_thread(
                 self.llm.invoke,
                 prompt
             )
-            
+
             # Extrair conteúdo da resposta
             if hasattr(response, 'content'):
                 content = response.content
             else:
                 content = str(response)
-            
+
             # Parsear sub-queries (uma por linha)
             sub_queries = [
                 line.strip()
                 for line in content.strip().split('\n')
                 if line.strip() and not line.strip().startswith('#')
             ]
-            
+
             # Validar resultado
             if not sub_queries:
                 return [query]  # Fallback: query original
-            
+
             if len(sub_queries) < 2:
                 return [query]  # Não faz sentido decompor em 1
-            
+
             if len(sub_queries) > 4:
                 sub_queries = sub_queries[:4]  # Limitar a 4
-            
+
             return sub_queries
-            
+
         except Exception as e:
             print(f"[WARN] Query decomposition falhou: {e}. Usando query original.")
             return [query]
@@ -384,7 +384,7 @@ from src.rag.query_decomposer import QueryDecomposer
 class BSCRetriever:
     def __init__(self):
         # ... existing init ...
-        
+
         # Query Decomposition
         if settings.ENABLE_QUERY_DECOMPOSITION:
             from langchain_openai import ChatOpenAI
@@ -398,31 +398,31 @@ class BSCRetriever:
                 min_query_length=settings.decomposition_min_query_length,
                 score_threshold=settings.decomposition_score_threshold
             )
-    
+
     async def retrieve_with_decomposition(
-        self, 
-        query: str, 
+        self,
+        query: str,
         k: int = 10
     ) -> List[Document]:
         """Retrieval COM query decomposition."""
-        
+
         # Decidir se deve decompor
         should_decompose, complexity_score = self.query_decomposer.should_decompose(query)
-        
+
         if not should_decompose:
             # Fallback: retrieval normal
             return await self.retrieve_async(query, k=k)
-        
+
         # Decompor query
         sub_queries = await self.query_decomposer.decompose(query)
-        
+
         # Retrieval paralelo de todas sub-queries
         tasks = [self.retrieve_async(sq, k=k) for sq in sub_queries]
         results_list = await asyncio.gather(*tasks)
-        
+
         # Fusionar resultados usando RRF
         fused_docs = self._reciprocal_rank_fusion(results_list, k=60)
-        
+
         # Retornar top-k
         return fused_docs[:k]
 ```
@@ -451,18 +451,18 @@ query = "Como implementar BSC considerando as 4 perspectivas e suas interconexõ
 #   +1 palavras ligação ("e", "considerando")
 #   +2 padrão "4 perspectivas"
 #   +1 complexidade ("implementar", "interconexões")
-#   = 4 pontos → DECOMPOR
+#   = 4 pontos -> DECOMPOR
 
 # Query simples - Score 0
 query = "O que é BSC?"
 #   Comprimento < 30 caracteres
-#   = 0 pontos → NÃO DECOMPOR
+#   = 0 pontos -> NÃO DECOMPOR
 
 # Query relacional - Score 2
 query = "Qual relação entre aprendizado e processos internos no BSC?"
 #   +1 palavras ligação ("e")
 #   +2 múltiplas perspectivas ("aprendizado", "processos")
-#   = 3 pontos → DECOMPOR
+#   = 3 pontos -> DECOMPOR
 ```
 
 ---
@@ -487,7 +487,7 @@ pytest tests/test_query_decomposer.py --cov=src.rag.query_decomposer --cov-repor
 
 ### Benchmark
 
-**Dataset:** 20 queries BSC diversas  
+**Dataset:** 20 queries BSC diversas
 **Categorias:** multi_perspectiva (5), relacional (5), comparativa (5), conceitual_complexa (5)
 
 ```bash
@@ -508,8 +508,8 @@ python tests/benchmark_query_decomposition.py --queries 10  # Teste rápido
 | **Latência Adicional** | <3s | +4.25s | Aceitável para PoC |
 | **Heurística Accuracy** | >80% | **100%** | PASS |
 
-**Queries Decompostas:** 10/10 (100%)  
-**Média Sub-queries:** 4.0 por query  
+**Queries Decompostas:** 10/10 (100%)
+**Média Sub-queries:** 4.0 por query
 **Total Sub-queries Geradas:** 40
 
 ### Limitações Atuais
@@ -543,7 +543,7 @@ if should_decompose_decision:
     # ...
 ```
 
-**Impacto:** Benchmark reportava 0% heurística accuracy.  
+**Impacto:** Benchmark reportava 0% heurística accuracy.
 **Fix:** Desempacotar tupla corretamente em `tests/benchmark_query_decomposition.py:217`
 
 ---
@@ -655,6 +655,6 @@ if any(re.search(pattern, query_lower) for pattern in perspective_patterns):
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Próxima Revisão:** Após validação manual de answer quality  
+**Última Atualização:** 2025-10-14
+**Próxima Revisão:** Após validação manual de answer quality
 **Maintainer:** Agente BSC RAG Team

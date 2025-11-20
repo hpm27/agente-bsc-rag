@@ -9,7 +9,7 @@ ESCOPO DOS TESTES:
 2. Carregamento de profile existente
 3. Atualização de engagement state (progressão workflow)
 4. Verificação de persistência real no Mem0
-5. Fluxo E2E completo (onboarding → delivery)
+5. Fluxo E2E completo (onboarding -> delivery)
 
 SETUP REQUERIDO:
 - MEM0_API_KEY configurado em .env
@@ -52,16 +52,16 @@ def test_new_client_creates_profile(cleanup_test_profile):
 
     # Arrange: Criar state inicial sem profile
     initial_state = BSCState(
-        query="Como implementar BSC?",
-        user_id=test_user_id,
-        client_profile=None
+        query="Como implementar BSC?", user_id=test_user_id, client_profile=None
     )
 
     # Act 1: Carregar memória (deve retornar None para cliente novo)
     state_after_load = load_client_memory(initial_state)
 
     # Assert 1: load_client_memory deve retornar None para cliente novo
-    assert state_after_load["client_profile"] is None, "load_client_memory deve retornar None para cliente novo"
+    assert (
+        state_after_load["client_profile"] is None
+    ), "load_client_memory deve retornar None para cliente novo"
 
     # Act 2: Criar profile placeholder (simulando onboarding)
     new_profile = create_placeholder_profile(test_user_id, "Empresa Teste LTDA")
@@ -71,11 +71,11 @@ def test_new_client_creates_profile(cleanup_test_profile):
         name="Empresa Teste LTDA",
         sector="Tecnologia",
         size="média",
-        industry="Software as a Service"
+        industry="Software as a Service",
     )
     new_profile.context = StrategicContext(
         current_challenges=["Implementar BSC pela primeira vez"],
-        strategic_objectives=["Estruturar metas", "Alinhar equipes"]
+        strategic_objectives=["Estruturar metas", "Alinhar equipes"],
     )
 
     # Adicionar profile ao state
@@ -87,15 +87,13 @@ def test_new_client_creates_profile(cleanup_test_profile):
     # Assert 2: user_id deve ser retornado
     assert state_after_save.get("user_id") == test_user_id or "user_id" in state_after_save
 
-    # ⏱️ Aguardar propagação da API Mem0 (eventual consistency)
+    # [TIMER] Aguardar propagação da API Mem0 (eventual consistency)
     time.sleep(1)
 
     # Act 4: Tentar carregar o profile novamente para verificar persistência
-    reloaded_state = load_client_memory(BSCState(
-        query="reload",
-        user_id=test_user_id,
-        client_profile=None
-    ))
+    reloaded_state = load_client_memory(
+        BSCState(query="reload", user_id=test_user_id, client_profile=None)
+    )
 
     # Assert 3: O profile recarregado deve existir e ter os mesmos dados
     assert reloaded_state["client_profile"] is not None, "Profile não foi persistido no Mem0"
@@ -130,29 +128,23 @@ def test_existing_client_loads_profile(cleanup_test_profile):
             name="Empresa Existente SA",
             sector="Saúde",
             size="grande",
-            industry="Healthcare Technology"
+            industry="Healthcare Technology",
         ),
         context=StrategicContext(
             current_challenges=["Escalar operações mantendo qualidade"],
-            strategic_objectives=["Aumentar EBITDA 20%", "Melhorar NPS 30pts"]
+            strategic_objectives=["Aumentar EBITDA 20%", "Melhorar NPS 30pts"],
         ),
-        engagement=EngagementState(
-            current_phase="DISCOVERY"
-        )
+        engagement=EngagementState(current_phase="DISCOVERY"),
     )
 
     # Salvar profile existente no Mem0
     _mem0_client.save_profile(existing_profile)
 
-    # ⏱️ Aguardar propagação da API Mem0 (eventual consistency)
+    # [TIMER] Aguardar propagação da API Mem0 (eventual consistency)
     time.sleep(1)
 
     # Act: Carregar profile existente via load_client_memory
-    state = BSCState(
-        query="Status do projeto?",
-        user_id=test_user_id,
-        client_profile=None
-    )
+    state = BSCState(query="Status do projeto?", user_id=test_user_id, client_profile=None)
     state_after_load = load_client_memory(state)
 
     # Assert: Profile carregado deve corresponder ao existente
@@ -188,18 +180,13 @@ def test_engagement_state_updates(cleanup_test_profile):
     profile = ClientProfile(
         client_id=test_user_id,
         company=CompanyInfo(
-            name="Startup Inovadora LTDA",
-            sector="Tecnologia",
-            size="pequena",
-            industry="Fintech"
+            name="Startup Inovadora LTDA", sector="Tecnologia", size="pequena", industry="Fintech"
         ),
         context=StrategicContext(
             current_challenges=["Estruturar processos"],
-            strategic_objectives=["Crescer 100% ao ano"]
+            strategic_objectives=["Crescer 100% ao ano"],
         ),
-        engagement=EngagementState(
-            current_phase="ONBOARDING"
-        )
+        engagement=EngagementState(current_phase="ONBOARDING"),
     )
 
     # Salvar profile inicial
@@ -216,21 +203,17 @@ def test_engagement_state_updates(cleanup_test_profile):
     profile_updated = state_after_load["client_profile"]
     profile_updated.engagement.current_phase = "DISCOVERY"
     state_updated = BSCState(
-        query="Iniciando discovery",
-        user_id=test_user_id,
-        client_profile=profile_updated
+        query="Iniciando discovery", user_id=test_user_id, client_profile=profile_updated
     )
     save_client_memory(state_updated)
 
-    # ⏱️ Aguardar propagação da API Mem0
+    # [TIMER] Aguardar propagação da API Mem0
     time.sleep(1)
 
     # Act 3: Carregar novamente para validar persistência
-    state_reloaded = load_client_memory(BSCState(
-        query="check phase",
-        user_id=test_user_id,
-        client_profile=None
-    ))
+    state_reloaded = load_client_memory(
+        BSCState(query="check phase", user_id=test_user_id, client_profile=None)
+    )
 
     # Assert 2: Fase deve estar atualizada para DISCOVERY
     assert state_reloaded["client_profile"] is not None, "Profile não foi recarregado"
@@ -266,18 +249,16 @@ def test_profile_persistence_real_mem0(cleanup_test_profile):
             sector="Manufatura",
             size="grande",
             industry="Automotiva",
-            founded_year=1980
+            founded_year=1980,
         ),
         context=StrategicContext(
             mission="Liderar transformação sustentável",
             vision="Ser referência global até 2030",
             core_values=["Inovação", "Sustentabilidade", "Excelência"],
             current_challenges=["Transformação digital", "ESG compliance"],
-            strategic_objectives=["Reduzir emissões 50%", "Digitalizar 100% processos"]
+            strategic_objectives=["Reduzir emissões 50%", "Digitalizar 100% processos"],
         ),
-        engagement=EngagementState(
-            current_phase="DESIGN"
-        )
+        engagement=EngagementState(current_phase="DESIGN"),
     )
 
     # Act 1: Salvar profile
@@ -288,11 +269,9 @@ def test_profile_persistence_real_mem0(cleanup_test_profile):
     time.sleep(2)
 
     # Act 3: Carregar profile em nova requisição
-    state_reloaded = load_client_memory(BSCState(
-        query="reload",
-        user_id=test_user_id,
-        client_profile=None
-    ))
+    state_reloaded = load_client_memory(
+        BSCState(query="reload", user_id=test_user_id, client_profile=None)
+    )
 
     # Assert: Validar todos os campos persistidos
     assert state_reloaded["client_profile"] is not None, "Profile não foi persistido no Mem0"
@@ -350,19 +329,16 @@ def test_workflow_complete_e2e(cleanup_test_profile):
     # Act 2: Criar profile inicial (onboarding)
     profile = create_placeholder_profile(test_user_id, "E2E Test Company")
     profile.company = CompanyInfo(
-        name="E2E Test Company",
-        sector="Tecnologia",
-        size="média",
-        industry="SaaS"
+        name="E2E Test Company", sector="Tecnologia", size="média", industry="SaaS"
     )
     profile.context = StrategicContext(
         current_challenges=["Crescimento desorganizado"],
-        strategic_objectives=["Estruturar gestão estratégica"]
+        strategic_objectives=["Estruturar gestão estratégica"],
     )
     state.client_profile = profile
     save_client_memory(state)
 
-    # ⏱️ Aguardar propagação da API Mem0
+    # [TIMER] Aguardar propagação da API Mem0
     time.sleep(1)
 
     # ===== FASE 2: DISCOVERY =====
@@ -380,13 +356,15 @@ def test_workflow_complete_e2e(cleanup_test_profile):
     state_discovery.client_profile = profile_discovery
     save_client_memory(state_discovery)
 
-    # ⏱️ Aguardar propagação da API Mem0
+    # [TIMER] Aguardar propagação da API Mem0
     time.sleep(1)
 
     # ===== FASE 3: DESIGN =====
 
     # Act 5: Carregar e progredir para DESIGN
-    state_design = BSCState(query="Criar mapa estratégico", user_id=test_user_id, client_profile=None)
+    state_design = BSCState(
+        query="Criar mapa estratégico", user_id=test_user_id, client_profile=None
+    )
     state_design_loaded = load_client_memory(state_design)
 
     # Assert 3: Profile está em DISCOVERY
@@ -398,17 +376,15 @@ def test_workflow_complete_e2e(cleanup_test_profile):
     state_design.client_profile = profile_design
     save_client_memory(state_design)
 
-    # ⏱️ Aguardar propagação da API Mem0
+    # [TIMER] Aguardar propagação da API Mem0
     time.sleep(1)
 
     # ===== VALIDAÇÃO FINAL =====
 
     # Act 7: Carregar profile final
-    state_final = load_client_memory(BSCState(
-        query="status",
-        user_id=test_user_id,
-        client_profile=None
-    ))
+    state_final = load_client_memory(
+        BSCState(query="status", user_id=test_user_id, client_profile=None)
+    )
 
     # Assert 4: Validar estado final completo
     final_profile = state_final["client_profile"]

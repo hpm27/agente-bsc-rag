@@ -6,7 +6,7 @@
 
 _**User**_
 
-Execute o benchmark completo da Fase 2A com todas as 50 queries. 
+Execute o benchmark completo da Fase 2A com todas as 50 queries.
 
 Comando: python tests/benchmark_fase2a/run_benchmark.py
 
@@ -26,4 +26,3 @@ _**Assistant (default)**_
 
 
 ---
-

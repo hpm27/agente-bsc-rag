@@ -1,28 +1,28 @@
-# 📇 ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
+# [EMOJI] ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.4  
-**Última Atualização:** 2025-10-19  
-**Total de Documentos:** 50 (44 docs/ + 4 rules/ + 2 tool docs) - +1 lesson + 1 tool session 20!
+**Versão:** 1.5
+**Última Atualização:** 2025-11-20
+**Total de Documentos:** 53 (47 docs/ + 4 rules/ + 2 tool docs) - +3 docs FASE 5-6 planning!
 
 ---
 
-## 🎯 COMO USAR ESTE ÍNDICE
+## [EMOJI] COMO USAR ESTE ÍNDICE
 
 **3 formas de navegação rápida:**
 
-1. **Por Tag (A-Z)** → Seção 1 - Ctrl+F tag específica (ex: "retrieval", "agents")
-2. **Por Categoria** → Seção 2 - Explorar por tipo (Techniques, Patterns, History, Guides)
-3. **Quick Search Matrix** → Seção 3 - Cenários comuns mapeados
+1. **Por Tag (A-Z)** -> Seção 1 - Ctrl+F tag específica (ex: "retrieval", "agents")
+2. **Por Categoria** -> Seção 2 - Explorar por tipo (Techniques, Patterns, History, Guides)
+3. **Quick Search Matrix** -> Seção 3 - Cenários comuns mapeados
 
 **Quando usar:**
-- ✅ Preciso encontrar documentação sobre [tópico específico]
-- ✅ Onde está documentado [feature/técnica]?
-- ✅ Quais docs existem sobre [categoria]?
-- ✅ Como fazer [tarefa comum]?
+- [OK] Preciso encontrar documentação sobre [tópico específico]
+- [OK] Onde está documentado [feature/técnica]?
+- [OK] Quais docs existem sobre [categoria]?
+- [OK] Como fazer [tarefa comum]?
 
 ---
 
-## 📑 SEÇÃO 1: TAGS PRINCIPAIS (A-Z)
+## [EMOJI] SEÇÃO 1: TAGS PRINCIPAIS (A-Z)
 
 ### A
 
@@ -317,9 +317,9 @@
 ### R
 
 **rag-advanced** (Docs: 6 - Técnicas Fase 2)
-- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 ✅
-- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 ✅
-- `docs/techniques/ROUTER.md` - TECH-003 ✅
+- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 [OK]
+- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 [OK]
+- `docs/techniques/ROUTER.md` - TECH-003 [OK]
 - `docs/techniques/FASE_2B_OVERVIEW.md` - Self-RAG + CRAG (planejado)
 - `.cursor/rules/rag-techniques-catalog.mdc` - Catálogo completo
 - `.cursor/rules/rag-recipes.mdc` - Recipes validados
@@ -327,7 +327,7 @@
 **recipes** (Docs: 1)
 - `.cursor/rules/rag-recipes.mdc` - 3 recipes validados
   - RECIPE-001: Hybrid Search + Re-ranking
-  - RECIPE-002: AsyncIO Parallel Retrieval  
+  - RECIPE-002: AsyncIO Parallel Retrieval
   - RECIPE-003: Embedding Cache
 
 **reranking** (Docs: 4)
@@ -392,9 +392,9 @@
 ### T
 
 **techniques** (Docs: 3 implementados + 1 planejado)
-- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 ✅
-- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 ✅
-- `docs/techniques/ROUTER.md` - TECH-003 ✅
+- `docs/techniques/QUERY_DECOMPOSITION.md` - TECH-001 [OK]
+- `docs/techniques/ADAPTIVE_RERANKING.md` - TECH-002 [OK]
+- `docs/techniques/ROUTER.md` - TECH-003 [OK]
 - `docs/techniques/FASE_2B_OVERVIEW.md` - Self-RAG + CRAG (planejado)
 
 **testing** (Docs: 3)
@@ -429,52 +429,52 @@
 
 ---
 
-## 📂 SEÇÃO 2: DOCS POR CATEGORIA
+## [EMOJI] SEÇÃO 2: DOCS POR CATEGORIA
 
-### 🔧 Techniques - RAG Avançado (3 implementados + 2 planejados)
+### [EMOJI] Techniques - RAG Avançado (3 implementados + 2 planejados)
 
 | Técnica | Doc | Código | Testes | Status |
 |---------|-----|--------|--------|--------|
-| **Query Decomposition** | `techniques/QUERY_DECOMPOSITION.md` | `src/rag/query_decomposer.py` | `tests/test_query_decomposer.py` | ✅ 100% |
-| **Adaptive Re-ranking** | `techniques/ADAPTIVE_RERANKING.md` | `src/rag/reranker.py` | `tests/test_adaptive_reranking.py` | ✅ 100% |
-| **Router Inteligente** | `techniques/ROUTER.md` | `src/rag/query_router.py` + `strategies.py` | `tests/test_query_router.py` | ✅ 100% |
-| **Self-RAG** | `techniques/FASE_2B_OVERVIEW.md` | [Fase 2B] | [Fase 2B] | 📋 Planejado |
-| **CRAG** | `techniques/FASE_2B_OVERVIEW.md` | [Fase 2B] | [Fase 2B] | 📋 Planejado |
+| **Query Decomposition** | `techniques/QUERY_DECOMPOSITION.md` | `src/rag/query_decomposer.py` | `tests/test_query_decomposer.py` | [OK] 100% |
+| **Adaptive Re-ranking** | `techniques/ADAPTIVE_RERANKING.md` | `src/rag/reranker.py` | `tests/test_adaptive_reranking.py` | [OK] 100% |
+| **Router Inteligente** | `techniques/ROUTER.md` | `src/rag/query_router.py` + `strategies.py` | `tests/test_query_router.py` | [OK] 100% |
+| **Self-RAG** | `techniques/FASE_2B_OVERVIEW.md` | [Fase 2B] | [Fase 2B] | [EMOJI] Planejado |
+| **CRAG** | `techniques/FASE_2B_OVERVIEW.md` | [Fase 2B] | [Fase 2B] | [EMOJI] Planejado |
 
 ---
 
-### 📊 Patterns - Configurações Validadas (1 + 3 planejados)
+### [EMOJI] Patterns - Configurações Validadas (1 + 3 planejados)
 
 | Pattern | Doc | Status |
 |---------|-----|--------|
-| **Exemplo Uso Router** | `patterns/EXEMPLO_USO_ROUTER.md` | ✅ Criado |
-| **Hybrid Search** | [Futuro] `patterns/HYBRID_SEARCH.md` | 📋 Planejado |
-| **Cohere Re-ranking** | [Futuro] `patterns/COHERE_RERANK.md` | 📋 Planejado |
-| **AsyncIO Parallel** | [Futuro] `patterns/ASYNCIO_PARALLEL.md` | 📋 Planejado |
+| **Exemplo Uso Router** | `patterns/EXEMPLO_USO_ROUTER.md` | [OK] Criado |
+| **Hybrid Search** | [Futuro] `patterns/HYBRID_SEARCH.md` | [EMOJI] Planejado |
+| **Cohere Re-ranking** | [Futuro] `patterns/COHERE_RERANK.md` | [EMOJI] Planejado |
+| **AsyncIO Parallel** | [Futuro] `patterns/ASYNCIO_PARALLEL.md` | [EMOJI] Planejado |
 
 ---
 
-### 📚 Lessons - Lições Aprendidas (10 completas)
+### [EMOJI] Lessons - Lições Aprendidas (10 completas)
 
 | Lição | Técnica | ROI Observado | Status |
 |-------|---------|---------------|--------|
-| **E2E Validation Corrections** | `lessons/lesson-e2e-validation-corrections-2025-10-14.md` | 3 correções críticas | ✅ |
-| **Query Decomposition** | `lessons/lesson-query-decomposition-2025-10-14.md` (545L) | $9.90/dia, heurística 100%, 91% coverage | ✅ |
-| **Adaptive Re-ranking** | `lessons/lesson-adaptive-reranking-2025-10-14.md` (626L) | TDD -93% bugs, 100% coverage, MMR validado | ✅ |
-| **Router Inteligente** | `lessons/lesson-router-2025-10-14.md` (786L) | 10x speedup, 92% accuracy, 70% reuso | ✅ |
-| **Antipadrões RAG** | `lessons/antipadrões-rag.md` (903L) | 32 antipadrões, 2-8h economizadas/antipadrão | ✅ |
-| **Memory Hierarchy** | `lessons/lesson-memory-hierarchy-2025-10-14.md` (700+L) | Hierarquia Mem0, persistência, factory pattern | ✅ |
-| **Test Debugging (FASE 2.4)** | `lessons/lesson-test-debugging-methodology-2025-10-15.md` | 5 erros, 40 min, ClientProfileAgent | ✅ |
-| **Test Methodology (FASE 2.5)** | `lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (1.100+L) | 7 erros, 38 min economizados, checklist 8 pontos | ✅ |
-| **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | ✅ |
-| **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | ✅ |
-| **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | ✅ |
-| **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | ✅ |
-| **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | ✅ |
+| **E2E Validation Corrections** | `lessons/lesson-e2e-validation-corrections-2025-10-14.md` | 3 correções críticas | [OK] |
+| **Query Decomposition** | `lessons/lesson-query-decomposition-2025-10-14.md` (545L) | $9.90/dia, heurística 100%, 91% coverage | [OK] |
+| **Adaptive Re-ranking** | `lessons/lesson-adaptive-reranking-2025-10-14.md` (626L) | TDD -93% bugs, 100% coverage, MMR validado | [OK] |
+| **Router Inteligente** | `lessons/lesson-router-2025-10-14.md` (786L) | 10x speedup, 92% accuracy, 70% reuso | [OK] |
+| **Antipadrões RAG** | `lessons/antipadrões-rag.md` (903L) | 32 antipadrões, 2-8h economizadas/antipadrão | [OK] |
+| **Memory Hierarchy** | `lessons/lesson-memory-hierarchy-2025-10-14.md` (700+L) | Hierarquia Mem0, persistência, factory pattern | [OK] |
+| **Test Debugging (FASE 2.4)** | `lessons/lesson-test-debugging-methodology-2025-10-15.md` | 5 erros, 40 min, ClientProfileAgent | [OK] |
+| **Test Methodology (FASE 2.5)** | `lessons/lesson-diagnostic-agent-test-methodology-2025-10-16.md` (1.100+L) | 7 erros, 38 min economizados, checklist 8 pontos | [OK] |
+| **E2E Workflow Tests (FASE 2.6)** | `lessons/lesson-onboarding-state-e2e-tests-2025-10-16.md` (11.900+L) | 32-60 min economizados, checklist 12 pontos, in-memory sessions | [OK] |
+| **SWOT Testing Methodology (FASE 3.1)** | `lessons/lesson-swot-testing-methodology-2025-10-19.md` (700+L) | Implementation-First Testing, APIs desconhecidas, 30-40 min economizados, checklist ponto 13 | [OK] |
+| **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | [OK] |
+| **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | [OK] |
+| **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | [OK] |
 
 ---
 
-### 📖 Guides - Guias de Uso (7)
+### [EMOJI] Guides - Guias de Uso (7)
 
 | Guia | Audiência | Páginas |
 |------|-----------|---------|
@@ -488,7 +488,7 @@
 
 ---
 
-### 🏛️ History - Progresso Histórico (14)
+### [EMOJI] History - Progresso Histórico (14)
 
 | Documento | Fase | Data Estimada |
 |-----------|------|---------------|
@@ -509,7 +509,7 @@
 
 ---
 
-### 🎯 Cursor Rules - Organização AI (4)
+### [EMOJI] Cursor Rules - Organização AI (4)
 
 | Rule | Tipo | Linhas | Descrição |
 |------|------|--------|-----------|
@@ -520,9 +520,9 @@
 
 ---
 
-## 🎯 SEÇÃO 3: QUICK SEARCH MATRIX
+## [EMOJI] SEÇÃO 3: QUICK SEARCH MATRIX
 
-**Cenários comuns → documentação direta**
+**Cenários comuns -> documentação direta**
 
 | Preciso de... | Tags | Documentos Principais | Arquivos Código |
 |---------------|------|----------------------|-----------------|
@@ -531,8 +531,8 @@
 | **Usar padrão rápido (recipe)** | recipes, patterns | `.cursor/rules/rag-recipes.mdc` | - |
 | **Configurar hybrid search** | hybrid-search, retrieval | `TUTORIAL.md`, `rag-recipes.mdc#RECIPE-001` | `src/rag/retriever.py` |
 | **Otimizar latência** | optimization, asyncio | `MULTILINGUAL_OPTIMIZATION_SUMMARY.md` | `src/agents/orchestrator.py` |
-| **Reduzir alucinações** | self-rag, hallucination | `FASE_2B_OVERVIEW.md` → Self-RAG | [Fase 2B] |
-| **Melhorar retrieval ruim** | crag, corrective | `FASE_2B_OVERVIEW.md` → CRAG | [Fase 2B] |
+| **Reduzir alucinações** | self-rag, hallucination | `FASE_2B_OVERVIEW.md` -> Self-RAG | [Fase 2B] |
+| **Melhorar retrieval ruim** | crag, corrective | `FASE_2B_OVERVIEW.md` -> CRAG | [Fase 2B] |
 | **Query complexa multi-parte** | query-decomposition | `techniques/QUERY_DECOMPOSITION.md` | `src/rag/query_decomposer.py` |
 | **Melhorar diversidade docs** | adaptive-reranking, diversity | `techniques/ADAPTIVE_RERANKING.md` | `src/rag/reranker.py` |
 | **Otimizar estratégia por query** | query-router, strategies | `techniques/ROUTER.md` | `src/rag/query_router.py` |
@@ -555,7 +555,7 @@
 
 ---
 
-## 📊 ESTATÍSTICAS DA DOCUMENTAÇÃO
+## [EMOJI] ESTATÍSTICAS DA DOCUMENTAÇÃO
 
 ### Por Categoria
 
@@ -602,11 +602,11 @@
 
 ---
 
-## 🔗 NAVEGAÇÃO RÁPIDA
+## [EMOJI] NAVEGAÇÃO RÁPIDA
 
 ### Para Novos Usuários:
 
-1. **Início:** `README.md` → `docs/QUICKSTART.md`
+1. **Início:** `README.md` -> `docs/QUICKSTART.md`
 2. **Tutorial:** `docs/TUTORIAL.md`
 3. **Arquitetura:** `docs/ARCHITECTURE.md`
 
@@ -625,18 +625,18 @@
 
 ---
 
-## 📝 CHANGELOG
+## [EMOJI] CHANGELOG
 
 ### v1.0 - 2025-10-14 (Versão Inicial)
 
 **Criado:**
-- ✅ Índice completo de 37 documentos
-- ✅ 25+ tags navegáveis (A-Z)
-- ✅ 5 categorias organizadas
-- ✅ Quick Search Matrix com 20+ cenários
-- ✅ Estatísticas da documentação
-- ✅ Top 10 docs mais importantes
-- ✅ Navegação rápida por audiência
+- [OK] Índice completo de 37 documentos
+- [OK] 25+ tags navegáveis (A-Z)
+- [OK] 5 categorias organizadas
+- [OK] Quick Search Matrix com 20+ cenários
+- [OK] Estatísticas da documentação
+- [OK] Top 10 docs mais importantes
+- [OK] Navegação rápida por audiência
 
 **ROI Esperado:**
 - 50-70% redução tempo de busca
@@ -649,26 +649,51 @@
 ### v1.2 - 2025-10-16 (Lições Aprendidas)
 
 **Adicionado:**
-- ✅ 9 lições completas em docs/lessons/
-- ✅ Antipadrões RAG catalogados
+- [OK] 9 lições completas em docs/lessons/
+- [OK] Antipadrões RAG catalogados
 
 ---
 
 ### v1.3 - 2025-10-19 (Architecture Docs)
 
 **Adicionado:**
-- ✅ `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
-- ✅ `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes
-- ✅ 3 novas tags: diagrams, api-contracts, mermaid
-- ✅ 2 novos cenários Quick Search Matrix
-- ✅ Estatísticas atualizadas: 44→46 docs
+- [OK] `docs/architecture/DATA_FLOW_DIAGRAMS.md` - 5 diagramas Mermaid
+- [OK] `docs/architecture/API_CONTRACTS.md` - Contratos API 8 agentes
+- [OK] 3 novas tags: diagrams, api-contracts, mermaid
+- [OK] 2 novos cenários Quick Search Matrix
+- [OK] Estatísticas atualizadas: 44->46 docs
 
 **ROI:**
 - ~1h economizada por task (consulta diagrams/contracts vs leitura código)
 
 ---
 
-**Última Atualização:** 2025-10-19  
-**Próximo:** FASE 3.1 SWOT Analysis Tool
+**Última Atualização:** 2025-11-20
+**Próximo:** SPRINT 1 - Integração Ferramentas no Diagnóstico (GAP #2)
 
+---
 
+## 🆕 NOVOS DOCUMENTOS (Nov 2025 - Sessão 36)
+
+### Planning & Roadmap - FASE 5-6
+
+1. **`docs/sprints/SPRINT_PLAN_OPÇÃO_B.md`** (13.500+ palavras)
+   - Roadmap completo 6 sprints (SOLUTION_DESIGN + IMPLEMENTATION)
+   - Sprint 1-6 detalhados com esforço, ROI, prioridade, DoD
+   - Riscos, mitigações, métricas de sucesso
+   - Tags: planning, roadmap, sprints, solution-design, implementation
+
+2. **`docs/PRD_BSC_RAG_AGENT.md`** (9.000+ palavras)
+   - Product Requirements Document completo
+   - 3 user personas detalhadas (Consultor BSC, Gerente PMO, CEO Startup)
+   - User stories US-01 a US-06
+   - Feature requirements FASE 1-6
+   - Technical requirements e success metrics
+   - Tags: prd, requirements, user-stories, features
+
+3. **`docs/implementation_guides/INTEGRATION_PLAN_GAP2.md`** (5.500+ palavras)
+   - Guia técnico resolução GAP #2 (ferramentas não integradas)
+   - Pseudo-código completo de implementação
+   - Schema DiagnosticToolsResult
+   - Testes unitários e E2E a criar
+   - Tags: implementation, gap-critical, diagnostic-tools, integration

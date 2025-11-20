@@ -1,13 +1,13 @@
 # Lição Aprendida: Metodologia de Debugging E2E Testing com APIs Externas
 
-**Data:** 2025-10-27  
-**Sessão:** FASE 3.10 - Testes E2E Tools  
-**Duração:** ~3 horas  
-**Status:** ✅ COMPLETA COM SUCESSO  
+**Data:** 2025-10-27
+**Sessão:** FASE 3.10 - Testes E2E Tools
+**Duração:** ~3 horas
+**Status:** [OK] COMPLETA COM SUCESSO
 
 ---
 
-## 📋 Resumo Executivo
+## [EMOJI] Resumo Executivo
 
 **PROBLEMA:** Teste E2E de persistência de tool outputs falhando - método `get_tool_output()` retornava `None` mesmo após salvamento bem-sucedido no Mem0 Platform.
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 🎯 Problemas Resolvidos
+## [EMOJI] Problemas Resolvidos
 
 ### 1. **Teste E2E Falhando Silenciosamente**
 - **Sintoma:** `get_tool_output()` retornava `None` sem exceções
@@ -36,7 +36,7 @@
 
 ---
 
-## 🧠 Metodologias Validadas
+## [EMOJI] Metodologias Validadas
 
 ### **1. Sequential Thinking para Planejamento**
 ```
@@ -68,40 +68,40 @@ print(f"[DEBUG] Parsed Data: {parsed_data}")
 
 ---
 
-## 🚨 Problemas Recorrentes Identificados
+## [EMOJI] Problemas Recorrentes Identificados
 
 ### **1. APIs Externas com Documentação Incompleta**
-**Frequência:** 80% dos projetos com integrações  
-**Impacto:** 2-4h debugging por integração  
+**Frequência:** 80% dos projetos com integrações
+**Impacto:** 2-4h debugging por integração
 
 **Soluções Baseadas em Pesquisa:**
-- ✅ **Sempre testar estrutura de resposta** antes de assumir formato
-- ✅ **Implementar parsing defensivo** para diferentes estruturas
-- ✅ **Usar logs explícitos** para investigação inicial
-- ✅ **Pesquisar issues conhecidos** no GitHub/repositório oficial
+- [OK] **Sempre testar estrutura de resposta** antes de assumir formato
+- [OK] **Implementar parsing defensivo** para diferentes estruturas
+- [OK] **Usar logs explícitos** para investigação inicial
+- [OK] **Pesquisar issues conhecidos** no GitHub/repositório oficial
 
 ### **2. Filtros/Metadata de APIs Não Funcionando**
-**Frequência:** 60% das APIs v2+ (breaking changes)  
-**Impacto:** 1-3h debugging por filtro  
+**Frequência:** 60% das APIs v2+ (breaking changes)
+**Impacto:** 1-3h debugging por filtro
 
 **Soluções Baseadas em Pesquisa:**
-- ✅ **Workaround com filtro manual** após busca ampla
-- ✅ **Fallback para métodos alternativos** (ex: `json_mode` vs `function_calling`)
-- ✅ **Testar com dados mínimos** antes de implementar filtros complexos
+- [OK] **Workaround com filtro manual** após busca ampla
+- [OK] **Fallback para métodos alternativos** (ex: `json_mode` vs `function_calling`)
+- [OK] **Testar com dados mínimos** antes de implementar filtros complexos
 
 ### **3. Testes E2E com APIs Externas Frágeis**
-**Frequência:** 90% dos projetos E2E  
-**Impacto:** 3-6h debugging por sessão  
+**Frequência:** 90% dos projetos E2E
+**Impacto:** 3-6h debugging por sessão
 
 **Soluções Baseadas em Pesquisa:**
-- ✅ **Usar sandbox environments** quando disponível
-- ✅ **Implementar retry logic** para falhas temporárias
-- ✅ **Isolar dados de teste** com client_ids únicos
-- ✅ **Monitorar logs de API** para identificar problemas
+- [OK] **Usar sandbox environments** quando disponível
+- [OK] **Implementar retry logic** para falhas temporárias
+- [OK] **Isolar dados de teste** com client_ids únicos
+- [OK] **Monitorar logs de API** para identificar problemas
 
 ---
 
-## 📚 Melhores Práticas Validadas (Baseadas em Pesquisa 2025)
+## [EMOJI] Melhores Práticas Validadas (Baseadas em Pesquisa 2025)
 
 ### **1. E2E Testing com APIs Externas**
 ```python
@@ -120,11 +120,11 @@ def api_call_with_fallback(primary_method, fallback_method, *args, **kwargs):
 def debug_api_response(response, expected_structure=None):
     print(f"[DEBUG] Response Type: {type(response)}")
     print(f"[DEBUG] Response Keys: {response.keys() if isinstance(response, dict) else 'N/A'}")
-    
+
     if expected_structure:
         print(f"[DEBUG] Expected: {expected_structure}")
         print(f"[DEBUG] Match: {isinstance(response, expected_structure)}")
-    
+
     return response
 ```
 
@@ -142,7 +142,7 @@ def resilient_api_client():
 
 ---
 
-## 🔧 Implementações Específicas desta Sessão
+## [EMOJI] Implementações Específicas desta Sessão
 
 ### **1. Workaround Mem0 API v2**
 ```python
@@ -177,12 +177,12 @@ print(f"[DEBUG] memories_list length: {len(memories_list)}")
 def test_e2e_save_and_get_swot_output(real_mem0_client, sample_swot_output):
     """Teste integrado: salvar + recuperar no mesmo teste."""
     client_id = "test_e2e_swot_integrated"
-    
+
     # Salvar
     tool_output = ToolOutput(tool_name="SWOT", ...)
     save_result = real_mem0_client.save_tool_output(client_id, tool_output)
     assert save_result == client_id
-    
+
     # Recuperar imediatamente
     retrieved_data = real_mem0_client.get_tool_output(client_id, "SWOT")
     assert retrieved_data is not None
@@ -191,7 +191,7 @@ def test_e2e_save_and_get_swot_output(real_mem0_client, sample_swot_output):
 
 ---
 
-## 📊 Métricas de Sucesso
+## [EMOJI] Métricas de Sucesso
 
 ### **Tempo de Resolução**
 - **Sem metodologia:** 6-8h estimado (debugging tentativa-e-erro)
@@ -210,7 +210,7 @@ def test_e2e_save_and_get_swot_output(real_mem0_client, sample_swot_output):
 
 ---
 
-## 🎓 Lições-Chave para Futuras Sessões
+## [EMOJI] Lições-Chave para Futuras Sessões
 
 ### **1. Sempre Pesquisar Issues Conhecidos**
 - GitHub issues são fonte valiosa de problemas conhecidos
@@ -234,7 +234,7 @@ def test_e2e_save_and_get_swot_output(real_mem0_client, sample_swot_output):
 
 ---
 
-## 🔗 Referências e Fontes
+## [EMOJI] Referências e Fontes
 
 ### **Issues GitHub**
 - [Mem0 Issue #3284](https://github.com/mem0ai/mem0/issues/3284) - Metadata filtering not working
@@ -251,7 +251,7 @@ def test_e2e_save_and_get_swot_output(real_mem0_client, sample_swot_output):
 
 ---
 
-## 📝 Checklist para Futuras Sessões E2E
+## [EMOJI] Checklist para Futuras Sessões E2E
 
 ### **Pré-Teste**
 - [ ] Pesquisar issues conhecidos da API no GitHub

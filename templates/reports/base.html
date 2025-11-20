@@ -7,14 +7,14 @@
     <style>
         /* Fontes modernas */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
+
         /* Reset e base */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             font-size: 11pt;
@@ -23,7 +23,7 @@
             background: white;
             padding: 20mm;
         }
-        
+
         /* Tipografia */
         h1 {
             font-size: 28pt;
@@ -32,7 +32,7 @@
             margin-bottom: 8mm;
             line-height: 1.2;
         }
-        
+
         h2 {
             font-size: 20pt;
             font-weight: 600;
@@ -42,7 +42,7 @@
             padding-bottom: 2mm;
             border-bottom: 2px solid #dbeafe;
         }
-        
+
         h3 {
             font-size: 16pt;
             font-weight: 600;
@@ -50,7 +50,7 @@
             margin-top: 6mm;
             margin-bottom: 3mm;
         }
-        
+
         h4 {
             font-size: 13pt;
             font-weight: 600;
@@ -58,31 +58,31 @@
             margin-top: 4mm;
             margin-bottom: 2mm;
         }
-        
+
         p {
             margin-bottom: 3mm;
             text-align: justify;
         }
-        
+
         strong {
             font-weight: 600;
             color: #111827;
         }
-        
+
         /* Header */
         .header {
             border-bottom: 3px solid #2563eb;
             padding-bottom: 6mm;
             margin-bottom: 10mm;
         }
-        
+
         .header-title {
             font-size: 32pt;
             font-weight: 700;
             color: #1e40af;
             margin-bottom: 4mm;
         }
-        
+
         .header-meta {
             display: flex;
             justify-content: space-between;
@@ -90,11 +90,11 @@
             color: #6b7280;
             margin-top: 3mm;
         }
-        
+
         .header-meta strong {
             color: #374151;
         }
-        
+
         /* Footer */
         .footer {
             position: fixed;
@@ -108,20 +108,20 @@
             display: flex;
             justify-content: space-between;
         }
-        
+
         .footer-left {
             flex: 1;
         }
-        
+
         .footer-right {
             text-align: right;
         }
-        
+
         /* Content area */
         .content {
             margin-bottom: 30mm;
         }
-        
+
         /* Badges */
         .badge {
             display: inline-block;
@@ -132,41 +132,41 @@
             margin-right: 2mm;
             margin-bottom: 2mm;
         }
-        
+
         .badge-high {
             background: #fee2e2;
             color: #991b1b;
             border: 1px solid #fca5a5;
         }
-        
+
         .badge-medium {
             background: #fef3c7;
             color: #92400e;
             border: 1px solid #fde68a;
         }
-        
+
         .badge-low {
             background: #d1fae5;
             color: #065f46;
             border: 1px solid #6ee7b7;
         }
-        
+
         /* Lists */
         ul, ol {
             margin-left: 6mm;
             margin-bottom: 4mm;
         }
-        
+
         li {
             margin-bottom: 2mm;
             line-height: 1.5;
         }
-        
+
         /* Sections */
         section {
             margin-bottom: 8mm;
         }
-        
+
         .executive-summary {
             background: #f0f9ff;
             border-left: 4px solid #2563eb;
@@ -174,13 +174,13 @@
             margin: 6mm 0;
             border-radius: 2mm;
         }
-        
+
         .executive-summary p {
             margin-bottom: 0;
             font-size: 11pt;
             line-height: 1.7;
         }
-        
+
         /* Perspective boxes */
         .perspective {
             background: #f9fafb;
@@ -190,14 +190,14 @@
             margin-bottom: 6mm;
             page-break-inside: avoid;
         }
-        
+
         .perspective-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 4mm;
         }
-        
+
         /* Recommendations */
         .recommendation {
             background: white;
@@ -208,19 +208,19 @@
             margin-bottom: 5mm;
             page-break-inside: avoid;
         }
-        
+
         .recommendation h4 {
             margin-top: 0;
             margin-bottom: 3mm;
         }
-        
+
         .recommendation-meta {
             display: flex;
             gap: 3mm;
             margin-bottom: 3mm;
             flex-wrap: wrap;
         }
-        
+
         /* Tables */
         table {
             width: 100%;
@@ -228,7 +228,7 @@
             margin: 5mm 0;
             font-size: 10pt;
         }
-        
+
         th {
             background: #f3f4f6;
             color: #374151;
@@ -237,41 +237,41 @@
             padding: 3mm;
             border: 1px solid #d1d5db;
         }
-        
+
         td {
             padding: 3mm;
             border: 1px solid #e5e7eb;
         }
-        
+
         tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         /* Page breaks */
         .page-break {
             page-break-after: always;
         }
-        
+
         /* Print-specific */
         @media print {
             body {
                 padding: 15mm;
             }
-            
+
             .page-break {
                 page-break-after: always;
             }
         }
-        
+
         /* Utility classes */
         .text-center {
             text-align: center;
         }
-        
+
         .text-right {
             text-align: right;
         }
-        
+
         .mt-1 { margin-top: 2mm; }
         .mt-2 { margin-top: 4mm; }
         .mt-3 { margin-top: 6mm; }
@@ -288,7 +288,7 @@
         </div>
         <div class="header-meta">
             <div>
-                <strong>Empresa:</strong> {{ profile.company.name }} | 
+                <strong>Empresa:</strong> {{ profile.company.name }} |
                 <strong>Setor:</strong> {{ profile.company.sector }}
             </div>
             <div>
@@ -296,12 +296,12 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="content">
         {% block content %}{% endblock %}
     </div>
-    
+
     <!-- Footer -->
     <div class="footer">
         <div class="footer-left">
@@ -313,4 +313,3 @@
     </div>
 </body>
 </html>
-

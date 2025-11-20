@@ -6,7 +6,7 @@
 
 ---
 
-## 📋 Estrutura
+## [EMOJI] Estrutura
 
 ```
 tests/benchmark_fase2a/
@@ -27,7 +27,7 @@ tests/benchmark_fase2a/
 
 ---
 
-## 🚀 Como Executar
+## [EMOJI] Como Executar
 
 ### 1. Benchmark Completo (50 queries)
 
@@ -36,7 +36,7 @@ cd "D:\Users\OneDrive - engelar.eng.br\Documentos\Hugo\ENGELAR\agente-bsc-rag"
 .\venv\Scripts\python.exe tests\benchmark_fase2a\run_benchmark.py
 ```
 
-**Tempo:** ~2.5-3 horas  
+**Tempo:** ~2.5-3 horas
 **Custo:** ~$1.60 USD
 
 ### 2. Teste Piloto (5 queries)
@@ -45,7 +45,7 @@ cd "D:\Users\OneDrive - engelar.eng.br\Documentos\Hugo\ENGELAR\agente-bsc-rag"
 .\venv\Scripts\python.exe tests\benchmark_fase2a\run_benchmark.py --pilot
 ```
 
-**Tempo:** ~10-15 minutos  
+**Tempo:** ~10-15 minutos
 **Custo:** ~$0.16 USD
 
 ### 3. Customizado (N queries)
@@ -56,7 +56,7 @@ cd "D:\Users\OneDrive - engelar.eng.br\Documentos\Hugo\ENGELAR\agente-bsc-rag"
 
 ---
 
-## 📊 Análise de Resultados
+## [EMOJI] Análise de Resultados
 
 Após o benchmark terminar:
 
@@ -72,21 +72,21 @@ Após o benchmark terminar:
 
 ---
 
-## 🎯 O Que é Avaliado
+## [EMOJI] O Que é Avaliado
 
 ### Baseline (Sem Otimizações)
-- ❌ Query Decomposition desabilitada
-- ❌ Adaptive Re-ranking desabilitado
-- ❌ Router Inteligente desabilitado
+- [ERRO] Query Decomposition desabilitada
+- [ERRO] Adaptive Re-ranking desabilitado
+- [ERRO] Router Inteligente desabilitado
 
 ### Fase 2A (Com Otimizações)
-- ✅ Query Decomposition ativa
-- ✅ Adaptive Re-ranking ativo
-- ✅ Router Inteligente ativo
+- [OK] Query Decomposition ativa
+- [OK] Adaptive Re-ranking ativo
+- [OK] Router Inteligente ativo
 
 ---
 
-## 📈 Métricas Coletadas
+## [EMOJI] Métricas Coletadas
 
 ### 1. Latência
 - Mean, Median (P50)
@@ -103,7 +103,7 @@ Após o benchmark terminar:
 
 ---
 
-## 📚 Dataset de Queries
+## [EMOJI] Dataset de Queries
 
 **Arquivo:** `tests/benchmark_queries.json`
 
@@ -116,7 +116,7 @@ Após o benchmark terminar:
 
 ---
 
-## 🔍 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Problema: Benchmark falha com erro de import
 
@@ -127,17 +127,17 @@ pip install ragas datasets matplotlib seaborn pandas numpy
 
 ### Problema: RAGAS não gera métricas
 
-**Causa:** Queries sem `answer` ou `contexts` vazios.  
+**Causa:** Queries sem `answer` ou `contexts` vazios.
 **Solução:** Verificar que workflow retorna `final_response` e `agent_responses`.
 
 ### Problema: Latências muito altas (>300s)
 
-**Causa:** Muitas queries complexas ativando 4 agentes.  
+**Causa:** Muitas queries complexas ativando 4 agentes.
 **Ação:** Isso é esperado. Queries complexas podem levar 3-5 min.
 
 ---
 
-## 📖 Interpretação de Resultados
+## [EMOJI] Interpretação de Resultados
 
 ### Latência
 
@@ -159,7 +159,7 @@ pip install ragas datasets matplotlib seaborn pandas numpy
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### 1. Query Decomposition
 
@@ -189,18 +189,18 @@ pip install ragas datasets matplotlib seaborn pandas numpy
 
 ---
 
-## 📝 Próximos Passos
+## [EMOJI] Próximos Passos
 
 Após análise dos resultados:
 
-1. ✅ Validar que targets foram atingidos
-2. 📊 Documentar lições em `docs/lessons/`
-3. 📚 Atualizar `docs/techniques/` com dados reais
-4. 🎯 Decidir: Fase 2B (Self-RAG, CRAG) ou ajustes
+1. [OK] Validar que targets foram atingidos
+2. [EMOJI] Documentar lições em `docs/lessons/`
+3. [EMOJI] Atualizar `docs/techniques/` com dados reais
+4. [EMOJI] Decidir: Fase 2B (Self-RAG, CRAG) ou ajustes
 
 ---
 
-## 🔗 Referências
+## [EMOJI] Referências
 
 - **RAGAS Framework:** https://docs.ragas.io/
 - **Plano Fase 2:** `.cursor/plans/fase-2-rag-avancado.plan.md`
@@ -208,6 +208,5 @@ Após análise dos resultados:
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Status:** ✅ Pronto para uso
-
+**Última Atualização:** 2025-10-14
+**Status:** [OK] Pronto para uso

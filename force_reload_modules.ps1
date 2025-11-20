@@ -1,11 +1,11 @@
 # ===================================================================
 # SCRIPT DE FORCE RELOAD DE MÓDULOS PYTHON + STREAMLIT
 # ===================================================================
-# 
+#
 # PROBLEMA: Python mantém módulos em sys.modules na memória
 # SOLUÇÃO: Deletar sys.modules + Limpar cache + Reiniciar Python
 #
-# USO: 
+# USO:
 # 1. PARE o Streamlit completamente (Ctrl+C)
 # 2. Execute: .\force_reload_modules.ps1
 # 3. Reinicie Streamlit: streamlit run app\main.py
@@ -117,7 +117,6 @@ Write-Host "==================================================================="
 Write-Host ""
 Write-Host "TROUBLESHOOTING EXTREMO (se ainda falhar):" -ForegroundColor Red
 Write-Host "- Opção A: Fechar VSCode/IDE completamente + Reabrir" -ForegroundColor White
-Write-Host "- Opção B: Deletar venv e recriar (pip install -r requirements.txt)" -ForegroundColor White  
+Write-Host "- Opção B: Deletar venv e recriar (pip install -r requirements.txt)" -ForegroundColor White
 Write-Host "- Opção C: Reiniciar máquina (último recurso)" -ForegroundColor White
 Write-Host ""
-

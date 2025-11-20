@@ -9,6 +9,7 @@ Valida:
 
 Conformidade: Checklist [[memory:9969868]] (12 pontos)
 """
+
 from unittest.mock import patch
 
 import pytest
@@ -22,10 +23,10 @@ from src.memory.schemas import (
     StrategicContext,
 )
 
-
 # ============================================================================
 # FIXTURES
 # ============================================================================
+
 
 @pytest.fixture
 def orchestrator():
@@ -40,36 +41,46 @@ def valid_bsc_state():
         query="Como implementar BSC?",
         user_id="test_user_001",
         session_id="test_session_001",
-        onboarding_progress={"COMPANY_INFO": True, "STRATEGIC_CONTEXT": True, "ENGAGEMENT_MODE": True},
+        onboarding_progress={
+            "COMPANY_INFO": True,
+            "STRATEGIC_CONTEXT": True,
+            "ENGAGEMENT_MODE": True,
+        },
         client_profile=ClientProfile(
             client_id="test_user_001",
             company=CompanyInfo(
-                name="Test Corp",
-                sector="Tecnologia",
-                size="média",
-                industry="Software Development"
+                name="Test Corp", sector="Tecnologia", size="média", industry="Software Development"
             ),
             context=StrategicContext(
                 current_challenges=["Challenge 1", "Challenge 2"],
                 strategic_objectives=["Objective 1", "Objective 2"],
-                stakeholders=["CEO", "CFO"]
-            )
+                stakeholders=["CEO", "CFO"],
+            ),
         ),
-        metadata={}
+        metadata={},
     )
 
 
 @pytest.fixture
 def mock_complete_diagnostic():
     """CompleteDiagnostic mock (dict) para testes discovery."""
+
     # Mock object com interface mínima necessária
     class MockDiagnostic:
         def __init__(self):
             self.diagnostic_results = [
-                {"perspective": "Financial", "current_state": "Strong revenue", "gaps": ["Cost optimization"]},
+                {
+                    "perspective": "Financial",
+                    "current_state": "Strong revenue",
+                    "gaps": ["Cost optimization"],
+                },
                 {"perspective": "Customer", "current_state": "Good NPS", "gaps": ["Retention"]},
-                {"perspective": "Process", "current_state": "Manual processes", "gaps": ["Automation"]},
-                {"perspective": "Learning", "current_state": "Skills gap", "gaps": ["Training"]}
+                {
+                    "perspective": "Process",
+                    "current_state": "Manual processes",
+                    "gaps": ["Automation"],
+                },
+                {"perspective": "Learning", "current_state": "Skills gap", "gaps": ["Training"]},
             ]
             self.recommendations = []
             self.synergies = ["Cost reduction improves margins"]
@@ -80,7 +91,7 @@ def mock_complete_diagnostic():
                 "diagnostic_results": self.diagnostic_results,
                 "recommendations": self.recommendations,
                 "synergies": self.synergies,
-                "executive_summary": self.executive_summary
+                "executive_summary": self.executive_summary,
             }
 
     return MockDiagnostic()
@@ -90,16 +101,21 @@ def mock_complete_diagnostic():
 # TESTES: coordinate_onboarding
 # ============================================================================
 
+
 def test_coordinate_onboarding_start(orchestrator):
     """Onboarding start cria session e retorna welcome message."""
     state = BSCState(
         query="",  # Primeira interação, sem query
         user_id="test_user_onboarding_start",
         onboarding_progress={},
-        metadata={}
+        metadata={},
     )
 
-    with patch.object(orchestrator.onboarding_agent, 'start_onboarding', return_value="Bem-vindo ao BSC Consulting!"):
+    with patch.object(
+        orchestrator.onboarding_agent,
+        "start_onboarding",
+        return_value="Bem-vindo ao BSC Consulting!",
+    ):
         result = orchestrator.coordinate_onboarding(state)
 
     # Validações
@@ -117,20 +133,26 @@ def test_coordinate_onboarding_multi_turn(orchestrator):
     # Turn 1: Start
     state1 = BSCState(query="", user_id=user_id, onboarding_progress={}, metadata={})
 
-    with patch.object(orchestrator.onboarding_agent, 'start_onboarding', return_value="Welcome!"):
+    with patch.object(orchestrator.onboarding_agent, "start_onboarding", return_value="Welcome!"):
         result1 = orchestrator.coordinate_onboarding(state1)
 
     assert user_id in orchestrator._onboarding_sessions
     assert result1["current_phase"] == ConsultingPhase.ONBOARDING
 
     # Turn 2: User response
-    state2 = BSCState(query="Minha empresa é Test Corp", user_id=user_id, onboarding_progress={}, metadata={})
+    state2 = BSCState(
+        query="Minha empresa é Test Corp", user_id=user_id, onboarding_progress={}, metadata={}
+    )
 
-    with patch.object(orchestrator.onboarding_agent, 'process_turn', return_value={
-        "response": "Ótimo! Qual o setor?",
-        "onboarding_progress": {"COMPANY_INFO": False},
-        "is_complete": False
-    }):
+    with patch.object(
+        orchestrator.onboarding_agent,
+        "process_turn",
+        return_value={
+            "response": "Ótimo! Qual o setor?",
+            "onboarding_progress": {"COMPANY_INFO": False},
+            "is_complete": False,
+        },
+    ):
         result2 = orchestrator.coordinate_onboarding(state2)
 
     assert user_id in orchestrator._onboarding_sessions
@@ -146,16 +168,31 @@ def test_coordinate_onboarding_complete(orchestrator, valid_bsc_state):
     orchestrator._onboarding_sessions[user_id] = {
         "started": True,
         "progress": {"COMPANY_INFO": True, "STRATEGIC_CONTEXT": True},
-        "messages": ["Welcome!", "Test Corp", "Technology"]
+        "messages": ["Welcome!", "Test Corp", "Technology"],
     }
 
     state = BSCState(query="Yes, complete", user_id=user_id, onboarding_progress={}, metadata={})
 
-    with patch.object(orchestrator.onboarding_agent, 'process_turn', return_value={
-        "response": "Onboarding completo!",
-        "onboarding_progress": {"COMPANY_INFO": True, "STRATEGIC_CONTEXT": True, "ENGAGEMENT_MODE": True},
-        "is_complete": True
-    }), patch.object(orchestrator.client_profile_agent, 'extract_profile', return_value=valid_bsc_state.client_profile):
+    with (
+        patch.object(
+            orchestrator.onboarding_agent,
+            "process_turn",
+            return_value={
+                "response": "Onboarding completo!",
+                "onboarding_progress": {
+                    "COMPANY_INFO": True,
+                    "STRATEGIC_CONTEXT": True,
+                    "ENGAGEMENT_MODE": True,
+                },
+                "is_complete": True,
+            },
+        ),
+        patch.object(
+            orchestrator.client_profile_agent,
+            "extract_profile",
+            return_value=valid_bsc_state.client_profile,
+        ),
+    ):
         result = orchestrator.coordinate_onboarding(state)
 
     # Validações
@@ -167,9 +204,13 @@ def test_coordinate_onboarding_complete(orchestrator, valid_bsc_state):
 
 def test_coordinate_onboarding_error_handling(orchestrator):
     """Onboarding com erro retorna fallback amigável."""
-    state = BSCState(query="trigger_error", user_id="test_error", onboarding_progress={}, metadata={})
+    state = BSCState(
+        query="trigger_error", user_id="test_error", onboarding_progress={}, metadata={}
+    )
 
-    with patch.object(orchestrator.onboarding_agent, 'start_onboarding', side_effect=ValueError("Test error")):
+    with patch.object(
+        orchestrator.onboarding_agent, "start_onboarding", side_effect=ValueError("Test error")
+    ):
         result = orchestrator.coordinate_onboarding(state)
 
     # Validações
@@ -183,10 +224,15 @@ def test_coordinate_onboarding_error_handling(orchestrator):
 # TESTES: coordinate_discovery
 # ============================================================================
 
+
 @pytest.mark.asyncio
-async def test_coordinate_discovery_success(orchestrator, valid_bsc_state, mock_complete_diagnostic):
+async def test_coordinate_discovery_success(
+    orchestrator, valid_bsc_state, mock_complete_diagnostic
+):
     """Discovery executa diagnóstico e transiciona para APPROVAL_PENDING."""
-    with patch.object(orchestrator.diagnostic_agent, 'run_diagnostic', return_value=mock_complete_diagnostic):
+    with patch.object(
+        orchestrator.diagnostic_agent, "run_diagnostic", return_value=mock_complete_diagnostic
+    ):
         result = await orchestrator.coordinate_discovery(valid_bsc_state)
 
     # Validações
@@ -200,7 +246,9 @@ async def test_coordinate_discovery_success(orchestrator, valid_bsc_state, mock_
 @pytest.mark.asyncio
 async def test_coordinate_discovery_missing_profile(orchestrator):
     """Discovery sem ClientProfile retorna fallback para ONBOARDING."""
-    state = BSCState(query="Fazer diagnóstico", user_id="test_no_profile", client_profile=None, metadata={})
+    state = BSCState(
+        query="Fazer diagnóstico", user_id="test_no_profile", client_profile=None, metadata={}
+    )
 
     result = await orchestrator.coordinate_discovery(state)
 
@@ -212,7 +260,11 @@ async def test_coordinate_discovery_missing_profile(orchestrator):
 @pytest.mark.asyncio
 async def test_coordinate_discovery_error_handling(orchestrator, valid_bsc_state):
     """Discovery com erro retorna fallback amigável."""
-    with patch.object(orchestrator.diagnostic_agent, 'run_diagnostic', side_effect=RuntimeError("Diagnostic failed")):
+    with patch.object(
+        orchestrator.diagnostic_agent,
+        "run_diagnostic",
+        side_effect=RuntimeError("Diagnostic failed"),
+    ):
         result = await orchestrator.coordinate_discovery(valid_bsc_state)
 
     # Validações
@@ -225,94 +277,75 @@ async def test_coordinate_discovery_error_handling(orchestrator, valid_bsc_state
 # TESTES: validate_transition
 # ============================================================================
 
+
 def test_validate_transition_onboarding_to_discovery_valid(orchestrator, valid_bsc_state):
-    """Transição ONBOARDING → DISCOVERY válida com onboarding completo."""
+    """Transição ONBOARDING -> DISCOVERY válida com onboarding completo."""
     is_valid = orchestrator.validate_transition(
         from_phase=ConsultingPhase.ONBOARDING,
         to_phase=ConsultingPhase.DISCOVERY,
-        state=valid_bsc_state
+        state=valid_bsc_state,
     )
 
     assert is_valid is True
 
 
 def test_validate_transition_onboarding_to_discovery_invalid(orchestrator):
-    """Transição ONBOARDING → DISCOVERY bloqueada se onboarding incompleto."""
+    """Transição ONBOARDING -> DISCOVERY bloqueada se onboarding incompleto."""
     state = BSCState(
         query="Test",
         user_id="test_incomplete",
         onboarding_progress={"COMPANY_INFO": True, "STRATEGIC_CONTEXT": False},  # Incompleto
-        metadata={}
+        metadata={},
     )
 
     is_valid = orchestrator.validate_transition(
-        from_phase=ConsultingPhase.ONBOARDING,
-        to_phase=ConsultingPhase.DISCOVERY,
-        state=state
+        from_phase=ConsultingPhase.ONBOARDING, to_phase=ConsultingPhase.DISCOVERY, state=state
     )
 
     assert is_valid is False
 
 
 def test_validate_transition_discovery_to_approval_valid(orchestrator, valid_bsc_state):
-    """Transição DISCOVERY → APPROVAL_PENDING válida com diagnostic presente."""
+    """Transição DISCOVERY -> APPROVAL_PENDING válida com diagnostic presente."""
     state = BSCState(
-        **valid_bsc_state.model_dump(),
-        diagnostic={"executive_summary": "Test summary"}
+        **valid_bsc_state.model_dump(), diagnostic={"executive_summary": "Test summary"}
     )
 
     is_valid = orchestrator.validate_transition(
-        from_phase=ConsultingPhase.DISCOVERY,
-        to_phase=ConsultingPhase.APPROVAL_PENDING,
-        state=state
+        from_phase=ConsultingPhase.DISCOVERY, to_phase=ConsultingPhase.APPROVAL_PENDING, state=state
     )
 
     assert is_valid is True
 
 
 def test_validate_transition_discovery_to_approval_invalid(orchestrator, valid_bsc_state):
-    """Transição DISCOVERY → APPROVAL_PENDING bloqueada se diagnostic ausente."""
-    state = BSCState(
-        **valid_bsc_state.model_dump(),
-        diagnostic=None  # Ausente
-    )
+    """Transição DISCOVERY -> APPROVAL_PENDING bloqueada se diagnostic ausente."""
+    state = BSCState(**valid_bsc_state.model_dump(), diagnostic=None)  # Ausente
 
     is_valid = orchestrator.validate_transition(
-        from_phase=ConsultingPhase.DISCOVERY,
-        to_phase=ConsultingPhase.APPROVAL_PENDING,
-        state=state
+        from_phase=ConsultingPhase.DISCOVERY, to_phase=ConsultingPhase.APPROVAL_PENDING, state=state
     )
 
     assert is_valid is False
 
 
 def test_validate_transition_approval_to_end_valid(orchestrator, valid_bsc_state):
-    """Transição APPROVAL_PENDING → END válida com APPROVED."""
-    state = BSCState(
-        **valid_bsc_state.model_dump(),
-        approval_status=ApprovalStatus.APPROVED
-    )
+    """Transição APPROVAL_PENDING -> END válida com APPROVED."""
+    state = BSCState(**valid_bsc_state.model_dump(), approval_status=ApprovalStatus.APPROVED)
 
     is_valid = orchestrator.validate_transition(
-        from_phase=ConsultingPhase.APPROVAL_PENDING,
-        to_phase="END",
-        state=state
+        from_phase=ConsultingPhase.APPROVAL_PENDING, to_phase="END", state=state
     )
 
     assert is_valid is True
 
 
 def test_validate_transition_approval_to_end_invalid(orchestrator, valid_bsc_state):
-    """Transição APPROVAL_PENDING → END bloqueada se não APPROVED."""
-    state = BSCState(
-        **valid_bsc_state.model_dump(),
-        approval_status=ApprovalStatus.REJECTED
-    )
+    """Transição APPROVAL_PENDING -> END bloqueada se não APPROVED."""
+    state = BSCState(**valid_bsc_state.model_dump(), approval_status=ApprovalStatus.REJECTED)
 
     is_valid = orchestrator.validate_transition(
-        from_phase=ConsultingPhase.APPROVAL_PENDING,
-        to_phase="END",
-        state=state
+        from_phase=ConsultingPhase.APPROVAL_PENDING, to_phase="END", state=state
     )
 
     assert is_valid is False
@@ -322,15 +355,12 @@ def test_validate_transition_approval_to_end_invalid(orchestrator, valid_bsc_sta
 # TESTES: handle_error
 # ============================================================================
 
+
 def test_handle_error_generic(orchestrator, valid_bsc_state):
     """handle_error retorna fallback com metadata completa."""
     error = ValueError("Test generic error")
 
-    result = orchestrator.handle_error(
-        error=error,
-        state=valid_bsc_state,
-        phase="TEST_PHASE"
-    )
+    result = orchestrator.handle_error(error=error, state=valid_bsc_state, phase="TEST_PHASE")
 
     # Validações
     assert result["current_phase"] == ConsultingPhase.ERROR
@@ -344,11 +374,7 @@ def test_handle_error_unknown_phase(orchestrator, valid_bsc_state):
     """handle_error funciona mesmo com phase UNKNOWN."""
     error = RuntimeError("Unknown phase error")
 
-    result = orchestrator.handle_error(
-        error=error,
-        state=valid_bsc_state,
-        phase="UNKNOWN"
-    )
+    result = orchestrator.handle_error(error=error, state=valid_bsc_state, phase="UNKNOWN")
 
     # Validações
     assert result["current_phase"] == ConsultingPhase.ERROR
@@ -359,6 +385,7 @@ def test_handle_error_unknown_phase(orchestrator, valid_bsc_state):
 # ============================================================================
 # TESTE REGRESSÃO CRÍTICO (Checklist ponto 12)
 # ============================================================================
+
 
 def test_orchestrator_nao_quebra_workflow_existente(orchestrator, valid_bsc_state):
     """CRÍTICO: Orchestrator não interfere com workflow RAG tradicional.
@@ -373,7 +400,7 @@ def test_orchestrator_nao_quebra_workflow_existente(orchestrator, valid_bsc_stat
         query="O que é BSC?",
         user_id="test_rag_user",
         session_id="test_rag_session",
-        metadata={}
+        metadata={},
         # SEM: onboarding_progress, client_profile, diagnostic, approval_status
     )
 
@@ -398,6 +425,7 @@ def test_orchestrator_nao_quebra_workflow_existente(orchestrator, valid_bsc_stat
 # ============================================================================
 # TESTES LAZY LOADING (Properties)
 # ============================================================================
+
 
 def test_lazy_loading_client_profile_agent(orchestrator):
     """ClientProfileAgent carrega apenas quando acessado."""
@@ -427,4 +455,3 @@ def test_lazy_loading_diagnostic_agent(orchestrator):
 
     assert orchestrator._diagnostic_agent is not None
     assert agent == orchestrator._diagnostic_agent
-

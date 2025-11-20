@@ -1,10 +1,10 @@
-# 📗 Referência da API - Agente BSC RAG
+# [EMOJI] Referência da API - Agente BSC RAG
 
 > Documentação técnica completa da API do sistema BSC RAG para uso programático
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 - [Visão Geral](#visão-geral)
 - [LangGraph Workflow](#langgraph-workflow)
@@ -18,7 +18,7 @@
 
 ---
 
-## 🎯 Visão Geral
+## [EMOJI] Visão Geral
 
 A API do Agente BSC RAG segue uma arquitetura modular baseada em:
 
@@ -30,7 +30,7 @@ A API do Agente BSC RAG segue uma arquitetura modular baseada em:
 
 ---
 
-## 🔗 LangGraph Workflow
+## [EMOJI] LangGraph Workflow
 
 ### `get_workflow()`
 
@@ -45,9 +45,9 @@ workflow = get_workflow()
 **Retorno**: `BSCWorkflow` - Instância do workflow LangGraph
 
 **Características**:
-- ✅ Singleton (sempre retorna a mesma instância)
-- ✅ Thread-safe
-- ✅ Carregamento lazy (inicializa apenas no primeiro uso)
+- [OK] Singleton (sempre retorna a mesma instância)
+- [OK] Thread-safe
+- [OK] Carregamento lazy (inicializa apenas no primeiro uso)
 
 ---
 
@@ -140,13 +140,13 @@ print(viz)
 **Exemplo de Saída**:
 
 ```
-START → analyze_query → execute_agents → synthesize_response 
-→ judge_evaluation → decide_next_step → [finalize OR refine] → END
+START -> analyze_query -> execute_agents -> synthesize_response
+-> judge_evaluation -> decide_next_step -> [finalize OR refine] -> END
 ```
 
 ---
 
-## 🎛️ Orchestrator
+## [EMOJI] Orchestrator
 
 Classe responsável por coordenar agentes especialistas.
 
@@ -236,7 +236,7 @@ responses = orchestrator.invoke_agents(
 
 ---
 
-### `ainvoke_agents()` (Assíncrono) ⚡
+### `ainvoke_agents()` (Assíncrono) [FAST]
 
 Executa agentes selecionados de forma **assíncrona** (paralela).
 
@@ -252,9 +252,9 @@ responses = asyncio.run(
 ```
 
 **Vantagens**:
-- ⚡ **3.34x mais rápido** que execução síncrona
-- ✅ Execução paralela com `asyncio.gather()`
-- ✅ Mesma interface que `invoke_agents()`
+- [FAST] **3.34x mais rápido** que execução síncrona
+- [OK] Execução paralela com `asyncio.gather()`
+- [OK] Mesma interface que `invoke_agents()`
 
 **Performance**:
 - 4 agentes sequencial: ~120s
@@ -288,7 +288,7 @@ synthesis = orchestrator.synthesize_response(
 
 ---
 
-## 🤖 Agentes Especialistas BSC
+## [EMOJI] Agentes Especialistas BSC
 
 ### Estrutura Comum
 
@@ -327,7 +327,7 @@ response = await agent.ainvoke(query="Quais são os KPIs de receita?")
 
 ---
 
-### `FinancialAgent` 💰
+### `FinancialAgent` [EMOJI]
 
 **Especialização**: Perspectiva Financeira do BSC
 
@@ -349,7 +349,7 @@ print(response["response"])
 
 ---
 
-### `CustomerAgent` 👥
+### `CustomerAgent` [EMOJI]
 
 **Especialização**: Perspectiva de Clientes
 
@@ -369,7 +369,7 @@ response = agent.invoke("Como medir satisfação do cliente no BSC?")
 
 ---
 
-### `ProcessAgent` ⚙️
+### `ProcessAgent` [EMOJI]
 
 **Especialização**: Perspectiva de Processos Internos
 
@@ -389,7 +389,7 @@ response = agent.invoke("Quais processos críticos monitorar no BSC?")
 
 ---
 
-### `LearningAgent` 🎓
+### `LearningAgent` [EMOJI]
 
 **Especialização**: Perspectiva de Aprendizado e Crescimento
 
@@ -409,7 +409,7 @@ response = agent.invoke("Como desenvolver capacidades organizacionais?")
 
 ---
 
-## ⚖️ Judge Agent
+## [EMOJI] Judge Agent
 
 Agente de validação de qualidade (LLM as Judge).
 
@@ -473,13 +473,13 @@ evaluation = judge.evaluate(
 | **Source Citation** | 30% | Cita fontes adequadamente? |
 
 **Thresholds Padrão**:
-- ✅ Aprovado: score ≥ 0.7
-- ⚠️ Revisar: 0.5 ≤ score < 0.7
-- ❌ Reprovado: score < 0.5
+- [OK] Aprovado: score ≥ 0.7
+- [WARN] Revisar: 0.5 ≤ score < 0.7
+- [ERRO] Reprovado: score < 0.5
 
 ---
 
-## 📚 Pipeline RAG
+## [EMOJI] Pipeline RAG
 
 ### `BSCRetriever`
 
@@ -519,7 +519,7 @@ results = retriever.retrieve(
 | `query` | `str` | (obrigatório) | Query do usuário |
 | `top_k` | `int` | `10` | Número de documentos a retornar |
 | `threshold` | `float` | `0.7` | Score mínimo de relevância (0-1) |
-| `multilingual` | `bool` | `True` | Ativar query expansion PT-BR ↔ EN |
+| `multilingual` | `bool` | `True` | Ativar query expansion PT-BR <-> EN |
 
 **Retorno**: `List[SearchResult]`
 
@@ -544,7 +544,7 @@ results = retriever.retrieve(
 
 1. **Query Translation** (se `multilingual=True`):
    - Detecta idioma (PT-BR vs EN)
-   - Traduz query PT-BR → EN
+   - Traduz query PT-BR -> EN
    - Gera segunda query em inglês
 
 2. **Hybrid Search** (Qdrant nativo):
@@ -587,12 +587,12 @@ embedding = embedding_manager.embed_text("Balanced Scorecard KPIs")
 **Retorno**: `List[float]` - Vector de 3072 dimensões
 
 **Cache**:
-- ✅ Cache automático em disco (diskcache)
-- ✅ 949x speedup para textos repetidos
-- ✅ 87.5% hit rate em cenários realistas
-- ✅ Thread-safe e multiprocess-safe
-- ✅ TTL: 30 dias (configurável)
-- ✅ Tamanho máximo: 5GB com LRU eviction
+- [OK] Cache automático em disco (diskcache)
+- [OK] 949x speedup para textos repetidos
+- [OK] 87.5% hit rate em cenários realistas
+- [OK] Thread-safe e multiprocess-safe
+- [OK] TTL: 30 dias (configurável)
+- [OK] Tamanho máximo: 5GB com LRU eviction
 
 **Estatísticas**:
 
@@ -613,7 +613,7 @@ Tradutor de queries para busca multilíngue.
 
 #### `translate()`
 
-Traduz query PT-BR ↔ EN.
+Traduz query PT-BR <-> EN.
 
 ```python
 from src.rag.query_translator import QueryTranslator
@@ -629,12 +629,12 @@ translation = translator.translate(
 **Retorno**: `str` - "What are the financial KPIs?"
 
 **Cache**:
-- ✅ Cache in-memory automático
-- ✅ LLM: GPT-5 mini (rápido e barato: ~$0.001/query)
+- [OK] Cache in-memory automático
+- [OK] LLM: GPT-5 mini (rápido e barato: ~$0.001/query)
 
 ---
 
-## 🛠️ Ferramentas RAG
+## [EMOJI] Ferramentas RAG
 
 ### `SearchTool`
 
@@ -673,7 +673,7 @@ Source 2 (Score: 0.89):
 
 ---
 
-## ⚙️ Configurações
+## [EMOJI] Configurações
 
 ### Arquivo `.env`
 
@@ -784,7 +784,7 @@ settings.agent_max_workers: int
 
 ---
 
-## 📐 Tipos e Modelos
+## [EMOJI] Tipos e Modelos
 
 ### Pydantic Models
 
@@ -869,7 +869,7 @@ PerspectiveType.LEARNING     # "Learning"
 
 ---
 
-## 🧪 Exemplos Completos
+## [EMOJI] Exemplos Completos
 
 ### Exemplo 1: Uso Básico do Workflow
 
@@ -887,16 +887,16 @@ result = workflow.run(
 
 # Processar resultado
 if result["judge_evaluation"]["approved"]:
-    print("✅ Resposta aprovada!")
+    print("[OK] Resposta aprovada!")
     print(f"\nResposta:\n{result['final_response']}\n")
-    
+
     print(f"Perspectivas consultadas:")
     for p in result["perspectives"]:
         print(f"  - {p}")
-    
+
     print(f"\nScore do Judge: {result['judge_evaluation']['score']:.2f}")
 else:
-    print("❌ Resposta reprovada")
+    print("[ERRO] Resposta reprovada")
     print(f"Feedback: {result['judge_evaluation']['feedback']}")
 ```
 
@@ -970,26 +970,26 @@ evaluation = judge.evaluate(
 
 # Verificar aprovação
 if evaluation["approved"]:
-    print(f"✅ Aprovado com score {evaluation['score']:.2f}")
+    print(f"[OK] Aprovado com score {evaluation['score']:.2f}")
 else:
-    print(f"❌ Reprovado")
+    print(f"[ERRO] Reprovado")
     print(f"Issues: {', '.join(evaluation['issues'])}")
     print(f"Sugestões: {', '.join(evaluation['suggestions'])}")
 ```
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Para dúvidas técnicas sobre a API:
 
-- 📖 Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para detalhes de arquitetura
-- 📘 Veja [TUTORIAL.md](TUTORIAL.md) para casos de uso práticos
-- 🐛 Reporte bugs em [Issues](https://github.com/seu-usuario/agente-bsc-rag/issues)
+- [EMOJI] Consulte [ARCHITECTURE.md](ARCHITECTURE.md) para detalhes de arquitetura
+- [EMOJI] Veja [TUTORIAL.md](TUTORIAL.md) para casos de uso práticos
+- [EMOJI] Reporte bugs em [Issues](https://github.com/seu-usuario/agente-bsc-rag/issues)
 
 ---
 
 <p align="center">
-  <strong>📗 API Reference v1.0</strong><br>
+  <strong>[EMOJI] API Reference v1.0</strong><br>
   <em>Agente BSC RAG - MVP Out/2025</em>
 </p>

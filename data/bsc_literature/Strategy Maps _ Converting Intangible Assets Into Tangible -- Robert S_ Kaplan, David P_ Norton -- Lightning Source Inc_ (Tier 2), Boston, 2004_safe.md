@@ -6,12 +6,12 @@ CONVERTING INTANGIBLE ASSETS INTO TANGIBLE OUTCOMES
 
 ## Autores
 
-Robert S. Kaplan  
+Robert S. Kaplan
 David P. Norton
 
 ### Nota adicional
 
-FROM THE AUTHORS OF THE WORLDWIDE BESTSELLING  
+FROM THE AUTHORS OF THE WORLDWIDE BESTSELLING
 THE BALANCED SCORECARD
 
 ### Editora
@@ -30,8 +30,8 @@ HARVARD BUSINESS PRESS
 
 © 2004 Harvard Business School Publishing Corporation
 
-All rights reserved.  
-First eBook Edition: December 2003  
+All rights reserved.
+First eBook Edition: December 2003
 ISBN 978-1-59139-134-0
 
 No part of this publication may be reproduced, stored in or introduced into a retrieval system, or transmitted, in any form, or by any means (electronic, mechanical, photocopying, recording, or otherwise), without the prior permission of the publisher. Requests for permission should be directed to <permissions@hbsp.harvard.edu>, or mailed to Permissions, Harvard Business School Publishing, 60 Harvard Way, Boston, Massachusetts 02163.
@@ -59,26 +59,26 @@ of the experience on which this work is based.
 
 ## PART I: OVERVIEW
 
-1. Introduction  
+1. Introduction
 2. Strategy Maps
 
 ## PART II: VALUE-CREATING PROCESSES
 
-3. Operations Management Processes  
-4. Customer Management Processes  
-5. Innovation Processes  
+3. Operations Management Processes
+4. Customer Management Processes
+5. Innovation Processes
 6. Regulatory and Social Processes
 
 ## PART III: INTANGIBLE ASSETS
 
-7. Aligning Intangible Assets to Enterprise Strategy  
-8. Human Capital Readiness  
-9. Information Capital Readiness  
+7. Aligning Intangible Assets to Enterprise Strategy
+8. Human Capital Readiness
+9. Information Capital Readiness
 10. Organization Capital Readiness
 
 ## PART IV: BUILDING STRATEGIES AND STRATEGY MAPS
 
-11. Customizing Your Strategy Map to Your Strategy  
+11. Customizing Your Strategy Map to Your Strategy
 12. Planning the Campaign
 
 ---
@@ -87,8 +87,8 @@ of the experience on which this work is based.
 
 # PART V: THE CASE FILES
 
-13. Private-Sector Organizations  
-14. Public-Sector Organizations  
+13. Private-Sector Organizations
+14. Public-Sector Organizations
 15. Nonprofit Organizations
 
 About the Authors
@@ -365,7 +365,7 @@ In The Strategy-Focused Organization, we noted a study of failed strategies, whi
 
 Notas:
 
-- Os números sobrescritos (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) indicam referências/notas de rodapé da obra original.  
+- Os números sobrescritos (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15) indicam referências/notas de rodapé da obra original.
 - Não há fórmulas, tabelas ou figuras nesta página.
 
 ---
@@ -1080,7 +1080,7 @@ The overarching mission of the organization provides the starting point by defin
 
 ## Figura 2-2. The Balanced Scorecard Is a Step in a Continuum That Describes What Value Is and How It Is Created
 
-- Descrição visual: Um diagrama em formato de linha do tempo/continuidade. À esquerda, itens estáveis como “Mission” e “Core Values”. No meio, “Vision” direciona o futuro e liga o estado estável às decisões estratégicas. À direita, “Strategy” representa a fase dinâmica que evolui ao longo do tempo. O conjunto ilustra que o Balanced Scorecard se posiciona como um passo dentro desse continuum, traduzindo missão, valores e visão em criação de valor e execução. Não há eixos numéricos; trata-se de um fluxo conceitual mostrando a progressão lógica de propósito → direção → ação/estratégia.
+- Descrição visual: Um diagrama em formato de linha do tempo/continuidade. À esquerda, itens estáveis como “Mission” e “Core Values”. No meio, “Vision” direciona o futuro e liga o estado estável às decisões estratégicas. À direita, “Strategy” representa a fase dinâmica que evolui ao longo do tempo. O conjunto ilustra que o Balanced Scorecard se posiciona como um passo dentro desse continuum, traduzindo missão, valores e visão em criação de valor e execução. Não há eixos numéricos; trata-se de um fluxo conceitual mostrando a progressão lógica de propósito -> direção -> ação/estratégia.
 
 ---
 
@@ -2327,19 +2327,19 @@ Of course, as a company offering risk management and diversification services to
 
 Risk management should be about more than avoiding fluctuations in income and cash flow. A company’s investors generally hold diversified portfolios that allow unsystematic variation in the outcome from any single company’s performance to have minimum impact on their overall returns. Lisa Meulbroek describes five ways by which corporate-level risk management can create shareholder value in ways that investors cannot accomplish on their own:6
 
-1. Reduce the costs associated with financial distress, such as bankruptcy  
-2. Moderate the risk faced by important nondiversified investors and stakeholders  
-3. Decrease taxes  
-4. Reduce monitoring costs  
+1. Reduce the costs associated with financial distress, such as bankruptcy
+2. Moderate the risk faced by important nondiversified investors and stakeholders
+3. Decrease taxes
+4. Reduce monitoring costs
 5. Lower the cost of capital
 
 Figure 3-3  Swiss Re Strategy Map
 
-—  
+—
 
 Figuras e diagramas
 
-- Figura 3-3: Swiss Re Strategy Map  
+- Figura 3-3: Swiss Re Strategy Map
   Descrição: Referência textual à figura “Swiss Re Strategy Map”. A imagem específica do mapa de estratégia não está presente na página exibida; apenas a legenda “Figure 3-3 Swiss Re Strategy Map” aparece ao pé da página, com uma linha horizontal acima da legenda. Não há eixos, escalas ou elementos gráficos visíveis nesta página além do texto e da legenda.
 
 ---
@@ -3146,7 +3146,7 @@ Figure 4-2 Customer Management Processes
       - Partnering/relationship management
       - Customer education
 - Conexões:
-  - Setas indicam o encadeamento dos quatro processos (Selection → Acquisition → Retention → Growth) alinhados sob a proposição de valor e contribuindo para os objetivos financeiros (produtividade e crescimento) que levam ao “Long-Term Shareholder Value”.
+  - Setas indicam o encadeamento dos quatro processos (Selection -> Acquisition -> Retention -> Growth) alinhados sob a proposição de valor e contribuindo para os objetivos financeiros (produtividade e crescimento) que levam ao “Long-Term Shareholder Value”.
 
 ---
 
@@ -3681,11 +3681,11 @@ In the case study following this chapter, we present the Handleman Company strat
 
 ## NOTES
 
-1. Helpful material on customer selection has been drawn from D. Narandas, “Note on Customer Management,” Note 9-502-073 (Boston: Harvard Business School, 2002), and R. Dolan, “Note on Marketing Strategy,” Note 9-598-061 (Boston: Harvard Business School, 2000).  
-2. R. Lal, “Harrah’s Entertainment Inc.,” Case 502-011 (Boston: Harvard Business School, 2002), 7, 9.  
-3. This discussion of entry-level products is drawn from the “foot-in-the-door” strategy described in D. Narandas, “Note on Customer Management.”  
-4. Lal, “Harrah’s Entertainment Inc.,” 9.  
-5. Ibid.  
+1. Helpful material on customer selection has been drawn from D. Narandas, “Note on Customer Management,” Note 9-502-073 (Boston: Harvard Business School, 2002), and R. Dolan, “Note on Marketing Strategy,” Note 9-598-061 (Boston: Harvard Business School, 2000).
+2. R. Lal, “Harrah’s Entertainment Inc.,” Case 502-011 (Boston: Harvard Business School, 2002), 7, 9.
+3. This discussion of entry-level products is drawn from the “foot-in-the-door” strategy described in D. Narandas, “Note on Customer Management.”
+4. Lal, “Harrah’s Entertainment Inc.,” 9.
+5. Ibid.
 6. The hierarchy of customer loyalty is due to J. Heskett, “Beyond Customer Loyalty,” in Managing Service Quality, vol. 12 (Bradford, UK: MCB University Press, 2002).
 
 ### Figure 4-7 Customer Management Scorecard Template
@@ -4180,7 +4180,7 @@ Descrição detalhada:
 - Título visual: “The Stage-Gate Model of New Product Development”.
 - Fluxo linear da esquerda para a direita alternando “Gates” (G) e “Stages” (S).
 - Elementos na parte superior (fluxo principal):
-  - “Idea” → “G1” → “S1” → “G2” → “S2” → “G3” → “S3” → “G4” → “S4” → “G5” → “S5” → “PIR”.
+  - “Idea” -> “G1” -> “S1” -> “G2” -> “S2” -> “G3” -> “S3” -> “G4” -> “S4” -> “G5” -> “S5” -> “PIR”.
   - Rótulos superiores dos gates/stages:
     - “Initial Gate” sobre G1
     - “Second Gate” sobre G2
@@ -4639,7 +4639,7 @@ understood that putting your best copywriter on a network account helps make tha
 
 Additional internal process themes were:
 
-- Excel at account management and create great ads: Within this theme lies one of Saatchi & Saatchi’s core goals: creating “BFIs”—Big, Fabulous Ideas. More than just an ingenious ad concept, a BFI is a transformational idea; for example, a new product category (such as nonaspirin pain relievers, which Saatchi & Saatchi created for Tylenol), or a new product position (such as pitching Pepcid AC as a preventative, not just a relief, medicine).  
+- Excel at account management and create great ads: Within this theme lies one of Saatchi & Saatchi’s core goals: creating “BFIs”—Big, Fabulous Ideas. More than just an ingenious ad concept, a BFI is a transformational idea; for example, a new product category (such as nonaspirin pain relievers, which Saatchi & Saatchi created for Tylenol), or a new product position (such as pitching Pepcid AC as a preventative, not just a relief, medicine).
   Another process objective within this theme was to revise the “ideas brief” process by which an agency advances a concept from proposal to end product. To conserve resources and prevent burnout, agencies now start with only the four key team leaders (account, planning, media, and creative) to meet and figure out the client challenge. Within twenty-four to forty-eight hours they craft a “challenge brief” defining the client’s need. Only when the client approves the brief does the agency commit significant resources. This streamlined approach sharpened focus within Saatchi as well as within its client companies.
 
 - Focus business development: Agency heads now must identify new business and new client opportunities—and demonstrate the greater payoff from investing to go after their business. This objective has forced a more strategic approach to business planning.
@@ -4839,11 +4839,11 @@ Below, we provide examples of the measurements and disclosures companies current
 
 Because of extensive regulation in developed nations, environmental performance is the most developed of the regulatory and social measurement systems for company reporting. In general, companies have several components to their environmental performance report:
 
-A. Energy and resource consumption  
-B. Water emissions  
-C. Air emissions  
-D. Solid waste production and disposal  
-E. Product performance  
+A. Energy and resource consumption
+B. Water emissions
+C. Air emissions
+D. Solid waste production and disposal
+E. Product performance
 F. Aggregate environmental measures
 
 ### A. Energy and Resource Consumption
@@ -5817,8 +5817,8 @@ Descrição detalhada da figura:
 
 - A figura é um diagrama tipo “mapa estratégico” com múltiplas camadas horizontais, representando a ligação entre perspectivas, proposição de valor ao cliente, famílias de cargos estratégicos e capitais intangíveis.
 - Topo: dois grandes grupos de resultados com setas ovais conectadas:
-  - Productivity: Improve Operating Efficiency → Long-Term Shareholder Value
-  - Growth: Broaden Revenue Mix → Long-Term Shareholder Value
+  - Productivity: Improve Operating Efficiency -> Long-Term Shareholder Value
+  - Growth: Broaden Revenue Mix -> Long-Term Shareholder Value
 - Abaixo: Customer Value Proposition no centro, com quatro ofertas/posicionamentos dentro de elipses conectadas:
   - Price/Quality
   - Financial Adviser
@@ -6390,7 +6390,7 @@ As another and more comprehensive example, Figure 8-3 shows the strategic job fa
   - Um mapa estratégico em formato de diagrama que conecta perspectivas e objetivos estratégicos de Chemico, Inc. ao longo de várias camadas.
   - Camadas típicas de um mapa de estratégia (de baixo para cima): processos internos e capacidades, aprendizagem e crescimento (incluindo famílias de cargos/competências), clientes, e resultados financeiros.
   - O diagrama destaca “strategic job families” (famílias de cargos estratégicos) como elementos-chave na perspectiva de Aprendizado e Crescimento, mostrando como essas famílias suportam processos de engenharia, desenvolvimento de novos produtos e relacionamento técnico com clientes.
-  - Setas indicam o fluxo causal: capacidades de engenharia e relacionamento técnico → inovação de soluções → maior valor para clientes-chave → desempenho financeiro superior.
+  - Setas indicam o fluxo causal: capacidades de engenharia e relacionamento técnico -> inovação de soluções -> maior valor para clientes-chave -> desempenho financeiro superior.
   - Ênfase na ligação estreita entre engenharia e desenvolvimento de novos produtos, posicionada como mecanismo central para gerar soluções inovadoras para problemas dos clientes.
 - Eixos/estruturas:
   - Não há eixos numéricos; é um diagrama de relações com caixas e setas.
@@ -6753,8 +6753,8 @@ Parte superior esquerda:
 
 - Título: Human Capital Readiness Report
 - Subitens:
-  - Human Capital Objective → Develop Strategic Competencies
-  - Measure → Human Capital Readiness
+  - Human Capital Objective -> Develop Strategic Competencies
+  - Measure -> Human Capital Readiness
 - Uma seta aponta para um painel inferior intitulado “Human Capital Readiness (Detail)”.
 
 Parte superior direita:
@@ -6991,10 +6991,10 @@ The case study following this chapter discusses National City Corporation, a ban
 
 ## NOTES
 
-1. John Bronson, speaking at the Balanced Scorecard Collaborative Conference on Human Capital, Naples, Florida, 27 February 2002.  
-2. Reported by Kimberlee Williams, Balanced Scorecard Collaborative Human Capital Working Group, 10 September 2002.  
-3. Several other job families supported this process, but the joint venture program manager had the greatest impact on its success or failure.  
-4. The remaining three programs (applied research, value-added customer partnerships, and order fulfillment) were extensions of mature processes that were being refocused and refined.  
+1. John Bronson, speaking at the Balanced Scorecard Collaborative Conference on Human Capital, Naples, Florida, 27 February 2002.
+2. Reported by Kimberlee Williams, Balanced Scorecard Collaborative Human Capital Working Group, 10 September 2002.
+3. Several other job families supported this process, but the joint venture program manager had the greatest impact on its success or failure.
+4. The remaining three programs (applied research, value-added customer partnerships, and order fulfillment) were extensions of mature processes that were being refocused and refined.
 5. As the strategy maps of BAS evolves, the “people focus” will also change, ensuring that human capital will remain aligned with the overall strategy. To view the most current BAS strategy map, see
 
 ---
@@ -7479,7 +7479,7 @@ Diagrama retangular com cantos arredondados, composto por três blocos principai
     - Infrastructure
   - À direita da grade, texto “Which Applications”.
 
-- No centro, entre o bloco esquerdo e o direito, há uma seta bidirecional horizontal (↔), sugerindo alinhamento entre portfólio e estratégia.
+- No centro, entre o bloco esquerdo e o direito, há uma seta bidirecional horizontal (<->), sugerindo alinhamento entre portfólio e estratégia.
 
 - Bloco à direita (título: “Information Capital Investment Strategy”):
   - Três itens em lista com marcadores circulares:
@@ -8008,7 +8008,7 @@ To fulfill the spirit of the P4 objective, “Offer me innovations that create b
 
 Finally, a tool and discipline for cost-benefit analysis developed by TRPIT in support of its BSC has been adopted and sponsored by the enterprise CFO and has become integral to the initiative budgeting process.
 
-—  
+—
 Case prepared by Robert S. Gold of Balanced Scorecard Collaborative and Pam McGinnis of T. Rowe Price. Our thanks to Pam McGinnis and her colleagues for sharing the T. Rowe Price experience.
 
 ---
@@ -8245,7 +8245,7 @@ Descrição da figura:
   - Deregulation
 - Under these, “From” items are grouped and mapped to a middle column of capability themes, which are then mapped “To” desired outcomes on the right. A large downward arrow points to the “IMS Organization Change Agenda.”
 
-## [Table] Market and Capability Shifts (From → To)
+## [Table] Market and Capability Shifts (From -> To)
 
 | Context Group       | From (Left) | Capability Focus (Center) | To (Right) |
 |:--------------------|:----------------------------|:---------------------------|:-----------------------------------|
@@ -8636,7 +8636,7 @@ Measuring the leadership development process is more straightforward than measur
 
 The Bonneville Power Administration (BPA) provides an excellent example of the leadership measurement process (see Figure 10-11). BPA measures leadership along two dimensions:
 
-a. Employees, customers, and constituents understand BPA’s mission and goals  
+a. Employees, customers, and constituents understand BPA’s mission and goals
 b. The leader produces desired results
 
 The internal employee Organization Assessment Survey, or OAS, shows that employees generally understand the agency’s mission. The responses exceed the high benchmark target established for this measure. The benchmarks for a second survey, “Great Place to Work” (GPTW) compare results to those from an identical survey administered to employees of leading-edge companies in North America. BPA is below the benchmark for this measure—to be in the top 100—but is rapidly closing the gap. BPA also administers a separate annual survey to customers and constituents, monitoring their understanding of BPA’s mission and goals. Any shortfall in performance on this measure motivates BPA’s leaders to increase their efforts to communicate more effectively with these important constituents. Finally, BPA measures its leaders’ ability to produce desired results by monitoring their performance against Balanced Score-card targets. Both
@@ -9120,7 +9120,7 @@ Figure 10-17 Ingersoll-Rand Strategy Map
 
 # [Página 303]
 
-channel management, and customer relationship management.  
+channel management, and customer relationship management.
 • Drive dramatic growth through innovation by focusing on innovative solutions for IR’s customers. This theme develops and manages IR’s products and services portfolio to enable long-term competitive advantage.
 
 Supporting these internal process capabilities, IR designed a people expertise theme in its strategy map to clarify IR’s cultural priorities, manage the critical people skills and competencies, and address the enabling infrastructure needs. From a people expertise perspective, IR will leverage the power of the enterprise through dual citizenship: the business unit and the corporation. Dual citizenship, bringing together the talents, energy, and enthusiasm of all IR people, will differentiate IR as a company, making the enterprise stronger because of the collective might of the individual businesses.
@@ -10242,7 +10242,7 @@ Descrição detalhada:
   1) Primeira coluna (margem esquerda) com as perspectivas.
   2) Coluna central intitulada “Objectives” com listas de objetivos por perspectiva, organizados em agrupamentos com rótulos como F1–F4 (financeiros), C1–C4 (cliente), I1–I5 (internos), L1–L3 (aprendizado).
   3) Coluna da direita intitulada “Measures” contendo as medidas/indicadores correspondentes a cada objetivo.
-- Setas e conectores não estão explicitamente visíveis, mas a organização sugere alinhamento causal de baixo para cima (aprendizado → processos internos → cliente → financeiro).
+- Setas e conectores não estão explicitamente visíveis, mas a organização sugere alinhamento causal de baixo para cima (aprendizado -> processos internos -> cliente -> financeiro).
 
 Conteúdo textual observado na figura:
 
@@ -10250,58 +10250,58 @@ Conteúdo textual observado na figura:
 
 Objectives:
 
-- F1: Profitable growth  
-- F2: Grow organically  
-- F3: Lower costs  
+- F1: Profitable growth
+- F2: Grow organically
+- F3: Lower costs
 - F4: Fit: Profitable growth
 
 Measures:
 
-- Economic Value Added  
-- Earnings Before Interest and Taxes  
-- Growth by value segment  
-- Contribution/profit/value impact by segment  
-- Cost to serve by value segment  
+- Economic Value Added
+- Earnings Before Interest and Taxes
+- Growth by value segment
+- Contribution/profit/value impact by segment
+- Cost to serve by value segment
 - Cost to serve by channel
 
 ### Customer Perspective
 
 Objectives:
 
-- C1: Value proposition  
+- C1: Value proposition
 - C2: Creating distinction
 
 Measures:
 
-- Customer survey (via sales representatives)  
-- Acquisition by segment  
-- Retention by segment  
+- Customer survey (via sales representatives)
+- Acquisition by segment
+- Retention by segment
 - Lifetime customer value
 
 ### Internal Business Process Perspective
 
 Objectives:
 
-- Improve customer experience  
-  - I1: Mass customization  
+- Improve customer experience
+  - I1: Mass customization
   - I2: One-to-one marketing
-- Leverage customer service  
-  - Desire one…  
-  - … Personalized, proactive service  
-- Rationalize operations  
-  - I3: Optimize channel mix (orders, services, problems)  
+- Leverage customer service
+  - Desire one…
+  - … Personalized, proactive service
+- Rationalize operations
+  - I3: Optimize channel mix (orders, services, problems)
   - I4: Streamline processes
 
 Measures:
 
-- Response rate to campaigns  
-- Number of customers using PIN  
-- Reduced number of customer cases  
-- Response to nonpromotional campaigns  
-- Channel mix  
-- Percent interactive channels by value segment  
-- Percent interactive channels by need segment  
-- Percent redundancies eliminated  
+- Response rate to campaigns
+- Number of customers using PIN
+- Reduced number of customer cases
+- Response to nonpromotional campaigns
+- Channel mix
+- Percent interactive channels by value segment
+- Percent interactive channels by need segment
+- Percent redundancies eliminated
 - Savings
 
 Observação: A linha “Desire one… … Personalized, proactive service” aparece como duas linhas contínuas sob “Leverage customer service”, indicando a intenção de um serviço único, personalizado e proativo.
@@ -10310,19 +10310,19 @@ Observação: A linha “Desire one… … Personalized, proactive service” ap
 
 Objectives:
 
-- L1: Enhance our people’s capabilities  
-- L2: Align organization around “One Boise” vision  
+- L1: Enhance our people’s capabilities
+- L2: Align organization around “One Boise” vision
 - L3: Integrate key technologies
 
 Measures:
 
-- Percent trained in “One Boise” skills  
-- Percent “One Boise” new jobs filled  
-- “One Vision” staff survey alignment with strategy  
-- Percent staff with incentives aligned with strategy  
-- CRM technologies versus plan (R1, R2, R3, etc.)  
-- Percent “one Boise” reporting implemented  
-- Percent “one Boise” reporting implemented with customer  
+- Percent trained in “One Boise” skills
+- Percent “One Boise” new jobs filled
+- “One Vision” staff survey alignment with strategy
+- Percent staff with incentives aligned with strategy
+- CRM technologies versus plan (R1, R2, R3, etc.)
+- Percent “one Boise” reporting implemented
+- Percent “one Boise” reporting implemented with customer
 - Percent “one Boise” reporting implemented for management
 
 ---
@@ -10759,8 +10759,8 @@ O processo produz um conjunto de planos de ação incluindo metas, iniciativas e
 
 ### Step 1: Define the Shareholder Value Gap
 
-a. Define the overarching financial (or mission) objectives and measures  
-b. Define the targets and value gap  
+a. Define the overarching financial (or mission) objectives and measures
+b. Define the targets and value gap
 c. Allocate the value gap to growth and productivity goals
 
 Strategy maps start, in the financial perspective, with objectives for creating shareholder value through two financial objectives: a long-term revenue growth component, and a short-term component from productivity improvements. Figure 12-5 shows the financial objectives at Consumer Bank. The overarching shareholder objective was to “dramatically increase earnings per share.” The stretch target for this overarching objective was to “increase net income by $100 million in five years.” The stretch target creates a value gap—the difference between future aspiration and current reality. The value gap communicates to the organization that dramatic change is required since the stretch target should not be achievable solely by continuous improvements.
@@ -10811,9 +10811,9 @@ provides some breakdown of the overall stretch target, few in the organization w
 
 ## Step 2: Reconcile the Customer Value Proposition
 
-a. Clarify target customer segments  
-b. Clarify the customer value proposition  
-c. Select the measures  
+a. Clarify target customer segments
+b. Clarify the customer value proposition
+c. Select the measures
 d. Reconcile customer objectives with financial growth goals
 
 Cost and productivity improvements are relatively easy to target and plan for. After all, the amounts currently being spent are visible in the organization and can be benchmarked against the cost of processes operated by other organizations. So the opportunities for cost and productivity improvements should be tangible. Much harder is articulating how revenue growth targets will be achieved. Revenue growth requires explicit attention to targeted customer groups, including selling more to existing customers and also selling to entirely new customers. Such growth is unlikely to happen automatically or just because the organization has approved a financial plan based on a spreadsheet that assumes 11 percent annual revenue growth. The company must identify the value proposition it will offer customers in targeted groups that will lead to the desired revenue growth.
@@ -10881,7 +10881,7 @@ Step 3: Establish the Value Time Line
 
 ## Página 360
 
-a. Establish the time line for results  
+a. Establish the time line for results
 b. Allocate the value gap to different themes
 
 Figure 12-7 illustrates Consumer Bank’s value time line—how value will be created over time by different internal processes. The overall time horizon for the strategy was five years. Operations management processes would reduce cost per customer. The major impact of this strategy would be felt in the first two years as cost per customer dropped from $100 to $80 per year. If this target were achieved, the company’s net income would double in the first two years, from $20 million to $47 million. Customer management processes would increase the number of relationship (Segment B) customers. Although progress would be made in each year, the major growth would come in year three, helping to boost net income in that year to $96 million, from $47 million in year two. Innovation processes would int...[conteúdo truncado por ser muito longo]
@@ -11037,7 +11037,7 @@ a. Identify the human, information, and organization capital required to support
 
 ## Página 364
 
-b. Assess the readiness of these assets to support the strategy  
+b. Assess the readiness of these assets to support the strategy
 c. Establish measures and targets
 
 In the fifth step, the organization sets targets for the learning and growth objectives that align and create readiness for human, information, and organization capital, the intangible assets. Figure 12-9 describes the learning and growth objectives for Consumer Bank. For each of the seven value-creating internal processes identified in Step 4, the management team asked two questions: (1) “Which job families are critical to managing this process?” and (2) “Which information systems are critical for improving this process?” The answers to these questions established the priorities for developing and aligning human and information capital to the strategy.
@@ -11107,7 +11107,7 @@ We always had strategic objectives to upgrade the skills of our people and to in
 
 ## Step 6: Identify and Fund the Strategic Initiatives
 
-a. Define the specific initiatives required to support the processes and to develop the intangible assets  
+a. Define the specific initiatives required to support the processes and to develop the intangible assets
 b. Clarify and secure the funding
 
 The strategy map describes the logic of the strategy, showing clearly the set of critical processes that create value as well as the intangible assets required to support them. The Balanced Scorecard identifies measures and targets for each objective in the strategy map. But objectives and targets are not achieved simply because they have been identified. For each measure on the Balanced Scorecard, managers must identify the strategic initiatives needed to achieve the target. And they must supply the resources—people, funding, and capacity—required to successfully complete each initiative. The initiatives create the results; they are the basis for successful strategy execution.
@@ -11351,8 +11351,8 @@ The U.S. Army case study following this chapter illustrates the challenges of ca
 
 There are moments in history when events suddenly allow us to see the challenges ahead with a clarity previously unimaginable. The events of this past year have created one of those rare opportunities. Now we see clearly the challenges facing us—and we are confronting them.
 
-—Thomas E. White  
-18th Secretary of the Army  
+—Thomas E. White
+18th Secretary of the Army
 Army Green Book 2002–2003
 
 ### Background
@@ -11440,7 +11440,7 @@ Figure 12-12  Army Mission Map
 
 ### Fluxos e conectividade
 
-- Setas largas verticais em ambos os lados do diagrama conectam “Secure Resources” → “People” → “Sound Business Practices” → “Readiness/Transformation” → “Core Competencies/Mission”.
+- Setas largas verticais em ambos os lados do diagrama conectam “Secure Resources” -> “People” -> “Sound Business Practices” -> “Readiness/Transformation” -> “Core Competencies/Mission”.
 - Um laço elíptico grande circunda “Readiness” e “Transformation”, destacando a interação contínua entre preparo atual e modernização futura.
 - O conjunto indica que recursos assegurados e pessoas desenvolvidas sustentam práticas empresariais sólidas, que por sua vez viabilizam readiness e transformation, culminando na entrega das core competencies aos stakeholders e no cumprimento da missão.
 
@@ -11623,7 +11623,7 @@ The Scorecard has also become a visible part of the company’s annual planning 
 
 Last year, Northwestern Mutual began a series of employee surveys designed to measure, among other things, employee engagement and commitment. The most recent survey showed a dramatic improvement in the number of employees who felt that they “understood company business direction and saw a clear link between their jobs and company objectives.” The Balanced Scorecard rollout was a principal reason for this improvement.
 
-—  
+—
 Case prepared by Arun Dhingra of Balanced Scorecard Collaborative and Deborah Beck of Northwestern Mutual. Our thanks to Ed Zore for sharing the Northwestern Mutual experience.
 
 ## VOLVOFINANS
@@ -11944,9 +11944,9 @@ The RCMP decided to adopt the Balanced Scorecard as the tool to manage the execu
 
 # [Página 394]
 
-measures, and targets. In short, the BSC would describe and measure the RCMP strategy  
+measures, and targets. In short, the BSC would describe and measure the RCMP strategy
 
-- Make accountability for results against the strategic framework more open and transparent  
+- Make accountability for results against the strategic framework more open and transparent
 - Ensure organizational alignment by cascading the scorecard into each of the divisions and functional areas of the organization
 
 The Commissioner of the RCMP would manage the high-level Strategic Executive Council (SEC) strategy map (see Figure 14-1). This map provides direction and clarity to each of the subsidiary strategy maps, and a clear line of sight between the police operations in a division or detachment, and the Commissioner’s priorities.

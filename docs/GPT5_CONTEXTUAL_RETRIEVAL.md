@@ -232,8 +232,8 @@ Durante o processamento, compare logs:
 
 **Solução**: Ajuste `GPT5_REASONING_EFFORT`:
 
-- `minimal` → `low` (tarefas simples)
-- `low` → `medium` (mais complexidade)
+- `minimal` -> `low` (tarefas simples)
+- `low` -> `medium` (mais complexidade)
 
 ### Custos Altos com GPT-5
 
@@ -241,8 +241,8 @@ Durante o processamento, compare logs:
 
 **Solução**: Reduza `GPT5_REASONING_EFFORT`:
 
-- `high` → `medium` (análise moderada)
-- `medium` → `minimal` (tarefas simples)
+- `high` -> `medium` (análise moderada)
+- `medium` -> `minimal` (tarefas simples)
 
 ## Referências
 
@@ -262,5 +262,5 @@ Durante o processamento, compare logs:
 
 ---
 
-**Última Atualização**: 11/10/2025  
+**Última Atualização**: 11/10/2025
 **Autor**: Agente BSC RAG Team

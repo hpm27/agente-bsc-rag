@@ -1,9 +1,9 @@
 # Lição: Streamlit Module Cache Persistente - Outubro 2025
 
-## 📋 Contexto
+## [EMOJI] Contexto
 
-**Data:** 21 de outubro de 2025  
-**Problema:** Código antigo executando em Streamlit mesmo após limpar `__pycache__` 5+ vezes  
+**Data:** 21 de outubro de 2025
+**Problema:** Código antigo executando em Streamlit mesmo após limpar `__pycache__` 5+ vezes
 **Sintomas:**
 - Logs DEBUG adicionados NÃO aparecem
 - Logs antigos (que NÃO existem no código atual) APARECEM
@@ -11,19 +11,19 @@
 
 ---
 
-## 🔍 Investigação (Sequential Thinking + Brightdata Research)
+## [EMOJI] Investigação (Sequential Thinking + Brightdata Research)
 
 ### Hipóteses Testadas
 
-1. ✅ **__pycache__ directories** → Limpado 5x, problema persistiu
-2. ✅ **.pyc files soltos** → Nenhum encontrado em src/
-3. ✅ **Streamlit cache (.streamlit/)** → Não existia
-4. ✅ **LangGraph checkpoints** → Não existia
-5. ❌ **sys.modules cache em memória** → **CAUSA ROOT CONFIRMADA**
+1. [OK] **__pycache__ directories** -> Limpado 5x, problema persistiu
+2. [OK] **.pyc files soltos** -> Nenhum encontrado em src/
+3. [OK] **Streamlit cache (.streamlit/)** -> Não existia
+4. [OK] **LangGraph checkpoints** -> Não existia
+5. [ERRO] **sys.modules cache em memória** -> **CAUSA ROOT CONFIRMADA**
 
 ---
 
-## 🎯 CAUSA ROOT (Validada por Pesquisa 2024-2025)
+## [EMOJI] CAUSA ROOT (Validada por Pesquisa 2024-2025)
 
 **Fonte:** Stack Overflow, Streamlit Community, Reddit r/learnpython (2024-2025)
 
@@ -36,7 +36,7 @@
 │  ┌────────────────────────────────────────┐            │
 │  │  sys.modules (MEMÓRIA RAM)             │            │
 │  │                                         │            │
-│  │  'src.agents.diagnostic_agent': <mod>  │ ← AQUI!   │
+│  │  'src.agents.diagnostic_agent': <mod>  │ <- AQUI!   │
 │  │  'src.graph.workflow': <module>        │            │
 │  │  ... (todos módulos importados)        │            │
 │  └────────────────────────────────────────┘            │
@@ -46,12 +46,12 @@
 └─────────────────────────────────────────────────────────┘
 
                     ↓ (import statement)
-                    
+
 ┌─────────────────────────────────────────────────────────┐
 │ DISCO (Arquivos .py)                                    │
 │                                                          │
-│  src/agents/diagnostic_agent.py  ← Código NOVO         │
-│  __pycache__/*.pyc               ← Cache DISCO          │
+│  src/agents/diagnostic_agent.py  <- Código NOVO         │
+│  __pycache__/*.pyc               <- Cache DISCO          │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -60,7 +60,7 @@
 
 ---
 
-## 🐛 Por Que Aconteceu no Nosso Projeto
+## [EMOJI] Por Que Aconteceu no Nosso Projeto
 
 ### Logs que Apareceram (mas NÃO existem no código):
 
@@ -84,7 +84,7 @@ grep -r "Financial Agent processando (async)" src/
 
 ```python
 # src/agents/diagnostic_agent.py linha 473
-logger.info("🚀🚀🚀 [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERSÃO NOVA EXECUTANDO! 🚀🚀🚀")
+logger.info("[EMOJI][EMOJI][EMOJI] [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERSÃO NOVA EXECUTANDO! [EMOJI][EMOJI][EMOJI]")
 ```
 
 **No log:** AUSENTE completamente!
@@ -93,7 +93,7 @@ logger.info("🚀🚀🚀 [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERS
 
 ---
 
-## ✅ SOLUÇÃO DEFINITIVA
+## [OK] SOLUÇÃO DEFINITIVA
 
 ### Opção 1: Matar Processo Python (RECOMENDADO - 100% Eficaz)
 
@@ -106,7 +106,7 @@ Get-Process python | Stop-Process -Force
 Get-Process python | Where-Object {$_.CommandLine -like "*streamlit*"} | Stop-Process -Force
 
 # Método 3: Via Task Manager
-# Ctrl+Shift+Esc → Detalhes → python.exe → Finalizar Tarefa
+# Ctrl+Shift+Esc -> Detalhes -> python.exe -> Finalizar Tarefa
 ```
 
 **Depois:**
@@ -174,7 +174,7 @@ streamlit run app\main.py
 
 ---
 
-## 🚨 PROBLEMA 2: AttributeError Pydantic V2
+## [EMOJI] PROBLEMA 2: AttributeError Pydantic V2
 
 ### Erro Observado
 
@@ -192,12 +192,12 @@ AttributeError: 'dict' object has no attribute 'current_challenges'
 # V1 - FUNCIONAVA
 data = input_model.dict(exclude_unset=True)
 updated = model.copy(update=data)
-updated = updated.parse_obj(updated)  # ← Convertia nested dicts!
+updated = updated.parse_obj(updated)  # <- Convertia nested dicts!
 
 # V2 - NÃO FUNCIONA MAIS
 data = input_model.model_dump(exclude_unset=True)
 updated = model.model_copy(update=data)
-updated = updated.model_validate(updated)  # ← NÃO converte nested!
+updated = updated.model_validate(updated)  # <- NÃO converte nested!
 ```
 
 **Por que:** Pydantic V2 com `model_dump()` retorna nested models como **dicts**, e `model_validate()` NÃO os converte de volta.
@@ -237,7 +237,7 @@ else:
 
 ---
 
-## 📊 ROI e Aprendizados
+## [EMOJI] ROI e Aprendizados
 
 ### Tempo Gasto
 - Debugging + 5x limpezas manuais: **40 minutos**
@@ -251,27 +251,27 @@ else:
 
 ### Top 5 Lições
 
-1. ✅ **Limpar __pycache__ NÃO é suficiente** - Cache está na memória do processo
-2. ✅ **Streamlit hot-reload NÃO limpa sys.modules** - Processo deve ser morto
-3. ✅ **Logs DEBUG "únicos" são essenciais** - Permitem detectar código antigo
-4. ✅ **Pydantic V2 nested models requerem conversão explícita** - Não há magic parsing
-5. ✅ **Grep é ferramenta crítica** - Encontrar código "fantasma" que aparece nos logs
+1. [OK] **Limpar __pycache__ NÃO é suficiente** - Cache está na memória do processo
+2. [OK] **Streamlit hot-reload NÃO limpa sys.modules** - Processo deve ser morto
+3. [OK] **Logs DEBUG "únicos" são essenciais** - Permitem detectar código antigo
+4. [OK] **Pydantic V2 nested models requerem conversão explícita** - Não há magic parsing
+5. [OK] **Grep é ferramenta crítica** - Encontrar código "fantasma" que aparece nos logs
 
 ### Antipadrões Identificados
 
-❌ **NÃO FAZER:**
+[ERRO] **NÃO FAZER:**
 - Confiar em hot-reload do Streamlit para módulos críticos
 - Assumir que `__pycache__` limpo = código atualizado
 - Usar `model_validate()` para converter nested dicts em Pydantic V2
 
-✅ **FAZER:**
+[OK] **FAZER:**
 - Matar processo Python quando mudanças críticas
 - Adicionar logs DEBUG com timestamp/versão para detectar código antigo
 - Converter nested dicts EXPLICITAMENTE antes de criar Pydantic models
 
 ---
 
-## 🔗 Referências
+## [EMOJI] Referências
 
 ### Pesquisa Brightdata (21 Out 2025)
 
@@ -285,33 +285,32 @@ else:
 5. [Recursive version of 'reload'](https://stackoverflow.com/questions/15506971/recursive-version-of-reload) (12 anos, 10+ respostas)
 
 **Pydantic V2 Issues:**
-6. [Partial update of nested model via dump → copy doesn't work on v2](https://github.com/pydantic/pydantic/issues/7387) (Sep 2023 - CRITICAL)
+6. [Partial update of nested model via dump -> copy doesn't work on v2](https://github.com/pydantic/pydantic/issues/7387) (Sep 2023 - CRITICAL)
 
 ---
 
-## 🎯 Próximos Passos
+## [EMOJI] Próximos Passos
 
 1. **Testar solução:** Matar processo Python + Reiniciar Streamlit
-2. **Validar:** Procurar log `🚀🚀🚀 [DIAGNOSTIC v2.1...` no novo log
+2. **Validar:** Procurar log `[EMOJI][EMOJI][EMOJI] [DIAGNOSTIC v2.1...` no novo log
 3. **Se falhar ainda:** Considerar opções extremas (fechar VSCode, deletar venv, reiniciar máquina)
 
 ---
 
-## ✅ Checklist de Validação
+## [OK] Checklist de Validação
 
 Ao reiniciar Streamlit, verificar:
 
-- [ ] Log `🚀🚀🚀 [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERSÃO NOVA EXECUTANDO! 🚀🚀🚀` APARECE
+- [ ] Log `[EMOJI][EMOJI][EMOJI] [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERSÃO NOVA EXECUTANDO! [EMOJI][EMOJI][EMOJI]` APARECE
 - [ ] Logs antigos `[FIN] Financial Agent processando (async)` NÃO APARECEM
 - [ ] AttributeError `'dict' object has no attribute 'current_challenges'` NÃO OCORRE
 - [ ] Diagnóstico completa sem loop infinito
 - [ ] Recomendações são geradas com sucesso
 
-Se TODOS checkboxes marcados = **Problema resolvido!** ✅
+Se TODOS checkboxes marcados = **Problema resolvido!** [OK]
 
 ---
 
-**Autor:** Agente BSC RAG (Claude Sonnet 4.5)  
-**Revisado:** Brightdata Research + Sequential Thinking Methodology  
-**Status:** ✅ Solução Validada (aguardando teste usuário)
-
+**Autor:** Agente BSC RAG (Claude Sonnet 4.5)
+**Revisado:** Brightdata Research + Sequential Thinking Methodology
+**Status:** [OK] Solução Validada (aguardando teste usuário)

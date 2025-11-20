@@ -5,8 +5,8 @@ alwaysApply: false
 
 # 📘 CATÁLOGO DE TÉCNICAS RAG - BSC Project
 
-**Versão:** 1.0  
-**Última Atualização:** 2025-10-14  
+**Versão:** 1.0
+**Última Atualização:** 2025-10-14
 **Técnicas Catalogadas:** 3 (Fase 2A completa) + 2 (Fase 2B planejadas)
 
 ---
@@ -63,11 +63,11 @@ Técnicas que transformam/melhoram a query antes do retrieval.
 - ✅ Queries relacionais ("relação entre X e Y")
 - ❌ Queries simples factual (<30 palavras, "O que é BSC?")
 
-**ROI Esperado:** +30-40% recall, +25-35% precision  
+**ROI Esperado:** +30-40% recall, +25-35% precision
 **ROI Real:** Heurística 100% accuracy (ground truth não validável ainda)
 
-**Complexidade:** ⭐⭐ (Simples)  
-**Tempo:** 4 dias (implementação + testes + docs)  
+**Complexidade:** ⭐⭐ (Simples)
+**Tempo:** 4 dias (implementação + testes + docs)
 **Custo:** ~$0.0001 por query (GPT-5 mini)
 
 **Componentes:**
@@ -139,11 +139,11 @@ Técnicas que melhoram qualidade e diversidade dos documentos re-ranked.
 - ❌ Dataset muito pequeno (<50 docs totais)
 - ❌ Latência crítica (<2s requirement)
 
-**ROI Esperado:** Diversity score >0.7, ≥2 fontes no top-5  
+**ROI Esperado:** Diversity score >0.7, ≥2 fontes no top-5
 **ROI Real:** 100% coverage, 38 testes validados
 
-**Complexidade:** ⭐⭐ (Simples)  
-**Tempo:** 2 dias (implementação + 38 testes + docs)  
+**Complexidade:** ⭐⭐ (Simples)
+**Tempo:** 2 dias (implementação + 38 testes + docs)
 **Custo:** +1-2s latência (cálculo embeddings + MMR)
 
 **Componentes:**
@@ -212,11 +212,11 @@ Técnicas que adicionam decisões inteligentes e routing automático.
 - ❌ Todas queries são do mesmo tipo (routing desnecessário)
 - ❌ Sistema com apenas 1 estratégia de retrieval
 
-**ROI Esperado:** -20% latência média, 90% queries simples <10s  
+**ROI Esperado:** -20% latência média, 90% queries simples <10s
 **ROI Real:** Classifier 92% accuracy, 6h implementação (10x mais rápido!)
 
-**Complexidade:** ⭐⭐⭐⭐ (Média-Alta)  
-**Tempo:** 6h (vs 5-7 dias estimados - **10x speedup!**)  
+**Complexidade:** ⭐⭐⭐⭐ (Média-Alta)
+**Tempo:** 6h (vs 5-7 dias estimados - **10x speedup!**)
 **Custo:** <$0.0001 por query (heurísticas 80%, LLM fallback 20%)
 
 **Componentes:**
@@ -478,7 +478,7 @@ for cada documento não selecionado:
     relevance = rerank_score[doc]
     max_similarity = max(cosine_similarity(doc, selected_docs))
     mmr_score = λ * relevance - (1-λ) * max_similarity
-    
+
 selecionar doc com maior mmr_score
 ```
 
@@ -583,7 +583,7 @@ Query "Qual impacto aprendizado em finanças?"
 
 ```python
 # Simple Factual
-word_count < 30 
+word_count < 30
 AND ("o que é" OR "defina" OR "explique")
 AND NOT ("e" OR "também" OR "considerando")
 
@@ -650,8 +650,8 @@ DIRECT_ANSWER_CACHE_TTL=3600
 
 **ROI Esperado:** -40-50% alucinações, +10-15% faithfulness
 
-**Complexidade:** ⭐⭐⭐⭐ (Média-Alta)  
-**Tempo Estimado:** 3-4 dias (13-16h)  
+**Complexidade:** ⭐⭐⭐⭐ (Média-Alta)
+**Tempo Estimado:** 3-4 dias (13-16h)
 **Custo:** +30-40% (múltiplos LLM calls para grading)
 
 **Componentes:**
@@ -681,7 +681,7 @@ Query → [Precisa retrieval?]
 - ❌ +20-30% latência
 - ❌ +30-40% custo
 
-**Documentação Planejada:** `docs/techniques/SELF_RAG.md`  
+**Documentação Planejada:** `docs/techniques/SELF_RAG.md`
 **Plano Detalhado:** `.cursor/plans/fase-2b-rag-avancado.plan.md`
 
 ---
@@ -701,8 +701,8 @@ Query → [Precisa retrieval?]
 
 **ROI Esperado:** +15-25% precision, +15% accuracy em queries corrigidas
 
-**Complexidade:** ⭐⭐⭐⭐⭐ (Alta)  
-**Tempo Estimado:** 4-5 dias (18-21h)  
+**Complexidade:** ⭐⭐⭐⭐⭐ (Alta)
+**Tempo Estimado:** 4-5 dias (18-21h)
 **Custo:** +40-50% (grading + query rewrite + web search)
 
 **Componentes:**
@@ -730,7 +730,7 @@ Query → Retrieve → Grade (score 0-1)
 - ❌ +40-50% custo
 - ❌ Precisa integração web search (Tavily API ou Brightdata MCP)
 
-**Documentação Planejada:** `docs/techniques/CRAG.md`  
+**Documentação Planejada:** `docs/techniques/CRAG.md`
 **Plano Detalhado:** `.cursor/plans/fase-2b-rag-avancado.plan.md`
 
 ---
@@ -963,6 +963,6 @@ tail -f logs/routing_decisions.jsonl  # Router está sendo usado?
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Status:** ✅ TIER 2 COMPLETO - 3 técnicas catalogadas  
+**Última Atualização:** 2025-10-14
+**Status:** ✅ TIER 2 COMPLETO - 3 técnicas catalogadas
 **Próxima Revisão:** Após Fase 2B.1 (Self-RAG)

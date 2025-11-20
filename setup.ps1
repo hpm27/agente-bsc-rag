@@ -95,7 +95,7 @@ if (Test-Path ".env") {
     Write-Host "   1. OpenAI API Key (OBRIGATORIO)" -ForegroundColor White
     Write-Host "   2. Cohere API Key (OBRIGATORIO)" -ForegroundColor White
     Write-Host "   3. Anthropic API Key (OPCIONAL)" -ForegroundColor White
-    
+
     @"
 # OpenAI (OBRIGATORIO)
 OPENAI_API_KEY=sk-your-openai-key-here
@@ -149,7 +149,7 @@ ENABLE_METRICS=true
 DEBUG=false
 LOG_LEVEL=INFO
 "@ | Out-File -FilePath ".env" -Encoding UTF8
-    
+
     Write-Host "`n[OK] Arquivo .env criado" -ForegroundColor Green
     Write-Host "[WARN] ATENCAO: Edite o arquivo .env e adicione suas API keys!" -ForegroundColor Yellow
 }
@@ -179,7 +179,7 @@ $response = Read-Host
 if ($response -ne 'n' -and $response -ne 'N') {
     Write-Host "`n[INFO] Iniciando containers..." -ForegroundColor Yellow
     docker-compose up -d
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`n[OK] Servicos Docker iniciados com sucesso!" -ForegroundColor Green
         Write-Host "`n[INFO] Status dos servicos:" -ForegroundColor Cyan

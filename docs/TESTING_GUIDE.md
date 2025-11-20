@@ -1,6 +1,6 @@
 # Guia de Testes End-to-End - Agente BSC RAG
 
-## 📋 Visão Geral
+## [EMOJI] Visão Geral
 
 Este guia detalha como executar e interpretar os **testes End-to-End (E2E)** do sistema Agente BSC RAG. Os testes validam o sistema completo funcionando de ponta a ponta, desde a ingestão de dados até a geração de respostas.
 
@@ -8,11 +8,11 @@ Este guia detalha como executar e interpretar os **testes End-to-End (E2E)** do 
 
 ---
 
-## 🎯 Objetivos dos Testes E2E
+## [EMOJI] Objetivos dos Testes E2E
 
 Os testes E2E validam:
 
-1. **Fluxo Completo**: Ingestão → Query → Retrieval → Agentes → Synthesis → Judge → Resposta
+1. **Fluxo Completo**: Ingestão -> Query -> Retrieval -> Agentes -> Synthesis -> Judge -> Resposta
 2. **Performance**: Latência (P50/P95/P99), cache de embeddings, paralelização
 3. **Qualidade**: Precisão de respostas, aprovação do Judge, scores de relevância
 4. **Otimizações**: Cache 949x speedup, busca multilíngue +106% precisão, paralelização 3.34x
@@ -20,7 +20,7 @@ Os testes E2E validam:
 
 ---
 
-## 📦 Estrutura de Testes
+## [EMOJI] Estrutura de Testes
 
 ### Arquivos
 
@@ -44,7 +44,7 @@ tests/integration/
 
 ---
 
-## 🚀 Pré-requisitos
+## [EMOJI] Pré-requisitos
 
 ### 1. Sistema em Execução
 
@@ -115,7 +115,7 @@ pip install -r requirements.txt
 
 ---
 
-## ▶️ Executando Testes
+## ▶ Executando Testes
 
 ### Executar Todos os Testes
 
@@ -173,7 +173,7 @@ pytest tests/integration/test_e2e.py -m "slow" -v
 
 ---
 
-## 📊 Interpretando Resultados
+## [EMOJI] Interpretando Resultados
 
 ### Output Esperado
 
@@ -204,8 +204,8 @@ tests/integration/test_e2e.py::TestSystemReadiness::test_dataset_indexed PASSED 
 ```
 
 **Targets MVP**:
-- P50 < 20s ✅
-- P95 < 30s ✅
+- P50 < 20s [OK]
+- P95 < 30s [OK]
 - P99 < 40s (aceitável)
 
 #### 2. Cache de Embeddings
@@ -215,8 +215,8 @@ tests/integration/test_e2e.py::TestSystemReadiness::test_dataset_indexed PASSED 
 ```
 
 **Targets**:
-- Speedup >= 10x (esperado: 100-1000x) ✅
-- Cache hit rate >= 80% ✅
+- Speedup >= 10x (esperado: 100-1000x) [OK]
+- Cache hit rate >= 80% [OK]
 
 #### 3. Judge Approval Rate
 
@@ -225,8 +225,8 @@ tests/integration/test_e2e.py::TestSystemReadiness::test_dataset_indexed PASSED 
 ```
 
 **Targets**:
-- Approval rate >= 70% ✅
-- Avg score >= 0.7 ✅
+- Approval rate >= 70% [OK]
+- Avg score >= 0.7 [OK]
 
 #### 4. Busca Multilíngue
 
@@ -235,7 +235,7 @@ tests/integration/test_e2e.py::TestSystemReadiness::test_dataset_indexed PASSED 
 ```
 
 **Target**:
-- Pelo menos 50% dos docs com score >0.7 ✅
+- Pelo menos 50% dos docs com score >0.7 [OK]
 
 #### 5. Paralelização de Agentes
 
@@ -244,11 +244,11 @@ tests/integration/test_e2e.py::TestSystemReadiness::test_dataset_indexed PASSED 
 ```
 
 **Target**:
-- <20s para 3+ perspectivas (vs ~30-40s sequencial) ✅
+- <20s para 3+ perspectivas (vs ~30-40s sequencial) [OK]
 
 ---
 
-## ⚠️ Troubleshooting
+## [WARN] Troubleshooting
 
 ### Problema 1: Qdrant não está rodando
 
@@ -409,26 +409,26 @@ pytest tests/integration/test_e2e.py::TestMetrics::test_judge_approval_rate -v -
 
 ---
 
-## 📈 Métricas de Sucesso MVP
+## [EMOJI] Métricas de Sucesso MVP
 
 ### Targets Alcançados (14/10/2025)
 
 | Métrica | Target MVP | Atual | Status |
 |---------|------------|-------|--------|
-| **Latência P50** | <20s | ~12s | ✅ |
-| **Latência P95** | <30s | ~19s | ✅ |
-| **Cache Speedup** | >10x | 949x | ✅ |
-| **Cache Hit Rate** | >80% | 87.5% | ✅ |
-| **Judge Approval** | >70% | ~83% | ✅ |
-| **Judge Avg Score** | >0.7 | ~0.82 | ✅ |
-| **Multilingual Precision** | >50% docs score >0.7 | 80% | ✅ |
-| **Paralelização** | <20s para 3+ persp. | ~14s | ✅ |
+| **Latência P50** | <20s | ~12s | [OK] |
+| **Latência P95** | <30s | ~19s | [OK] |
+| **Cache Speedup** | >10x | 949x | [OK] |
+| **Cache Hit Rate** | >80% | 87.5% | [OK] |
+| **Judge Approval** | >70% | ~83% | [OK] |
+| **Judge Avg Score** | >0.7 | ~0.82 | [OK] |
+| **Multilingual Precision** | >50% docs score >0.7 | 80% | [OK] |
+| **Paralelização** | <20s para 3+ persp. | ~14s | [OK] |
 
-**Conclusão**: Sistema MVP **100% dentro dos targets** 🎉
+**Conclusão**: Sistema MVP **100% dentro dos targets** [EMOJI]
 
 ---
 
-## 🔧 Customizando Testes
+## [EMOJI] Customizando Testes
 
 ### Adicionar Nova Query de Teste
 
@@ -456,9 +456,9 @@ Editar `tests/integration/test_e2e.py`:
 async def test_meu_caso_especifico(self, workflow):
     """Descrição do teste."""
     query = "Minha query de teste"
-    
+
     result = await workflow.run(query, session_id="test-custom")
-    
+
     # Suas assertions aqui
     assert result is not None
     assert "response" in result
@@ -481,7 +481,7 @@ assert speedup >= 10  # Ajustar para 5 se infra for mais lenta
 
 ---
 
-## 🚦 CI/CD Integration
+## [EMOJI] CI/CD Integration
 
 ### GitHub Actions (Exemplo)
 
@@ -493,25 +493,25 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       qdrant:
         image: qdrant/qdrant:latest
         ports:
           - 6333:6333
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      
+
       - name: Index dataset
         run: |
           python scripts/build_knowledge_base.py
@@ -519,7 +519,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-      
+
       - name: Run E2E tests
         run: |
           pytest tests/integration/test_e2e.py -v --junitxml=report.xml
@@ -527,7 +527,7 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
-      
+
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
@@ -537,7 +537,7 @@ jobs:
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 - **Pytest Documentation**: https://docs.pytest.org/
 - **Pytest Asyncio**: https://github.com/pytest-dev/pytest-asyncio
@@ -547,7 +547,7 @@ jobs:
 
 ---
 
-## 📝 Changelog
+## [EMOJI] Changelog
 
 ### 14/10/2025 - v1.0 (Inicial)
 - Suite completa de 22 testes E2E
@@ -557,7 +557,6 @@ jobs:
 
 ---
 
-**Última atualização**: 14/10/2025  
-**Versão**: 1.0  
+**Última atualização**: 14/10/2025
+**Versão**: 1.0
 **Autor**: Agente BSC RAG Team
-

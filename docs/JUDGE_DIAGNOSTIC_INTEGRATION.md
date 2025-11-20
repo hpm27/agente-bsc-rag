@@ -1,23 +1,23 @@
 # Judge Agent - Integração no Workflow de Diagnóstico
 
-**Data:** Novembro 2025  
-**Versão:** 1.0  
-**Status:** ✅ Implementado e Validado
+**Data:** Novembro 2025
+**Versão:** 1.0
+**Status:** [OK] Implementado e Validado
 
 ---
 
-## 📋 Resumo Executivo
+## [EMOJI] Resumo Executivo
 
 O **Judge Agent** foi integrado ao workflow de diagnóstico BSC para avaliar automaticamente a qualidade dos diagnósticos gerados ANTES de enviar para aprovação humana. Esta integração implementa um **quality gate** que:
 
-- ✅ Avalia diagnósticos com critérios context-aware (DIAGNOSTIC vs RAG)
-- ✅ Adiciona scores e reasoning em metadata
-- ✅ Permite prosseguir mesmo com score baixo (human-in-the-loop)
-- ✅ Registra logs estruturados para monitoramento
+- [OK] Avalia diagnósticos com critérios context-aware (DIAGNOSTIC vs RAG)
+- [OK] Adiciona scores e reasoning em metadata
+- [OK] Permite prosseguir mesmo com score baixo (human-in-the-loop)
+- [OK] Registra logs estruturados para monitoramento
 
 ---
 
-## 🎯 Problema Resolvido
+## [EMOJI] Problema Resolvido
 
 **Observação do Usuário (Nov 2025):**
 > "Após a fase de diagnóstico é feito um relatório com os pontos, e o Judge faz uma avaliação do diagnóstico feito da empresa. Normalmente ele da uma nota abaixo por na fase de diagnóstico os agentes muitas vezes não atribuem fonte, mas eu acredito que as fontes só virão na próxima etapa quando os agente efetivamente farão a busca nos conteúdos indexados."
@@ -35,7 +35,7 @@ O **Judge Agent** foi integrado ao workflow de diagnóstico BSC para avaliar aut
 
 ---
 
-## 🔧 Implementação
+## [EMOJI] Implementação
 
 ### 1. Arquitetura
 
@@ -80,10 +80,10 @@ def judge_agent(self) -> JudgeAgent:
 def _format_diagnostic_for_judge(self, diagnostic: Any) -> str:
     """
     Formata diagnostico para avaliacao do Judge Agent.
-    
+
     Args:
         diagnostic: CompleteDiagnostic Pydantic
-        
+
     Returns:
         String formatada com conteudo essencial para Judge avaliar qualidade
     """
@@ -92,7 +92,7 @@ def _format_diagnostic_for_judge(self, diagnostic: Any) -> str:
         "[DIAGNOSTICO BSC]\\n\\n",
         f"EXECUTIVE SUMMARY:\\n{diagnostic.executive_summary}\\n\\n"
     ]
-    
+
     # Top insights por perspectiva (2-3 por perspectiva)
     perspectives_data = {
         "FINANCEIRA": diagnostic.financial_perspective,
@@ -100,22 +100,22 @@ def _format_diagnostic_for_judge(self, diagnostic: Any) -> str:
         "PROCESSOS": diagnostic.process_perspective,
         "APRENDIZADO": diagnostic.learning_perspective
     }
-    
+
     output_parts.append("INSIGHTS PRINCIPAIS POR PERSPECTIVA:\\n\\n")
-    
+
     for persp_name, persp_data in perspectives_data.items():
         if persp_data and persp_data.insights:
             output_parts.append(f"[{persp_name}]\\n")
             for insight in persp_data.insights[:3]:  # Top 3
                 output_parts.append(f"- {insight}\\n")
             output_parts.append("\\n")
-    
+
     # Top 5 recomendacoes HIGH priority
     high_priority_recs = [
         rec for rec in diagnostic.recommendations
         if rec.priority == "HIGH"
     ][:5]
-    
+
     if high_priority_recs:
         output_parts.append("RECOMENDACOES PRIORITARIAS:\\n\\n")
         for i, rec in enumerate(high_priority_recs, 1):
@@ -124,7 +124,7 @@ def _format_diagnostic_for_judge(self, diagnostic: Any) -> str:
                 f"   Impacto: {rec.impact}\\n"
                 f"   Descricao: {rec.description}\\n\\n"
             )
-    
+
     return "".join(output_parts)
 ```
 
@@ -137,7 +137,7 @@ logger.info("[JUDGE] Avaliando qualidade do diagnostico BSC...")
 try:
     # Formatar diagnostico para avaliacao
     diagnostic_formatted = self._format_diagnostic_for_judge(complete_diagnostic)
-    
+
     # Avaliar com Judge (context='DIAGNOSTIC': relaxa criterios de fontes)
     judge_result = self.judge_agent.evaluate(
         original_query=(
@@ -147,9 +147,9 @@ try:
         agent_response=diagnostic_formatted,
         retrieved_documents="[Perfil cliente coletado no onboarding]",
         agent_name="Diagnostic Agent",
-        evaluation_context="DIAGNOSTIC"  # ← CRÍTICO: Context-aware
+        evaluation_context="DIAGNOSTIC"  # <- CRÍTICO: Context-aware
     )
-    
+
     # Log resultado Judge
     logger.info(
         f"[JUDGE] Avaliacao concluida | "
@@ -158,7 +158,7 @@ try:
         f"Is_grounded: {judge_result.is_grounded} | "
         f"Is_complete: {judge_result.is_complete}"
     )
-    
+
     # Armazenar avaliacao Judge em metadata
     judge_evaluation = {
         "quality_score": judge_result.quality_score,
@@ -170,7 +170,7 @@ try:
         "suggestions": judge_result.suggestions,
         "evaluated_at": datetime.now(timezone.utc).isoformat()
     }
-    
+
     # Warning se score baixo (mas permitir prosseguir)
     if judge_result.quality_score < 0.7:
         logger.warning(
@@ -201,7 +201,7 @@ diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
 
 ---
 
-## 📊 Comportamento Esperado
+## [EMOJI] Comportamento Esperado
 
 ### Cenário 1: Score Alto (>= 0.85)
 
@@ -258,8 +258,8 @@ diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
 
 # Log
 [JUDGE] Avaliacao concluida | Score: 0.55 | Verdict: needs_improvement
-[JUDGE] [WARN] Score abaixo de 0.7 detectado! | Score: 0.55 | 
-    Sugestoes: ['Adicionar mais insights...'] | 
+[JUDGE] [WARN] Score abaixo de 0.7 detectado! | Score: 0.55 |
+    Sugestoes: ['Adicionar mais insights...'] |
     Diagnostico sera enviado para aprovacao mas requer atencao humana
 ```
 
@@ -282,21 +282,21 @@ diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
 
 ---
 
-## 🎯 Critérios de Avaliação (Context='DIAGNOSTIC')
+## [EMOJI] Critérios de Avaliação (Context='DIAGNOSTIC')
 
-### ✅ Avaliados (Score Alto Possível)
+### [OK] Avaliados (Score Alto Possível)
 
 1. **Qualidade da análise** (0-1): Insights são profundos e específicos?
 2. **Completude**: Todas 4 perspectivas BSC analisadas?
 3. **Coerência**: Recomendações alinhadas com desafios identificados?
 4. **Especificidade**: Recomendações são acionáveis ou genéricas?
 
-### 🔵 Relaxados (Não Penalizam)
+### [EMOJI] Relaxados (Não Penalizam)
 
 1. **Citação de fontes**: Não esperado em DIAGNOSTIC (apenas perfil cliente)
 2. **Documentos recuperados**: Não esperado (sem retrieval nesta fase)
 
-### ❌ Ainda Penalizam
+### [ERRO] Ainda Penalizam
 
 1. **Alucinações**: Inventar informações não presentes no perfil cliente
 2. **Incompletude**: Perspectivas BSC não analisadas
@@ -304,7 +304,7 @@ diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
 
 ---
 
-## 📈 Métricas e Monitoramento
+## [EMOJI] Métricas e Monitoramento
 
 ### Logs Estruturados
 
@@ -337,7 +337,7 @@ state.diagnostic["metadata"]["judge_evaluation"] = {
 ```python
 # % Diagnósticos com score >= 0.85
 high_quality_rate = (
-    len([d for d in diagnostics if d.metadata.judge_evaluation.quality_score >= 0.85]) 
+    len([d for d in diagnostics if d.metadata.judge_evaluation.quality_score >= 0.85])
     / len(diagnostics)
 )
 
@@ -359,13 +359,13 @@ Counter(all_suggestions).most_common(10)
 
 ---
 
-## 🚀 Exemplo de Uso
+## [EMOJI] Exemplo de Uso
 
 Ver arquivo: `examples/judge_context_aware_demo.py`
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### 1. Context-Aware é Essencial
 
@@ -401,7 +401,7 @@ Ver arquivo: `examples/judge_context_aware_demo.py`
 
 ---
 
-## 🔧 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Judge Sempre Retorna Score Baixo
 
@@ -431,7 +431,7 @@ print(diagnostic_dict.keys())
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 1. **Judge Context-Aware:** `docs/JUDGE_CONTEXT_AWARE.md`
 2. **Sequential Thinking Planning:** Sessão Nov 19, 2025
@@ -440,7 +440,7 @@ print(diagnostic_dict.keys())
 
 ---
 
-## ✅ Checklist de Validação
+## [OK] Checklist de Validação
 
 Antes de considerar integração completa:
 
@@ -457,7 +457,6 @@ Antes de considerar integração completa:
 
 ---
 
-**Última Atualização:** 2025-11-19  
-**Status:** ✅ Pronto para Produção  
+**Última Atualização:** 2025-11-19
+**Status:** [OK] Pronto para Produção
 **Autor:** AI Agent (Sequential Thinking + Brightdata Research)
-

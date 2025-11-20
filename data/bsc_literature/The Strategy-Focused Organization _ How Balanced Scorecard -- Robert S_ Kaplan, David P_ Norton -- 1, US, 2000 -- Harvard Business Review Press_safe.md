@@ -2,7 +2,7 @@
 
 ## HOW BALANCED SCORECARD COMPANIES THRIVE IN THE NEW BUSINESS ENVIRONMENT
 
-### ROBERT S. KAPLAN  
+### ROBERT S. KAPLAN
 
 ### DAVID P. NORTON
 
@@ -47,7 +47,7 @@ This Page Intentionally Left Blank
 
 ### DAVID P. NORTON
 
-HARVARD BUSINESS SCHOOL PRESS  
+HARVARD BUSINESS SCHOOL PRESS
 BOSTON, MASSACHUSETTS
 
 [Figura: Capa textual com título em letras grandes e negrito, linhas horizontais separando seções; sem imagens ou gráficos além da tipografia.]
@@ -70,16 +70,16 @@ EVA™ is a trademarked symbol of Stern, Stewart & Co.
 
 ## Library of Congress Cataloging-in-Publication Data
 
-Kaplan, Robert S.  
-The strategy-focused organization: how balanced scorecard companies thrive in the new business environment / Robert S. Kaplan, David P. Norton.  
-p. cm.  
-Includes index.  
-ISBN 1-57851-250-6 (alk. paper)  
+Kaplan, Robert S.
+The strategy-focused organization: how balanced scorecard companies thrive in the new business environment / Robert S. Kaplan, David P. Norton.
+p. cm.
+Includes index.
+ISBN 1-57851-250-6 (alk. paper)
 
 1. Strategic planning. I. Norton, David P. II. Title.
 
-HD30.28 .K3544 2000  
-658.4'012—dc21  
+HD30.28 .K3544 2000
+658.4'012—dc21
 00-033515
 
 The paper used in this publication meets the requirements of the American National Standard for Permanence of Paper for Publications and Documents in Libraries and Archives Z39.48-1992.
@@ -92,29 +92,29 @@ The paper used in this publication meets the requirements of the American Nation
 
 Preface  vii
 
-1 ■ Creating the Strategy-Focused Organization  1  
+1 ■ Creating the Strategy-Focused Organization  1
 2 ■ How Mobil Became a Strategy-Focused Organization  29
 
 ## PART ONE: TRANSLATING THE STRATEGY TO OPERATIONAL TERMS  65
 
-3 ■ Building Strategy Maps  69  
-4 ■ Building Strategy Maps in Private Sector Companies  107  
+3 ■ Building Strategy Maps  69
+4 ■ Building Strategy Maps in Private Sector Companies  107
 5 ■ Strategy Scorecards in Nonprofit, Government, and Health Care Organizations  133
 
 ## PART TWO: ALIGNING THE ORGANIZATION TO CREATE SYNERGIES  161
 
-6 ■ Creating Business Unit Synergy  167  
+6 ■ Creating Business Unit Synergy  167
 7 ■ Creating Synergies through Shared Services  191
 
 ## PART THREE: MAKING STRATEGY EVERYONE’S EVERYDAY JOB  211
 
-8 ■ Creating Strategic Awareness  215  
-9 ■ Defining Personal and Team Objectives  233  
+8 ■ Creating Strategic Awareness  215
+9 ■ Defining Personal and Team Objectives  233
 10 ■ The Balanced Paycheck  253
 
 ## PART FOUR: MAKING STRATEGY A CONTINUAL PROCESS  273
 
-11 ■ Planning and Budgeting  279  
+11 ■ Planning and Budgeting  279
 12 ■ Feedback and Learning  303
 
 ---
@@ -125,12 +125,12 @@ vi
 
 CONTENTS
 
-PART FIVE: MOBILIZING CHANGE THROUGH EXECUTIVE  
+PART FIVE: MOBILIZING CHANGE THROUGH EXECUTIVE
 LEADERSHIP  331
 
 13  ■  Leadership and Mobilization  333
 
-14  ■  Avoiding the Pitfalls  355  
+14  ■  Avoiding the Pitfalls  355
   Frequently Asked Questions  369
 
   Index  383
@@ -174,69 +174,69 @@ We are indebted to many people for helping us understand how to make an organiza
 
 # PREFACE
 
-Governor Gary Locke and Joe Dear  
+Governor Gary Locke and Joe Dear
 State of Washington
 
-Dr. Jon Meliones  
+Dr. Jon Meliones
 Duke Children’s Hospital
 
-Vanessa Kirsch and Kelly Fitzsimmons  
+Vanessa Kirsch and Kelly Fitzsimmons
 New Profit, Inc.
 
-Tris Chapman  
+Tris Chapman
 Southern Gardens Citrus
 
-Kathleen Bradley Kapsalis  
+Kathleen Bradley Kapsalis
 May Institute
 
-Elaine Brennan  
+Elaine Brennan
 Montefiore Hospital
 
 Many people created change from within their organizations to generate the rich experiences and successful implementations that we describe in the book:
 
-Jay Forbes  
+Jay Forbes
 Nova Scotia Power
 
-Mike Brown and Doug Schultz  
+Mike Brown and Doug Schultz
 United Parcel Service
 
-Ron Mambu  
+Ron Mambu
 FMC Corporation
 
-Richard Magnus  
+Richard Magnus
 Subordinate Courts, Singapore
 
-Guillermo Babatz  
+Guillermo Babatz
 Grupo Bal, Mexico
 
-Steve Kirn  
+Steve Kirn
 Sears, Roebuck and Co.
 
-Cheryl Thomas and William Ehrhorn  
+Cheryl Thomas and William Ehrhorn
 Fannie Mae
 
-Steven Relyea  
+Steven Relyea
 University of California, San Diego
 
-Ted Francavilla  
+Ted Francavilla
 Chemical and Chase Banks
 
-Ed Lewis  
+Ed Lewis
 Mobil NAM&R
 
-Todd D’Attoma  
+Todd D’Attoma
 Mobil NAM&R, Lubricants
 
-Stephen Mournighan  
+Stephen Mournighan
 U.S. Department of Energy Procurement
 
-Lori Byrd  
+Lori Byrd
 U.S. Department of Transportation
 
-Julie Chesley and M. Wenger  
+Julie Chesley and M. Wenger
 National Reconnaissance Office
 
-Dennis Wymore  
+Dennis Wymore
 Shell Oil Company
 
 ---
@@ -245,31 +245,31 @@ Shell Oil Company
 
 # Preface
 
-Eileen Moser  
+Eileen Moser
 United Way of Southeastern New England
 
-Lisa Schumacher and Nancy Elliott  
+Lisa Schumacher and Nancy Elliott
 City of Charlotte, North Carolina
 
-John Davis  
+John Davis
 Nationwide Financial Services
 
-Marc de Quervain  
+Marc de Quervain
 ABB Switzerland
 
-Al Derden  
+Al Derden
 Texaco
 
-Wolfgang Schmidt-Soelch  
+Wolfgang Schmidt-Soelch
 Winterthur International
 
-James Noble and Martin Shotbolt  
+James Noble and Martin Shotbolt
 General Motors
 
-Garrett Walker  
+Garrett Walker
 GTE Service Corporation
 
-Randy Numbers and Mary Gray  
+Randy Numbers and Mary Gray
 J. P. Morgan
 
 In addition, we learned from the innovative implementations done by our colleagues at the Balanced Scorecard Collaborative: Michael Contrada, Geoffrey Fenwick, Laura Downing, Bill Hodges, Terry Brown, Ann Nevius, Rob Howie, Cynthia Baird, Mario Bognanno, Dave Foster, Randy Russell, and Gaelle Lamotte; and those formerly at Renaissance Worldwide—Francis Gouillart, Sean Hogan, Ryan English, and Timothy Henry.
@@ -278,7 +278,7 @@ Our collaborators at Harvard Business School Press—Carol Franco, President; Ho
 
 We appreciate the assistance of all these many people in helping us create this book.
 
-Robert S. Kaplan and David P. Norton  
+Robert S. Kaplan and David P. Norton
 Boston and Lincoln, Massachusetts, June 2000
 
 ---
@@ -472,31 +472,31 @@ The speed with which the new strategies delivered results indicates that the com
 
 #### Seção superior: Mobilize Change through Executive Leadership
 
-- Mobilization  
-- Governance Process  
+- Mobilization
+- Governance Process
 - Strategic Management System
 
 #### Seção esquerda: Translate the Strategy to Operational Terms
 
-- Strategy Maps  
+- Strategy Maps
 - Balanced Scorecards
 
 #### Seção direita: Make Strategy a Continual Process
 
-- Link Budgets and Strategies  
-- Analytics and Information Systems  
+- Link Budgets and Strategies
+- Analytics and Information Systems
 - Strategic Learning
 
 #### Seção inferior esquerda: Align the Organization to the Strategy
 
-- Corporate Role  
-- Business Unit Synergies  
+- Corporate Role
+- Business Unit Synergies
 - Shared Service Synergies
 
 #### Seção inferior direita: Make Strategy Everyone’s Everyday Job
 
-- Strategic Awareness  
-- Personal Scorecards  
+- Strategic Awareness
+- Personal Scorecards
 - Balanced Paychecks
 
 ---
@@ -821,8 +821,8 @@ Having the scorecard, however, may be necessary but not sufficient to beat the o
 
 ## NOTES
 
-1. “Measures That Matter,” Ernst & Young (Boston, 1998), 9.  
-2. Walter Kiechel, “Corporate Strategists under Fire,” Fortune, 27 December 1982, 38.  
+1. “Measures That Matter,” Ernst & Young (Boston, 1998), 9.
+2. Walter Kiechel, “Corporate Strategists under Fire,” Fortune, 27 December 1982, 38.
 3. R. Charan and G. Colvin, “Why CEO’s Fail,” Fortune, 21 June 1999.
 
 ---
@@ -1113,7 +1113,7 @@ cused measures, derived from the strategy, and that clearly communicated the new
 
 With a clear picture about the outcomes desired in the financial and customer perspectives, Mobil now turned to the objectives and measures in the internal business process perspective. For direct linkages to the customer objectives, Mobil identified two important internal processes:
 
-1. Develop new products and services  
+1. Develop new products and services
 2. Generate dealer profits from nongasoline revenues
 
 The first objective signaled the desire to enhance the buying experience of consumers by developing new offerings at the gasoline station. The second objective supported both the new win-win relationship with dealers and Mobil’s financial objectives. If dealers could generate increased revenues and profits from products other than gasoline, then dealers would rely less on profits from gasoline sales to meet their profit targets. This would leave more of a profit share for Mobil, while still allowing its dealers to be the most profitable in the industry. Mobil also recognized that an important internal process was to train its dealers to be better managers of the gasoline station, service bays, and convenience store—another contributor to dealer profitability.
@@ -1508,9 +1508,9 @@ The Balanced Scorecard became the mechanism both to create strategic awareness a
 
 # How Mobil Became a Strategy-Focused Organization 45
 
-- Develop win-win relationships with dealers and retailers  
-- Improve critical internal processes—low cost, zero defects, on-time deliveries  
-- Reduce environmental, safety, and other health-threatening incidents  
+- Develop win-win relationships with dealers and retailers
+- Improve critical internal processes—low cost, zero defects, on-time deliveries
+- Reduce environmental, safety, and other health-threatening incidents
 - Improve employee morale
 
 These high-level objectives were then transmitted throughout the organization by incorporating them in scorecards developed by individual business units. Each unit formulated a strategy appropriate for its target market, but each strategy had to be consistent with the themes and priorities of the NAM&R template. Each of the eighteen geographical business units translated its strategy into a Balanced Scorecard. The eighteen scorecards were customized to local circumstances—competitors, market opportunities, and critical processes—but were still based on the high-level divisional scorecard. As McCool noted,
@@ -1920,9 +1920,9 @@ Mobil launched its Balanced Scorecard project in 1994. The following year, 1995,
 
 The productivity strategy created a 20 percent reduction in the cost of refining, marketing, and delivering a gallon of gasoline. Mobil produced the equivalent of about 12 billion gallons of gasoline per year, so that even small changes in operating costs per gallon had an enormous impact on the bottom line. Better utilization of existing assets created additional improvements in cash flow. The productivity strategy was accomplished using several key drivers:
 
-- Product quality improved each year for four consecutive years  
-- Annual yield losses were reduced by 70 percent  
-- Safety incidents resulting in lost work were reduced by 80 percent  
+- Product quality improved each year for four consecutive years
+- Annual yield losses were reduced by 70 percent
+- Safety incidents resulting in lost work were reduced by 80 percent
 - Environmental incidents were reduced by 63 percent
 
 ---
@@ -1998,17 +1998,17 @@ None of this success would have occurred without a complete cultural shift at th
 
 Mobil NAM&R applied the five principles of a Strategy-Focused Organization to achieve breakthrough performance:
 
-1. Translate the strategy to operational terms  
-2. Align the organization to the strategy  
-3. Make strategy everyone’s everyday job  
-4. Make strategy a continual process  
+1. Translate the strategy to operational terms
+2. Align the organization to the strategy
+3. Make strategy everyone’s everyday job
+4. Make strategy a continual process
 5. Mobilize leadership for change
 
 By applying these principles, Mobil integrated and aligned the entire organization to the new strategy. With such focus and alignment, it was gratifying but not surprising that Mobil could implement its new strategy rapidly and effectively.
 
 ## NOTES
 
-1. Many companies are now using value-based financial metrics, such as economic value added, as alternatives to ROCE. Mobil was a company that emphasized ROCE, but its story would have been unaffected had an alternative shareholder value metric been chosen.  
+1. Many companies are now using value-based financial metrics, such as economic value added, as alternatives to ROCE. Mobil was a company that emphasized ROCE, but its story would have been unaffected had an alternative shareholder value metric been chosen.
 2. Note that operating expenses exclude the cost of purchased raw materials, such as crude oil. Thus while Mobil could be the industry leader for its operating expenses, a competitor that had access to lower-cost crude oil could have a lower total cost per gallon produced.
 
 ---
@@ -2017,16 +2017,16 @@ By applying these principles, Mobil integrated and aligned the entire organizati
 
 # How Mobil Became a Strategy-Focused Organization — Page 63
 
-3. See M. Porter, “What Is Strategy?” Harvard Business Review (November–December 1996): 61–78, for an example of a failed Continental Airlines strategy that attempted to offer two different levels of service for business travelers and price-sensitive leisure travelers.  
-4. R. S. Kaplan, “Mobil USM&R (A): Linking the Balanced Scorecard,” 9-197-025 (Boston: Harvard Business School, 1996), 3.  
-5. Ibid., 6.  
-6. The details of this process for two of the local business units (New England Sales District, and Lubricants) are described in R. S. Kaplan, “Mobil USM&R (B): New England Sales & Distribution,” 9-197-026 (Boston: Harvard Business School, 1996), and “Mobil USM&R (C): Lubricants Division,” 9-197-027 (Boston: Harvard Business School, 1996).  
-7. R. S. Kaplan, “Mobil USM&R (D): Gasoline Marketing,” 9-197-028 (Boston: Harvard Business School, 1996), 1.  
-8. Ibid., 2.  
-9. In Chapter 10, we describe in detail the interesting target-setting process used by Mobil.  
-10. Kaplan, “USM&R (A),” 9.  
-11. Ibid.  
-12. Ibid., 9–10.  
+3. See M. Porter, “What Is Strategy?” Harvard Business Review (November–December 1996): 61–78, for an example of a failed Continental Airlines strategy that attempted to offer two different levels of service for business travelers and price-sensitive leisure travelers.
+4. R. S. Kaplan, “Mobil USM&R (A): Linking the Balanced Scorecard,” 9-197-025 (Boston: Harvard Business School, 1996), 3.
+5. Ibid., 6.
+6. The details of this process for two of the local business units (New England Sales District, and Lubricants) are described in R. S. Kaplan, “Mobil USM&R (B): New England Sales & Distribution,” 9-197-026 (Boston: Harvard Business School, 1996), and “Mobil USM&R (C): Lubricants Division,” 9-197-027 (Boston: Harvard Business School, 1996).
+7. R. S. Kaplan, “Mobil USM&R (D): Gasoline Marketing,” 9-197-028 (Boston: Harvard Business School, 1996), 1.
+8. Ibid., 2.
+9. In Chapter 10, we describe in detail the interesting target-setting process used by Mobil.
+10. Kaplan, “USM&R (A),” 9.
+11. Ibid.
+12. Ibid., 9–10.
 13. Ibid., 9.
 
 ---
@@ -2150,7 +2150,7 @@ Por favor, envie a página 81 ou confirme se devo processar a página 70 exibida
     - Duas caixas conectadas bidirecionalmente: “'A' Class Factories” e “Line Plan Management”.
   - Perspectiva Learning:
     - Duas caixas: “Factory Relationship Skills” e “Merchandise Buying/Planning Systems”.
-  - Setas verticais conectam objetivos de Learning → Internal → Customer → Financial, indicando encadeamento para resultados financeiros.
+  - Setas verticais conectam objetivos de Learning -> Internal -> Customer -> Financial, indicando encadeamento para resultados financeiros.
 
 ---
 
@@ -2863,23 +2863,23 @@ Caption: “Be a Good Corporate Citizen”
   - Invention
   - Product Development
   - Exploitation (speed to market)
-- Customer Management Processes: ✓
-- Operational Processes: ✓
+- Customer Management Processes: [OK]
+- Operational Processes: [OK]
 
 ### Row: Customer Intimacy
 
-- Innovation Processes: ✓
+- Innovation Processes: [OK]
 - Customer Management Processes:
   - Solution Development
   - Customer Service
   - Relationship Management
   - Advisory Services
-- Operational Processes: ✓
+- Operational Processes: [OK]
 
 ### Row: Operational Excellence
 
-- Innovation Processes: ✓
-- Customer Management Processes: ✓
+- Innovation Processes: [OK]
+- Customer Management Processes: [OK]
 - Operational Processes:
   - Supply Chain Management
   - Operations
@@ -3016,7 +3016,7 @@ Figure 3-15 integrates the preceding development into a generic template for cre
 - Setas curvas e retas conectam elementos de baixo para cima, indicando relações de causa e efeito desde “A Motivated and Prepared Workforce” até “Improve Shareholder Value”.
 - Cada perspectiva contém blocos/caixas com rótulos específicos. Há também faixas sombreadas atrás de alguns blocos, destacando temas como “Operational Excellence”, “Customer Intimacy” e “Product Leadership”.
 - Na parte superior, um grande arco indica que os resultados financeiros (Productivity Strategy e Revenue Growth Strategy) estão vinculados às camadas inferiores.
-- O eixo horizontal implícito representa o fluxo de criação de valor: competências e tecnologias → processos internos → proposta de valor ao cliente → resultados financeiros.
+- O eixo horizontal implícito representa o fluxo de criação de valor: competências e tecnologias -> processos internos -> proposta de valor ao cliente -> resultados financeiros.
 - Não há escalas numéricas; o diagrama é conceitual.
 
 ## Financial Perspective
@@ -3102,7 +3102,7 @@ Templates are also useful to analyze or reverse-engineer an existing scorecard. 
 
 (Strategy Map: Partial)
 
-Revenue Growth Strategy  
+Revenue Growth Strategy
 Improve quality of our revenue by understanding customer needs and differentiating ourselves accordingly
 
 - Financial
@@ -3324,7 +3324,7 @@ Conexões visuais:
 
 ## Observações de layout e fluxo
 
-- Fluxo causal principal: Learning and Growth → Internal (três pilares) → Customer (Tier I e Tier II) → Financial (Cash Flow, New Revenue Sources, Project Profitability) → Return on Capital.
+- Fluxo causal principal: Learning and Growth -> Internal (três pilares) -> Customer (Tier I e Tier II) -> Financial (Cash Flow, New Revenue Sources, Project Profitability) -> Return on Capital.
 - Marcadores próximos às setas:
   - A1: de “Morale and Empowerment” para “Suggestion Program”.
   - A2: de “Rework” (Operational Excellence) para “Tier II Customers”.
@@ -3405,15 +3405,15 @@ We do not claim to have made a science of strategy. The formulation of strategy 
 
 # BUILDING STRATEGY MAPS
 
-tion, training, and marketing expenses. See G. B. Stewart III, The Quest for Value: The EVA® Management Guide (New York: HarperBusiness, 1991).  
-5. M. Treacy and F. Wiersema, The Discipline of Market Leaders: Choose Your Customers, Narrow Your Focus, Dominate Your Market (Reading, MA: Addison-Wesley, 1995).  
-6. Ibid., 35.  
-7. Ibid., 38.  
-8. Ibid., 31.  
-9. An alternative explanation for the mismatch between measures and strategy is that the company is espousing one strategy but implementing a quite different strategy.  
-10. Porter, “What Is Strategy?” 77.  
-11. Ibid., 64.  
-12. Carla O’Dell and C. Jackson Grayson, “Knowledge Transfer: Discover Your Value Proposition,” Strategy and Leadership (March–April 1999): 10–15.  
+tion, training, and marketing expenses. See G. B. Stewart III, The Quest for Value: The EVA® Management Guide (New York: HarperBusiness, 1991).
+5. M. Treacy and F. Wiersema, The Discipline of Market Leaders: Choose Your Customers, Narrow Your Focus, Dominate Your Market (Reading, MA: Addison-Wesley, 1995).
+6. Ibid., 35.
+7. Ibid., 38.
+8. Ibid., 31.
+9. An alternative explanation for the mismatch between measures and strategy is that the company is espousing one strategy but implementing a quite different strategy.
+10. Porter, “What Is Strategy?” 77.
+11. Ibid., 64.
+12. Carla O’Dell and C. Jackson Grayson, “Knowledge Transfer: Discover Your Value Proposition,” Strategy and Leadership (March–April 1999): 10–15.
 13. See A. A. Atkinson and J. H. Waterhouse, “A Stakeholder Approach to Strategic Performance Measurement,” Sloan Management Review (Spring 1997), for an excellent exposition of stakeholder scorecards.
 
 ---
@@ -3474,8 +3474,8 @@ By having these three strategic themes already established, the interdepartmenta
 
 We can analyze the OFS scorecard using the framework established in Chapter 3. Starting with the financial perspective, National Bank OFS identified a gap that existed between its ambitious profit targets and the profits that would be earned with the existing customer base and imbedded costs. The company used its three strategic themes to determine the specific amounts required to close the profit gap:
 
-1. Increasing the number of customers  
-2. Increasing the revenue per customer  
+1. Increasing the number of customers
+2. Increasing the revenue per customer
 3. Decreasing cost per customer
 
 OFS set stretch targets for each component that, taken together, yielded the desired profit improvement. This set the stage for moving to the customer perspective.
@@ -3562,17 +3562,17 @@ A seguir, todo o conteúdo textual visível das caixas e rótulos, preservando a
 ## Fluxos principais (descrição das conexões por setas)
 
 - Iniciativas de Learning & Growth alimentam capacidades internas:
-  - Develop Superior Service Capability → Maximize Reliability; Manage Attrition.
+  - Develop Superior Service Capability -> Maximize Reliability; Manage Attrition.
   - Identify and Develop Third-Party Relationships é suportado por competências gerenciais e técnicas.
-  - Deploy Scorecard and Embed in OFS → Increase Efficiency within OFS e demais processos de melhoria.
+  - Deploy Scorecard and Embed in OFS -> Increase Efficiency within OFS e demais processos de melhoria.
 - Processos Internos conduzem resultados para o cliente:
-  - Maximize Reliability e Manage Attrition → Add and Retain High-Value and High-Potential-Value Customers.
-  - Marketing e uso efetivo de dados → Increase Revenue per Customer (via Cross-Sell, Increase Fees and Balances).
-  - Increase Efficiency within OFS, Automate/Streamline → Migrate NB Customers to OFS, Increase Customers’ Use of Online.
+  - Maximize Reliability e Manage Attrition -> Add and Retain High-Value and High-Potential-Value Customers.
+  - Marketing e uso efetivo de dados -> Increase Revenue per Customer (via Cross-Sell, Increase Fees and Balances).
+  - Increase Efficiency within OFS, Automate/Streamline -> Migrate NB Customers to OFS, Increase Customers’ Use of Online.
 - Resultados do cliente impactam finanças:
-  - Add and Retain High-Value and High-Potential-Value Customers → Grow Revenue.
-  - Increase Revenue per Customer → Maximize Profit.
-  - Migrate NB Customers to OFS/Increase Use of Online → Reduce Cost per Customer for the Bank.
+  - Add and Retain High-Value and High-Potential-Value Customers -> Grow Revenue.
+  - Increase Revenue per Customer -> Maximize Profit.
+  - Migrate NB Customers to OFS/Increase Use of Online -> Reduce Cost per Customer for the Bank.
 
 ## Observações sobre eixos/estrutura
 
@@ -4571,7 +4571,7 @@ Doug Ashby, chief professional officer (the CEO) of the UWSENE, felt that his cu
 
 Several different constituencies could have been represented in the customer perspective: donors, volunteers, employees, agencies, and the individuals who were the ultimate recipient or consumer of agency services. Ashby framed the strategic choice faced by the organization:
 
-United Ways have three primary choices. They can be donor-focused, agency-focused, or community-focused.  
+United Ways have three primary choices. They can be donor-focused, agency-focused, or community-focused.
 Each of the three strategies is good, with the potential to yield positive end results. . . . Many United Ways switch strategies, say to meet specific community needs, for very good reasons but then are surprised when their agencies and donors get upset. UWSENE has definitely become a donor-focused organization, believing that if the donors are satisfied, then agencies will be provided for. That is why we chose the donor as the primary customer on the scorecard.10
 
 Ashby’s choice made the objectives for donors on the customer perspective relatively straightforward to articulate. The team then formulated initial internal business process objectives that would deliver the financial and customer objectives. Because the United Way functioned as a financial intermediary, collecting funds from a broad population of donors and disbursing the funds to community-based agencies, the team left the financial perspective at the top of the scorecard.
@@ -4588,7 +4588,7 @@ for the agencies it funded to supply needed services to communities. Ashby, howe
 
 After several months, the team produced the scorecard shown in Figure 5-5. Reactions to the scorecard were favorable. One middle manager said, “You can relate to the BSC. It shows where you fit in the organization. You can see how you contribute to the customer or financial needs of the organization, and to staff advancement.”11 A member of the project team noted the enthusiasm among the staff for the Balanced Scorecard:
 
-We used to have strategic plans handed down from on high, and there wasn’t the buy-in we now have from the BSC. It should start to change behavior.  
+We used to have strategic plans handed down from on high, and there wasn’t the buy-in we now have from the BSC. It should start to change behavior.
 In the past, . . . those departments not involved with fundraising didn’t get any recognition for the success of the organization. Now we will look to all the BSC measures to assess our success in reaching our goals.12
 
 ## The May Institute
@@ -4652,39 +4652,39 @@ Working together we seek to contribute to every individual’s independence and 
 ## Figura 5-6 — Descrição visual do Balanced Scorecard
 
 - O diagrama é circular, com setas curvas conectando quatro caixas retangulares que representam as quatro perspectivas do Balanced Scorecard. O fluxo é no sentido anti-horário, ligando:
-  1) Customer Perspective →
-  2) Internal Perspective →
-  3) Financial Perspective →
-  4) Learning and Growth Perspective → de volta para Customer Perspective.
+  1) Customer Perspective ->
+  2) Internal Perspective ->
+  3) Financial Perspective ->
+  4) Learning and Growth Perspective -> de volta para Customer Perspective.
 - Dentro de cada caixa, há listas com marcadores quadrados (■) ou circulares (●) descrevendo objetivos específicos.
 - Entre algumas caixas há setas retas indicando relação direta.
 
 ## Customer Perspective
 
-- ■ Satisfied Consumers, Families, and Funders  
-- ■ Recognized as a Leader in Conducting and Disseminating Research  
-- ■ Optimize Quality of Life  
+- ■ Satisfied Consumers, Families, and Funders
+- ■ Recognized as a Leader in Conducting and Disseminating Research
+- ■ Optimize Quality of Life
 - ■ Recognized as Leader in Media and by Legislators
 
 ## Internal Perspective
 
-- ■ Effective, Comprehensive Information Systems (External and Internal Communication)  
-- ■ Effective, Comprehensive, and Cost-Effective Care for Consumers  
-- ■ Safeguard Rights, Responsibilities, and Ethics via Corporate Compliance Office  
+- ■ Effective, Comprehensive Information Systems (External and Internal Communication)
+- ■ Effective, Comprehensive, and Cost-Effective Care for Consumers
+- ■ Safeguard Rights, Responsibilities, and Ethics via Corporate Compliance Office
 - ● Effective Collaboration and Partnering with Other Agencies/Providers
 
 ## Financial Perspective
 
-- ■ Achieve Continued Improvement in Net Asset and Liquidity to Support New Service Development  
-- ■ Effectively Link Clinical and Financial Data Systems and Decisions  
-- ■ Effectively Link Staff Compensation, Performance, and Service Delivery  
+- ■ Achieve Continued Improvement in Net Asset and Liquidity to Support New Service Development
+- ■ Effectively Link Clinical and Financial Data Systems and Decisions
+- ■ Effectively Link Staff Compensation, Performance, and Service Delivery
 - ■ Sufficient Funding Support for All Programs/Services
 
 ## Learning and Growth Perspective
 
-- ■ Agencywide Adherence to Performance Improvement via PDCA Methods  
-- ● Access to Career Development and Mentoring for All Staff  
-- ■ Strategic Job Coverage at All Levels  
+- ■ Agencywide Adherence to Performance Improvement via PDCA Methods
+- ● Access to Career Development and Mentoring for All Staff
+- ■ Strategic Job Coverage at All Levels
 - ■ Diverse Staff Working Productively—Guided by the Agency’s Balanced Scorecard
 
 149
@@ -4989,8 +4989,8 @@ The fundamental principles to create a Strategy-Focused Organization are applica
 
 ## NOTES
 
-1. This framework was developed collaboratively with Professor Dutch Leonard of Harvard’s Kennedy School of Government.  
-2. The Charlotte story is described in more detail in R. S. Kaplan, “City of Charlotte (A),” 9-199-036 (Boston: Harvard Business School, 1998).  
+1. This framework was developed collaboratively with Professor Dutch Leonard of Harvard’s Kennedy School of Government.
+2. The Charlotte story is described in more detail in R. S. Kaplan, “City of Charlotte (A),” 9-199-036 (Boston: Harvard Business School, 1998).
 3. Two obvious choices, education and social services, were under the jurisdiction of the county government, not the city. Hence they were not on the list.
 
 ---
@@ -5621,7 +5621,7 @@ Each cabinet developed its own Balanced Scorecard for its strategic theme (see s
 
 ## Organizational Structure (left panel)
 
-- Mayor  
+- Mayor
   City Council
   - City Manager
     - Support Units
@@ -5678,16 +5678,16 @@ Each cabinet developed its own Balanced Scorecard for its strategic theme (see s
 - Boxes within each perspective represent strategic objectives.
 - Arrows indicate cause-and-effect linkages:
   - From Learning and Growth objectives upward into Internal Process objectives:
-    - Enhance Knowledge Management Capabilities → Secure Funding/Service Partners
-    - Close Skills Gap → Promote Community-Based Problem-Solving
-    - Achieve Positive Employee Climate → Increase Infrastructure Capacity
+    - Enhance Knowledge Management Capabilities -> Secure Funding/Service Partners
+    - Close Skills Gap -> Promote Community-Based Problem-Solving
+    - Achieve Positive Employee Climate -> Increase Infrastructure Capacity
   - From Internal Process objectives upward into Financial Accountability objectives:
-    - Secure Funding/Service Partners → Expand New City Funding
-    - Promote Community-Based Problem-Solving → Strengthen Neighborhoods (via upward arrow crossing Financial tier)
-    - Increase Infrastructure Capacity → Grow Tax Base
+    - Secure Funding/Service Partners -> Expand New City Funding
+    - Promote Community-Based Problem-Solving -> Strengthen Neighborhoods (via upward arrow crossing Financial tier)
+    - Increase Infrastructure Capacity -> Grow Tax Base
   - From Financial Accountability objectives upward into Customer Perspective objective:
-    - Expand New City Funding → Strengthen Neighborhoods
-    - Grow Tax Base → Strengthen Neighborhoods
+    - Expand New City Funding -> Strengthen Neighborhoods
+    - Grow Tax Base -> Strengthen Neighborhoods
 - The “City-within-a-City” theme is shown as a shaded header over the entire strategy map, indicating the thematic focus of the objectives.
 
 ---
@@ -6000,7 +6000,7 @@ Figure 7-3 Shell Services International’s Balanced Scorecard
 
 - Positive Customer Feedback
 - Linha temporal textual: 1995 1996 1997 1998 1999
-  - Target 68% 75% 80% 85% 90% → (seta apontando para a direita indicando progressão)
+  - Target 68% 75% 80% 85% 90% -> (seta apontando para a direita indicando progressão)
 - Stretch 90%
 - Market Share
   - Share of Internal Customer—
@@ -6240,10 +6240,10 @@ The client value proposition was divided into two components. The basic objectiv
 
 The internal process themes reflected the organization value chain:
 
-- Understand customer needs  
-- Create and develop innovative solutions  
-- Provide infrastructure  
-- Manage technical and operating risk  
+- Understand customer needs
+- Create and develop innovative solutions
+- Provide infrastructure
+- Manage technical and operating risk
 - Service the client
 
 The learning and growth strategy focused on key staff development, empowerment of employees, teamwork at the executive level, and an aligned goal system.
@@ -6267,25 +6267,25 @@ Our vision is to be the #1 client-driven team, providing unsurpassed quality, in
 
 ### Financial
 
-- Fiscal Responsibility  
+- Fiscal Responsibility
   We will always ensure that the finite resources of people, facilities, capital, and technology are effectively and efficiently aligned and funded in order to achieve the corporate vision of enhancing our clients' and shareholders' wealth.
 
 ### Client
 
-- Client Focus and Quality  
+- Client Focus and Quality
   We will provide products and services of unsurpassed quality that meet and exceed our clients' current and future requirements. Service standards will measure total client satisfaction. Continuous quality improvement programs will focus on achieving world-class customer quality.
 
 ### Internal
 
-- Infrastructure  
+- Infrastructure
   We will provide reliable information services and innovative technology solutions in support of our key business objectives, focusing on systems integration, interoperability, portability, scalability, and end-to-end connectivity in order to create an integrated, client-focused, continuous processing environment on a global scale.
 
-- Risk Management  
+- Risk Management
   We will ensure that reliable contingency and recovery plans are in place. We will continuously evaluate these plans to ensure there is no adverse impact on the firm's critical functions in the event of disruption of service.
 
 ### Learning and Growth
 
-- Employer of Choice  
+- Employer of Choice
   We will attract and retain the highest caliber of people in an environment that champions professional growth, values diversity, promotes individual talent, and recognizes and rewards the contribution and achievement of its team members.
 
 ---
@@ -6331,7 +6331,7 @@ Our vision is to be the #1 client-driven team, providing unsurpassed quality, in
 
 ### Financial Layer (flow)
 
-- Strategic Spending/Investment → Return on Spending → Cost Productivity
+- Strategic Spending/Investment -> Return on Spending -> Cost Productivity
 
 ### Client Layer
 
@@ -6354,7 +6354,7 @@ Our vision is to be the #1 client-driven team, providing unsurpassed quality, in
 
 ### Learning and Growth Layer (flow and links upward)
 
-- Attract and Retain Skilled People → Align and Link Goals and Rewards
+- Attract and Retain Skilled People -> Align and Link Goals and Rewards
 - Empower Employees
 
 ## Descrição da figura
@@ -6364,7 +6364,7 @@ Our vision is to be the #1 client-driven team, providing unsurpassed quality, in
 - Setas indicam causalidade:
   - Na perspectiva Financial, uma seta sequencial conecta “Strategic Spending/Investment” a “Return on Spending” e depois a “Cost Productivity”.
   - Na perspectiva Client, as caixas estão agrupadas em dois blocos: “Differentiators” (três caixas: Innovative Solutions, Knowledgeable Advisor, Develop a Partnership/Trusting Relationship) e “Basic” (três caixas: Value for Cost, Quality Service, Reliable Operations). Há setas vindas da camada Internal apontando para ambos os grupos, indicando que processos internos suportam tanto diferenciadores quanto requisitos básicos.
-  - Na perspectiva Internal, as caixas seguem um fluxo: “Understand, Anticipate, and Prioritize Client Needs” → “Create and Develop Solution” → “Provide Flexible Global Infrastructure” → “Manage Technical and Operating Risk” → “Service the Client”. Há setas ascendentes conectando o primeiro objetivo interno ao grupo “Differentiators” da camada Client e o último objetivo interno ao grupo “Basic”.
+  - Na perspectiva Internal, as caixas seguem um fluxo: “Understand, Anticipate, and Prioritize Client Needs” -> “Create and Develop Solution” -> “Provide Flexible Global Infrastructure” -> “Manage Technical and Operating Risk” -> “Service the Client”. Há setas ascendentes conectando o primeiro objetivo interno ao grupo “Differentiators” da camada Client e o último objetivo interno ao grupo “Basic”.
   - Na perspectiva Learning and Growth, “Attract and Retain Skilled People” conecta-se por seta para cima a “Understand, Anticipate, and Prioritize Client Needs” e por seta horizontal a “Align and Link Goals and Rewards”. “Align and Link Goals and Rewards” conecta-se por seta para “Empower Employees”, e “Empower Employees” conecta-se por seta para cima alimentando a cadeia de processos internos.
 - O layout reforça a lógica de causa e efeito: capacidades de Learning and Growth habilitam processos Internal, que entregam valor na camada Client (diferenciadores e básicos), que por sua vez conduzem resultados Financial.
 
@@ -6526,9 +6526,9 @@ Companies must view the communication of the scorecard to employees as a strateg
 
 The communications program should have the following objectives:
 
-1. Develop an understanding of the strategy throughout the organization  
-2. Develop buy-in to support the organization’s strategy  
-3. Educate the organization about the Balanced Scorecard measurement and management system for implementing the strategy  
+1. Develop an understanding of the strategy throughout the organization
+2. Develop buy-in to support the organization’s strategy
+3. Educate the organization about the Balanced Scorecard measurement and management system for implementing the strategy
 4. Provide feedback, via the Balanced Scorecard, about the strategy
 
 Ed Robertson, manager of employee communications at Federal Express Corporation, emphasized that the performance of the communications process must be evaluated by results, not activities. Counting the “number of messages sent” and “number of viewers” measures the activities of a communication process but not its output. George Bernard Shaw said: “The greatest problem with communication is the illusion that it has been accomplished.” Just because a message has been sent, it doesn’t mean that it has been received. The output measure for the communications process should be shared understanding among employees.
@@ -7102,10 +7102,10 @@ Our research has shown that Charlotte’s experience was not an aberration. Huma
 
 Strategy-Focused Organizations, in contrast, can choose from a diverse set of methods to bridge from the strategic objectives that appear on a company or business unit scorecard across to personal and team objectives:
 
-1. The “Super Bowl” approach  
-2. Alignment with strategic initiatives  
-3. Integration with existing planning and quality processes  
-4. Integration with human resource processes  
+1. The “Super Bowl” approach
+2. Alignment with strategic initiatives
+3. Integration with existing planning and quality processes
+4. Integration with human resource processes
 5. Personal Balanced Scorecards
 
 We illustrate each in turn.
@@ -7122,10 +7122,10 @@ At one Mobil business unit, New England Sales and Distribution (NES&D), the seni
 
 In late January, the weekend after the Super Bowl, the NES&D leadership team organized a major meeting at a resort in New Hampshire. They decorated a meeting hall like a football field, gave everyone football sweatshirts, and showed videotapes of the great NFL professional teams like the Green Bay Packers and Pittsburgh Steelers. They had an announcer from NFL films describe how these winning teams had all the elements—offense, defense, coaches, the support groups—working together. The leadership team then announced that the New England region would have its own Super Bowl for 1995, with scoring based on five critical measures drawn from the financial, customer, and internal process measures on the NES&D scorecard:
 
-- Gasoline volume  
-- Return on capital employed  
-- Customer complaints  
-- Mystery shopper rating  
+- Gasoline volume
+- Return on capital employed
+- Customer complaints
+- Mystery shopper rating
 - Commitment to dealers
 
 NES&D would win the Super Bowl if it could hit stretch targets on all five measures; the internal targets exceeded the performance levels committed by the leadership team to Mobil’s headquarters. If NES&D reached all five targets, everyone would get a cash bonus of $250 and a great weekend next winter at a resort hotel in Vermont. If it failed in any one, there would be no reward.
@@ -7342,14 +7342,14 @@ Many of the skills, knowledge, and competencies, of course, were difficult to me
 
 ## Descrição da figura
 
-- A página contém duas figuras conectadas por uma seta grossa curva apontando da esquerda (um “house model” de RH) para a direita (um diagrama circular de competências).  
+- A página contém duas figuras conectadas por uma seta grossa curva apontando da esquerda (um “house model” de RH) para a direita (um diagrama circular de competências).
 - Não há texto corrido além dos rótulos internos das figuras.
 
 ## Figura à esquerda: “House model” de RH
 
 Descrição visual:
 
-- Um bloco em forma de casa (base retangular com topo triangular) dividido em várias células rotuladas.  
+- Um bloco em forma de casa (base retangular com topo triangular) dividido em várias células rotuladas.
 - Título implícito no topo do telhado: “HR Supporting Business Strategy”.
 
 Lista de blocos e rótulos (preservando a hierarquia aproximada de cima para baixo):
@@ -7380,7 +7380,7 @@ Lista de blocos e rótulos (preservando a hierarquia aproximada de cima para bai
 
 Descrição visual:
 
-- Um retângulo com um grande círculo segmentado em quatro quadrantes e anéis concêntricos.  
+- Um retângulo com um grande círculo segmentado em quatro quadrantes e anéis concêntricos.
 - Há rótulos nos quatro quadrantes externos (regiões ao redor do círculo) e, dentro do círculo, textos distribuídos por anéis: um anel externo com capacidades amplas, um anel interno com quatro domínios, e um núcleo central com dois valores.
 
 Rótulos dos quadrantes externos (em torno do círculo, começando no topo esquerdo e seguindo no sentido horário):
@@ -7455,18 +7455,18 @@ Figure 9-4 Personal Balanced Scorecard
 
 ### Targets
 
-1.  
-2.  
-3.  
-4.  
-5.  
+1.
+2.
+3.
+4.
+5.
 
-4.  
+4.
 
-5.  
+5.
 
-Name:  
-Location:  
+Name:
+Location:
 *1995 level = 100
 
 Source: Adapted from Robert S. Kaplan and David P. Norton, “Using the Balanced Scorecard as a Strategic Management System,” Harvard Business Review (January–February 1996): 81. Reprinted by permission of Harvard Business Review.
@@ -7561,7 +7561,7 @@ More complex organizations will share the outcomes and strategy they are trying 
 
 # NOTES
 
-1. Management by objectives was introduced by Peter Drucker in The Practice of Management (New York: HarperBusiness, 1954).  
+1. Management by objectives was introduced by Peter Drucker in The Practice of Management (New York: HarperBusiness, 1954).
 2. R. S. Kaplan, “City of Charlotte (A),” 9-199-036 (Boston: Harvard Business School, 1998), 2.
 
 ---
@@ -7757,56 +7757,56 @@ The most relevant scorecard to the individual’s work—corporate, division, or
 
 # Figure 10-2 CIGNA Property & Casualty’s Incentive Compensation System
 
-Total Shares = Position Shares + Performance Shares  
+Total Shares = Position Shares + Performance Shares
 Unit Share Value Determined from Balanced Scorecard (Par Value = $10.00)
 
 ## Incentive Structure
 
 ### Strategic Objectives, Weights, and Measures
 
-- (F1) Shareholder Expectations  
-  - % Weight: 20  
-  - Financial Measures: Net Operating Income  
+- (F1) Shareholder Expectations
+  - % Weight: 20
+  - Financial Measures: Net Operating Income
   - Nonfinancial Measures: -
 
-- (F1) Operating Performance  
-  - % Weight: 15  
-  - Financial Measures: Accident Year Combined  
+- (F1) Operating Performance
+  - % Weight: 15
+  - Financial Measures: Accident Year Combined
   - Nonfinancial Measures: -
 
-- (F3) Growth  
-  - % Weight: 20  
-  - Financial Measures: Gross Written Premiums  
+- (F3) Growth
+  - % Weight: 20
+  - Financial Measures: Gross Written Premiums
   - Nonfinancial Measures: -
 
-- (E1) Producer Relationship  
-  - % Weight: 10  
-  - Financial Measures: -  
+- (E1) Producer Relationship
+  - % Weight: 10
+  - Financial Measures: -
   - Nonfinancial Measures: Producer Feedback (Councils, Surveys, etc.)
 
-- (I2) Underwriting Profitability  
-  - % Weight: 10  
-  - Financial Measures: -  
+- (I2) Underwriting Profitability
+  - % Weight: 10
+  - Financial Measures: -
   - Nonfinancial Measures: Underwriting Practice Reviews
 
-- (L2) Information Technology  
-  - % Weight: 5  
-  - Financial Measures: -  
+- (L2) Information Technology
+  - % Weight: 5
+  - Financial Measures: -
   - Nonfinancial Measures: Upgrade Computer Literacy
 
-- Other  
-  - % Weight: 20  
-  - Financial Measures: -  
+- Other
+  - % Weight: 20
+  - Financial Measures: -
   - Nonfinancial Measures: -
 
 ### Examples of Payout Calculations
 
-- Example 1  
-  - $5.00/Unit Share × 50 Position Shares + 100 Performance Shares = 150 Shares  
+- Example 1
+  - $5.00/Unit Share × 50 Position Shares + 100 Performance Shares = 150 Shares
   - Bonus = $750.00
 
-- Example 2  
-  - $14.00/Unit Share × 50 Position Shares + 10 Performance Shares = 60 Shares  
+- Example 2
+  - $14.00/Unit Share × 50 Position Shares + 10 Performance Shares = 60 Shares
   - Bonus = $840.00
 
 ---
@@ -7827,16 +7827,16 @@ Winterthur International placed a great deal of weight on the reward and remuner
 
 ### Rating Criteria for Rating
 
-- OS — Outstanding Performance  
+- OS — Outstanding Performance
   This level is achieved by few others and with no shortfalls. Objectives are exceeded; the individual may be performing regularly in situations of significantly increased responsibility, defining new standards of exceptional performance.
 
-- AT — At Stretched Target  
+- AT — At Stretched Target
   Performance delivers against stretched targets and may exceed some targets, with no shortfalls. This is a fully effective performer who consistently meets job requirements across accountabilities as well as the stretched objectives in the performance plan.
 
-- GA — Performance Is Acceptable  
+- GA — Performance Is Acceptable
   Performance is generally acceptable and meets most objectives. Shortfalls are in noncritical areas. Some objectives are met, but definite improvements are needed.
 
-- NA — Performance Is Not Yet Acceptable  
+- NA — Performance Is Not Yet Acceptable
   Performance is not in line with the requirement in the performance plan and job family. This person requires a closely monitored performance improvement plan.
 
 Winterthur, like Mobil, established employees’ base pay at 10 percent below the median. Not Acceptable (NA) performance received no bonus, so the individual received below-median pay for the year. Acceptable (GA) performance enabled the employee to receive a 10 percent bonus, bringing total pay up to the median for that job. Stretch target (AT) performance placed the employee at the seventy-fifth percentile of pay, and outstanding (OS) performance led to pay that met or exceeded the ninetieth percentile. The awards for outstanding performance (a 35 percent bonus for middle managers and supervisors; 80 percent to more than 100 percent for members of the executive board) greatly exceeded the bonuses typically paid to
@@ -7874,19 +7874,19 @@ Texaco points were awarded based on plantwide results, work-group team results, 
 
 # THE BALANCED PAYCHECK
 
-Plantwide Team  
-Safety  
+Plantwide Team
+Safety
 Utilization
 
-Work-Group Team  
-Throughput  
+Work-Group Team
+Throughput
 No unscheduled downtime
 
-Individual  
-Perfect attendance  
+Individual
+Perfect attendance
 No safety (OSHA) recordable incidents
 
-Expenses (excluding utilities)  
+Expenses (excluding utilities)
 Energy expenses
 
 In implementing the new recognition plan, Texaco Refinery and Marketing, Inc. (TRMI) managers conducted extensive in-plant orientation meetings. They also mailed to employees’ homes the brochures that described the awards that could be redeemed with Texaco points. In this way, the entire family learned about the program and participated in selecting the prizes that they would redeem with the employee’s Texaco points.
@@ -8571,7 +8571,7 @@ The initiatives, once approved, received executive sponsorship, a project team, 
 
 ### Customer
 
-- Product Quality → Shopping Experience
+- Product Quality -> Shopping Experience
 - Measurement
   - Return rate
     - Quality
@@ -8591,7 +8591,7 @@ The initiatives, once approved, received executive sponsorship, a project team, 
 
 ### Internal
 
-- "A"-Class Factories ↔ Line Plan Management
+- "A"-Class Factories <-> Line Plan Management
 - Measurement
   - % of merchandise from "A" factories
   - Items in stock vs. plan
@@ -8603,7 +8603,7 @@ The initiatives, once approved, received executive sponsorship, a project team, 
 
 ### Learning
 
-- Factory Relationship Skills → Merchandise Buying/Planning Skills
+- Factory Relationship Skills -> Merchandise Buying/Planning Skills
 - Measurement
   - % of strategic skills available
 - Target
@@ -8652,13 +8652,13 @@ trying to steal time from already busy people and with funding scraped together 
 
 A second important message from Figure 11-6 is that initiatives must be viewed as means, not ends. In constructing their Balanced Scorecards, organizations often get this wrong. They use the following planning process:
 
-Strategy → Initiatives → Measures (of initiative completion and cost)
+Strategy -> Initiatives -> Measures (of initiative completion and cost)
 
 Their strategic plan consists primarily of a list of initiatives that will be undertaken, and their internal business measures are milestones—time and cost metrics—about initiatives.
 
 Such a planning process is backwards! Strategy is not about managing initiatives. The Balanced Scorecard strategic planning process is:
 
-Strategy → Objectives → Measures → Targets (stretch) → Initiatives
+Strategy -> Objectives -> Measures -> Targets (stretch) -> Initiatives
 
 The strategic planning process should use initiatives to help the organization achieve its strategic objectives, not as ends in themselves. Public sector and nonprofit organizations are especially guilty of often confusing initiative completion as the target rather than improvements in mission objectives and agency effectiveness.
 
@@ -8812,8 +8812,8 @@ When using the Balanced Scorecard to integrate their planning and budgeting proc
 
 ## NOTES
 
-1. J. Hope and R. Fraser, “Beyond Budgeting,” BBRT, CAM-I Europe White Paper.  
-2. Ibid.  
+1. J. Hope and R. Fraser, “Beyond Budgeting,” BBRT, CAM-I Europe White Paper.
+2. Ibid.
 3. See Robert S. Kaplan and Robin Cooper, Cost & Effect: Using Integrated Cost Systems to Drive Profitability and Performance (Boston: Harvard Business School Press, 1997), 303–16; and “The Promise—and Peril—of Inte-
 
 ---
@@ -8983,7 +8983,7 @@ que então farei a conversão completa para Markdown seguindo todas as diretrize
 
 ### Descrição da figura
 
-- Diagrama de fluxo hierárquico que conecta “Compelling Place to Work” → comportamentos dos associados → impressões do cliente → retenção do cliente → métricas financeiras.  
+- Diagrama de fluxo hierárquico que conecta “Compelling Place to Work” -> comportamentos dos associados -> impressões do cliente -> retenção do cliente -> métricas financeiras.
 - Três faixas horizontais separadas por linhas tracejadas, rotuladas à esquerda:
   - Compelling Place to Invest
   - Compelling Place to Shop
@@ -9094,7 +9094,7 @@ The first benefit from the dynamic simulation model came from the constructive d
   - Um fluxo com “válvula” circular conduzindo para um retângulo preenchido à direita, rotulado “Client Base”.
   - Um círculo hachurado abaixo à esquerda rotulado “Perception Delays”, com uma seta grande retornando para a área “Customer” e também saindo para outras áreas.
 - Conexões principais:
-  - “New Clients for New Segments” → (fluxo) → “Client Base”.
+  - “New Clients for New Segments” -> (fluxo) -> “Client Base”.
   - Saídas do “Client Base” conectam-se a “Finance” (vendas) e “Internal”.
 
 ## Seção: Finance
@@ -9116,7 +9116,7 @@ The first benefit from the dynamic simulation model came from the constructive d
 - Elementos visuais:
   - Caixa de área com rótulo “Internal”.
   - Linha superior:
-    - Símbolo de fonte (estrela) à esquerda → fluxo rotulado “Claims” → retângulo “Pending Claims” → fluxo → círculo “Completed Claims” → símbolo de destino (estrela).
+    - Símbolo de fonte (estrela) à esquerda -> fluxo rotulado “Claims” -> retângulo “Pending Claims” -> fluxo -> círculo “Completed Claims” -> símbolo de destino (estrela).
   - Linha intermediária:
     - Um retângulo à esquerda rotulado “Competitive Advantage”.
     - Abaixo dele, um rótulo de fluxo/variável “Improvement in Process” apontando para a direita.
@@ -9148,7 +9148,7 @@ The first benefit from the dynamic simulation model came from the constructive d
 
 ## Relações e tendências implícitas
 
-- Aumento em “Investment in Technology” → após “Capacity Delays” → eleva “Capacity to Promote in New Segments” → melhora “Agent Productivity” e “Improvement Programs” → reforça “Improvement in Process” → aumenta “Competitive Advantage” e “Inventory of Ideas” → reduz “Pending Claims” e eleva “Completed Claims” → impacta “Costs and Expenses” e “EVA” → afeta “Dividends” e realimenta “Reinvestment”.
+- Aumento em “Investment in Technology” -> após “Capacity Delays” -> eleva “Capacity to Promote in New Segments” -> melhora “Agent Productivity” e “Improvement Programs” -> reforça “Improvement in Process” -> aumenta “Competitive Advantage” e “Inventory of Ideas” -> reduz “Pending Claims” e eleva “Completed Claims” -> impacta “Costs and Expenses” e “EVA” -> afeta “Dividends” e realimenta “Reinvestment”.
 - “Client Base” impulsiona “Sales” no módulo Finance, conectando desempenho de mercado ao resultado econômico.
 
 ## Observações finais
@@ -9488,11 +9488,11 @@ Desculpe, mas a imagem fornecida é da página 328, não da página 339. Para re
 
 # FEEDBACK AND LEARNING
 
-5. Rucci, Kirn, and Quinn, “The Employee-Customer-Profit Chain at Sears,” 89.  
-6. J. D. Sterman, N. Repenning, and F. Kofman, “Unanticipated Side Effects of Successful Quality Improvement Programs: Exploring a Paradox of Organizational Improvement,” Management Science 4, no. 2 (1997): 503–21.  
-7. The simulation language, ithink, developed by High Performance Systems, Inc., is also the foundation for Balancing the Corporate Scorecard, a simulation produced by Harvard Business School Publishing.  
-8. H. Mintzberg, “Crafting Strategy,” Harvard Business Review (July–August 1987): 66–75.  
-9. M. D. Eisner, Letter From The Chairman, The Walt Disney Annual Report, 1995.  
+5. Rucci, Kirn, and Quinn, “The Employee-Customer-Profit Chain at Sears,” 89.
+6. J. D. Sterman, N. Repenning, and F. Kofman, “Unanticipated Side Effects of Successful Quality Improvement Programs: Exploring a Paradox of Organizational Improvement,” Management Science 4, no. 2 (1997): 503–21.
+7. The simulation language, ithink, developed by High Performance Systems, Inc., is also the foundation for Balancing the Corporate Scorecard, a simulation produced by Harvard Business School Publishing.
+8. H. Mintzberg, “Crafting Strategy,” Harvard Business Review (July–August 1987): 66–75.
+9. M. D. Eisner, Letter From The Chairman, The Walt Disney Annual Report, 1995.
 10. L. Wilson, “The Management Meeting: Putting Strategy on the Table” (paper presented at the Balanced Scorecard Collaborative Best Practice Conference, Cambridge, MA, 15–16 December 1999).
 
 ---
@@ -10057,12 +10057,12 @@ Babel.” Many large enterprises lost interest in the scorecard concept because 
 
 The most common causes of implementation failures, however, are poor organizational processes, not poor scorecard design. We have seen at least seven different types of process failures in companies’ scorecard projects:
 
-1. Lack of senior management commitment  
-2. Too few individuals involved  
-3. Keeping the scorecard at the top  
-4. Too long a development process; the Balanced Scorecard as a one-time measurement project  
-5. Treating the Balanced Scorecard as a systems project  
-6. Hiring inexperienced consultants  
+1. Lack of senior management commitment
+2. Too few individuals involved
+3. Keeping the scorecard at the top
+4. Too long a development process; the Balanced Scorecard as a one-time measurement project
+5. Treating the Balanced Scorecard as a systems project
+6. Hiring inexperienced consultants
 7. Introducing the Balanced Scorecard only for compensation
 
 ### 1. Lack of Senior Management Commitment
@@ -10615,39 +10615,39 @@ Se preferir, envie a página 397 para conversão específica.
 
 # Index
 
-at Store 24, 318–319  
-downsizing, 358  
-drivers, 76–77, 247  
-at OFS, 111  
-selecting the correct, 360  
-stakeholder scorecards and, 102–103  
+at Store 24, 318–319
+downsizing, 358
+drivers, 76–77, 247
+at OFS, 111
+selecting the correct, 360
+stakeholder scorecards and, 102–103
 systems dynamics model and, 313
 
 Drucker, Peter, 250n
 
 Duke Children’s Hospital, 20–21, 153–154, 155
 
-dynamic budgeting, 288–300  
+dynamic budgeting, 288–300
 
-- evaluating initiatives in, 296  
-- operational budgeting in, 289–292  
+- evaluating initiatives in, 296
+- operational budgeting in, 289–292
 - strategic budgeting in, 292–295
 
 dynamic simulation model, 311–313
 
 earnings-per-share (EPS) growth, 53
 
-e-companies  
+e-companies
 
-- Balanced Scorecard for, 115–116  
-- compensation in, 269–270  
+- Balanced Scorecard for, 115–116
+- compensation in, 269–270
 - strategic themes for, 116
 
 Economic Value Added (EVA) metric, 25, 83–84, 378–380
 
-education, about strategy, 12–13  
+education, about strategy, 12–13
 
-- measures in, 229–230  
+- measures in, 229–230
 - programs, 218
 
 educational institutions, 20
@@ -10660,39 +10660,39 @@ Eisner, Michael, 319, 329n
 
 Elias, J., 160n
 
-employees  
+employees
 
-- aligning, 211–271  
-- behavior changes required from, 215–216  
-- commitment of, 49, 212  
-- communication of strategy to, 12–13, 213, 215–232  
-- emergent strategy formulation by, 315–316  
-- importance of alignment of, 212–213  
-- incentive/reward systems and, 213  
-- making strategy the job of, 12–13, 47–56  
-- participation of in intelligence, 314–315  
-- personal and team objectives for, 213, 233–251  
+- aligning, 211–271
+- behavior changes required from, 215–216
+- commitment of, 49, 212
+- communication of strategy to, 12–13, 213, 215–232
+- emergent strategy formulation by, 315–316
+- importance of alignment of, 212–213
+- incentive/reward systems and, 213
+- making strategy the job of, 12–13, 47–56
+- participation of in intelligence, 314–315
+- personal and team objectives for, 213, 233–251
 - at Sears, 310
 
 enterprise resource planning (ERP) systems, 327
 
-environmental, health, and safety (EHS) factors, 92  
+environmental, health, and safety (EHS) factors, 92
 
 - at Mobil, 38
 
-environments  
+environments
 
-- impact of on strategy, 313–315  
+- impact of on strategy, 313–315
 - rapidly evolving, 269–270, 369–370
 
 EPS. See earnings-per-share (EPS) growth
 
 EVA. See Economic Value Added (EVA) metric
 
-executive teams  
+executive teams
 
-- building, 345–348  
-- commitment of, 15–17  
+- building, 345–348
+- commitment of, 15–17
 - failure to involve others, 364
 
 experimentation, 315
@@ -10703,13 +10703,13 @@ Exxon Mobil Corporation, 29, 358
 
 factor analysis, 309–310
 
-failure, 360–361  
+failure, 360–361
 
-- control systems and, 350  
-- in design, 360–361  
-- due to process, 361–367  
-- multiple strategy implementation in, 32  
-- from starting too high, 342–343  
+- control systems and, 350
+- in design, 360–361
+- due to process, 361–367
+- multiple strategy implementation in, 32
+- from starting too high, 342–343
 - transitional issues causing, 357–360
 
 Falter, Elizabeth, 219, 232n
@@ -10763,9 +10763,9 @@ Kirsch, Vanessa, 150
 
 knowledge, as power, 320
 
-knowledge-based strategies  
+knowledge-based strategies
 
-- difficulties implementing, 2–3  
+- difficulties implementing, 2–3
 - value creation through, 2
 
 knowledge economy, 66
@@ -10784,15 +10784,15 @@ lag indicators, 3, 76–77, 247. See also financial measures
 
 Lathrop, Terry, 237
 
-leadership  
+leadership
 
-- building executive teams, 345–348  
-- changes in, effects of on the Balanced Scorecard, 357–360  
-- compared with management, 331  
-- creating a new future through, 334–336  
-- levers of control and, 348–350  
-- mobilizing change through, 15–17, 331–354  
-- sense of urgency and, 333–334  
+- building executive teams, 345–348
+- changes in, effects of on the Balanced Scorecard, 357–360
+- compared with management, 331
+- creating a new future through, 334–336
+- levers of control and, 348–350
+- mobilizing change through, 15–17, 331–354
+- sense of urgency and, 333–334
 - style and scorecard success, 350–353
 
 lead indicators, 76–77, 247. See also drivers
@@ -10801,19 +10801,19 @@ lean channels, 219
 
 learning. See organizational learning
 
-learning and growth perspective, 23, 76  
+learning and growth perspective, 23, 76
 
-- of City of Charlotte, 183  
-- climate in, 93  
-- at the DOE, 201  
-- at Fannie Mae, 120  
-- at FINCO, 205  
-- in incentive linkages, 254  
-- at the May Institute, 148  
-- at Mobil, 38–40  
-- at OFS, 113–114  
-- strategic competencies in, 93  
-- strategic technologies in, 93  
+- of City of Charlotte, 183
+- climate in, 93
+- at the DOE, 201
+- at Fannie Mae, 120
+- at FINCO, 205
+- in incentive linkages, 254
+- at the May Institute, 148
+- at Mobil, 38–40
+- at OFS, 113–114
+- strategic competencies in, 93
+- strategic technologies in, 93
 - in strategy maps, 93–95, 97
 
 learning maps, 223–226
@@ -10842,17 +10842,17 @@ Lutz, Bob, 279
 
 Madden, George, 226, 247, 249
 
-management  
+management
 
-- dimensions of Balanced Scorecard, 7  
-- integrating measurement into, 23  
-- lack of commitment from, 361–362  
-- layers in, 276n  
-- versus leadership, 331  
-- return on, 298  
-- strategy maps and, 72  
-- of strategy versus operations, 273–276, 280  
-- systems, modifying, 16–17  
+- dimensions of Balanced Scorecard, 7
+- integrating measurement into, 23
+- lack of commitment from, 361–362
+- layers in, 276n
+- versus leadership, 331
+- return on, 298
+- strategy maps and, 72
+- of strategy versus operations, 273–276, 280
+- systems, modifying, 16–17
 - understanding of strategy by, 30
 
 management by objectives (MBO), 233–234
@@ -10879,77 +10879,77 @@ McCool, Bob, 29, 30, 45, 54, 56–58, 60, 334, 343, 351
 
 McKinsey & Company, 351
 
-measures. See also financial measures  
-of communication, 217–218  
-determining number and mix of, 360, 375–376  
-development process for, 364–365  
-different across divisions and operating companies, 170–171  
-educating employees on, 229–230  
-evolution of Balanced Scorecard, 22–26  
-focus through, 23  
-impact of on alignment, 355–356  
-for incentive compensation, 267–269  
-individual versus team, 268–269  
-leading change with, 343–345  
-mismatch of with strategy, 2, 92  
-at Mobil, 287–288  
-point-of-arrival, 21–22  
-at Shell, 197–198  
-stand-alone, 99  
-of strategy, 3  
-strategy map implications for, 99–100  
-sustainability of, 59  
-template for, 230  
-too few, 360  
+measures. See also financial measures
+of communication, 217–218
+determining number and mix of, 360, 375–376
+development process for, 364–365
+different across divisions and operating companies, 170–171
+educating employees on, 229–230
+evolution of Balanced Scorecard, 22–26
+focus through, 23
+impact of on alignment, 355–356
+for incentive compensation, 267–269
+individual versus team, 268–269
+leading change with, 343–345
+mismatch of with strategy, 2, 92
+at Mobil, 287–288
+point-of-arrival, 21–22
+at Shell, 197–198
+stand-alone, 99
+of strategy, 3
+strategy map implications for, 99–100
+sustainability of, 59
+template for, 230
+too few, 360
 waiting for missing, 375
 
-meetings, management, 14–15, 304–320.  
-See also town meetings  
-at AT&T Canada Inc., 346–347  
-at Chemical Retail Bank, 320  
-at CIGNA Property & Casualty Insurance, 319, 320  
-at City of Charlotte, 307  
-focus on strategy in, 304–307  
-at Mobil, 56–57  
-scorecard updating at, 317–319  
-structure and frequency of, 319–320  
+meetings, management, 14–15, 304–320.
+See also town meetings
+at AT&T Canada Inc., 346–347
+at Chemical Retail Bank, 320
+at CIGNA Property & Casualty Insurance, 319, 320
+at City of Charlotte, 307
+focus on strategy in, 304–307
+at Mobil, 56–57
+scorecard updating at, 317–319
+structure and frequency of, 319–320
 testing and adapting strategy in, 307–316
 
-Meliones, Jon, 153, 154, 160n  
-Melville, Australia, 143  
-Mercer Consulting Group, Inc., 253  
-Metrus Group, Inc., 355–356  
-Microsoft Corporation, 370  
-military officers, 351  
-Miniace, Joseph N., 219, 232n  
-Mintzberg, Henry, 315, 329n  
-mission, organizational, 72–75  
+Meliones, Jon, 153, 154, 160n
+Melville, Australia, 143
+Mercer Consulting Group, Inc., 253
+Metrus Group, Inc., 355–356
+Microsoft Corporation, 370
+military officers, 351
+Miniace, Joseph N., 219, 232n
+Mintzberg, Henry, 315, 329n
+mission, organizational, 72–75
 in nonprofit, government, and health care organizations, 135
 
-Mobil North America Marketing and Refining Division (NAM&R), 4–5, 29–63, 334  
-alignment to strategy at, 40, 44–47  
-Balanced Scorecard development at, 337–339  
-Balanced Scorecard evolution at, 187–188  
-Balanced Scorecard of, 41  
-Balanced Scorecard results at, 60–62  
-communication at, 220–222  
-communication measures at, 218  
-compared with Montefiore Hospital, 158–159  
-customer intimacy strategy, 87  
-customer management at, 172–174  
-customer perspective at, 32–37  
-data security at, 374  
-dealer profitability at, 35–36  
-educational brochure at, 49–51  
-executive teams and, 346  
-financial perspective at, 30–32  
-incentive compensation at, 53–56, 255–258, 266, 314  
-internal business process perspective at, 37–38, 39  
-leadership mobilization at, 57–60  
-learning and growth perspective at, 38–40  
-measures at, 342–343  
-merger with Exxon Mobil, 29  
-New England Sales and Distribution unit, 45–46  
+Mobil North America Marketing and Refining Division (NAM&R), 4–5, 29–63, 334
+alignment to strategy at, 40, 44–47
+Balanced Scorecard development at, 337–339
+Balanced Scorecard evolution at, 187–188
+Balanced Scorecard of, 41
+Balanced Scorecard results at, 60–62
+communication at, 220–222
+communication measures at, 218
+compared with Montefiore Hospital, 158–159
+customer intimacy strategy, 87
+customer management at, 172–174
+customer perspective at, 32–37
+data security at, 374
+dealer profitability at, 35–36
+educational brochure at, 49–51
+executive teams and, 346
+financial perspective at, 30–32
+incentive compensation at, 53–56, 255–258, 266, 314
+internal business process perspective at, 37–38, 39
+leadership mobilization at, 57–60
+learning and growth perspective at, 38–40
+measures at, 342–343
+merger with Exxon Mobil, 29
+New England Sales and Distribution unit, 45–46
 personal scorecards at, 246–250
 
 ---
@@ -10958,107 +10958,107 @@ personal scorecards at, 246–250
 
 # Index
 
-Mobil North America Marketing and Refining Division (NAM&R) (continued)  
+Mobil North America Marketing and Refining Division (NAM&R) (continued)
 
-- planning and budgeting and, 285–288  
-- reporting system at, 324  
-- reverse-engineered scorecards at, 97–99  
-- shared services scorecards at, 194–196  
-- Speedpass, 52, 315  
-- strategy as continual process at, 56–57  
-- strategy as everyone’s job at, 47–56  
-- strategy map of, 36, 39, 42–43  
-- strategy trees at, 226–229  
-- “Super Bowl” approach at, 235–237  
-- translating strategy into operational terms at, 30–40  
-- truck drivers at, 51–52, 249  
+- planning and budgeting and, 285–288
+- reporting system at, 324
+- reverse-engineered scorecards at, 97–99
+- shared services scorecards at, 194–196
+- Speedpass, 52, 315
+- strategy as continual process at, 56–57
+- strategy as everyone’s job at, 47–56
+- strategy map of, 36, 39, 42–43
+- strategy trees at, 226–229
+- “Super Bowl” approach at, 235–237
+- translating strategy into operational terms at, 30–40
+- truck drivers at, 51–52, 249
 
-Montefiore Hospital, 154–159  
+Montefiore Hospital, 154–159
 
-Montgomery, C., 162–163, 165n  
+Montgomery, C., 162–163, 165n
 
-motivation  
+motivation
 
-- in government agencies, 202  
-- incentive compensation and, 255  
-- leadership and, 334–336  
-- personal scorecards and, 241  
-- for shared services, 208–209  
+- in government agencies, 202
+- incentive compensation and, 255
+- leadership and, 334–336
+- personal scorecards and, 241
+- for shared services, 208–209
 
-Motorola, Inc., 222–223  
+Motorola, Inc., 222–223
 
-Mournihan, Stephen, 199–200  
+Mournihan, Stephen, 199–200
 
-Myers, R., 104n  
+Myers, R., 104n
 
-National Bank Online Financial Services (OFS)  
+National Bank Online Financial Services (OFS)
 
-- Balanced Scorecard launch at, 335  
-- initiative evaluation at, 297–300, 315–316  
-- rapid change at, 370  
-- strategy map, 107–116  
+- Balanced Scorecard launch at, 335
+- initiative evaluation at, 297–300, 315–316
+- rapid change at, 370
+- strategy map, 107–116
 
-National Partnership for Reinventing Government, 142  
+National Partnership for Reinventing Government, 142
 
-National Reconnaissance Office, 143  
+National Reconnaissance Office, 143
 
-nation-state-city metaphor, 157  
+nation-state-city metaphor, 157
 
-Nationwide Financial Services, Inc., 291  
+Nationwide Financial Services, Inc., 291
 
-Nationwide Mutual Insurance, 321  
+Nationwide Mutual Insurance, 321
 
-natural business units (NBUs), 286  
+natural business units (NBUs), 286
 
-Nelson, Oz, 21–22, 239  
+Nelson, Oz, 21–22, 239
 
-Newell, Douglas, 107–108, 300, 335  
+Newell, Douglas, 107–108, 300, 335
 
-New Profit, Inc. (NPI), 150–153  
+New Profit, Inc. (NPI), 150–153
 
-newsletters, 218, 220  
+newsletters, 218, 220
 
-Niven, Paul, 219–220  
+Niven, Paul, 219–220
 
-nonprofit institutions  
+nonprofit institutions
 
-- Balanced Scorecard in, 20, 134–137  
-- impact of leadership changes in, 358–359  
-- May Institute, 146–150  
-- New Profit, Inc., 150–153  
-- role of strategy in, 133–134  
-- United Way of Southeastern New England, 145–146, 147  
+- Balanced Scorecard in, 20, 134–137
+- impact of leadership changes in, 358–359
+- May Institute, 146–150
+- New Profit, Inc., 150–153
+- role of strategy in, 133–134
+- United Way of Southeastern New England, 145–146, 147
 
-Novacor, Inc., 230, 231  
+Novacor, Inc., 230, 231
 
-Nova Scotia Power, Inc. (NSPI), 121–123  
+Nova Scotia Power, Inc. (NSPI), 121–123
 
-- communication at, 219–220  
-- human resources group at, 244  
-- incentive compensation at, 258–259  
-- personal scorecards at, 245–246  
+- communication at, 219–220
+- human resources group at, 244
+- incentive compensation at, 258–259
+- personal scorecards at, 245–246
 
-NRO. See U.S. National Reconnaissance Office (NRO)  
+NRO. See U.S. National Reconnaissance Office (NRO)
 
-O’Dell, Carla, 94, 95, 105n  
+O’Dell, Carla, 94, 95, 105n
 
-“On the Folly of Rewarding A, While Hoping for B” (Kerr), 343, 354n  
+“On the Folly of Rewarding A, While Hoping for B” (Kerr), 343, 354n
 
-operating plans, 13–14  
+operating plans, 13–14
 
-operating unit scorecards, 178–183  
+operating unit scorecards, 178–183
 
-operational budgeting, 14, 282, 288–292, 300  
+operational budgeting, 14, 282, 288–292, 300
 
-operational excellence strategy, 86, 87, 92  
+operational excellence strategy, 86, 87, 92
 
-- at Fannie Mae, 116–121  
-- internal processes in, 92  
-- knowledge management strategy for, 94, 95  
-- in Mobil, 38  
-- in nonprofit and government agencies, 134  
-- at Nova Scotia Power, Inc., 121–123  
-- in strategy maps, 87–89  
+- at Fannie Mae, 116–121
+- internal processes in, 92
+- knowledge management strategy for, 94, 95
+- in Mobil, 38
+- in nonprofit and government agencies, 134
+- at Nova Scotia Power, Inc., 121–123
+- in strategy maps, 87–89
 
 operational terms, translating strategy into, 9–11, 65–160
 
@@ -11068,77 +11068,77 @@ operational terms, translating strategy into, 9–11, 65–160
 
 # Index
 
-difficulty of, 65–67  
-financial measures and, 66–67  
-importance of, 65–66  
-at Mobil, 30–40  
-strategy maps for, 69–131  
-strategy scorecards for, 133–160  
-organizational learning, 15  
-feedback for, 303–329  
-granularity in, 316–317  
-strategic, 274–275  
-organization design, 11–12  
-organizations, growth of, 162  
+difficulty of, 65–67
+financial measures and, 66–67
+importance of, 65–66
+at Mobil, 30–40
+strategy maps for, 69–131
+strategy scorecards for, 133–160
+organizational learning, 15
+feedback for, 303–329
+granularity in, 316–317
+strategic, 274–275
+organization design, 11–12
+organizations, growth of, 162
 outsourcing, 192, 325
 
-parenting, 162–163, 171  
-Performance Share Plan (PSP), 259–260  
-personal Balanced Scorecards, 244–250  
-personal development, 247  
-personal/team objectives, 13, 233–251  
-integrating with human resources processes, 242–244  
-integrating with planning and quality processes, 239–241  
-personal Balanced Scorecards and, 244–250  
-strategic initiative alignment and, 237–239  
-“Super Bowl” approach to, 235–237  
-Pfeffer, Jeffrey, 269, 271n  
-planning  
-at ABB Switzerland, 283–284  
-bridging the gap from budgeting to, 282–288  
-with budgeting, 279–301  
-dynamic budgeting in, 288–300  
-importance of, 279  
-integrating personal/team objectives with existing, 239–241  
-at Mobil, 285–288  
-systems dynamics model and, 313  
+parenting, 162–163, 171
+Performance Share Plan (PSP), 259–260
+personal Balanced Scorecards, 244–250
+personal development, 247
+personal/team objectives, 13, 233–251
+integrating with human resources processes, 242–244
+integrating with planning and quality processes, 239–241
+personal Balanced Scorecards and, 244–250
+strategic initiative alignment and, 237–239
+“Super Bowl” approach to, 235–237
+Pfeffer, Jeffrey, 269, 271n
+planning
+at ABB Switzerland, 283–284
+bridging the gap from budgeting to, 282–288
+with budgeting, 279–301
+dynamic budgeting in, 288–300
+importance of, 279
+integrating personal/team objectives with existing, 239–241
+at Mobil, 285–288
+systems dynamics model and, 313
 point-of-arrival (POA) metrics, 21–22
 
-Porras, Jerry I., 354n  
-Porter, Michael, 63n, 75, 89–90, 104n, 105n, 133  
-potential, value as, 67  
-Prahalad, C. K., 189n  
-process failures, 361–367  
-productivity strategy, 85  
-product leadership strategy, 86, 90  
-internal processes in, 90, 92  
-at Mobil, 30  
-National Bank Online Financial Services (OFS), 107–116  
-in strategy maps, 87–89  
-profitable growth strategy, 85–86  
+Porras, Jerry I., 354n
+Porter, Michael, 63n, 75, 89–90, 104n, 105n, 133
+potential, value as, 67
+Prahalad, C. K., 189n
+process failures, 361–367
+productivity strategy, 85
+product leadership strategy, 86, 90
+internal processes in, 90, 92
+at Mobil, 30
+National Bank Online Financial Services (OFS), 107–116
+in strategy maps, 87–89
+profitable growth strategy, 85–86
 PSP. See Performance Share Plan (PSP)
 
-quality, 25. See also total quality management (TQM)  
-Field of Dreams strategy for, 377  
+quality, 25. See also total quality management (TQM)
+Field of Dreams strategy for, 377
 Quinn, R. T., 232n, 328n, 329n
 
-reengineering, 26, 377  
-at AgriChem, 124, 125  
-regulation. See government regulation  
-Relyea, Steven, 20, 202  
-Repenning, N., 329n, 368n  
-reporting  
-competition versus cooperation from, 324–325  
-open, 14–15  
-on performance, 323–324  
-software for, 326–327  
-traditional versus Balanced Scorecard, 325–326  
-resource allocation, 17  
-budgeting and, 282, 292–294  
-return on capital employed (ROCE), 83, 229  
-at Mobil, 30–31, 53  
-return-on-investment metric, 25  
-return on investment (ROI), 83  
+reengineering, 26, 377
+at AgriChem, 124, 125
+regulation. See government regulation
+Relyea, Steven, 20, 202
+Repenning, N., 329n, 368n
+reporting
+competition versus cooperation from, 324–325
+open, 14–15
+on performance, 323–324
+software for, 326–327
+traditional versus Balanced Scorecard, 325–326
+resource allocation, 17
+budgeting and, 282, 292–294
+return on capital employed (ROCE), 83, 229
+at Mobil, 30–31, 53
+return-on-investment metric, 25
+return on investment (ROI), 83
 return on management, 298
 
 Page number: 393
@@ -11149,79 +11149,79 @@ Page number: 393
 
 # Index (cont.)
 
-return on net assets (RONA), 124  
-Reuters America Inc., 321, 323  
-reverse-engineering, 97–99  
-review/revision of strategy, 305–307  
+return on net assets (RONA), 124
+Reuters America Inc., 321, 323
+reverse-engineering, 97–99
+review/revision of strategy, 305–307
 
-- at Chemical Retail Bank, 306  
-- as continual process, 13–15  
-rich channels, 218–219. See also communication  
-risk-taking, 324  
-Robertson, Ed, 217  
-ROCE. See return on capital employed (ROCE)  
-Rockwater, 6  
-- analysis at, 308  
-- strategy map at, 99–100, 101  
-- value chain integration at, 174–178  
-ROI. See return on investment (ROI)  
-RONA. See return on net assets (RONA)  
-Rucci, A. J., 232n, 328n, 329n  
+- at Chemical Retail Bank, 306
+- as continual process, 13–15
+rich channels, 218–219. See also communication
+risk-taking, 324
+Robertson, Ed, 217
+ROCE. See return on capital employed (ROCE)
+Rockwater, 6
+- analysis at, 308
+- strategy map at, 99–100, 101
+- value chain integration at, 174–178
+ROI. See return on investment (ROI)
+RONA. See return on net assets (RONA)
+Rucci, A. J., 232n, 328n, 329n
 
-Santamaria, J. A., 214n, 354n  
-Schiemann, W. A., 368n  
-Schneiderman, Art, 360–361  
-scientific management, 211  
-Sears, Roebuck and Co., 92  
+Santamaria, J. A., 214n, 354n
+Schiemann, W. A., 368n
+Schneiderman, Art, 360–361
+scientific management, 211
+Sears, Roebuck and Co., 92
 
-- analysis at, 308–310  
-- learning maps at, 223–226  
-- stakeholder scorecard at, 102, 103  
-Securities and Exchange Commission, 374  
-service agreements, 193, 208  
-- at Mobil, 46–47, 194  
-- at Shell, 197–199  
-Shapiro, Carl, 131n  
-shared service units  
-- Balanced Scorecards for individual, 46–47, 48  
-- business-in-a-business model for, 192–193, 203–207  
-- at the DOE, 199–202  
-- failure to align, 360–361  
-- launching Balanced Scorecards at, 339–341  
-linking with SBUs, 193–194  
-- at Mobil, 194–196  
-responsiveness of, 191–192  
-scorecard development for, 192–207  
-- at Shell, 196–199  
-strategic partner model for, 192, 193–203  
-synergies through, 191–209  
-- at the University of California, San Diego, 202–203  
-“yellow pages” test for, 192, 204  
-shareholders  
-- defining strategy from the perspective of, 76–77  
-- managing value for, 170–172  
-Shell Services International (SSI), 196–199  
-Sherman, S., 354n  
-Simons, Robert, 271n, 301n, 348, 349, 354n  
-Singapore District Courts, 144  
-SKF, 288  
-small businesses, 369–370  
-software  
-- Balanced Scorecard reporting, 326–327  
-- to facilitate strategy evaluation, 314–315  
-- systems dynamics, 311  
-Southern Gardens Citrus, 19–20, 369  
-sponsorship, developing, 371  
-Sprint Corporation, 291, 301n  
-stakeholder scorecards, 102–103, 360  
-State of Washington, 186–187  
-- Balanced Scorecard at, 334–335  
-statistical analysis, 308–313  
-Sicrman, J. D., 329n, 368n  
-Slewart, G. B., 105n  
-Stewart, Thomas A., 213n, 232n  
-Stitt, Skip, 209n  
-Store 24, 81–83  
+- analysis at, 308–310
+- learning maps at, 223–226
+- stakeholder scorecard at, 102, 103
+Securities and Exchange Commission, 374
+service agreements, 193, 208
+- at Mobil, 46–47, 194
+- at Shell, 197–199
+Shapiro, Carl, 131n
+shared service units
+- Balanced Scorecards for individual, 46–47, 48
+- business-in-a-business model for, 192–193, 203–207
+- at the DOE, 199–202
+- failure to align, 360–361
+- launching Balanced Scorecards at, 339–341
+linking with SBUs, 193–194
+- at Mobil, 194–196
+responsiveness of, 191–192
+scorecard development for, 192–207
+- at Shell, 196–199
+strategic partner model for, 192, 193–203
+synergies through, 191–209
+- at the University of California, San Diego, 202–203
+“yellow pages” test for, 192, 204
+shareholders
+- defining strategy from the perspective of, 76–77
+- managing value for, 170–172
+Shell Services International (SSI), 196–199
+Sherman, S., 354n
+Simons, Robert, 271n, 301n, 348, 349, 354n
+Singapore District Courts, 144
+SKF, 288
+small businesses, 369–370
+software
+- Balanced Scorecard reporting, 326–327
+- to facilitate strategy evaluation, 314–315
+- systems dynamics, 311
+Southern Gardens Citrus, 19–20, 369
+sponsorship, developing, 371
+Sprint Corporation, 291, 301n
+stakeholder scorecards, 102–103, 360
+State of Washington, 186–187
+- Balanced Scorecard at, 334–335
+statistical analysis, 308–313
+Sicrman, J. D., 329n, 368n
+Slewart, G. B., 105n
+Stewart, Thomas A., 213n, 232n
+Stitt, Skip, 209n
+Store 24, 81–83
 - customer intimacy strategy at, 87–88
 
 ---
@@ -11249,154 +11249,154 @@ Assim que você enviar a página correta, farei a conversão completa com:
 
 # Index (Page 407)
 
-- textile plants, 235  
-- Texas Instruments, 224  
-  - employee performance management at, 241  
-  - knowledge capture and sharing at, 223–224  
-- Texas, State of. See State of Texas  
-- theatre organization, 28–29  
-- themes and strategies, 7–8  
-- 3M  
-  - growth strategy of, 64  
-  - innovation at, 63–64  
-- time frames for planning, 285–286  
-- time-series analysis, 311  
-- time-series statistical analysis, 310–311  
-- time to market, alignment with strategy and, 112  
-- Times Mirror, 356–357  
-- Tiss, Milunsky, 86n  
-- Titleist, 124–125  
-- top down, strategic themes not channeled from, 83  
-- top leadership  
-  - building strategic management agenda with, 157–161  
-  - creating change through, 140, 141–144  
-  - executive leadership. See executive leadership  
-  - investing time of, 154–155  
-  - linking strategy maps and scorecards of executive team to business units, 158–159  
-  - personal involvement and sponsorship by, 152, 155  
-  - reinforcing messages by, 153  
-- top management, the, 12  
-- top 10 list, for identifying strategic objectives, 282–284  
-- total quality management (TQM), 361–362  
-  - compared with the Balanced Scorecard, 376–377  
-- Toyota, 63, 358  
-- training employees, 216–217  
-  - Red Cross, 146  
-- training hours, 96, 97–98  
-- training programs, data for managing processes of, 113–114  
-- transaction-based financial system, 54  
-- transcendent lesson, 4  
-- transparency, 344, 363  
-- Treasury, U.S. Department of the, 347  
-- trend charts, 306–307  
-- trend line, drawing, 307–308  
-- trends on scorecards, measuring significant, 300–303  
-- triangulation, 316  
-- tripwire metrics, 97  
-- ttests (t-tests), statistical, 312–313  
-- turnover  
-  - employee, 253–254  
-  - turnover rate, 254  
-- type I and type II errors, 376–377  
-- types, validation of, 317–318  
-- Tyson Foods, 133, 186, 225, 332–333  
+- textile plants, 235
+- Texas Instruments, 224
+  - employee performance management at, 241
+  - knowledge capture and sharing at, 223–224
+- Texas, State of. See State of Texas
+- theatre organization, 28–29
+- themes and strategies, 7–8
+- 3M
+  - growth strategy of, 64
+  - innovation at, 63–64
+- time frames for planning, 285–286
+- time-series analysis, 311
+- time-series statistical analysis, 310–311
+- time to market, alignment with strategy and, 112
+- Times Mirror, 356–357
+- Tiss, Milunsky, 86n
+- Titleist, 124–125
+- top down, strategic themes not channeled from, 83
+- top leadership
+  - building strategic management agenda with, 157–161
+  - creating change through, 140, 141–144
+  - executive leadership. See executive leadership
+  - investing time of, 154–155
+  - linking strategy maps and scorecards of executive team to business units, 158–159
+  - personal involvement and sponsorship by, 152, 155
+  - reinforcing messages by, 153
+- top management, the, 12
+- top 10 list, for identifying strategic objectives, 282–284
+- total quality management (TQM), 361–362
+  - compared with the Balanced Scorecard, 376–377
+- Toyota, 63, 358
+- training employees, 216–217
+  - Red Cross, 146
+- training hours, 96, 97–98
+- training programs, data for managing processes of, 113–114
+- transaction-based financial system, 54
+- transcendent lesson, 4
+- transparency, 344, 363
+- Treasury, U.S. Department of the, 347
+- trend charts, 306–307
+- trend line, drawing, 307–308
+- trends on scorecards, measuring significant, 300–303
+- triangulation, 316
+- tripwire metrics, 97
+- ttests (t-tests), statistical, 312–313
+- turnover
+  - employee, 253–254
+  - turnover rate, 254
+- type I and type II errors, 376–377
+- types, validation of, 317–318
+- Tyson Foods, 133, 186, 225, 332–333
 
-- Unisys, 321–322  
-- unit-level distributions, 320  
-- United Kingdom  
-  - Brown & Root in, 174–178  
-  - exemplar government enterprises in the, 360  
-- United Kingdom Ministry of Defence (MOD)  
-  - expected results, 343–344  
-  - Lessons Learned process of, 348–349  
-  - mission, 343  
-  - performance management framework, 345  
-  - performance management in, 338–344  
-  - Policy for Defence, 338–339  
-  - shared services in, 205–206  
-  - strategic objectives, 343  
-  - strategy maps, 339–340, 342, 343–344  
-  - U.K. Defence Logistics organization, 339–342, 344–348  
-  - vision, 343  
-- United Kingdom’s Defense Logistics Organization, 352  
-- United Kingdom’s Exchequer, 348  
-- United Kingdom’s Ministry of Defence (MOD). See United Kingdom Ministry of Defence (MOD)  
-- United Parcel Service, 21–22  
-- United States Navy, 232  
-- United Way of Southeastern New England (UWSENE), 145–146, 147, 376  
-  - impact of leadership change in, 358–359  
-- U.S. Army, 351–352  
-- U.S. Army Materiel Command, 351–352  
-- U.S. Army Signal Command, 352  
-- U.S. Department of Defense, 347–348  
-- U.S. Department of the Interior, 327–328  
-- U.S. Department of the Treasury, 347  
-- U.S. federal government, 338–339  
-  - national security. See national security strategy  
-- utility company, 230–231  
-- utility industry metrics, 96–97  
-- utilization rate, 255  
+- Unisys, 321–322
+- unit-level distributions, 320
+- United Kingdom
+  - Brown & Root in, 174–178
+  - exemplar government enterprises in the, 360
+- United Kingdom Ministry of Defence (MOD)
+  - expected results, 343–344
+  - Lessons Learned process of, 348–349
+  - mission, 343
+  - performance management framework, 345
+  - performance management in, 338–344
+  - Policy for Defence, 338–339
+  - shared services in, 205–206
+  - strategic objectives, 343
+  - strategy maps, 339–340, 342, 343–344
+  - U.K. Defence Logistics organization, 339–342, 344–348
+  - vision, 343
+- United Kingdom’s Defense Logistics Organization, 352
+- United Kingdom’s Exchequer, 348
+- United Kingdom’s Ministry of Defence (MOD). See United Kingdom Ministry of Defence (MOD)
+- United Parcel Service, 21–22
+- United States Navy, 232
+- United Way of Southeastern New England (UWSENE), 145–146, 147, 376
+  - impact of leadership change in, 358–359
+- U.S. Army, 351–352
+- U.S. Army Materiel Command, 351–352
+- U.S. Army Signal Command, 352
+- U.S. Department of Defense, 347–348
+- U.S. Department of the Interior, 327–328
+- U.S. Department of the Treasury, 347
+- U.S. federal government, 338–339
+  - national security. See national security strategy
+- utility company, 230–231
+- utility industry metrics, 96–97
+- utilization rate, 255
 
-- validation  
-  - construct, 315–318  
-  - content, 314–315  
-  - types of, 317–318  
-- validation framework, 314–318  
-- values, defining core, 28–29  
-- Van de Ven, A. H. (Andrew H.), 327–328  
-- variables, use of statistical validation of, 318–320  
-- variance from budget, 51  
-- vector diagram, 75–76  
-- vendor performance, measuring, 114–115  
-- veridical performance measures, 315–316  
-- vertical integration, 169  
-- vertical penetration of the BSC, 149–172  
-- vertical, synapses external to the organization are not, 208  
-- Vision (perspective), 25  
-- vision and strategy, linking to measures and objectives, 26–27  
-- vision and the Balanced Scorecard, 5  
-- vision statements, 23–24  
-  - airline, 23  
-- visions, strategy maps linking, 69–71  
-- vital few metrics, 100  
-- Volkswagen, 358  
+- validation
+  - construct, 315–318
+  - content, 314–315
+  - types of, 317–318
+- validation framework, 314–318
+- values, defining core, 28–29
+- Van de Ven, A. H. (Andrew H.), 327–328
+- variables, use of statistical validation of, 318–320
+- variance from budget, 51
+- vector diagram, 75–76
+- vendor performance, measuring, 114–115
+- veridical performance measures, 315–316
+- vertical integration, 169
+- vertical penetration of the BSC, 149–172
+- vertical, synapses external to the organization are not, 208
+- Vision (perspective), 25
+- vision and strategy, linking to measures and objectives, 26–27
+- vision and the Balanced Scorecard, 5
+- vision statements, 23–24
+  - airline, 23
+- visions, strategy maps linking, 69–71
+- vital few metrics, 100
+- Volkswagen, 358
 
-- Waccamaw, 265  
-- Walmart, 358  
-- Washington  
-  - State of. See State of Washington  
-- Waste Management, Inc., 358–359  
-- waste management industry, 358  
-- waterfall implementation approach, 229–231  
-- Weber, Donald, 85–86  
-- Web page access, 345–346  
-- weight reduction, 74  
-- Welch, Jack, 2  
-- Wells Fargo, 358  
-- Westenhoefer, Frank, 205  
-- Westminster, 348  
-- what-how matrix, 82–83  
-- whistleblowing policy in MOD, 346  
-- White, Roy, 351–352  
-- wholesaler, 127–128  
-- Wicks, Peter, 176–177  
-- Williams, Allan, 351–352  
-- winner’s curse, 74  
-- wireline businesses, 169  
-- Wood, S., 96–97  
-- work environments, changing prior to launching BSC, 181  
-- work group customer scrips, 174–175  
-- World Bank, 358  
-- WorldCom, 355–356  
-- worst cases, analyzing likelihood of, 74–75  
-- writer, 168–169  
+- Waccamaw, 265
+- Walmart, 358
+- Washington
+  - State of. See State of Washington
+- Waste Management, Inc., 358–359
+- waste management industry, 358
+- waterfall implementation approach, 229–231
+- Weber, Donald, 85–86
+- Web page access, 345–346
+- weight reduction, 74
+- Welch, Jack, 2
+- Wells Fargo, 358
+- Westenhoefer, Frank, 205
+- Westminster, 348
+- what-how matrix, 82–83
+- whistleblowing policy in MOD, 346
+- White, Roy, 351–352
+- wholesaler, 127–128
+- Wicks, Peter, 176–177
+- Williams, Allan, 351–352
+- winner’s curse, 74
+- wireline businesses, 169
+- Wood, S., 96–97
+- work environments, changing prior to launching BSC, 181
+- work group customer scrips, 174–175
+- World Bank, 358
+- WorldCom, 355–356
+- worst cases, analyzing likelihood of, 74–75
+- writer, 168–169
 
-- Xerox, 63, 358, 359  
+- Xerox, 63, 358, 359
 
-- Yamaha, 358  
+- Yamaha, 358
 
-- Zara, 358  
-- Zeta components, 255  
+- Zara, 358
+- Zeta components, 255
 - Zuboff, Shoshana, 35–36
 
 ---
@@ -11405,58 +11405,58 @@ Assim que você enviar a página correta, farei a conversão completa com:
 
 # Index
 
-value proposition  
+value proposition
 
-- customer, 11  
-- at OFS, 111  
-- in strategy maps, 86–90  
+- customer, 11
+- at OFS, 111
+- in strategy maps, 86–90
 
-values, 73, 348, 349  
+values, 73, 348, 349
 
-Varian, Hal R., 131n  
+Varian, Hal R., 131n
 
-Veterans Benefit Administration (VBA), 142–143  
+Veterans Benefit Administration (VBA), 142–143
 
-virtual organizations, 323  
+virtual organizations, 323
 
-- scorecards for, 187, 188–189  
+- scorecards for, 187, 188–189
 
-vision, 72–75  
+vision, 72–75
 
-- ability to execute, 1  
-- translating into objectives, 40, 41  
+- ability to execute, 1
+- translating into objectives, 40, 41
 
-Washington, State of, 186–187, 334–335  
+Washington, State of, 186–187, 334–335
 
-Waterhouse, J. H., 105n  
+Waterhouse, J. H., 105n
 
-Webber, A. M., 27n  
+Webber, A. M., 27n
 
-Web sites, communication via, 223. See also intranets  
+Web sites, communication via, 223. See also intranets
 
-Wegner, M. S., 354n  
+Wegner, M. S., 354n
 
-Welch, Jack, 279, 335  
+Welch, Jack, 279, 335
 
-“What’s in it for me?” criterion, 239  
+“What’s in it for me?” criterion, 239
 
-Wiersema, F., 86–87, 105n  
+Wiersema, F., 86–87, 105n
 
-Williams, Jeffrey R., 131n  
+Williams, Jeffrey R., 131n
 
-Wilson, Lee, 306, 316, 318, 319, 329n, 375  
+Wilson, Lee, 306, 316, 318, 319, 329n, 375
 
-Winterthur International, 242–244  
+Winterthur International, 242–244
 
-- incentive compensation at, 261–262  
+- incentive compensation at, 261–262
 
-workforce capabilities, 66  
+workforce capabilities, 66
 
-work teams, 237, 239  
+work teams, 237, 239
 
-Wymore, Dennis R., 209n  
+Wymore, Dennis R., 209n
 
-“yellow pages” test, 192, 204  
+“yellow pages” test, 192, 204
 
 Zeneca Ag Products North America, 18–19
 

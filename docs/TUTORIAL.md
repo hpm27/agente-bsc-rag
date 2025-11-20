@@ -1,10 +1,10 @@
-# 🎓 Tutorial Completo - Agente BSC RAG
+# [EMOJI] Tutorial Completo - Agente BSC RAG
 
 > Guia passo-a-passo para dominar o sistema BSC RAG: uso básico, avançado, customização e casos práticos
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 - [Parte 1: Usando a Interface Streamlit](#parte-1-usando-a-interface-streamlit)
 - [Parte 2: Uso Programático (API)](#parte-2-uso-programático-api)
@@ -16,7 +16,7 @@
 
 ---
 
-## 📱 Parte 1: Usando a Interface Streamlit
+## [EMOJI] Parte 1: Usando a Interface Streamlit
 
 ### 1.1 Primeiro Acesso
 
@@ -29,9 +29,9 @@ python run_streamlit.py
 2. **Acessar interface**: Abra [http://localhost:8501](http://localhost:8501)
 
 3. **Interface inicial**:
-   - 📝 Campo de input de query (centro)
-   - ⚙️ Sidebar (esquerda) com configurações
-   - 📊 Área de histórico (abaixo do input)
+   - [EMOJI] Campo de input de query (centro)
+   - [EMOJI] Sidebar (esquerda) com configurações
+   - [EMOJI] Área de histórico (abaixo do input)
 
 ### 1.2 Anatomia da Interface
 
@@ -39,13 +39,13 @@ python run_streamlit.py
 ┌──────────────────────────────────────────────────────────────┐
 │  SIDEBAR                │  ÁREA PRINCIPAL                    │
 │  ┌────────────────┐     │  ┌──────────────────────────────┐ │
-│  │ Configurações  │     │  │  🎯 Agente BSC RAG           │ │
+│  │ Configurações  │     │  │  [EMOJI] Agente BSC RAG           │ │
 │  │                │     │  └──────────────────────────────┘ │
 │  │ Perspectivas:  │     │                                   │
-│  │ ☑ Financeira   │     │  ┌──────────────────────────────┐│
-│  │ ☑ Clientes     │     │  │ Sua pergunta sobre BSC:      ││
-│  │ ☑ Processos    │     │  │ [_____________________][Enviar]│
-│  │ ☑ Aprendizado  │     │  └──────────────────────────────┘│
+│  │ [EMOJI] Financeira   │     │  ┌──────────────────────────────┐│
+│  │ [EMOJI] Clientes     │     │  │ Sua pergunta sobre BSC:      ││
+│  │ [EMOJI] Processos    │     │  │ [_____________________][Enviar]│
+│  │ [EMOJI] Aprendizado  │     │  └──────────────────────────────┘│
 │  │                │     │                                   │
 │  │ Parâmetros:    │     │  ┌──────────────────────────────┐│
 │  │ Top-K: 10      │     │  │  HISTÓRICO                   ││
@@ -74,7 +74,7 @@ Digite: "Quais são os principais KPIs da perspectiva financeira?"
 RESPOSTA FINAL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Segundo Kaplan & Norton, os principais KPIs da perspectiva 
+Segundo Kaplan & Norton, os principais KPIs da perspectiva
 financeira no Balanced Scorecard incluem:
 
 1. **ROI (Return on Investment)**
@@ -109,7 +109,7 @@ FONTES (Top 5)
 [1] Score: 0.96
     Fonte: The Balanced Scorecard
     Seção: 65
-    Conteúdo: "Financial perspective focuses on traditional 
+    Conteúdo: "Financial perspective focuses on traditional
               financial metrics such as ROI, revenue growth..."
 
 [2] Score: 0.94
@@ -138,27 +138,27 @@ Sugestões:
 ### 1.4 Interpretando os Resultados
 
 **1. Resposta Final**:
-- ✅ Texto sintetizado combinando insights dos agentes
-- ✅ Formatado em Markdown (negrito, listas, etc.)
-- ✅ Focado na query do usuário
+- [OK] Texto sintetizado combinando insights dos agentes
+- [OK] Formatado em Markdown (negrito, listas, etc.)
+- [OK] Focado na query do usuário
 
 **2. Perspectivas Consultadas**:
-- 📊 Quais agentes BSC foram acionados
-- 📈 Confidence score de cada perspectiva (0-1)
-- 🎯 1-4 perspectivas dependendo da query
+- [EMOJI] Quais agentes BSC foram acionados
+- [EMOJI] Confidence score de cada perspectiva (0-1)
+- [EMOJI] 1-4 perspectivas dependendo da query
 
 **3. Fontes**:
-- 📚 Top 5-10 documentos mais relevantes
-- 🔢 Score de relevância (0-1, quanto maior melhor)
-- 📖 Fonte e seção exatas
-- 📄 Preview do conteúdo
+- [EMOJI] Top 5-10 documentos mais relevantes
+- [EMOJI] Score de relevância (0-1, quanto maior melhor)
+- [EMOJI] Fonte e seção exatas
+- [EMOJI] Preview do conteúdo
 
 **4. Avaliação do Judge**:
 - ⭐ Score geral (0-1, threshold padrão: 0.7)
-- ✅/❌ Aprovado ou reprovado
-- 📊 Breakdown: Completude, Fundamentação, Citação
-- 💬 Feedback textual detalhado
-- 💡 Sugestões de melhoria
+- [OK]/[ERRO] Aprovado ou reprovado
+- [EMOJI] Breakdown: Completude, Fundamentação, Citação
+- [EMOJI] Feedback textual detalhado
+- [EMOJI] Sugestões de melhoria
 
 ### 1.5 Queries Complexas (Multi-Perspectiva)
 
@@ -169,14 +169,14 @@ Sugestões:
 ```
 
 **Resultado**:
-- ✅ Perspectivas consultadas: **Customer** + **Financial**
-- ✅ Resposta sintetizada conectando as duas perspectivas
-- ✅ Relação causa-efeito explicada
+- [OK] Perspectivas consultadas: **Customer** + **Financial**
+- [OK] Resposta sintetizada conectando as duas perspectivas
+- [OK] Relação causa-efeito explicada
 
 **Resposta esperada**:
 
 ```
-A satisfação do cliente impacta a lucratividade através de 
+A satisfação do cliente impacta a lucratividade através de
 múltiplos mecanismos:
 
 1. PERSPECTIVA DE CLIENTES:
@@ -191,18 +191,18 @@ múltiplos mecanismos:
    - Margem de lucro melhora
 
 3. CADEIA DE CAUSA E EFEITO:
-   Satisfação → Retenção → Receita Recorrente → Lucratividade
+   Satisfação -> Retenção -> Receita Recorrente -> Lucratividade
 ```
 
 ### 1.6 Configurando Parâmetros na Sidebar
 
 **Perspectivas BSC**:
-- ☑ **Financeira**: Marque se query envolve ROI, receita, custos
-- ☑ **Clientes**: Marque se envolve satisfação, NPS, retenção
-- ☑ **Processos**: Marque se envolve eficiência, qualidade
-- ☑ **Aprendizado**: Marque se envolve capacitação, inovação
+- [EMOJI] **Financeira**: Marque se query envolve ROI, receita, custos
+- [EMOJI] **Clientes**: Marque se envolve satisfação, NPS, retenção
+- [EMOJI] **Processos**: Marque se envolve eficiência, qualidade
+- [EMOJI] **Aprendizado**: Marque se envolve capacitação, inovação
 
-💡 **Dica**: Deixe **todas marcadas** para queries gerais. O Orchestrator escolherá automaticamente.
+[EMOJI] **Dica**: Deixe **todas marcadas** para queries gerais. O Orchestrator escolherá automaticamente.
 
 **Parâmetros de Retrieval**:
 
@@ -213,9 +213,9 @@ múltiplos mecanismos:
 | **Rerank Top-N** | 5 | Docs após re-ranking | Aumente (7-10) para mais diversidade |
 
 **Judge Threshold**:
-- 📊 **0.7** (padrão): Balanceado
-- 📊 **0.8-0.9**: Mais rigoroso (menos refinamentos)
-- 📊 **0.5-0.6**: Mais permissivo (mais refinamentos)
+- [EMOJI] **0.7** (padrão): Balanceado
+- [EMOJI] **0.8-0.9**: Mais rigoroso (menos refinamentos)
+- [EMOJI] **0.5-0.6**: Mais permissivo (mais refinamentos)
 
 ### 1.7 Histórico de Conversação
 
@@ -230,7 +230,7 @@ múltiplos mecanismos:
 
 ---
 
-## 💻 Parte 2: Uso Programático (API)
+## [EMOJI] Parte 2: Uso Programático (API)
 
 ### 2.1 Exemplo Básico (Workflow Completo)
 
@@ -309,13 +309,13 @@ from src.agents.orchestrator import Orchestrator
 
 async def main():
     orchestrator = Orchestrator()
-    
+
     # Executar 4 agentes em paralelo
     responses = await orchestrator.ainvoke_agents(
         query="Como implementar BSC na empresa?",
         agents_to_use=["financeira", "cliente", "processos", "aprendizado"]
     )
-    
+
     for resp in responses:
         print(f"\n{resp['perspective']} (confidence {resp['confidence']:.2f}):")
         print(resp['response'][:200] + "...")
@@ -325,9 +325,9 @@ asyncio.run(main())
 ```
 
 **Performance**:
-- ⚡ 4 agentes sequencial: ~120s
-- ⚡ 4 agentes paralelo (AsyncIO): ~36s
-- ⚡ **Speedup: 3.34x**
+- [FAST] 4 agentes sequencial: ~120s
+- [FAST] 4 agentes paralelo (AsyncIO): ~36s
+- [FAST] **Speedup: 3.34x**
 
 ### 2.3 Busca RAG Direta
 
@@ -344,7 +344,7 @@ results = retriever.retrieve(
     query="Quais são os objetivos da perspectiva de processos?",
     top_k=10,
     threshold=0.7,
-    multilingual=True  # Query expansion PT-BR ↔ EN
+    multilingual=True  # Query expansion PT-BR <-> EN
 )
 
 # Processar resultados
@@ -403,7 +403,7 @@ async def process_query(request: QueryRequest):
             session_id=request.session_id,
             max_iterations=request.max_iterations
         )
-        
+
         return QueryResponse(
             final_response=result["final_response"],
             perspectives=result["perspectives"],
@@ -426,7 +426,7 @@ curl -X POST http://localhost:8000/query \
 
 ---
 
-## 🎨 Parte 3: Customização
+## [EMOJI] Parte 3: Customização
 
 ### 3.1 Adicionar Novos Documentos BSC
 
@@ -439,10 +439,10 @@ cp outro-documento.md data/bsc_literature/
 ```
 
 **Formatos suportados**:
-- ✅ `.md` (Markdown)
-- ✅ `.pdf` (PDF)
-- ✅ `.txt` (Texto plano)
-- ✅ `.docx` (Word) - experimental
+- [OK] `.md` (Markdown)
+- [OK] `.pdf` (PDF)
+- [OK] `.txt` (Texto plano)
+- [OK] `.docx` (Word) - experimental
 
 **Passo 2: Reindexar**:
 
@@ -461,7 +461,7 @@ python scripts/build_knowledge_base.py
 [OK] Knowledge base atualizada!
 ```
 
-💡 **Dica**: Cache otimizado reutiliza chunks já processados (apenas processa documentos novos).
+[EMOJI] **Dica**: Cache otimizado reutiliza chunks já processados (apenas processa documentos novos).
 
 ### 3.2 Modificar Prompts de Agentes
 
@@ -526,13 +526,13 @@ from src.agents.base_agent import BaseAgent
 
 class SustainabilityAgent(BaseAgent):
     """Agente para perspectiva de Sustentabilidade."""
-    
+
     def __init__(self):
         super().__init__(
             name="Sustainability Agent",
             perspective="Sustainability",
             system_prompt="""Você é especialista em Sustentabilidade no BSC.
-            
+
             Foco em:
             - Impacto ambiental (carbon footprint, energia renovável)
             - Responsabilidade social (diversidade, inclusão)
@@ -613,7 +613,7 @@ print(f"Tamanho: {stats['size_mb']:.2f} MB")
 
 ---
 
-## 📊 Parte 4: Análise Avançada
+## [EMOJI] Parte 4: Análise Avançada
 
 ### 4.1 Interpretar Métricas E2E
 
@@ -644,7 +644,7 @@ RESULTADOS:
 - **P50 (Mediana)**: 50% das queries respondem em <71s
 - **P95**: 95% das queries respondem em <122s
 - **P99**: 99% respondem em <122s
-- ✅ **Todas abaixo dos thresholds** = Performance OK
+- [OK] **Todas abaixo dos thresholds** = Performance OK
 
 **Se P95 > 180s**: Investigar gargalos (cache, API externa, paralelização).
 
@@ -684,8 +684,8 @@ print(f"Synthesis: {synthesis_time:.2f}s")
 |---------|---------|----------------|
 | Embeddings | Ativar cache (`ENABLE_EMBEDDING_CACHE=true`) | 949x speedup |
 | Agentes | Usar `ainvoke_agents()` (AsyncIO) | 3.34x speedup |
-| Retrieval | Reduzir `top_k` (10 → 5) | -20% latência |
-| Re-ranking | Reduzir `rerank_top_n` (5 → 3) | -15% latência |
+| Retrieval | Reduzir `top_k` (10 -> 5) | -20% latência |
+| Re-ranking | Reduzir `rerank_top_n` (5 -> 3) | -15% latência |
 | API calls | Upgrade tier OpenAI/Anthropic | -30% latência |
 
 ### 4.3 Debug de Queries Problemáticas
@@ -714,7 +714,7 @@ else:
 
 1. **Reduzir threshold**: `threshold=0.5` (vs 0.7 padrão)
 2. **Aumentar top_k**: `top_k=20` (vs 10 padrão)
-3. **Reformular query**: "Quais KPIs..." → "KPIs da perspectiva financeira segundo Kaplan"
+3. **Reformular query**: "Quais KPIs..." -> "KPIs da perspectiva financeira segundo Kaplan"
 4. **Adicionar documentos**: Dataset pode não cobrir o tópico
 
 **Query retorna resposta reprovada pelo Judge**:
@@ -729,7 +729,7 @@ if not judge["approved"]:
     print(f"\nIssues:")
     for issue in judge["issues"]:
         print(f"  - {issue}")
-    
+
     print(f"\nSugestões:")
     for suggestion in judge["suggestions"]:
         print(f"  - {suggestion}")
@@ -737,13 +737,13 @@ if not judge["approved"]:
 
 **Ações**:
 
-- 📝 Refinar query baseado em sugestões
-- 🔧 Reduzir `judge_threshold` se muito rigoroso
-- 📚 Adicionar documentos mais específicos ao dataset
+- [EMOJI] Refinar query baseado em sugestões
+- [EMOJI] Reduzir `judge_threshold` se muito rigoroso
+- [EMOJI] Adicionar documentos mais específicos ao dataset
 
 ---
 
-## 🎯 Parte 5: Casos de Uso Práticos
+## [EMOJI] Parte 5: Casos de Uso Práticos
 
 ### Caso 1: Análise Financeira de BSC
 
@@ -752,7 +752,7 @@ if not judge["approved"]:
 **Query 1: Identificar KPIs**:
 
 ```
-"Quais KPIs da perspectiva financeira são mais adequados para uma 
+"Quais KPIs da perspectiva financeira são mais adequados para uma
 empresa de tecnologia SaaS?"
 ```
 
@@ -766,18 +766,18 @@ empresa de tecnologia SaaS?"
 **Query 2: Relação com outras perspectivas**:
 
 ```
-"Como os KPIs de satisfação do cliente (NPS) impactam o churn rate 
+"Como os KPIs de satisfação do cliente (NPS) impactam o churn rate
 e consequentemente o MRR?"
 ```
 
 **Resultado esperado**:
 - Perspectivas consultadas: Customer + Financial
-- Cadeia causa-efeito: NPS ↑ → Churn ↓ → MRR ↑
+- Cadeia causa-efeito: NPS ↑ -> Churn ↓ -> MRR ↑
 
 **Query 3: Benchmarking**:
 
 ```
-"Quais são os benchmarks de CAC e LTV para empresas SaaS segundo 
+"Quais são os benchmarks de CAC e LTV para empresas SaaS segundo
 melhores práticas BSC?"
 ```
 
@@ -792,28 +792,28 @@ melhores práticas BSC?"
 1. **Objetivo Financeiro**:
 
 ```
-"Quais objetivos financeiros são típicos para empresas de manufatura 
+"Quais objetivos financeiros são típicos para empresas de manufatura
 no BSC?"
 ```
 
 2. **Cascateamento para Clientes**:
 
 ```
-"Como objetivos de crescimento de receita se traduzem em objetivos 
+"Como objetivos de crescimento de receita se traduzem em objetivos
 da perspectiva de clientes?"
 ```
 
 3. **Processos Internos**:
 
 ```
-"Quais processos internos suportam melhoria de satisfação do cliente 
+"Quais processos internos suportam melhoria de satisfação do cliente
 em manufatura?"
 ```
 
 4. **Aprendizado e Crescimento**:
 
 ```
-"Que capacidades organizacionais são necessárias para melhorar 
+"Que capacidades organizacionais são necessárias para melhorar
 processos de manufatura?"
 ```
 
@@ -828,7 +828,7 @@ processos de manufatura?"
 **Query 1: Exemplos de KPIs**:
 
 ```
-"Quais são os KPIs típicos da perspectiva de processos internos 
+"Quais são os KPIs típicos da perspectiva de processos internos
 segundo Kaplan & Norton?"
 ```
 
@@ -882,7 +882,7 @@ for query in queries:
 **3. Criar Mapa Estratégico**:
 
 ```
-"Como construir um mapa estratégico BSC mostrando relações 
+"Como construir um mapa estratégico BSC mostrando relações
 causa-efeito entre objetivos?"
 ```
 
@@ -931,7 +931,7 @@ print("="*60)
 
 for i, query in enumerate(diagnostic_queries, 1):
     result = workflow.run(query, session_id=f"diagnostic-{i}")
-    
+
     print(f"\n{i}. {query}")
     print("-" * 60)
     print(result["final_response"][:500] + "...\n")
@@ -943,37 +943,37 @@ print("\n[OK] Relatório completo gerado!")
 
 ---
 
-## ❓ FAQ
+## [?] FAQ
 
 ### Q1: Como melhorar a precisão das respostas?
 
-**A**: 
-1. ✅ Adicione documentos mais específicos ao dataset
-2. ✅ Reformule queries de forma mais clara
-3. ✅ Aumente `top_k` (10 → 15)
-4. ✅ Ative busca multilíngue (`ENABLE_MULTILINGUAL_SEARCH=true`)
-5. ✅ Use queries completas vs fragmentadas
+**A**:
+1. [OK] Adicione documentos mais específicos ao dataset
+2. [OK] Reformule queries de forma mais clara
+3. [OK] Aumente `top_k` (10 -> 15)
+4. [OK] Ative busca multilíngue (`ENABLE_MULTILINGUAL_SEARCH=true`)
+5. [OK] Use queries completas vs fragmentadas
 
 ### Q2: Sistema está lento. Como otimizar?
 
 **A**:
-1. ⚡ Ative cache de embeddings (`ENABLE_EMBEDDING_CACHE=true`)
-2. ⚡ Use AsyncIO para agentes (`ainvoke_agents()`)
-3. ⚡ Reduza `top_k` (10 → 5) se aceitável
-4. ⚡ Upgrade tier das APIs (OpenAI/Anthropic tier 2+)
-5. ⚡ Use servidor com mais CPU cores (4 → 8)
+1. [FAST] Ative cache de embeddings (`ENABLE_EMBEDDING_CACHE=true`)
+2. [FAST] Use AsyncIO para agentes (`ainvoke_agents()`)
+3. [FAST] Reduza `top_k` (10 -> 5) se aceitável
+4. [FAST] Upgrade tier das APIs (OpenAI/Anthropic tier 2+)
+5. [FAST] Use servidor com mais CPU cores (4 -> 8)
 
 ### Q3: Judge reprova muitas respostas. O que fazer?
 
 **A**:
-1. 🔧 Reduzir `JUDGE_THRESHOLD` (0.7 → 0.6)
-2. 📚 Adicionar documentos mais relevantes
-3. 📝 Melhorar clareza das queries
-4. 🎯 Verificar se perspectivas corretas foram acionadas
+1. [EMOJI] Reduzir `JUDGE_THRESHOLD` (0.7 -> 0.6)
+2. [EMOJI] Adicionar documentos mais relevantes
+3. [EMOJI] Melhorar clareza das queries
+4. [EMOJI] Verificar se perspectivas corretas foram acionadas
 
 ### Q4: Como adicionar suporte a outro idioma?
 
-**A**: Sistema já suporta **busca multilíngue PT-BR ↔ EN**. Para adicionar outro idioma (ex: ES):
+**A**: Sistema já suporta **busca multilíngue PT-BR <-> EN**. Para adicionar outro idioma (ex: ES):
 
 1. Atualizar `src/rag/query_translator.py`:
 
@@ -1000,11 +1000,11 @@ def get_llm(temperature=0.7):
 ```
 
 Modelos suportados:
-- ✅ Claude (Anthropic)
-- ✅ GPT-4/5 (OpenAI)
-- ✅ LLaMA (local via Ollama)
-- ✅ Mistral (local ou API)
-- ✅ Gemini (Google - experimental)
+- [OK] Claude (Anthropic)
+- [OK] GPT-4/5 (OpenAI)
+- [OK] LLaMA (local via Ollama)
+- [OK] Mistral (local ou API)
+- [OK] Gemini (Google - experimental)
 
 ### Q6: Como integrar com ferramentas BI (Power BI, Tableau)?
 
@@ -1022,16 +1022,16 @@ async def query_bsc(query: str):
     }
 ```
 
-**Power BI**: Web.Contents() → JSON parsing  
+**Power BI**: Web.Contents() -> JSON parsing
 **Tableau**: Web Data Connector (WDC)
 
 ### Q7: Sistema funciona offline?
 
 **A**: **Parcialmente**:
-- ❌ LLMs (Claude/GPT): **Requerem internet** (API externas)
-- ✅ Qdrant: **Funciona offline** (local)
-- ✅ Cache embeddings: **Funciona offline** (disco local)
-- ⚠️ Query translation: Requer internet (GPT-5 mini)
+- [ERRO] LLMs (Claude/GPT): **Requerem internet** (API externas)
+- [OK] Qdrant: **Funciona offline** (local)
+- [OK] Cache embeddings: **Funciona offline** (disco local)
+- [WARN] Query translation: Requer internet (GPT-5 mini)
 
 **Para 100% offline**: Use LLaMA local (Ollama) + embeddings locais.
 
@@ -1064,7 +1064,7 @@ doc.save("bsc_response.docx")
 
 ---
 
-## 📚 Glossário BSC
+## [EMOJI] Glossário BSC
 
 | Termo | Definição |
 |-------|-----------|
@@ -1082,25 +1082,24 @@ doc.save("bsc_response.docx")
 | **RAG (Retrieval Augmented Generation)** | Geração aumentada por recuperação de documentos |
 | **Hybrid Search** | Combinação de busca semântica + lexical (BM25) |
 | **Re-ranking** | Reordenação de resultados por relevância (Cohere) |
-| **Query Expansion** | Expansão multilíngue de queries (PT-BR ↔ EN) |
+| **Query Expansion** | Expansão multilíngue de queries (PT-BR <-> EN) |
 | **RRF (Reciprocal Rank Fusion)** | Fusão de rankings de múltiplas queries |
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Para mais ajuda:
 
-- 📖 [README.md](../README.md) - Overview do projeto
-- 📘 [QUICKSTART.md](QUICKSTART.md) - Guia de instalação
-- 📗 [API_REFERENCE.md](API_REFERENCE.md) - Referência técnica
-- 📕 [DEPLOYMENT.md](DEPLOYMENT.md) - Deploy em produção
-- 🐛 [Issues](https://github.com/seu-usuario/agente-bsc-rag/issues) - Reportar bugs
+- [EMOJI] [README.md](../README.md) - Overview do projeto
+- [EMOJI] [QUICKSTART.md](QUICKSTART.md) - Guia de instalação
+- [EMOJI] [API_REFERENCE.md](API_REFERENCE.md) - Referência técnica
+- [EMOJI] [DEPLOYMENT.md](DEPLOYMENT.md) - Deploy em produção
+- [EMOJI] [Issues](https://github.com/seu-usuario/agente-bsc-rag/issues) - Reportar bugs
 
 ---
 
 <p align="center">
-  <strong>🎓 Tutorial Completo v1.0</strong><br>
+  <strong>[EMOJI] Tutorial Completo v1.0</strong><br>
   <em>Agente BSC RAG - MVP Out/2025</em>
 </p>
-

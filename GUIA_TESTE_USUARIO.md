@@ -1,10 +1,10 @@
-# 🎯 Guia de Teste - Agente BSC RAG
+# [EMOJI] Guia de Teste - Agente BSC RAG
 
 Sistema **100% validado e pronto** para interação real!
 
 ---
 
-## ✅ Status Final do Sistema
+## [OK] Status Final do Sistema
 
 - **Docker**: 3 containers rodando (Qdrant, Redis, Weaviate)
 - **Vector Store**: 7.965 chunks indexados (5 livros Kaplan & Norton)
@@ -14,7 +14,7 @@ Sistema **100% validado e pronto** para interação real!
 
 ---
 
-## 🚀 Opção 1: Interface Streamlit (RECOMENDADA)
+## [EMOJI] Opção 1: Interface Streamlit (RECOMENDADA)
 
 ### Interface web completa com chat interativo, visualização de resultados e métricas.
 
@@ -32,15 +32,15 @@ Local URL: http://localhost:8501
 
 **Abra seu navegador:** [http://localhost:8501](http://localhost:8501)
 
-### 🎨 Recursos da Interface:
+### [EMOJI] Recursos da Interface:
 
-- ✅ Chat interativo com histórico de conversas
-- ✅ Visualização por perspectiva BSC (Financeira, Clientes, Processos, Aprendizado)
-- ✅ Documentos relevantes com scores de relevância
-- ✅ Avaliação do Judge Agent (score, feedback, problemas)
-- ✅ Métricas de confiança e fontes consultadas
+- [OK] Chat interativo com histórico de conversas
+- [OK] Visualização por perspectiva BSC (Financeira, Clientes, Processos, Aprendizado)
+- [OK] Documentos relevantes com scores de relevância
+- [OK] Avaliação do Judge Agent (score, feedback, problemas)
+- [OK] Métricas de confiança e fontes consultadas
 
-### 📝 Perguntas Sugeridas:
+### [EMOJI] Perguntas Sugeridas:
 
 **Conceituais:**
 - "O que é Balanced Scorecard?"
@@ -64,7 +64,7 @@ Local URL: http://localhost:8501
 
 ---
 
-## 💻 Opção 2: Script Python Interativo
+## [EMOJI] Opção 2: Script Python Interativo
 
 ### Modo console para testes rápidos e debugging.
 
@@ -83,14 +83,14 @@ python examples/run_workflow_example.py
 4. Sair
 ```
 
-### 🔍 Queries de Exemplo (Opção 1):
+### [EMOJI] Queries de Exemplo (Opção 1):
 
 1. "O que é Balanced Scorecard?" (query geral - todas perspectivas)
 2. "Quais são os principais KPIs da perspectiva financeira?" (específica)
 3. "Como a satisfação do cliente impacta a lucratividade?" (multi-perspectiva)
 4. "Qual a relação entre capacitação de funcionários e qualidade dos processos?" (complexa)
 
-### ⌨️ Modo Interativo (Opção 2):
+### ⌨ Modo Interativo (Opção 2):
 
 - Digite suas perguntas livremente
 - Digite "sair" para encerrar
@@ -98,12 +98,12 @@ python examples/run_workflow_example.py
 
 ---
 
-## 📊 O Que Observar Durante os Testes
+## [EMOJI] O Que Observar Durante os Testes
 
 ### 1. **Routing Inteligente**
-- Queries simples ("O que é BSC?") → Todas perspectivas
-- Queries específicas ("KPIs financeiros?") → Apenas perspectiva financeira
-- Queries complexas → Múltiplas perspectivas + Query Decomposition
+- Queries simples ("O que é BSC?") -> Todas perspectivas
+- Queries específicas ("KPIs financeiros?") -> Apenas perspectiva financeira
+- Queries complexas -> Múltiplas perspectivas + Query Decomposition
 
 ### 2. **Qualidade das Respostas**
 - Respostas devem citar fontes (livros Kaplan & Norton)
@@ -122,7 +122,7 @@ python examples/run_workflow_example.py
 
 ---
 
-## 🐛 Troubleshooting Durante os Testes
+## [EMOJI] Troubleshooting Durante os Testes
 
 ### Erro: "Connection refused" ao Qdrant
 **Solução:**
@@ -137,13 +137,13 @@ docker restart bsc-qdrant
 **Solução:**
 - Verificar saldo da conta OpenAI
 - Verificar se API key está válida no .env
-- Trocar para Claude: editar .env → `DEFAULT_LLM_MODEL=claude-sonnet-4-5-20250929`
+- Trocar para Claude: editar .env -> `DEFAULT_LLM_MODEL=claude-sonnet-4-5-20250929`
 
 ### Resposta vazia ou "Nenhuma resposta gerada"
 **Solução:**
 - Verificar logs: `logs/app.log`
 - Testar query mais simples: "O que é BSC?"
-- Verificar se vector store tem documentos: já validamos 7.965 chunks ✅
+- Verificar se vector store tem documentos: já validamos 7.965 chunks [OK]
 
 ### Streamlit não abre automaticamente
 **Solução:**
@@ -154,20 +154,20 @@ Start-Process "http://localhost:8501"
 
 ---
 
-## 📈 Métricas de Sucesso
+## [EMOJI] Métricas de Sucesso
 
 **Sistema está funcionando bem quando:**
 
-- ✅ Respostas em português brasileiro fluente
-- ✅ Citações de livros de Kaplan & Norton
-- ✅ Confidence > 0.7 na maioria das queries
-- ✅ Judge aprova (score > 0.8)
-- ✅ Documentos relevantes listados com scores
-- ✅ Latência < 90s para queries complexas
+- [OK] Respostas em português brasileiro fluente
+- [OK] Citações de livros de Kaplan & Norton
+- [OK] Confidence > 0.7 na maioria das queries
+- [OK] Judge aprova (score > 0.8)
+- [OK] Documentos relevantes listados com scores
+- [OK] Latência < 90s para queries complexas
 
 ---
 
-## 🎯 Próximos Passos Após Teste
+## [EMOJI] Próximos Passos Após Teste
 
 1. **Teste as 10 queries sugeridas** (5 conceituais + 5 implementação)
 2. **Avalie a qualidade** das respostas (factual? útil? completa?)
@@ -180,17 +180,16 @@ Start-Process "http://localhost:8501"
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 **Se encontrar problemas:**
 
-1. ✅ Verificar logs: `logs/app.log`
-2. ✅ Verificar Docker: `docker ps`
-3. ✅ Revalidar setup: `python scripts/validate_setup.py`
-4. ✅ Restart containers: `docker-compose restart`
+1. [OK] Verificar logs: `logs/app.log`
+2. [OK] Verificar Docker: `docker ps`
+3. [OK] Revalidar setup: `python scripts/validate_setup.py`
+4. [OK] Restart containers: `docker-compose restart`
 
 ---
 
-**Última Atualização:** 2025-10-19 (22:15)  
-**Status:** ✅ 100% PRONTO PARA TESTE REAL
-
+**Última Atualização:** 2025-10-19 (22:15)
+**Status:** [OK] 100% PRONTO PARA TESTE REAL

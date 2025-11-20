@@ -10,29 +10,27 @@ Fase: 4.3 - Integration APIs
 import logging
 import time
 from datetime import datetime
-from typing import Optional
 
+from config.settings import get_llm
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
 from api.dependencies import verify_api_key
 from api.schemas.requests import (
-    SwotRequest,
     FiveWhysRequest,
-    ToolExecutionRequest,
     KpiDefinitionRequest,
+    SwotRequest,
+    ToolExecutionRequest,
 )
 from api.schemas.responses import (
-    SwotResponse,
     FiveWhysResponse,
     KpiDefinitionResponse,
+    SwotResponse,
     ToolExecutionResponse,
     ToolsListResponse,
 )
-from api.utils.rate_limit import limiter, LIMIT_READ, LIMIT_WRITE, LIMIT_HEAVY
-
+from api.utils.rate_limit import LIMIT_HEAVY, LIMIT_READ, limiter
 from src.memory.mem0_client import Mem0ClientWrapper
 from src.memory.schemas import CompanyInfo, StrategicContext
-from config.settings import get_llm
 
 logger = logging.getLogger(__name__)
 
@@ -43,13 +41,14 @@ router = APIRouter()
 # HELPER FUNCTIONS
 # ============================================================================
 
+
 def _get_tool_agents():
     """Retorna instâncias dos 4 specialist agents para RAG."""
-    from src.agents.financial_agent import FinancialAgent
     from src.agents.customer_agent import CustomerAgent
-    from src.agents.process_agent import ProcessAgent
+    from src.agents.financial_agent import FinancialAgent
     from src.agents.learning_agent import LearningAgent
-    
+    from src.agents.process_agent import ProcessAgent
+
     return {
         "financial": FinancialAgent(),
         "customer": CustomerAgent(),
@@ -62,13 +61,13 @@ def _get_client_profile(client_id: str) -> tuple[CompanyInfo, StrategicContext]:
     """Busca ClientProfile e retorna CompanyInfo e StrategicContext."""
     mem0_client = Mem0ClientWrapper()
     profile = mem0_client.get_client_profile(client_id)
-    
+
     if not profile:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Cliente com ID '{client_id}' não encontrado."
+            detail=f"Cliente com ID '{client_id}' não encontrado.",
         )
-    
+
     return profile.company, profile.context
 
 
@@ -76,21 +75,18 @@ def _get_client_profile(client_id: str) -> tuple[CompanyInfo, StrategicContext]:
 # ENDPOINTS
 # ============================================================================
 
+
 @router.get(
     "",
     response_model=ToolsListResponse,
     summary="Listar ferramentas disponíveis",
-    description="Retorna lista de todas as ferramentas consultivas BSC disponíveis."
+    description="Retorna lista de todas as ferramentas consultivas BSC disponíveis.",
 )
 @limiter.limit(LIMIT_READ)
-async def list_tools(
-    request: Request,
-    response: Response,
-    auth: dict = Depends(verify_api_key)
-):
+async def list_tools(request: Request, response: Response, auth: dict = Depends(verify_api_key)):
     """Lista todas as ferramentas consultivas disponíveis."""
     logger.info("[API] list_tools")
-    
+
     tools = [
         {
             "name": "swot",
@@ -149,7 +145,7 @@ async def list_tools(
             "requires_problem_statement": False,
         },
     ]
-    
+
     return ToolsListResponse(tools=tools, total=len(tools))
 
 
@@ -158,29 +154,27 @@ async def list_tools(
     response_model=SwotResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Executar análise SWOT",
-    description="Executa análise SWOT completa para um cliente BSC."
+    description="Executa análise SWOT completa para um cliente BSC.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_swot(
-    request: Request,
-    response: Response,
-    body: SwotRequest,
-    auth: dict = Depends(verify_api_key)
+    request: Request, response: Response, body: SwotRequest, auth: dict = Depends(verify_api_key)
 ):
     """Executa análise SWOT para um cliente."""
     logger.info(f"[API] execute_swot | client_id={body.client_id}")
-    
+
     start_time = time.time()
-    
+
     try:
         # Buscar ClientProfile
         company_info, strategic_context = _get_client_profile(body.client_id)
-        
+
         # Instanciar ferramenta
         llm = get_llm()
         agents = _get_tool_agents()
-        
+
         from src.tools.swot_analysis import SWOTAnalysisTool
+
         tool = SWOTAnalysisTool(
             llm=llm,
             financial_agent=agents["financial"],
@@ -188,16 +182,16 @@ async def execute_swot(
             process_agent=agents["process"],
             learning_agent=agents["learning"],
         )
-        
+
         # Executar SWOT
         swot_result = tool.facilitate_swot(
             company_info=company_info,
             strategic_context=strategic_context,
             use_rag=True,
         )
-        
+
         execution_time = time.time() - start_time
-        
+
         # Construir response
         return SwotResponse(
             tool_output_id=f"swot_{int(time.time())}",
@@ -212,14 +206,14 @@ async def execute_swot(
             threats=swot_result.threats,
             strategic_recommendations=swot_result.strategic_recommendations or [],
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[API] Erro ao executar SWOT: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao executar análise SWOT: {str(e)}"
+            detail=f"Erro ao executar análise SWOT: {e!s}",
         )
 
 
@@ -228,32 +222,33 @@ async def execute_swot(
     response_model=FiveWhysResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Executar 5 Whys",
-    description="Executa análise de causa raiz usando método 5 Porquês."
+    description="Executa análise de causa raiz usando método 5 Porquês.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_five_whys(
     request: Request,
     response: Response,
     body: FiveWhysRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa análise 5 Whys para um problema específico."""
     logger.info(
         f"[API] execute_five_whys | client_id={body.client_id} | "
         f"problem={body.problem_statement[:50]}..."
     )
-    
+
     start_time = time.time()
-    
+
     try:
         # Buscar ClientProfile
         company_info, strategic_context = _get_client_profile(body.client_id)
-        
+
         # Instanciar ferramenta
         llm = get_llm()
         agents = _get_tool_agents()
-        
+
         from src.tools.five_whys import FiveWhysTool
+
         tool = FiveWhysTool(
             llm=llm,
             financial_agent=agents["financial"],
@@ -261,26 +256,28 @@ async def execute_five_whys(
             process_agent=agents["process"],
             learning_agent=agents["learning"],
         )
-        
+
         # Executar 5 Whys
         five_whys_result = tool.facilitate_five_whys(
             company_info=company_info,
             strategic_context=strategic_context,
             problem_statement=body.problem_statement,
         )
-        
+
         execution_time = time.time() - start_time
-        
+
         # Construir whys_chain a partir das iterações
         whys_chain = []
         for i, iteration in enumerate(five_whys_result.iterations, 1):
-            whys_chain.append({
-                "why_number": i,
-                "question": iteration.question,
-                "answer": iteration.answer,
-                "is_root_cause": iteration.is_root_cause,
-            })
-        
+            whys_chain.append(
+                {
+                    "why_number": i,
+                    "question": iteration.question,
+                    "answer": iteration.answer,
+                    "is_root_cause": iteration.is_root_cause,
+                }
+            )
+
         # Construir response
         return FiveWhysResponse(
             tool_output_id=f"5whys_{int(time.time())}",
@@ -290,18 +287,20 @@ async def execute_five_whys(
             created_at=datetime.now().isoformat(),
             execution_time_seconds=round(execution_time, 2),
             problem_statement=body.problem_statement,
-            root_causes=[five_whys_result.root_cause_summary] if five_whys_result.root_cause_summary else [],
+            root_causes=(
+                [five_whys_result.root_cause_summary] if five_whys_result.root_cause_summary else []
+            ),
             whys_chain=whys_chain,
             recommended_actions=five_whys_result.recommended_actions or [],
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[API] Erro ao executar 5 Whys: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao executar análise 5 Whys: {str(e)}"
+            detail=f"Erro ao executar análise 5 Whys: {e!s}",
         )
 
 
@@ -310,22 +309,22 @@ async def execute_five_whys(
     response_model=ToolExecutionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Executar Issue Tree",
-    description="Decompõe problema complexo em sub-problemas usando MECE."
+    description="Decompõe problema complexo em sub-problemas usando MECE.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_issue_tree(
     request: Request,
     response: Response,
     body: ToolExecutionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa Issue Tree para decomposição de problema."""
     logger.info(f"[API] execute_issue_tree | client_id={body.client_id}")
-    
+
     # TODO: Implementar IssueTreeTool quando disponível
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Issue Tree ainda não implementado. Em breve!"
+        detail="Issue Tree ainda não implementado. Em breve!",
     )
 
 
@@ -334,32 +333,33 @@ async def execute_issue_tree(
     response_model=KpiDefinitionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Definir KPIs",
-    description="Define KPIs SMART para perspectivas BSC."
+    description="Define KPIs SMART para perspectivas BSC.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_kpi_definer(
     request: Request,
     response: Response,
     body: KpiDefinitionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa definição de KPIs para um cliente."""
     logger.info(
         f"[API] execute_kpi_definer | client_id={body.client_id} | "
         f"perspective={body.perspective}"
     )
-    
+
     start_time = time.time()
-    
+
     try:
         # Buscar ClientProfile
         company_info, strategic_context = _get_client_profile(body.client_id)
-        
+
         # Instanciar ferramenta
         llm = get_llm()
         agents = _get_tool_agents()
-        
+
         from src.tools.kpi_definer import KPIDefinerTool
+
         tool = KPIDefinerTool(
             llm=llm,
             financial_agent=agents["financial"],
@@ -367,27 +367,29 @@ async def execute_kpi_definer(
             process_agent=agents["process"],
             learning_agent=agents["learning"],
         )
-        
+
         # Executar KPI Definer
         kpi_result = tool.facilitate_kpi_definition(
             company_info=company_info,
             strategic_context=strategic_context,
             perspective=body.perspective,
         )
-        
+
         execution_time = time.time() - start_time
-        
+
         # Construir lista de KPIs
         kpis_list = []
         for kpi in kpi_result.kpis:
-            kpis_list.append({
-                "name": kpi.name,
-                "description": kpi.description,
-                "formula": kpi.formula or "",
-                "target": kpi.target or "",
-                "perspective": kpi.perspective,
-            })
-        
+            kpis_list.append(
+                {
+                    "name": kpi.name,
+                    "description": kpi.description,
+                    "formula": kpi.formula or "",
+                    "target": kpi.target or "",
+                    "perspective": kpi.perspective,
+                }
+            )
+
         # Construir response
         return KpiDefinitionResponse(
             tool_output_id=f"kpi_{int(time.time())}",
@@ -400,14 +402,14 @@ async def execute_kpi_definer(
             kpis=kpis_list,
             total_kpis=len(kpis_list),
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[API] Erro ao executar KPI Definer: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao definir KPIs: {str(e)}"
+            detail=f"Erro ao definir KPIs: {e!s}",
         )
 
 
@@ -416,29 +418,30 @@ async def execute_kpi_definer(
     response_model=ToolExecutionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Definir objetivos estratégicos",
-    description="Define objetivos estratégicos balanceados para as 4 perspectivas BSC."
+    description="Define objetivos estratégicos balanceados para as 4 perspectivas BSC.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_strategic_objectives(
     request: Request,
     response: Response,
     body: ToolExecutionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa definição de objetivos estratégicos."""
     logger.info(f"[API] execute_strategic_objectives | client_id={body.client_id}")
-    
+
     start_time = time.time()
-    
+
     try:
         # Buscar ClientProfile
         company_info, strategic_context = _get_client_profile(body.client_id)
-        
+
         # Instanciar ferramenta
         llm = get_llm()
         agents = _get_tool_agents()
-        
+
         from src.tools.strategic_objectives import StrategicObjectivesTool
+
         tool = StrategicObjectivesTool(
             llm=llm,
             financial_agent=agents["financial"],
@@ -446,15 +449,15 @@ async def execute_strategic_objectives(
             process_agent=agents["process"],
             learning_agent=agents["learning"],
         )
-        
+
         # Executar Strategic Objectives
         objectives_result = tool.facilitate_strategic_objectives(
             company_info=company_info,
             strategic_context=strategic_context,
         )
-        
+
         execution_time = time.time() - start_time
-        
+
         # Construir response (simplificado por enquanto)
         return ToolExecutionResponse(
             tool_output_id=f"objectives_{int(time.time())}",
@@ -464,14 +467,14 @@ async def execute_strategic_objectives(
             created_at=datetime.now().isoformat(),
             execution_time_seconds=round(execution_time, 2),
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[API] Erro ao executar Strategic Objectives: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao definir objetivos estratégicos: {str(e)}"
+            detail=f"Erro ao definir objetivos estratégicos: {e!s}",
         )
 
 
@@ -480,29 +483,30 @@ async def execute_strategic_objectives(
     response_model=ToolExecutionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Executar benchmarking",
-    description="Compara desempenho com setor e concorrentes."
+    description="Compara desempenho com setor e concorrentes.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_benchmarking(
     request: Request,
     response: Response,
     body: ToolExecutionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa benchmarking para um cliente."""
     logger.info(f"[API] execute_benchmarking | client_id={body.client_id}")
-    
+
     start_time = time.time()
-    
+
     try:
         # Buscar ClientProfile
         company_info, strategic_context = _get_client_profile(body.client_id)
-        
+
         # Instanciar ferramenta
         llm = get_llm()
         agents = _get_tool_agents()
-        
+
         from src.tools.benchmarking_tool import BenchmarkingTool
+
         tool = BenchmarkingTool(
             llm=llm,
             financial_agent=agents["financial"],
@@ -510,15 +514,15 @@ async def execute_benchmarking(
             process_agent=agents["process"],
             learning_agent=agents["learning"],
         )
-        
+
         # Executar Benchmarking
         benchmarking_result = tool.facilitate_benchmarking(
             company_info=company_info,
             strategic_context=strategic_context,
         )
-        
+
         execution_time = time.time() - start_time
-        
+
         # Construir response (simplificado por enquanto)
         return ToolExecutionResponse(
             tool_output_id=f"benchmarking_{int(time.time())}",
@@ -528,14 +532,14 @@ async def execute_benchmarking(
             created_at=datetime.now().isoformat(),
             execution_time_seconds=round(execution_time, 2),
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
         logger.error(f"[API] Erro ao executar Benchmarking: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Erro ao executar benchmarking: {str(e)}"
+            detail=f"Erro ao executar benchmarking: {e!s}",
         )
 
 
@@ -544,22 +548,22 @@ async def execute_benchmarking(
     response_model=ToolExecutionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Criar plano de ação",
-    description="Cria plano de ação estruturado baseado em diagnóstico BSC."
+    description="Cria plano de ação estruturado baseado em diagnóstico BSC.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_action_plan(
     request: Request,
     response: Response,
     body: ToolExecutionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa criação de plano de ação."""
     logger.info(f"[API] execute_action_plan | client_id={body.client_id}")
-    
+
     # TODO: Implementar ActionPlanTool quando disponível
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Action Plan ainda não implementado. Em breve!"
+        detail="Action Plan ainda não implementado. Em breve!",
     )
 
 
@@ -568,21 +572,20 @@ async def execute_action_plan(
     response_model=ToolExecutionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Matriz de priorização",
-    description="Cria matriz de priorização de ações estratégicas."
+    description="Cria matriz de priorização de ações estratégicas.",
 )
 @limiter.limit(LIMIT_HEAVY)
 async def execute_prioritization(
     request: Request,
     response: Response,
     body: ToolExecutionRequest,
-    auth: dict = Depends(verify_api_key)
+    auth: dict = Depends(verify_api_key),
 ):
     """Executa matriz de priorização."""
     logger.info(f"[API] execute_prioritization | client_id={body.client_id}")
-    
+
     # TODO: Implementar PrioritizationMatrixTool quando disponível
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Prioritization Matrix ainda não implementado. Em breve!"
+        detail="Prioritization Matrix ainda não implementado. Em breve!",
     )
-

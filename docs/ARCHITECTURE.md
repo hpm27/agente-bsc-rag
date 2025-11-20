@@ -211,23 +211,23 @@ O Agente BSC é um sistema multi-agente avançado para consultoria em Balanced S
 ### Exemplo: "Sugira KPIs para a perspectiva financeira"
 
 ```
-1. Usuário → Interface Streamlit
-2. Interface → Orchestrator Agent
-3. Orchestrator → retrieve_knowledge("KPIs perspectiva financeira BSC")
-4. retrieve_knowledge → Retriever
-5. Retriever → Embedding Manager (gera embedding da query)
-6. Retriever → Redis Vector Store (hybrid search)
-7. Redis → Retriever (top-20 resultados)
-8. Retriever → Cohere Reranker (reordena)
-9. Reranker → Retriever (top-5 resultados)
-10. Retriever → Orchestrator (contexto formatado)
-11. Orchestrator → Financial Agent (delega tarefa com contexto)
-12. Financial Agent → GPT-4 (gera resposta)
-13. Financial Agent → Orchestrator (resposta estruturada)
-14. Orchestrator → Judge Agent (valida resposta)
-15. Judge Agent → GPT-4 (avalia qualidade)
-16. Judge Agent → Orchestrator (APROVADO ou REVISAR)
-17. Se APROVADO: Orchestrator → Interface → Usuário
+1. Usuário -> Interface Streamlit
+2. Interface -> Orchestrator Agent
+3. Orchestrator -> retrieve_knowledge("KPIs perspectiva financeira BSC")
+4. retrieve_knowledge -> Retriever
+5. Retriever -> Embedding Manager (gera embedding da query)
+6. Retriever -> Redis Vector Store (hybrid search)
+7. Redis -> Retriever (top-20 resultados)
+8. Retriever -> Cohere Reranker (reordena)
+9. Reranker -> Retriever (top-5 resultados)
+10. Retriever -> Orchestrator (contexto formatado)
+11. Orchestrator -> Financial Agent (delega tarefa com contexto)
+12. Financial Agent -> GPT-4 (gera resposta)
+13. Financial Agent -> Orchestrator (resposta estruturada)
+14. Orchestrator -> Judge Agent (valida resposta)
+15. Judge Agent -> GPT-4 (avalia qualidade)
+16. Judge Agent -> Orchestrator (APROVADO ou REVISAR)
+17. Se APROVADO: Orchestrator -> Interface -> Usuário
 18. Se REVISAR: Orchestrator revisa e repete 14-17
 ```
 
@@ -287,6 +287,281 @@ Com esta arquitetura, esperamos:
 
 ---
 
+## Roadmap de Evolução (FASE 5-6) - Nov 2025
+
+### Novas Fases Planejadas
+
+**Decisão (2025-11-20):** Opção B aprovada - Integração Completa SOLUTION_DESIGN + IMPLEMENTATION (6 sprints, 4-6 semanas).
+
+#### FASE 5: SOLUTION_DESIGN (Sprints 1-3)
+
+**Objetivo:** Converter diagnóstico BSC em Strategy Map visual e validado.
+
+**Novos Componentes:**
+
+1. **Strategy_Map_Designer_Tool** (Sprint 2)
+   - Converte CompleteDiagnostic em StrategyMap
+   - Reutiliza StrategicObjectivesTool e KPIDefinerTool (FASE 3)
+   - Mapeia conexões causa-efeito entre perspectivas
+   - Output: StrategyMap com 4 perspectivas + objetivos + KPIs + conexões
+
+2. **Alignment_Validator_Tool** (Sprint 2)
+   - Valida balanceamento do Strategy Map
+   - Detecta 5 tipos de gaps (perspectiva sem objetivos, objetivo sem KPI, etc)
+   - Output: AlignmentReport com score 0-100 e lista de gaps
+
+3. **KPI_Alignment_Checker** (Sprint 3)
+   - Verifica KPIs alinhados com objetivos
+   - Detecta KPIs órfãos ou duplicados
+   - Output: KPIAlignmentReport
+
+4. **Cause_Effect_Mapper** (Sprint 3)
+   - Mapeia relações causa-efeito entre objetivos
+   - Calcula força da relação (0-100)
+   - Output: Grafo de conexões
+
+**Novos Schemas Pydantic:**
+
+```python
+# src/memory/schemas.py (FASE 5)
+
+class StrategicObjective(BaseModel):
+    id: str
+    perspective: Literal["financial", "customer", "process", "learning"]
+    description: str
+    kpis: List[KPI]
+
+class CauseEffectConnection(BaseModel):
+    from_objective_id: str
+    to_objective_id: str
+    strength: float  # 0-100
+    rationale: str
+
+class StrategyMap(BaseModel):
+    financial_objectives: List[StrategicObjective]
+    customer_objectives: List[StrategicObjective]
+    process_objectives: List[StrategicObjective]
+    learning_objectives: List[StrategicObjective]
+    cause_effect_connections: List[CauseEffectConnection]
+    alignment_score: float  # 0-100
+```
+
+**Novo Node LangGraph:**
+- `design_solution()` - Gera Strategy Map a partir do diagnóstico aprovado
+
+**Routing Modificado:**
+- `APPROVAL_PENDING` (aprovado) -> `SOLUTION_DESIGN` -> `design_solution()`
+
+---
+
+#### FASE 6: IMPLEMENTATION (Sprint 4)
+
+**Objetivo:** Converter Strategy Map em Action Plans executáveis com milestones.
+
+**Novos Componentes:**
+
+1. **Action_Plan_Generator_Tool** (Sprint 4)
+   - Converte StrategyMap em ActionPlans
+   - Gera 3-5 milestones por objetivo
+   - Define responsáveis (role) e prazos (30/60/90 dias)
+   - Output: List[ActionPlan]
+
+2. **Milestone_Tracker_Tool** (Sprint 4)
+   - Tracking de progresso de milestones
+   - Atualiza status (todo -> in_progress -> done)
+   - Calcula % progresso por perspectiva
+   - Alertas de milestones atrasados
+
+**Novos Schemas Pydantic:**
+
+```python
+# src/memory/schemas.py (FASE 6)
+
+class Milestone(BaseModel):
+    id: str
+    description: str
+    responsible_role: str
+    deadline_days: int
+    status: Literal["todo", "in_progress", "done"]
+    dependencies: List[str]
+
+class ActionPlan(BaseModel):
+    objective_id: str
+    perspective: Literal["financial", "customer", "process", "learning"]
+    milestones: List[Milestone]
+    progress_percentage: float  # 0-100
+```
+
+**Novo Node LangGraph:**
+- `generate_action_plans()` - Cria Action Plans a partir do Strategy Map
+
+**Routing Modificado:**
+- `SOLUTION_DESIGN` -> `IMPLEMENTATION` -> `generate_action_plans()`
+
+---
+
+#### MCP Integrations (Sprints 5-6 - OPCIONAL)
+
+**Objetivo:** Integrar ferramentas externas para tracking e automação.
+
+**Componentes (Opcionais):**
+
+1. **MCP Asana Integration**
+   - Criar tasks no Asana a partir de Action Plans
+   - Sincronizar status (bidirecional)
+   - Webhook para updates em tempo real
+
+2. **MCP Google Calendar Integration**
+   - Criar meetings para milestones (revisões)
+   - Sincronizar prazos
+   - Alertas 1 semana antes
+
+3. **Progress_Dashboard**
+   - Visualização de progresso por perspectiva
+   - Timeline de milestones
+   - Alertas de atrasos
+
+---
+
+### GAP CRÍTICO #2 Identificado (Nov 2025)
+
+**Problema:** DiagnosticAgent NÃO usa as 7 ferramentas consultivas implementadas na FASE 3.
+
+**Root Cause:** `run_diagnostic()` chama APENAS 4 agentes BSC + RAG, ignora ferramentas consultivas.
+
+**Impacto:** 70% do valor da FASE 3 desperdiçado (ferramentas implementadas mas não integradas).
+
+**Solução (Sprint 1):**
+
+1. Criar schema `DiagnosticToolsResult` para agregar outputs
+2. Implementar método `_run_consultative_tools()` que executa 7 ferramentas em paralelo
+3. Modificar `consolidate_diagnostic()` para usar outputs das ferramentas no prompt
+4. Validar com testes E2E completos
+
+**Novo Schema:**
+
+```python
+# src/memory/schemas.py (Sprint 1)
+
+class DiagnosticToolsResult(BaseModel):
+    """Agregador de outputs das 7 ferramentas consultivas."""
+    swot_analysis: Optional[SWOTAnalysisResult] = None
+    five_whys_analysis: Optional[FiveWhysResult] = None
+    kpi_framework: Optional[KPIFrameworkResult] = None
+    strategic_objectives: Optional[StrategicObjectivesResult] = None
+    benchmarking_report: Optional[BenchmarkingResult] = None
+    issue_tree: Optional[IssueTreeResult] = None
+    prioritization_matrix: Optional[PrioritizationMatrixResult] = None
+    execution_time: float
+    tools_executed: List[str]
+```
+
+**Métricas Esperadas (Sprint 1):**
+- 7/7 ferramentas integradas
+- Latência adicional <60s (execução paralela)
+- 100% testes E2E passando
+- Diagnóstico rico com SWOT, Five Whys, KPIs visíveis
+
+---
+
+### Diagrama de Arquitetura Atualizado (FASE 5-6)
+
+```
+┌─────────────────────────────────────────┐
+│         Streamlit UI (app.py)           │
+│  ┌───────────────────────────────────┐  │
+│  │ - Diagnóstico BSC                 │  │
+│  │ - Strategy Map Visualizer (NOVO)  │  │
+│  │ - Action Plans Dashboard (NOVO)   │  │
+│  └───────────────────────────────────┘  │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│    LangGraph Workflow (workflow.py)     │
+│  ┌────────────────────────────────────┐ │
+│  │ Phases:                            │ │
+│  │ - ONBOARDING [FASE 1]              │ │
+│  │ - DISCOVERY [FASE 1-4]             │ │
+│  │ - SOLUTION_DESIGN [FASE 5 NOVO]    │ │
+│  │ - IMPLEMENTATION [FASE 6 NOVO]     │ │
+│  │                                    │ │
+│  │ Nodes:                             │ │
+│  │ - onboarding()                     │ │
+│  │ - discovery()                      │ │
+│  │ - design_solution() [NOVO]         │ │
+│  │ - generate_action_plans() [NOVO]   │ │
+│  └────────────────────────────────────┘ │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│         Agents & Tools                  │
+│  ┌────────────────────────────────────┐ │
+│  │ FASE 1-4 (Existentes):             │ │
+│  │ - OnboardingAgent                  │ │
+│  │ - DiagnosticAgent [7 tools]        │ │
+│  │ - 4 Specialist Agents (BSC)        │ │
+│  │ - JudgeAgent                       │ │
+│  │                                    │ │
+│  │ FASE 5 (Novos):                    │ │
+│  │ - Strategy_Map_Designer_Tool       │ │
+│  │ - Alignment_Validator_Tool         │ │
+│  │ - KPI_Alignment_Checker            │ │
+│  │ - Cause_Effect_Mapper              │ │
+│  │                                    │ │
+│  │ FASE 6 (Novos):                    │ │
+│  │ - Action_Plan_Generator_Tool       │ │
+│  │ - Milestone_Tracker_Tool           │ │
+│  └────────────────────────────────────┘ │
+└─────────────────┬───────────────────────┘
+                  │
+┌─────────────────▼───────────────────────┐
+│     Data Layer (Schemas + Memory)       │
+│  ┌────────────────────────────────────┐ │
+│  │ Pydantic Schemas:                  │ │
+│  │ - ClientProfile                    │ │
+│  │ - CompleteDiagnostic               │ │
+│  │ - DiagnosticToolsResult [NOVO]     │ │
+│  │ - StrategyMap [NOVO]               │ │
+│  │ - ActionPlan [NOVO]                │ │
+│  │                                    │ │
+│  │ Memory: Mem0 API v2                │ │
+│  └────────────────────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+---
+
+### Progresso Geral (Nov 2025)
+
+**FASE 1-4**: [OK] 100% COMPLETAS (46/50 tarefas)
+- Onboarding Agent
+- RAG Avançado (Query Decomposition, Adaptive Re-ranking, Router)
+- 7 Ferramentas Consultivas
+- Advanced Features (Judge, Performance, Multi-Client, APIs)
+
+**FASE 5-6**: [EMOJI] 0% (0/44 tarefas - planejadas)
+- Sprint 1 (Semana 1): Integração Ferramentas (GAP #2) - [EMOJI] CRÍTICO
+- Sprint 2 (Semana 2): Strategy Map MVP - [EMOJI] ALTO
+- Sprint 3 (Semana 3): Validações Avançadas - MÉDIO
+- Sprint 4 (Semana 4): Action Plans MVP - ALTO
+- Sprint 5-6 (Semanas 5-6): MCPs + Dashboard - BAIXO (opcional)
+
+**Progresso Total**: 46/90 tarefas (51%)
+
+**Próximos Passos:**
+1. Executar baseline E2E (capturar métricas antes mudanças)
+2. Implementar Sprint 1 (integração ferramentas)
+3. Implementar Sprint 2 (Strategy Map MVP)
+4. Continuar sprints 3-4 conforme planejado
+
+**Documentos Relacionados:**
+- `docs/sprints/SPRINT_PLAN_OPÇÃO_B.md` - Roadmap completo 6 sprints
+- `docs/PRD_BSC_RAG_AGENT.md` - Product Requirements Document
+- `docs/implementation_guides/INTEGRATION_PLAN_GAP2.md` - Guia técnico resolução GAP #2
+- `docs/analysis/GAP_CRITICAL_TOOLS_NOT_INTEGRATED.md` - Análise detalhada GAP #2
+
+---
+
 ## Documentação Arquitetural Relacionada
 
 Para informações mais detalhadas sobre a arquitetura do sistema, consulte:
@@ -299,7 +574,7 @@ Visualização de fluxos de dados críticos através de 5 diagramas Mermaid:
 - **Diagnostic Workflow**: Estado DISCOVERY, análise paralela AsyncIO das 4 perspectivas BSC
 - **Schema Dependencies**: Relações Pydantic entre ClientProfile, BSCState, DiagnosticResult
 - **Agent Interactions**: Comunicação entre OnboardingAgent, ClientProfileAgent, DiagnosticAgent
-- **State Transitions**: Estados LangGraph (ONBOARDING → DISCOVERY → APPROVAL_PENDING)
+- **State Transitions**: Estados LangGraph (ONBOARDING -> DISCOVERY -> APPROVAL_PENDING)
 
 **Quando consultar:** Implementando features que interagem com workflow existente, debugando fluxos de dados ou transições de estado.
 

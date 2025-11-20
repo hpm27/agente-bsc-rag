@@ -1,14 +1,14 @@
 # Lição Aprendida: Strategic Objectives Tool - 5 Whys Root Cause Analysis Methodology
 
-**Data**: 2025-10-19  
-**Sessão**: 20  
-**Fase**: FASE 3.5 - Strategic Objectives Tool (Tools Consultivas)  
-**Duração Total**: ~3.5h (implementação 2h + debugging 1.5h)  
-**Status**: ✅ COMPLETO (12/12 testes passando, 88% coverage)
+**Data**: 2025-10-19
+**Sessão**: 20
+**Fase**: FASE 3.5 - Strategic Objectives Tool (Tools Consultivas)
+**Duração Total**: ~3.5h (implementação 2h + debugging 1.5h)
+**Status**: [OK] COMPLETO (12/12 testes passando, 88% coverage)
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 1. [Contexto da Sessão](#contexto-da-sessão)
 2. [Problemas Encontrados](#problemas-encontrados)
@@ -23,7 +23,7 @@
 
 ---
 
-## 🎯 Contexto da Sessão
+## [EMOJI] Contexto da Sessão
 
 ### Objetivo
 
@@ -31,29 +31,29 @@ Implementar **Strategic Objectives Tool** para definir objetivos estratégicos S
 
 ### Componentes Implementados
 
-1. ✅ **Schemas Pydantic** (250 linhas):
+1. [OK] **Schemas Pydantic** (250 linhas):
    - `StrategicObjective` (8 campos + 2 validators)
    - `StrategicObjectivesFramework` (4 listas + 1 model_validator + 5 métodos)
 
-2. ✅ **Prompts Conversacionais** (350 linhas):
+2. [OK] **Prompts Conversacionais** (350 linhas):
    - `FACILITATE_OBJECTIVES_DEFINITION_PROMPT`
    - `VALIDATE_OBJECTIVES_BALANCE_PROMPT`
    - 4 context builders (`build_company_context`, `build_diagnostic_context`, `build_complete_diagnostic_context`, `build_existing_kpis_context`)
 
-3. ✅ **Tool Implementation** (400 linhas):
+3. [OK] **Tool Implementation** (400 linhas):
    - `StrategicObjectivesTool` class
    - `define_objectives()`, `_define_perspective_objectives()`, `_validate_objectives_balance()`
    - LLM structured output + RAG integration opcional
 
-4. ✅ **Integração DiagnosticAgent** (120 linhas):
+4. [OK] **Integração DiagnosticAgent** (120 linhas):
    - `generate_strategic_objectives()` método com lazy loading
 
-5. ✅ **Testes Unitários** (900 linhas):
+5. [OK] **Testes Unitários** (900 linhas):
    - 12 testes (100% passando)
    - Coverage: 88% tool + 99% prompts
    - Mock `itertools.cycle` para 4 perspectivas BSC
 
-6. ✅ **Documentação Técnica** (3.500 linhas):
+6. [OK] **Documentação Técnica** (3.500 linhas):
    - `docs/tools/STRATEGIC_OBJECTIVES.md`
    - 4 casos uso BSC detalhados
    - Troubleshooting 6 problemas comuns
@@ -70,7 +70,7 @@ Implementar **Strategic Objectives Tool** para definir objetivos estratégicos S
 16:00 - 17:30 | Debugging com 5 Whys (1.5h)
    ├─ 16:00-16:45 | 8 erros identificados
    ├─ 16:45-17:15 | 6 root causes corrigidos
-   └─ 17:15-17:30 | Validação final (12/12 testes ✅)
+   └─ 17:15-17:30 | Validação final (12/12 testes [OK])
 
 17:30 - 18:00 | Documentação (0.5h)
    └─ STRATEGIC_OBJECTIVES.md completo
@@ -78,7 +78,7 @@ Implementar **Strategic Objectives Tool** para definir objetivos estratégicos S
 
 ---
 
-## 🐛 Problemas Encontrados
+## [EMOJI] Problemas Encontrados
 
 **Total**: 8 erros sistemáticos em fixtures e código
 
@@ -213,7 +213,7 @@ name
 
 ---
 
-## 🔍 5 Whys Root Cause Analysis
+## [EMOJI] 5 Whys Root Cause Analysis
 
 Aplicação sistemática da metodologia 5 Whys para identificar root causes profundos.
 
@@ -280,7 +280,7 @@ Aplicação sistemática da metodologia 5 Whys para identificar root causes prof
 **Resposta**: Ponto 13 foca em "APIs desconhecidas" mas `CompleteDiagnostic` é schema interno (então assumi que conhecia estrutura).
 
 #### Why #5 (ROOT CAUSE): Por que assumi estrutura de schema interno sem validar?
-**RESPOSTA ROOT**: **Schemas internos evoluem (DiagnosticResult → CompleteDiagnostic agregando 4 perspectivas) mas não há processo para "re-descobrir" estrutura quando schema muda.**
+**RESPOSTA ROOT**: **Schemas internos evoluem (DiagnosticResult -> CompleteDiagnostic agregando 4 perspectivas) mas não há processo para "re-descobrir" estrutura quando schema muda.**
 
 **Solução**: Adicionar ao PONTO 13 (ou novo ponto): "Mesmo schemas internos devem ser LIDOS via grep quando houver mudança significativa (ex: schema que agrega N outros schemas)."
 
@@ -303,7 +303,7 @@ Aplicação sistemática da metodologia 5 Whys para identificar root causes prof
 **Resposta**: Pattern foi corrigido "inline" sem criar step explícito no checklist.
 
 #### Why #5 (ROOT CAUSE): Por que correções inline não geram atualizações de checklist?
-**RESPOSTA ROOT**: **Processo de documentação de patterns é manual e oportunista (lembro quando erro se repete) ao invés de automático (toda correção → considerar adicionar ao checklist).**
+**RESPOSTA ROOT**: **Processo de documentação de patterns é manual e oportunista (lembro quando erro se repete) ao invés de automático (toda correção -> considerar adicionar ao checklist).**
 
 **Solução**: Criar PROTOCOLO: "Toda correção de erro recorrente (2+ ocorrências) DEVE gerar proposta de atualização de checklist/memória no final da sessão."
 
@@ -355,30 +355,30 @@ Aplicação sistemática da metodologia 5 Whys para identificar root causes prof
 
 ---
 
-## ✅ Soluções Implementadas
+## [OK] Soluções Implementadas
 
 ### Solução 1: Corrigir Fixture `valid_company_info`
 
 ```python
-# ❌ ANTES (ERRADO)
+# [ERRO] ANTES (ERRADO)
 @pytest.fixture
 def valid_company_info() -> CompanyInfo:
     return CompanyInfo(
         name="TechCorp Solutions",
         industry="Software as a Service",
-        size="media"  # ❌ Literal inválido
-        # ❌ Campo 'sector' obrigatório ausente
+        size="media"  # [ERRO] Literal inválido
+        # [ERRO] Campo 'sector' obrigatório ausente
     )
 
-# ✅ DEPOIS (CORRETO)
+# [OK] DEPOIS (CORRETO)
 @pytest.fixture
 def valid_company_info() -> CompanyInfo:
     """Fixture com CompanyInfo valido."""
     return CompanyInfo(
         name="TechCorp Solutions",
-        sector="Tecnologia",  # ✅ Campo obrigatório adicionado
+        sector="Tecnologia",  # [OK] Campo obrigatório adicionado
         industry="Software as a Service",
-        size="média",  # ✅ Literal correto
+        size="média",  # [OK] Literal correto
         founded_year=2018
     )
 ```
@@ -396,24 +396,24 @@ grep "class CompanyInfo" src/memory/schemas.py -A 20
 ### Solução 2: Corrigir Fixture `valid_diagnostic_result` (CompleteDiagnostic)
 
 ```python
-# ❌ ANTES (ERRADO - estrutura plana)
+# [ERRO] ANTES (ERRADO - estrutura plana)
 @pytest.fixture
 def valid_diagnostic_result() -> CompleteDiagnostic:
     return CompleteDiagnostic(
-        current_state="Receita crescendo...",  # ❌ Campo não existe
-        challenges=["Gap 1", "Gap 2"],  # ❌ Deve ser "gaps"
+        current_state="Receita crescendo...",  # [ERRO] Campo não existe
+        challenges=["Gap 1", "Gap 2"],  # [ERRO] Deve ser "gaps"
         recommendations=[...],
         executive_summary="..."
     )
 
-# ✅ DEPOIS (CORRETO - estrutura nested 4 perspectivas)
+# [OK] DEPOIS (CORRETO - estrutura nested 4 perspectivas)
 @pytest.fixture
 def valid_diagnostic_result() -> CompleteDiagnostic:
     """Fixture com CompleteDiagnostic valido (4 perspectivas BSC)."""
     financial_diag = DiagnosticResult(
         perspective="Financeira",
-        current_state="Receita crescendo 40% YoY...",  # ✅ 50+ chars
-        gaps=[  # ✅ Campo correto (não "challenges")
+        current_state="Receita crescendo 40% YoY...",  # [OK] 50+ chars
+        gaps=[  # [OK] Campo correto (não "challenges")
             "Margens EBITDA baixas (15% vs target 20%)",
             "Falta visibilidade custos por produto"
         ],
@@ -422,15 +422,15 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
         ],
         priority="HIGH"
     )
-    
+
     # ... customer_diag, process_diag, learning_diag (similar)
-    
+
     return CompleteDiagnostic(
-        financial=financial_diag,  # ✅ DiagnosticResult objeto
+        financial=financial_diag,  # [OK] DiagnosticResult objeto
         customer=customer_diag,
         process=process_diag,
         learning=learning_diag,
-        recommendations=[Recommendation(...)],  # ✅ Lista de objetos
+        recommendations=[Recommendation(...)],  # [OK] Lista de objetos
         executive_summary="TechCorp está em fase de crescimento...",
         next_phase="APPROVAL_PENDING"
     )
@@ -453,37 +453,37 @@ grep "gaps\|challenges" src/memory/schemas.py
 ### Solução 3: Corrigir `build_company_context()` - Acessar Apenas Campos Existentes
 
 ```python
-# ❌ ANTES (ERRADO)
+# [ERRO] ANTES (ERRADO)
 def build_company_context(company_info: CompanyInfo) -> str:
     lines = []
     lines.append(f"Empresa: {company_info.name}")
-    
-    if company_info.annual_revenue:  # ❌ Campo não existe
+
+    if company_info.annual_revenue:  # [ERRO] Campo não existe
         lines.append(f"Receita: {company_info.annual_revenue}")
-    
-    if company_info.employee_count:  # ❌ Campo não existe
+
+    if company_info.employee_count:  # [ERRO] Campo não existe
         lines.append(f"Funcionários: {company_info.employee_count}")
-    
+
     return "\n".join(lines)
 
-# ✅ DEPOIS (CORRETO)
+# [OK] DEPOIS (CORRETO)
 def build_company_context(company_info: CompanyInfo) -> str:
     """Constroi contexto da empresa a partir de CompanyInfo.
-    
+
     Campos disponíveis (validados via grep):
     - name, sector, size (obrigatórios)
     - industry, founded_year (opcionais)
     """
     lines = []
     lines.append(f"Empresa: {company_info.name}")
-    lines.append(f"Setor: {company_info.sector}")  # ✅ Existe
-    lines.append(f"Porte: {company_info.size}")  # ✅ Existe
-    
-    if company_info.industry:  # ✅ Validado que existe
+    lines.append(f"Setor: {company_info.sector}")  # [OK] Existe
+    lines.append(f"Porte: {company_info.size}")  # [OK] Existe
+
+    if company_info.industry:  # [OK] Validado que existe
         lines.append(f"Industria: {company_info.industry}")
-    if company_info.founded_year:  # ✅ Validado que existe
+    if company_info.founded_year:  # [OK] Validado que existe
         lines.append(f"Ano de fundacao: {company_info.founded_year}")
-    
+
     return "\n".join(lines)
 ```
 
@@ -507,34 +507,34 @@ grep "class CompanyInfo" src/memory/schemas.py -A 15
 ### Solução 4: Extrair DiagnosticResult Específico Antes de build_diagnostic_context()
 
 ```python
-# ❌ ANTES (ERRADO - passa CompleteDiagnostic direto)
+# [ERRO] ANTES (ERRADO - passa CompleteDiagnostic direto)
 def _define_perspective_objectives(
     self,
     perspective: str,
-    diagnostic_result: CompleteDiagnostic  # ❌ Recebe agregado
+    diagnostic_result: CompleteDiagnostic  # [ERRO] Recebe agregado
 ):
     # Context builder espera DiagnosticResult single
-    diagnostic_context = build_diagnostic_context(diagnostic_result)  # ❌ Erro!
+    diagnostic_context = build_diagnostic_context(diagnostic_result)  # [ERRO] Erro!
 
-# ✅ DEPOIS (CORRETO - extrai DiagnosticResult da perspectiva)
+# [OK] DEPOIS (CORRETO - extrai DiagnosticResult da perspectiva)
 def _define_perspective_objectives(
     self,
     perspective: str,
-    diagnostic_result: CompleteDiagnostic  # ✅ Recebe agregado
+    diagnostic_result: CompleteDiagnostic  # [OK] Recebe agregado
 ):
-    # 1. Mapear perspectiva → campo do CompleteDiagnostic
+    # 1. Mapear perspectiva -> campo do CompleteDiagnostic
     perspective_mapping = {
         "Financeira": diagnostic_result.financial,
         "Clientes": diagnostic_result.customer,
         "Processos Internos": diagnostic_result.process,
         "Aprendizado e Crescimento": diagnostic_result.learning
     }
-    
+
     # 2. Extrair DiagnosticResult específico
     perspective_diagnostic = perspective_mapping[perspective]
-    
+
     # 3. Context builder agora recebe tipo correto
-    diagnostic_context = build_diagnostic_context(perspective_diagnostic)  # ✅ OK!
+    diagnostic_context = build_diagnostic_context(perspective_diagnostic)  # [OK] OK!
 ```
 
 **Processo Preventivo Aplicado**:
@@ -557,24 +557,24 @@ grep "class CompleteDiagnostic" src/memory/schemas.py -A 10
 ### Solução 5: Criar `build_complete_diagnostic_context()` para CompleteDiagnostic
 
 ```python
-# ✅ NOVO - Context builder dedicado para CompleteDiagnostic
+# [OK] NOVO - Context builder dedicado para CompleteDiagnostic
 def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic") -> str:
     """Constroi contexto resumido do diagnostico completo (4 perspectivas).
-    
+
     Use quando precisar visão agregada das 4 perspectivas.
     Para perspectiva específica, use build_diagnostic_context().
-    
+
     Args:
         complete_diagnostic: Diagnostico completo das 4 perspectivas BSC
-    
+
     Returns:
         str: Contexto formatado resumido
-    
+
     Example:
         >>> context = build_complete_diagnostic_context(complete_diagnostic)
         >>> print(context)
         Diagnostico BSC Completo:
-        
+
         Financeira (HIGH): 3 gaps, 2 oportunidades
         Clientes (HIGH): 3 gaps, 2 oportunidades
         ...
@@ -582,7 +582,7 @@ def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic")
     lines = []
     lines.append("Diagnostico BSC Completo:")
     lines.append("")
-    
+
     # Resumo por perspectiva
     perspectives = [
         ("Financeira", complete_diagnostic.financial),
@@ -590,16 +590,16 @@ def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic")
         ("Processos Internos", complete_diagnostic.process),
         ("Aprendizado e Crescimento", complete_diagnostic.learning)
     ]
-    
+
     for name, diag in perspectives:
         if diag:
             gaps_count = len(diag.gaps) if diag.gaps else 0
             opps_count = len(diag.opportunities) if diag.opportunities else 0
             lines.append(f"{name} ({diag.priority}): {gaps_count} gaps, {opps_count} oportunidades")
-    
+
     lines.append("")
     lines.append(f"Resumo Executivo: {complete_diagnostic.executive_summary[:200]}...")
-    
+
     return "\n".join(lines)
 ```
 
@@ -608,14 +608,14 @@ def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic")
 def _validate_objectives_balance(
     self,
     framework: StrategicObjectivesFramework,
-    complete_diagnostic: CompleteDiagnostic  # ✅ Recebe agregado
+    complete_diagnostic: CompleteDiagnostic  # [OK] Recebe agregado
 ):
-    # ✅ Usar context builder dedicado
+    # [OK] Usar context builder dedicado
     diagnostic_context = build_complete_diagnostic_context(complete_diagnostic)
-    
+
     # Prompt de validação
     prompt = VALIDATE_OBJECTIVES_BALANCE_PROMPT.format(
-        diagnostic_context=diagnostic_context,  # ✅ Contexto resumido 4 perspectivas
+        diagnostic_context=diagnostic_context,  # [OK] Contexto resumido 4 perspectivas
         objectives_summary=framework.summary()
     )
 ```
@@ -625,17 +625,17 @@ def _validate_objectives_balance(
 ### Solução 6: Tratar LLM Structured Output (Dict vs Pydantic Model)
 
 ```python
-# ❌ ANTES (ERRADO - assume sempre dict)
+# [ERRO] ANTES (ERRADO - assume sempre dict)
 result = structured_llm.invoke(prompt)
-objectives_data = result.get("objectives", [])  # ❌ Falha se Pydantic model
+objectives_data = result.get("objectives", [])  # [ERRO] Falha se Pydantic model
 
-# ✅ DEPOIS (CORRETO - trata ambos casos)
+# [OK] DEPOIS (CORRETO - trata ambos casos)
 result = structured_llm.invoke(prompt)
 
 # Detectar tipo e extrair objetivos adequadamente
 objectives_data = (
-    result["objectives"] if isinstance(result, dict)  # ✅ Dict → acesso direto
-    else result.objectives  # ✅ Pydantic model → atributo
+    result["objectives"] if isinstance(result, dict)  # [OK] Dict -> acesso direto
+    else result.objectives  # [OK] Pydantic model -> atributo
 )
 
 # Converter cada objetivo para StrategicObjective
@@ -646,10 +646,10 @@ for obj_item in objectives_data:
         else obj_item.dict() if hasattr(obj_item, 'dict')
         else dict(obj_item)
     )
-    
+
     # Garantir perspectiva correta (override se LLM errar)
     obj_dict["perspective"] = perspective
-    
+
     # Validar com Pydantic
     obj = StrategicObjective(**obj_dict)
     objectives.append(obj)
@@ -672,15 +672,15 @@ data = (
 ### Solução 7: Expandir KPI Names para Cumprir min_length=10
 
 ```python
-# ❌ ANTES (ERRADO - nomes curtos)
+# [ERRO] ANTES (ERRADO - nomes curtos)
 KPIDefinition(
-    name="NPS",  # ❌ 3 caracteres < min_length=10
+    name="NPS",  # [ERRO] 3 caracteres < min_length=10
     ...
 )
 
-# ✅ DEPOIS (CORRETO - nomes expandidos)
+# [OK] DEPOIS (CORRETO - nomes expandidos)
 KPIDefinition(
-    name="NPS Score (Net Promoter Score)",  # ✅ 33 caracteres >= 10
+    name="NPS Score (Net Promoter Score)",  # [OK] 33 caracteres >= 10
     description=(
         "Net Promoter Score mede a probabilidade de clientes recomendarem "
         "a empresa, variando de -100 (todos detratores) a +100 (todos promotores)"
@@ -702,7 +702,7 @@ grep "min_length\|max_length" src/memory/schemas.py
 
 ---
 
-## 🎯 Metodologia que Funcionou
+## [EMOJI] Metodologia que Funcionou
 
 ### 5 Whys Root Cause Analysis
 
@@ -718,8 +718,8 @@ grep "min_length\|max_length" src/memory/schemas.py
 6. **Why #5 (ROOT CAUSE)**: Por que a causa do Why #4 ocorreu? (causa raiz estrutural)
 
 **Diferença vs Trial-and-Error**:
-- ❌ **Trial-and-Error**: Corrige erro superficial → outro erro aparece → corrige → outro erro...
-- ✅ **5 Whys**: Identifica causa raiz → corrige root cause → múltiplos erros superficiais desaparecem
+- [ERRO] **Trial-and-Error**: Corrige erro superficial -> outro erro aparece -> corrige -> outro erro...
+- [OK] **5 Whys**: Identifica causa raiz -> corrige root cause -> múltiplos erros superficiais desaparecem
 
 **ROI Validado Sessão 20**:
 - **Trial-and-Error estimado**: 2-3h (corrigir 8 erros individualmente)
@@ -731,17 +731,17 @@ grep "min_length\|max_length" src/memory/schemas.py
 ### Fluxo Aplicado Sessão 20
 
 ```
-[16:00] Executar pytest → 8 erros aparecem
+[16:00] Executar pytest -> 8 erros aparecem
    ↓
-[16:05] PARAR trial-and-error → Aplicar metodologia estruturada
+[16:05] PARAR trial-and-error -> Aplicar metodologia estruturada
    ↓
 [16:10-16:45] 5 Whys para cada categoria de erro (35 min)
-   ├─ Erros 1-4,8 → Root Cause #1 (Fixtures sem leitura prévia)
-   ├─ Erros 5-6 → Root Cause #2 (Context builders campos inexistentes)
-   ├─ Erro 3,6 → Root Cause #3 (Type confusion nested schemas)
-   ├─ Erro 7 → Root Cause #4 (Dict vs Pydantic handling)
-   ├─ Erro 8 → Root Cause #5 (Validators não verificados)
-   └─ Erro 6 → Root Cause #6 (Context builder agregado ausente)
+   ├─ Erros 1-4,8 -> Root Cause #1 (Fixtures sem leitura prévia)
+   ├─ Erros 5-6 -> Root Cause #2 (Context builders campos inexistentes)
+   ├─ Erro 3,6 -> Root Cause #3 (Type confusion nested schemas)
+   ├─ Erro 7 -> Root Cause #4 (Dict vs Pydantic handling)
+   ├─ Erro 8 -> Root Cause #5 (Validators não verificados)
+   └─ Erro 6 -> Root Cause #6 (Context builder agregado ausente)
    ↓
 [16:45-17:15] Implementar soluções (30 min)
    ├─ Solução 1: Corrigir 3 fixtures (fixtures válidas)
@@ -751,9 +751,9 @@ grep "min_length\|max_length" src/memory/schemas.py
    ├─ Solução 5: Tratar dict vs Pydantic
    └─ Solução 6: Expandir KPI names
    ↓
-[17:15] Executar pytest novamente → 12/12 testes ✅
+[17:15] Executar pytest novamente -> 12/12 testes [OK]
    ↓
-[17:30] Validar coverage → 88% tool + 99% prompts ✅
+[17:30] Validar coverage -> 88% tool + 99% prompts [OK]
 ```
 
 **Key Insight**: 5 Whys investiu 35 min UPFRONT identificando root causes, mas economizou 1-1.5h em retrabalho (corrigir erros superficiais múltiplas vezes).
@@ -762,13 +762,13 @@ grep "min_length\|max_length" src/memory/schemas.py
 
 ### Quando Aplicar 5 Whys
 
-**✅ APLICAR quando**:
+**[OK] APLICAR quando**:
 - 2+ erros aparecem simultaneamente
 - Erro se repete em sessões consecutivas (recorrente)
 - Trial-and-error já consumiu 15+ min sem progresso
 - Erro é sintoma de problema estrutural (ex: fixtures inválidas recorrentes)
 
-**❌ NÃO APLICAR quando**:
+**[ERRO] NÃO APLICAR quando**:
 - Erro único e isolado (typo, import missing)
 - Root cause é óbvia (ex: esqueci adicionar field obrigatório)
 - Erro trivial (<2 min para corrigir)
@@ -797,7 +797,7 @@ grep "min_length\|max_length" src/memory/schemas.py
 
 ---
 
-## 🔄 Problemas Recorrentes e Prevenção Futura
+## [EMOJI] Problemas Recorrentes e Prevenção Futura
 
 ### Problema Recorrente #1: Fixtures Pydantic Inválidas
 
@@ -832,11 +832,11 @@ grep "class CompanyInfo" src/memory/schemas.py -A 15
 
 # Output:
 # class CompanyInfo(BaseModel):
-#     name: str  # ✅ OBRIGATÓRIO
-#     sector: str  # ✅ OBRIGATÓRIO
-#     size: Literal["micro", "pequena", "média", "grande", "50-100"]  # ✅ LITERAL
-#     industry: Optional[str] = None  # ✅ OPCIONAL
-#     founded_year: Optional[int] = None  # ✅ OPCIONAL
+#     name: str  # [OK] OBRIGATÓRIO
+#     sector: str  # [OK] OBRIGATÓRIO
+#     size: Literal["micro", "pequena", "média", "grande", "50-100"]  # [OK] LITERAL
+#     industry: Optional[str] = None  # [OK] OPCIONAL
+#     founded_year: Optional[int] = None  # [OK] OPCIONAL
 
 # Agora criar fixture com TODOS campos obrigatórios e Literal correto
 ```
@@ -892,8 +892,8 @@ if hasattr(company_info, 'annual_revenue') and company_info.annual_revenue:
 
 **Pattern**:
 - LLM structured output retorna dict OU Pydantic model (dependendo de config)
-- Código usa `.get()` (método de dict) → falha se Pydantic model
-- Código usa `.field` (atributo Pydantic) → falha se dict
+- Código usa `.get()` (método de dict) -> falha se Pydantic model
+- Código usa `.field` (atributo Pydantic) -> falha se dict
 
 **Root Cause**: Pattern corrigido em KPI Definer mas não documentado em checklist reutilizável
 
@@ -926,7 +926,7 @@ for item in data:
 
 ---
 
-## 🔍 Brightdata Research Findings
+## [EMOJI] Brightdata Research Findings
 
 ### Query 1: Pytest Fixtures Pydantic Validation Best Practices
 
@@ -945,7 +945,7 @@ for item in data:
    - Pydantic validation robusta com type hints
    - Working with models e validators
 
-**🚫 NÃO ENCONTRADO**: Ferramenta específica para auto-generate fixtures válidas de schemas Pydantic (mencionado "pydantic-factories" mas sem link direto)
+**[EMOJI] NÃO ENCONTRADO**: Ferramenta específica para auto-generate fixtures válidas de schemas Pydantic (mencionado "pydantic-factories" mas sem link direto)
 
 **Key Insight**: Best practice é **LER SCHEMA ANTES** de criar fixture (manual), não há ferramenta mágica que gera fixtures automaticamente.
 
@@ -1008,21 +1008,21 @@ else:
 
 ---
 
-## 📊 Métricas e ROI
+## [EMOJI] Métricas e ROI
 
 ### Métricas de Performance
 
 | Métrica | Target | Real | Status |
 |---|-----|-----|---|
-| **Testes passando** | 15+ | 12 | ✅ 80% |
-| **Coverage tool** | 70%+ | 88% | ✅ +18pp |
-| **Coverage prompts** | 70%+ | 99% | ✅ +29pp |
-| **Tempo execução testes** | <30s | 20.07s | ✅ -33% |
-| **Latência tool (sem RAG)** | <25s | ~20s | ✅ |
-| **Erros encontrados** | <5 | 8 | ⚠️ +60% |
-| **Root causes identificados** | N/A | 6 | ✅ |
-| **Tempo debugging** | <1h | 1.5h | ⚠️ +50% |
-| **Economia via 5 Whys** | N/A | 0.5-1.5h | ✅ |
+| **Testes passando** | 15+ | 12 | [OK] 80% |
+| **Coverage tool** | 70%+ | 88% | [OK] +18pp |
+| **Coverage prompts** | 70%+ | 99% | [OK] +29pp |
+| **Tempo execução testes** | <30s | 20.07s | [OK] -33% |
+| **Latência tool (sem RAG)** | <25s | ~20s | [OK] |
+| **Erros encontrados** | <5 | 8 | [WARN] +60% |
+| **Root causes identificados** | N/A | 6 | [OK] |
+| **Tempo debugging** | <1h | 1.5h | [WARN] +50% |
+| **Economia via 5 Whys** | N/A | 0.5-1.5h | [OK] |
 
 ### ROI da Metodologia 5 Whys
 
@@ -1055,18 +1055,18 @@ else:
 
 | Métrica | Target | Real | Status |
 |---|-----|-----|---|
-| **Objetivos SMART** | 100% | 100% | ✅ |
-| **Critérios mensuráveis** | 100% | 100% | ✅ |
-| **Alinhamento diagnóstico** | >85% | 92% | ✅ +7pp |
-| **Vinculação KPIs** | >70% | 85% | ✅ +15pp |
-| **Objetivos "genéricos" (evitar)** | <15% | 8% | ✅ -7pp |
-| **Fixtures válidas primeira tentativa** | 80%+ | 0% (8 erros) | ❌ |
+| **Objetivos SMART** | 100% | 100% | [OK] |
+| **Critérios mensuráveis** | 100% | 100% | [OK] |
+| **Alinhamento diagnóstico** | >85% | 92% | [OK] +7pp |
+| **Vinculação KPIs** | >70% | 85% | [OK] +15pp |
+| **Objetivos "genéricos" (evitar)** | <15% | 8% | [OK] -7pp |
+| **Fixtures válidas primeira tentativa** | 80%+ | 0% (8 erros) | [ERRO] |
 
 **Insight Crítico**: Fixtures inválidas (0% primeira tentativa) indicam necessidade urgente de **PONTO 15** no checklist.
 
 ---
 
-## ✅ Checklist Atualizado (Ponto 15)
+## [OK] Checklist Atualizado (Ponto 15)
 
 ### PONTO 15: LER SCHEMA PYDANTIC VIA GREP ANTES DE CRIAR FIXTURE OU ACESSAR CAMPOS
 
@@ -1097,10 +1097,10 @@ grep "class SchemaName" src/memory/schemas.py -A 50
 grep "class CompanyInfo" src/memory/schemas.py -A 15
 
 # Output analisado:
-# name: str  # ✅ OBRIGATÓRIO
-# sector: str  # ✅ OBRIGATÓRIO
-# size: Literal["micro", "pequena", "média", "grande"]  # ✅ LITERAL (4 valores)
-# industry: Optional[str] = None  # ✅ OPCIONAL
+# name: str  # [OK] OBRIGATÓRIO
+# sector: str  # [OK] OBRIGATÓRIO
+# size: Literal["micro", "pequena", "média", "grande"]  # [OK] LITERAL (4 valores)
+# industry: Optional[str] = None  # [OK] OPCIONAL
 ```
 
 #### Sub-ponto 15.2: Identificar Validators Pydantic
@@ -1134,9 +1134,9 @@ grep "min_length" src/memory/schemas.py
 grep "class CompleteDiagnostic" src/memory/schemas.py -A 10
 
 # Output:
-# financial: DiagnosticResult  # ✅ NESTED (não é tipo primitivo)
+# financial: DiagnosticResult  # [OK] NESTED (não é tipo primitivo)
 # customer: DiagnosticResult
-# recommendations: list[Recommendation]  # ✅ NESTED (lista de objetos)
+# recommendations: list[Recommendation]  # [OK] NESTED (lista de objetos)
 
 # PASSO 6: Ler schema do tipo nested também
 grep "class DiagnosticResult" src/memory/schemas.py -A 30
@@ -1150,22 +1150,22 @@ grep "class Recommendation" src/memory/schemas.py -A 20
 @pytest.fixture
 def valid_schema_name() -> SchemaName:
     """Fixture com SchemaName valido.
-    
+
     Campos validados via grep (2025-10-19):
     - Campo1: obrigatório, str
     - Campo2: obrigatório, Literal["value1", "value2"]
     - Campo3: opcional, Optional[int] = None
     - Campo4: nested, OtherSchemaName
-    
+
     Validators:
     - Campo1: min_length=10
     - Campo4: field_validator custom
     """
     return SchemaName(
-        campo1="Valor com 10+ caracteres",  # ✅ Respeita min_length
-        campo2="value1",  # ✅ Literal válido
-        campo3=42,  # ✅ Opcional fornecido
-        campo4=OtherSchemaName(...)  # ✅ Nested schema válido
+        campo1="Valor com 10+ caracteres",  # [OK] Respeita min_length
+        campo2="value1",  # [OK] Literal válido
+        campo3=42,  # [OK] Opcional fornecido
+        campo4=OtherSchemaName(...)  # [OK] Nested schema válido
     )
 ```
 
@@ -1175,26 +1175,26 @@ def valid_schema_name() -> SchemaName:
 # TEMPLATE para acessar campos de schemas em código de produção
 def build_context(schema_obj: SchemaName) -> str:
     """Context builder defensivo que valida campos antes de acessar.
-    
+
     Campos validados (via grep 2025-10-19):
     - campo1: str (obrigatório)
     - campo2: Optional[str] = None
     - campo3: Optional[int] = None
     """
     lines = []
-    
+
     # Campo obrigatório (sempre existe)
     lines.append(f"Campo1: {schema_obj.campo1}")
-    
+
     # Campos opcionais (validar antes de acessar)
     if hasattr(schema_obj, 'campo2') and schema_obj.campo2:
         lines.append(f"Campo2: {schema_obj.campo2}")
-    
+
     # OU usar getattr com default
     campo3 = getattr(schema_obj, 'campo3', None)
     if campo3 is not None:
         lines.append(f"Campo3: {campo3}")
-    
+
     return "\n".join(lines)
 ```
 
@@ -1204,15 +1204,15 @@ def build_context(schema_obj: SchemaName) -> str:
 
 | Situação | Aplicar Ponto 15? | Sub-pontos |
 |---|-----|---|
-| Criar fixture Pydantic nova | ✅ SIM | 15.1, 15.2, 15.3, 15.4 |
-| Modificar fixture existente com novo campo | ✅ SIM | 15.1, 15.2 |
-| Escrever context builder novo | ✅ SIM | 15.1, 15.5 |
-| Acessar campo de schema em tool/agent | ✅ SIM | 15.1, 15.5 |
-| Revisar código existente (refactor) | ⚠️ OPCIONAL | 15.5 (defensive) |
+| Criar fixture Pydantic nova | [OK] SIM | 15.1, 15.2, 15.3, 15.4 |
+| Modificar fixture existente com novo campo | [OK] SIM | 15.1, 15.2 |
+| Escrever context builder novo | [OK] SIM | 15.1, 15.5 |
+| Acessar campo de schema em tool/agent | [OK] SIM | 15.1, 15.5 |
+| Revisar código existente (refactor) | [WARN] OPCIONAL | 15.5 (defensive) |
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Papers e Artigos Metodologia
 
@@ -1261,23 +1261,23 @@ def build_context(schema_obj: SchemaName) -> str:
 
 ---
 
-## 🎯 Conclusões e Próximos Passos
+## [EMOJI] Conclusões e Próximos Passos
 
 ### Top 5 Descobertas Sessão 20
 
-1. ✅ **5 Whys Root Cause Analysis economiza 33-50% tempo debugging** quando 2+ erros relacionados
-2. ✅ **Fixtures Pydantic inválidas são problema RECORRENTE** (4 sessões) → PONTO 15 essencial
-3. ✅ **Context builders têm problema idêntico a fixtures** (assumir estrutura) → PONTO 15 genérico
-4. ✅ **CompleteDiagnostic** (schema aggregado nested) introduz complexidade nova → context builder dedicado
-5. ✅ **LLM structured output** dict vs Pydantic é pattern recorrente → template reutilizável
+1. [OK] **5 Whys Root Cause Analysis economiza 33-50% tempo debugging** quando 2+ erros relacionados
+2. [OK] **Fixtures Pydantic inválidas são problema RECORRENTE** (4 sessões) -> PONTO 15 essencial
+3. [OK] **Context builders têm problema idêntico a fixtures** (assumir estrutura) -> PONTO 15 genérico
+4. [OK] **CompleteDiagnostic** (schema aggregado nested) introduz complexidade nova -> context builder dedicado
+5. [OK] **LLM structured output** dict vs Pydantic é pattern recorrente -> template reutilizável
 
 ### Ações Preventivas Implementadas
 
-1. ✅ **PONTO 15**: LER SCHEMA VIA GREP (5 sub-pontos)
-2. ✅ **PONTO 16**: LLM STRUCTURED OUTPUT template
-3. ✅ **Sub-ponto 4.1**: Validators Pydantic (min_length, field_validator)
-4. ✅ **Context builder dedicado**: `build_complete_diagnostic_context()`
-5. ✅ **Metodologia 5 Whys**: Documentada e reutilizável
+1. [OK] **PONTO 15**: LER SCHEMA VIA GREP (5 sub-pontos)
+2. [OK] **PONTO 16**: LLM STRUCTURED OUTPUT template
+3. [OK] **Sub-ponto 4.1**: Validators Pydantic (min_length, field_validator)
+4. [OK] **Context builder dedicado**: `build_complete_diagnostic_context()`
+5. [OK] **Metodologia 5 Whys**: Documentada e reutilizável
 
 ### Próximos Passos (Sessão 21+)
 
@@ -1291,8 +1291,8 @@ def build_context(schema_obj: SchemaName) -> str:
 
 **Processo reativo (documentar erro) < Processo proativo (prevenir erro)**
 
-- ❌ **Antes**: Erro ocorre → Corrige → Documenta lição → Erro se repete → Corrige novamente
-- ✅ **Agora**: Erro ocorre → 5 Whys → Root cause → Atualiza checklist → Erro NÃO se repete
+- [ERRO] **Antes**: Erro ocorre -> Corrige -> Documenta lição -> Erro se repete -> Corrige novamente
+- [OK] **Agora**: Erro ocorre -> 5 Whys -> Root cause -> Atualiza checklist -> Erro NÃO se repete
 
 **ROI Esperado PONTO 15**: 30-40 min economizados por sessão futura (fixtures corretas primeira tentativa).
 
@@ -1300,8 +1300,7 @@ def build_context(schema_obj: SchemaName) -> str:
 
 **FIM DA LIÇÃO APRENDIDA**
 
-**Sessão**: 20  
-**Data**: 2025-10-19  
-**Linhas**: 950+  
+**Sessão**: 20
+**Data**: 2025-10-19
+**Linhas**: 950+
 **Próxima Aplicação**: Sessão 21 (Benchmarking Tool ou Action Plan Tool)
-

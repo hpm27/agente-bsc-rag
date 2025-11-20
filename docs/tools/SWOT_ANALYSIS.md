@@ -2,13 +2,13 @@
 
 **Ferramenta consultiva estruturada para facilitar análise SWOT contextualizada no Balanced Scorecard**
 
-**Status:** ✅ Implementado (FASE 3.1 - 2025-10-19)  
-**Coverage:** 71% (tool), 100% (tests - 13/13 passando)  
+**Status:** [OK] Implementado (FASE 3.1 - 2025-10-19)
+**Coverage:** 71% (tool), 100% (tests - 13/13 passando)
 **ROI:** ~2-3h economizadas por análise SWOT manual
 
 ---
 
-## 📋 Visão Geral
+## [EMOJI] Visão Geral
 
 `SWOTAnalysisTool` é uma ferramenta consultiva que facilita a construção estruturada de análises SWOT (Strengths, Weaknesses, Opportunities, Threats) contextualizadas para empresas em projetos de implementação de Balanced Scorecard.
 
@@ -39,7 +39,7 @@ SWOTAnalysis (validated schema com 4 quadrantes)
 
 ---
 
-## 🎯 Casos de Uso BSC
+## [EMOJI] Casos de Uso BSC
 
 ### 1. **Diagnóstico Inicial (DISCOVERY Phase)**
 
@@ -126,10 +126,10 @@ swot = tool.facilitate_swot(company, context, use_rag=True)
 ```
 
 **Workflow RAG:**
-1. Financial Agent → Recupera conhecimento sobre indicadores financeiros BSC
-2. Customer Agent → Recupera práticas de satisfação/retenção de clientes
-3. Process Agent → Recupera benchmarks de eficiência operacional
-4. Learning Agent → Recupera melhores práticas de capacitação e inovação
+1. Financial Agent -> Recupera conhecimento sobre indicadores financeiros BSC
+2. Customer Agent -> Recupera práticas de satisfação/retenção de clientes
+3. Process Agent -> Recupera benchmarks de eficiência operacional
+4. Learning Agent -> Recupera melhores práticas de capacitação e inovação
 
 **Output esperado:**
 - SWOT contextualizado com referências implícitas à literatura BSC
@@ -140,7 +140,7 @@ swot = tool.facilitate_swot(company, context, use_rag=True)
 
 ---
 
-## 🔧 Implementação Técnica
+## [EMOJI] Implementação Técnica
 
 ### Schemas Pydantic
 
@@ -149,19 +149,19 @@ swot = tool.facilitate_swot(company, context, use_rag=True)
 ```python
 class SWOTAnalysis(BaseModel):
     """Análise SWOT estruturada com 4 quadrantes.
-    
+
     Attributes:
         strengths: Lista de forças internas (default: vazio)
         weaknesses: Lista de fraquezas internas (default: vazio)
         opportunities: Lista de oportunidades externas (default: vazio)
         threats: Lista de ameaças externas (default: vazio)
     """
-    
+
     strengths: List[str] = Field(default_factory=list)
     weaknesses: List[str] = Field(default_factory=list)
     opportunities: List[str] = Field(default_factory=list)
     threats: List[str] = Field(default_factory=list)
-    
+
     def is_complete(self, min_items_per_quadrant: int = 2) -> bool:
         """Verifica se SWOT tem mínimo de itens por quadrante."""
         return all([
@@ -170,7 +170,7 @@ class SWOTAnalysis(BaseModel):
             len(self.opportunities) >= min_items_per_quadrant,
             len(self.threats) >= min_items_per_quadrant
         ])
-    
+
     def quality_score(self, target_items: int = 4) -> float:
         """Score 0.0-1.0 baseado em quantidade vs target."""
         total = sum([
@@ -181,27 +181,27 @@ class SWOTAnalysis(BaseModel):
         ])
         max_possible = target_items * 4
         return min(total / max_possible, 1.0) if max_possible > 0 else 0.0
-    
+
     def summary(self) -> str:
         """Retorna resumo textual formatado dos 4 quadrantes."""
         lines = []
-        
+
         lines.append(f"Strengths (Forças): {len(self.strengths)} items")
         for item in self.strengths:
             lines.append(f"- {item}")
-        
+
         lines.append(f"\nWeaknesses (Fraquezas): {len(self.weaknesses)} items")
         for item in self.weaknesses:
             lines.append(f"- {item}")
-        
+
         lines.append(f"\nOpportunities (Oportunidades): {len(self.opportunities)} items")
         for item in self.opportunities:
             lines.append(f"- {item}")
-        
+
         lines.append(f"\nThreats (Ameaças): {len(self.threats)} items")
         for item in self.threats:
             lines.append(f"- {item}")
-        
+
         return "\n".join(lines)
 ```
 
@@ -219,35 +219,35 @@ def facilitate_swot(
     use_rag: bool = True,
 ) -> SWOTAnalysis:
     """Facilita análise SWOT estruturada.
-    
+
     Args:
         company_info: Informações básicas da empresa
         strategic_context: Desafios e objetivos estratégicos
         use_rag: Se True, recupera conhecimento BSC via specialist agents
-        
+
     Returns:
         SWOTAnalysis: Objeto validado com 4 quadrantes
-        
+
     Raises:
         ValueError: Se LLM falha ou contexto insuficiente
     """
     logger.info(f"[SWOT Tool] Facilitando SWOT para {company_info.name} (use_rag={use_rag})")
-    
+
     # STEP 1: Construir contexto empresa
     company_context = build_company_context(company_info, strategic_context)
-    
+
     # STEP 2: (Opcional) RAG - Recuperar conhecimento BSC
     bsc_knowledge = ""
     if use_rag:
         rag_results = self._retrieve_bsc_knowledge(company_context)
         bsc_knowledge = build_bsc_knowledge_context(rag_results)
-    
+
     # STEP 3: Construir prompt completo
     prompt = FACILITATE_SWOT_PROMPT.format(
         company_context=company_context,
         bsc_knowledge=bsc_knowledge if bsc_knowledge else "Nenhum conhecimento BSC adicional."
     )
-    
+
     # STEP 4: LLM Structured Output
     try:
         swot = self.llm_structured.invoke(prompt)
@@ -257,7 +257,7 @@ def facilitate_swot(
             f"{len(swot.threats)}T (quality_score={swot.quality_score():.2f})"
         )
         return swot
-    
+
     except Exception as e:
         logger.error(f"[SWOT Tool] Erro inesperado ao gerar SWOT: {e}")
         raise ValueError(f"Falha ao facilitar SWOT: {e}") from e
@@ -326,33 +326,33 @@ Cada item deve ser:
 
 ---
 
-## 📊 Métricas e Validação
+## [EMOJI] Métricas e Validação
 
 ### Targets de Qualidade
 
 | Métrica | Target | Real (implementado) | Status |
 |---------|---------|---------------------|--------|
-| **Completude** | 100% (todos 4 quadrantes com >= 2 itens) | 100% (validado via .is_complete()) | ✅ |
-| **Quality Score** | >= 0.8 (16 itens total) | Variável (mock: 1.0) | ✅ |
-| **Latência (sem RAG)** | < 5s | ~2-3s (GPT-5) | ✅ |
-| **Latência (com RAG)** | < 15s | ~8-12s (4 agents paralelos) | ✅ |
-| **Cobertura testes** | >= 85% | 71% (tool), 100% (logic) | ⚠️ Aceitável |
+| **Completude** | 100% (todos 4 quadrantes com >= 2 itens) | 100% (validado via .is_complete()) | [OK] |
+| **Quality Score** | >= 0.8 (16 itens total) | Variável (mock: 1.0) | [OK] |
+| **Latência (sem RAG)** | < 5s | ~2-3s (GPT-5) | [OK] |
+| **Latência (com RAG)** | < 15s | ~8-12s (4 agents paralelos) | [OK] |
+| **Cobertura testes** | >= 85% | 71% (tool), 100% (logic) | [WARN] Aceitável |
 
 ---
 
 ### Resultados de Testes
 
-**Suite:** `tests/test_swot_analysis.py`  
-**Status:** ✅ 13/13 testes passando (100%)
+**Suite:** `tests/test_swot_analysis.py`
+**Status:** [OK] 13/13 testes passando (100%)
 
 | Categoria | Testes | Status |
 |-----------|---------|--------|
-| Criação e inicialização | 1 | ✅ PASS |
-| Geração SWOT básico (sem RAG) | 3 | ✅ PASS |
-| Geração SWOT com RAG | 1 | ✅ PASS |
-| Tratamento de erros | 1 | ✅ PASS |
-| Métodos de validação schema | 6 | ✅ PASS |
-| Smoke test integração | 1 | ✅ PASS |
+| Criação e inicialização | 1 | [OK] PASS |
+| Geração SWOT básico (sem RAG) | 3 | [OK] PASS |
+| Geração SWOT com RAG | 1 | [OK] PASS |
+| Tratamento de erros | 1 | [OK] PASS |
+| Métodos de validação schema | 6 | [OK] PASS |
+| Smoke test integração | 1 | [OK] PASS |
 
 **Exemplo de execução:**
 ```bash
@@ -362,7 +362,7 @@ pytest tests/test_swot_analysis.py -v --tb=short
 
 ---
 
-## 🎓 Lições Aprendidas (FASE 3.1)
+## [EMOJI] Lições Aprendidas (FASE 3.1)
 
 ### 1. **Structured Output > Parsing Manual**
 
@@ -441,7 +441,7 @@ def build_company_context(company_info, strategic_context) -> str:
 
 ---
 
-## 🔗 Integrações
+## [EMOJI] Integrações
 
 ### Com DiagnosticAgent
 
@@ -457,16 +457,16 @@ class DiagnosticAgent:
         diagnostic_result: CompleteDiagnostic | None = None,
     ):
         """Gera análise SWOT estruturada usando SWOTAnalysisTool.
-        
+
         Args:
             client_profile: Perfil completo do cliente
             use_rag: Se True, busca conhecimento BSC via specialist agents
             refine_with_diagnostic: Se True, refina SWOT baseado em diagnostic completo
             diagnostic_result: Diagnóstico BSC das 4 perspectivas (se refinement=True)
-            
+
         Returns:
             SWOTAnalysis: Objeto validado com 4 quadrantes
-            
+
         Example:
             >>> profile = ClientProfile(...)
             >>> diagnostic = agent.diagnose_perspectives(profile)  # 4 perspectivas
@@ -480,7 +480,7 @@ class DiagnosticAgent:
         # Extrair company_info e strategic_context de client_profile
         company_info = client_profile.company
         strategic_context = client_profile.context
-        
+
         # Inicializar SWOT tool
         swot_tool = SWOTAnalysisTool(
             llm=self.llm,
@@ -489,7 +489,7 @@ class DiagnosticAgent:
             process_agent=self.process_agent,
             learning_agent=self.learning_agent
         )
-        
+
         # Facilitar SWOT
         if refine_with_diagnostic and diagnostic_result:
             return swot_tool.refine_swot(
@@ -507,7 +507,7 @@ class DiagnosticAgent:
 
 ---
 
-## 🚀 Uso Prático
+## [EMOJI] Uso Prático
 
 ### Exemplo End-to-End
 
@@ -566,7 +566,7 @@ else:
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Papers e Artigos (2024-2025)
 
@@ -594,7 +594,7 @@ else:
 
 ---
 
-## ✅ Checklist de Implementação
+## [OK] Checklist de Implementação
 
 - [x] Schema SWOTAnalysis com métodos `.is_complete()`, `.quality_score()`, `.summary()`
 - [x] Prompts SWOT (FACILITATE_SWOT_PROMPT, SYNTHESIZE_SWOT_PROMPT)
@@ -608,12 +608,11 @@ else:
 
 ---
 
-**Última Atualização:** 2025-10-19  
-**Status:** ✅ Implementação completa (FASE 3.1)  
+**Última Atualização:** 2025-10-19
+**Status:** [OK] Implementação completa (FASE 3.1)
 **Próximos Passos:** Implementar ferramenta consultiva 3.2 (ex: PESTEL Analysis Tool)
 
 ---
 
-**Autor:** BSC RAG Team  
+**Autor:** BSC RAG Team
 **Contato:** [Documentação interna]
-

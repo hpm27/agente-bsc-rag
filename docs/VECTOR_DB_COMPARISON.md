@@ -71,17 +71,17 @@ Avaliar Qdrant vs Weaviate vs Redis Stack para escolher o melhor vector database
 
 #### Prós
 
-- ✅ Open-source e ativo desenvolvimento
-- ✅ Excelente performance em queries
-- ✅ Integração nativa com LangChain
-- ✅ Suporte a filtros complexos
-- ✅ API REST e gRPC
-- ✅ Documentação excelente
+- [OK] Open-source e ativo desenvolvimento
+- [OK] Excelente performance em queries
+- [OK] Integração nativa com LangChain
+- [OK] Suporte a filtros complexos
+- [OK] API REST e gRPC
+- [OK] Documentação excelente
 
 #### Contras
 
-- ❌ Hybrid search requer implementação customizada
-- ❌ Menos features enterprise que Weaviate
+- [ERRO] Hybrid search requer implementação customizada
+- [ERRO] Menos features enterprise que Weaviate
 
 #### Features Relevantes para BSC
 
@@ -96,17 +96,17 @@ Avaliar Qdrant vs Weaviate vs Redis Stack para escolher o melhor vector database
 
 #### Prós
 
-- ✅ Hybrid search nativo (BM25 + vetorial)
-- ✅ Suporte a GraphQL
-- ✅ Multi-tenancy nativo
-- ✅ Módulos de IA integrados
-- ✅ Excelente para RAG
+- [OK] Hybrid search nativo (BM25 + vetorial)
+- [OK] Suporte a GraphQL
+- [OK] Multi-tenancy nativo
+- [OK] Módulos de IA integrados
+- [OK] Excelente para RAG
 
 #### Contras
 
-- ❌ Mais complexo de configurar
-- ❌ Maior uso de recursos
-- ❌ Integração LangChain menos madura que Qdrant
+- [ERRO] Mais complexo de configurar
+- [ERRO] Maior uso de recursos
+- [ERRO] Integração LangChain menos madura que Qdrant
 
 #### Features Relevantes para BSC
 
@@ -121,17 +121,17 @@ Avaliar Qdrant vs Weaviate vs Redis Stack para escolher o melhor vector database
 
 #### Prós
 
-- ✅ Muito rápido para operações simples
-- ✅ Já está no stack atual
-- ✅ Familiaridade da equipe
-- ✅ Versátil (cache + vector store)
+- [OK] Muito rápido para operações simples
+- [OK] Já está no stack atual
+- [OK] Familiaridade da equipe
+- [OK] Versátil (cache + vector store)
 
 #### Contras
 
-- ❌ Menos features específicas para RAG
-- ❌ Documentação LangChain menos completa
-- ❌ Não é especializado em vector search
-- ❌ Hybrid search menos robusto
+- [ERRO] Menos features específicas para RAG
+- [ERRO] Documentação LangChain menos completa
+- [ERRO] Não é especializado em vector search
+- [ERRO] Hybrid search menos robusto
 
 #### Features Relevantes para BSC
 
@@ -184,7 +184,7 @@ Baseado na pesquisa inicial (antes do benchmark):
 
 ### Após Benchmark
 
-1. ✅ Executar `python tests/benchmark_vector_stores.py`
+1. [OK] Executar `python tests/benchmark_vector_stores.py`
 2. ⏳ Analisar resultados quantitativos
 3. ⏳ Tomar decisão final
 4. ⏳ Atualizar este documento com escolha

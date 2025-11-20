@@ -1,12 +1,12 @@
 # Benchmark Report - Query Decomposition vs Baseline
 
-**Data:** 2025-10-14 12:56:50  
-**Queries Testadas:** 10  
+**Data:** 2025-10-14 12:56:50
+**Queries Testadas:** 10
 **Configuração:** gpt-4o-mini | Cohere Rerank | Hybrid Search (BM25 + Qdrant)
 
 ---
 
-## 📊 Métricas Agregadas
+## [EMOJI] Métricas Agregadas
 
 ### Recall@10
 
@@ -45,18 +45,18 @@
 
 ---
 
-## ✅ Critérios de Sucesso
+## [OK] Critérios de Sucesso
 
 | Critério | Target | Real | Status |
 |----------|--------|------|--------|
-| **Recall@10 Improvement** | > +30% | +0.0% | ❌ FAIL |
-| **Precision@5 Improvement** | > +25% | +0.0% | ❌ FAIL |
-| **Latência Adicional** | < 3s | +4.25s | ❌ FAIL |
-| **Heurística Accuracy** | > 80% | 100.0% | ✅ PASS |
+| **Recall@10 Improvement** | > +30% | +0.0% | [ERRO] FAIL |
+| **Precision@5 Improvement** | > +25% | +0.0% | [ERRO] FAIL |
+| **Latência Adicional** | < 3s | +4.25s | [ERRO] FAIL |
+| **Heurística Accuracy** | > 80% | 100.0% | [OK] PASS |
 
 ---
 
-## 📋 Resultados Detalhados
+## [EMOJI] Resultados Detalhados
 
 ### Por Query
 
@@ -75,27 +75,27 @@
 
 ---
 
-## 🎓 Conclusões
+## [EMOJI] Conclusões
 
 **Recall@10:**
-- ❌ Baseline teve melhor recall
-- ❌ Target de +30% NÃO foi atingido
+- [ERRO] Baseline teve melhor recall
+- [ERRO] Target de +30% NÃO foi atingido
 
 **Precision@5:**
-- ❌ Baseline teve melhor precision
-- ❌ Target de +25% NÃO foi atingido
+- [ERRO] Baseline teve melhor precision
+- [ERRO] Target de +25% NÃO foi atingido
 
 **Latência:**
 - Overhead médio: +4.25s
-- ❌ Acima do target de 3s
+- [ERRO] Acima do target de 3s
 
 **Heurística:**
 - Accuracy: 100.0%
-- ✅ Target de >80% foi ATINGIDO
+- [OK] Target de >80% foi ATINGIDO
 
 **Recomendação Final:**
 
-❌ **NO-GO** - Query Decomposition precisa de ajustes antes de produção.
+[ERRO] **NO-GO** - Query Decomposition precisa de ajustes antes de produção.
 
 Ajustes recomendados:
 - Ajustar decomposição para gerar sub-queries mais diversas
@@ -104,5 +104,5 @@ Ajustes recomendados:
 
 ---
 
-**Gerado por:** `tests/benchmark_query_decomposition.py`  
+**Gerado por:** `tests/benchmark_query_decomposition.py`
 **Configuração:** Hybrid Search + Cohere Rerank + gpt-4o-mini

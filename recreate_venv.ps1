@@ -1,7 +1,7 @@
 # ===================================================================
 # SCRIPT: Recriar Virtual Environment (venv) do Zero
 # ===================================================================
-# 
+#
 # USO: .\recreate_venv.ps1
 #
 # O que faz:
@@ -77,7 +77,7 @@ Write-Host "[3/4] Criando novo venv..." -ForegroundColor Yellow
 try {
     Write-Host "      Executando: python -m venv venv" -ForegroundColor Gray
     python -m venv venv
-    
+
     if (Test-Path "venv\Scripts\python.exe") {
         Write-Host "      [OK] venv criado com sucesso" -ForegroundColor Green
     } else {
@@ -97,13 +97,13 @@ if (Test-Path "requirements.txt") {
     try {
         Write-Host "      Ativando venv..." -ForegroundColor Gray
         & "venv\Scripts\Activate.ps1"
-        
+
         Write-Host "      Atualizando pip..." -ForegroundColor Gray
         python -m pip install --upgrade pip --quiet
-        
+
         Write-Host "      Instalando requirements.txt (pode demorar 5-10 min)..." -ForegroundColor Gray
         pip install -r requirements.txt
-        
+
         Write-Host "      [OK] Dependências instaladas com sucesso" -ForegroundColor Green
     } catch {
         Write-Host "      [ERRO] Falha ao instalar dependências: $_" -ForegroundColor Red
@@ -130,4 +130,3 @@ Write-Host "   streamlit run app\main.py" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Cyan
 Write-Host ""
-

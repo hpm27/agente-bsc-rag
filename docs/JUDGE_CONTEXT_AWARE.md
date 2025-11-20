@@ -1,12 +1,12 @@
 # Judge Agent Context-Aware
 
-**Data:** Novembro 2025  
-**Versão:** 1.0  
-**Status:** ✅ Implementado
+**Data:** Novembro 2025
+**Versão:** 1.0
+**Status:** [OK] Implementado
 
 ---
 
-## 📋 Visão Geral
+## [EMOJI] Visão Geral
 
 O Judge Agent foi modificado para avaliar respostas de forma **context-aware**, ajustando critérios de avaliação baseado no tipo de conteúdo sendo avaliado (RAG, DIAGNÓSTICO, FERRAMENTAS).
 
@@ -22,17 +22,17 @@ O Judge Agent foi modificado para avaliar respostas de forma **context-aware**, 
 
 ---
 
-## 🎯 Contextos de Avaliação
+## [EMOJI] Contextos de Avaliação
 
 ### 1. **RAG** (Retrieval-Augmented Generation)
 
 **Quando usar:** Respostas geradas com retrieval em documentos BSC indexados
 
 **Critérios aplicados:**
-- ✅ **Citação de fontes ESPERADA** (Fonte, Página)
-- ✅ **Fundamentação em docs ESPERADA** (grounded)
-- ✅ **Detecção de alucinações ATIVA**
-- ✅ **Penalização por falta de fontes** (se quality_score < 0.85)
+- [OK] **Citação de fontes ESPERADA** (Fonte, Página)
+- [OK] **Fundamentação em docs ESPERADA** (grounded)
+- [OK] **Detecção de alucinações ATIVA**
+- [OK] **Penalização por falta de fontes** (se quality_score < 0.85)
 
 **Exemplo de uso:**
 ```python
@@ -45,7 +45,7 @@ judgment = judge.evaluate(
     agent_response="BSC é um sistema... (Fonte: Kaplan & Norton, 1996)",
     retrieved_documents="[Documentos BSC recuperados...]",
     agent_name="RAG Agent",
-    evaluation_context="RAG"  # ← Fontes ESPERADAS
+    evaluation_context="RAG"  # <- Fontes ESPERADAS
 )
 ```
 
@@ -63,11 +63,11 @@ rejected: quality_score < 0.5 OU (is_grounded=False E has_sources=False E qualit
 **Quando usar:** Diagnósticos BSC baseados no perfil do cliente (sem retrieval em docs)
 
 **Critérios aplicados:**
-- ✅ **Qualidade da análise** (coerência, profundidade)
-- ✅ **Relevância ao perfil do cliente**
-- ✅ **Viabilidade das recomendações**
-- ❌ **Citação de fontes NÃO esperada** (não penaliza)
-- ❌ **Fundamentação em docs NÃO esperada** (não penaliza)
+- [OK] **Qualidade da análise** (coerência, profundidade)
+- [OK] **Relevância ao perfil do cliente**
+- [OK] **Viabilidade das recomendações**
+- [ERRO] **Citação de fontes NÃO esperada** (não penaliza)
+- [ERRO] **Fundamentação em docs NÃO esperada** (não penaliza)
 
 **Exemplo de uso:**
 ```python
@@ -75,16 +75,16 @@ judgment = judge.evaluate(
     original_query="Diagnóstico BSC para TechCorp",
     agent_response="""
         EXECUTIVE SUMMARY:
-        Empresa TechCorp apresenta sólido desempenho financeiro mas 
+        Empresa TechCorp apresenta sólido desempenho financeiro mas
         enfrenta desafios em retenção de clientes (churn 15%).
-        
+
         RECOMENDAÇÕES:
         1. [HIGH] Implementar Customer Success estruturado
         2. [MEDIUM] Melhorar onboarding de clientes
     """,
     retrieved_documents="[Perfil cliente: TechCorp, setor tecnologia, 500 funcionários...]",
     agent_name="Diagnostic Agent",
-    evaluation_context="DIAGNOSTIC"  # ← Fontes NÃO esperadas
+    evaluation_context="DIAGNOSTIC"  # <- Fontes NÃO esperadas
 )
 ```
 
@@ -109,14 +109,14 @@ rejected: quality_score < 0.5
 **Status:** Planejado para implementação futura
 
 **Critérios esperados:**
-- ✅ **Estrutura adequada da ferramenta** (ex: matriz SWOT 2x2)
-- ✅ **Citação de fontes ESPERADA** (retrieval em docs BSC)
-- ✅ **Relevância ao contexto do cliente**
-- ✅ **Profundidade da análise**
+- [OK] **Estrutura adequada da ferramenta** (ex: matriz SWOT 2x2)
+- [OK] **Citação de fontes ESPERADA** (retrieval em docs BSC)
+- [OK] **Relevância ao contexto do cliente**
+- [OK] **Profundidade da análise**
 
 ---
 
-## 🔧 API Reference
+## [EMOJI] API Reference
 
 ### `JudgeAgent.evaluate()`
 
@@ -127,11 +127,11 @@ def evaluate(
     agent_response: str,
     retrieved_documents: str,
     agent_name: str = "Unknown Agent",
-    evaluation_context: str = "RAG"  # ← NOVO PARÂMETRO
+    evaluation_context: str = "RAG"  # <- NOVO PARÂMETRO
 ) -> JudgmentResult:
     """
     Avalia resposta de um agente especialista (context-aware).
-    
+
     Args:
         original_query: Pergunta original do usuário
         agent_response: Resposta fornecida pelo agente
@@ -141,7 +141,7 @@ def evaluate(
             - 'RAG': Respostas com retrieval (fontes esperadas) [DEFAULT]
             - 'DIAGNOSTIC': Diagnóstico sem retrieval (fontes não esperadas)
             - 'TOOLS': Ferramentas consultivas (futuro)
-    
+
     Returns:
         JudgmentResult com avaliação completa
     """
@@ -155,17 +155,17 @@ def evaluate_multiple(
     original_query: str,
     agent_responses: List[Dict[str, Any]],
     retrieved_documents: str,
-    evaluation_context: str = "RAG"  # ← NOVO PARÂMETRO
+    evaluation_context: str = "RAG"  # <- NOVO PARÂMETRO
 ) -> List[Dict[str, Any]]:
     """
     Avalia múltiplas respostas (de diferentes agentes).
-    
+
     Args:
         original_query: Pergunta original
         agent_responses: Lista de respostas
         retrieved_documents: Documentos recuperados
         evaluation_context: Contexto da avaliação ('RAG', 'DIAGNOSTIC', 'TOOLS')
-    
+
     Returns:
         Lista de avaliações ordenadas por quality_score
     """
@@ -173,20 +173,20 @@ def evaluate_multiple(
 
 ---
 
-## 📊 Comparação de Critérios
+## [EMOJI] Comparação de Critérios
 
 | Critério | RAG | DIAGNOSTIC | TOOLS (futuro) |
 |----------|-----|------------|----------------|
-| **Citação de fontes** | ✅ OBRIGATÓRIO | ❌ Não esperado | ✅ OBRIGATÓRIO |
-| **Fundamentação em docs** | ✅ OBRIGATÓRIO | ❌ Não esperado | ✅ OBRIGATÓRIO |
-| **Detecção alucinações** | ✅ ATIVA | ❌ N/A | ✅ ATIVA |
-| **Qualidade da análise** | ✅ Avaliada | ✅ **FOCO PRINCIPAL** | ✅ Avaliada |
-| **Relevância ao cliente** | ✅ Avaliada | ✅ **FOCO PRINCIPAL** | ✅ Avaliada |
-| **Penalização por falta de fontes** | ✅ SIM (se score < 0.85) | ❌ **NÃO** | ✅ SIM |
+| **Citação de fontes** | [OK] OBRIGATÓRIO | [ERRO] Não esperado | [OK] OBRIGATÓRIO |
+| **Fundamentação em docs** | [OK] OBRIGATÓRIO | [ERRO] Não esperado | [OK] OBRIGATÓRIO |
+| **Detecção alucinações** | [OK] ATIVA | [ERRO] N/A | [OK] ATIVA |
+| **Qualidade da análise** | [OK] Avaliada | [OK] **FOCO PRINCIPAL** | [OK] Avaliada |
+| **Relevância ao cliente** | [OK] Avaliada | [OK] **FOCO PRINCIPAL** | [OK] Avaliada |
+| **Penalização por falta de fontes** | [OK] SIM (se score < 0.85) | [ERRO] **NÃO** | [OK] SIM |
 
 ---
 
-## 🎓 Exemplos Práticos
+## [EMOJI] Exemplos Práticos
 
 ### Exemplo 1: Diagnóstico BSC (context='DIAGNOSTIC')
 
@@ -219,7 +219,7 @@ judgment = judge.evaluate(
     agent_response=diagnostic,
     retrieved_documents="[Perfil cliente: TechCorp, setor tecnologia, 500 funcionários...]",
     agent_name="Diagnostic Agent",
-    evaluation_context="DIAGNOSTIC"  # ← Fontes NÃO esperadas
+    evaluation_context="DIAGNOSTIC"  # <- Fontes NÃO esperadas
 )
 
 print(f"Score: {judgment.quality_score:.2f}")  # Ex: 0.85
@@ -230,9 +230,9 @@ print(f"Reasoning: {judgment.reasoning}")
 ```
 
 **Resultado esperado:**
-- ✅ **Aprovado** (foco em qualidade da análise, não fontes)
-- ✅ Score alto (0.80-0.90) se análise for coerente
-- ❌ Sem penalização por falta de fontes
+- [OK] **Aprovado** (foco em qualidade da análise, não fontes)
+- [OK] Score alto (0.80-0.90) se análise for coerente
+- [ERRO] Sem penalização por falta de fontes
 
 ---
 
@@ -241,20 +241,20 @@ print(f"Reasoning: {judgment.reasoning}")
 ```python
 # Resposta RAG COM fontes
 rag_response = """
-O Balanced Scorecard (BSC) é um sistema de gestão estratégica desenvolvido por 
-Robert Kaplan e David Norton em 1992 que traduz a visão e estratégia da organização 
+O Balanced Scorecard (BSC) é um sistema de gestão estratégica desenvolvido por
+Robert Kaplan e David Norton em 1992 que traduz a visão e estratégia da organização
 em objetivos mensuráveis organizados em 4 perspectivas balanceadas:
 
-1. **Perspectiva Financeira**: Objetivos financeiros tradicionais como crescimento 
+1. **Perspectiva Financeira**: Objetivos financeiros tradicionais como crescimento
    de receita, lucratividade, ROI (Fonte: Kaplan & Norton, 1996, p. 8-12)
 
-2. **Perspectiva Clientes**: Satisfação, retenção, aquisição e participação de 
+2. **Perspectiva Clientes**: Satisfação, retenção, aquisição e participação de
    mercado (Fonte: Kaplan & Norton, 1996, p. 13-18)
 
-3. **Perspectiva Processos Internos**: Processos críticos que geram valor para 
+3. **Perspectiva Processos Internos**: Processos críticos que geram valor para
    clientes e acionistas (Fonte: Kaplan & Norton, 1996, p. 19-24)
 
-4. **Perspectiva Aprendizado e Crescimento**: Capacidades organizacionais, sistemas 
+4. **Perspectiva Aprendizado e Crescimento**: Capacidades organizacionais, sistemas
    e cultura necessários para inovação (Fonte: Kaplan & Norton, 1996, p. 25-30)
 """
 
@@ -263,7 +263,7 @@ judgment = judge.evaluate(
     agent_response=rag_response,
     retrieved_documents="[Kaplan, R. S., & Norton, D. P. (1996). The Balanced Scorecard...]",
     agent_name="RAG Agent",
-    evaluation_context="RAG"  # ← Fontes ESPERADAS (default)
+    evaluation_context="RAG"  # <- Fontes ESPERADAS (default)
 )
 
 print(f"Score: {judgment.quality_score:.2f}")  # Ex: 0.95
@@ -273,9 +273,9 @@ print(f"is_grounded: {judgment.is_grounded}")  # True
 ```
 
 **Resultado esperado:**
-- ✅ **Aprovado** (fontes citadas adequadamente)
-- ✅ Score alto (0.90-1.0) se bem fundamentado
-- ✅ `has_sources=True`, `is_grounded=True`
+- [OK] **Aprovado** (fontes citadas adequadamente)
+- [OK] Score alto (0.90-1.0) se bem fundamentado
+- [OK] `has_sources=True`, `is_grounded=True`
 
 ---
 
@@ -294,7 +294,7 @@ judgment = judge.evaluate(
     agent_response=rag_response_no_sources,
     retrieved_documents="[Kaplan & Norton, 1996...]",
     agent_name="RAG Agent",
-    evaluation_context="RAG"  # ← Fontes ESPERADAS
+    evaluation_context="RAG"  # <- Fontes ESPERADAS
 )
 
 print(f"Score: {judgment.quality_score:.2f}")  # Ex: 0.65
@@ -305,13 +305,13 @@ print(f"Issues: {judgment.issues}")
 ```
 
 **Resultado esperado:**
-- ⚠️ **Needs improvement** ou **Rejected** (falta de fontes penaliza)
-- ⚠️ Score médio/baixo (0.50-0.70)
-- ❌ `has_sources=False`, issues listam falta de fontes
+- [WARN] **Needs improvement** ou **Rejected** (falta de fontes penaliza)
+- [WARN] Score médio/baixo (0.50-0.70)
+- [ERRO] `has_sources=False`, issues listam falta de fontes
 
 ---
 
-## 🔄 Integração com Workflow
+## [EMOJI] Integração com Workflow
 
 ### Fluxo RAG Tradicional
 
@@ -320,15 +320,15 @@ print(f"Issues: {judgment.issues}")
 
 def judge_evaluation(self, state: BSCState) -> dict[str, Any]:
     """Avalia resposta agregada (RAG tradicional)."""
-    
+
     judgment = self.judge.evaluate(
         original_query=state.query,
         agent_response=state.aggregated_response,
         retrieved_documents="[Documentos recuperados pelos agentes]",
         agent_name="Synthesized Response",
-        evaluation_context="RAG"  # ← Fontes ESPERADAS (default)
+        evaluation_context="RAG"  # <- Fontes ESPERADAS (default)
     )
-    
+
     # ... processar judgment
 ```
 
@@ -339,39 +339,39 @@ def judge_evaluation(self, state: BSCState) -> dict[str, Any]:
 
 async def coordinate_discovery(self, state: BSCState) -> dict[str, Any]:
     """Coordena diagnóstico BSC."""
-    
+
     # Gerar diagnóstico (sem retrieval)
     complete_diagnostic = await diagnostic_agent.run_diagnostic(state)
-    
+
     # Avaliar diagnóstico com Judge (context='DIAGNOSTIC')
     judgment = self.judge.evaluate(
         original_query="Diagnóstico BSC completo",
         agent_response=self._format_diagnostic_for_judge(complete_diagnostic),
         retrieved_documents=f"[Perfil cliente: {state.client_profile.company.name}...]",
         agent_name="Diagnostic Agent",
-        evaluation_context="DIAGNOSTIC"  # ← Fontes NÃO esperadas
+        evaluation_context="DIAGNOSTIC"  # <- Fontes NÃO esperadas
     )
-    
+
     # ... processar judgment
 ```
 
 ---
 
-## ✅ Validação e Testes
+## [OK] Validação e Testes
 
 ### Testes Unitários
 
 Arquivo: `tests/test_judge_context_aware.py`
 
 **Cobertura:**
-- ✅ Context 'DIAGNOSTIC' aceita diagnósticos sem fontes
-- ✅ Context 'DIAGNOSTIC' foca em qualidade da análise
-- ✅ Context 'RAG' exige fontes
-- ✅ Context 'RAG' aprova respostas com fontes
-- ✅ Mesmo conteúdo avaliado diferente em contextos diferentes
-- ✅ Compatibilidade retroativa (default 'RAG')
-- ✅ evaluate_multiple propaga contexto
-- ✅ Smoke tests para todos contextos
+- [OK] Context 'DIAGNOSTIC' aceita diagnósticos sem fontes
+- [OK] Context 'DIAGNOSTIC' foca em qualidade da análise
+- [OK] Context 'RAG' exige fontes
+- [OK] Context 'RAG' aprova respostas com fontes
+- [OK] Mesmo conteúdo avaliado diferente em contextos diferentes
+- [OK] Compatibilidade retroativa (default 'RAG')
+- [OK] evaluate_multiple propaga contexto
+- [OK] Smoke tests para todos contextos
 
 **Executar testes:**
 ```bash
@@ -394,35 +394,35 @@ python examples/judge_context_aware_demo.py
 
 ---
 
-## 📚 Decisões de Design
+## [EMOJI] Decisões de Design
 
 ### Por que Context-Aware ao invés de Separate Prompts?
 
 **Decisão:** Usar 1 método `evaluate()` com parâmetro `evaluation_context`
 
 **Alternativas consideradas:**
-- ❌ **Separate prompts**: Criar `evaluate_diagnostic()`, `evaluate_rag()` → Duplicação de código
-- ❌ **Relaxar critério global**: Mudar Judge para sempre tolerar falta de fontes → Reduz precisão RAG
-- ❌ **Add retrieval ao diagnóstico**: Fazer DiagnosticAgent buscar docs → Muda conceito, latência +3-5s
+- [ERRO] **Separate prompts**: Criar `evaluate_diagnostic()`, `evaluate_rag()` -> Duplicação de código
+- [ERRO] **Relaxar critério global**: Mudar Judge para sempre tolerar falta de fontes -> Reduz precisão RAG
+- [ERRO] **Add retrieval ao diagnóstico**: Fazer DiagnosticAgent buscar docs -> Muda conceito, latência +3-5s
 
 **Trade-offs:**
 | Solução | Complexidade | Precisão | Manutenção | Flexibilidade |
 |---------|--------------|----------|------------|---------------|
-| **Context-Aware** ✅ | Baixa | Alta | Fácil | Alta |
+| **Context-Aware** [OK] | Baixa | Alta | Fácil | Alta |
 | Separate prompts | Média | Alta | Difícil (2x código) | Média |
 | Relaxar critério | Baixa | **Reduz** | Fácil | Baixa |
 | Add retrieval | Muito alta | Alta | Difícil | Baixa |
 
 **Benefícios da solução escolhida:**
-1. ✅ **Baixa complexidade**: 1 parâmetro + ajuste de prompt
-2. ✅ **Alta precisão**: Mantém rigor RAG, relaxa DIAGNOSTIC
-3. ✅ **Flexibilidade**: Fácil adicionar novos contextos (TOOLS, etc.)
-4. ✅ **Compatibilidade**: Default 'RAG' mantém comportamento original
-5. ✅ **Manutenção**: Código centralizado, sem duplicação
+1. [OK] **Baixa complexidade**: 1 parâmetro + ajuste de prompt
+2. [OK] **Alta precisão**: Mantém rigor RAG, relaxa DIAGNOSTIC
+3. [OK] **Flexibilidade**: Fácil adicionar novos contextos (TOOLS, etc.)
+4. [OK] **Compatibilidade**: Default 'RAG' mantém comportamento original
+5. [OK] **Manutenção**: Código centralizado, sem duplicação
 
 ---
 
-## 🎯 Casos de Uso
+## [EMOJI] Casos de Uso
 
 ### Caso 1: Diagnóstico BSC Inicial
 
@@ -460,14 +460,14 @@ python examples/judge_context_aware_demo.py
 
 ---
 
-## 🔮 Roadmap
+## [EMOJI] Roadmap
 
-### Fase 1: Implementado ✅
+### Fase 1: Implementado [OK]
 
-- ✅ Judge context-aware com 'RAG' e 'DIAGNOSTIC'
-- ✅ Testes unitários completos
-- ✅ Demonstração interativa
-- ✅ Documentação completa
+- [OK] Judge context-aware com 'RAG' e 'DIAGNOSTIC'
+- [OK] Testes unitários completos
+- [OK] Demonstração interativa
+- [OK] Documentação completa
 
 ### Fase 2: Próximos Passos (Planejado)
 
@@ -477,13 +477,13 @@ python examples/judge_context_aware_demo.py
 
 ### Fase 3: Futuro
 
-- 🔜 **Context 'REFINEMENT'**: Avaliação de diagnósticos refinados (feedback cliente)
-- 🔜 **Dynamic thresholds**: Ajustar thresholds de aprovação por contexto via config
-- 🔜 **Multi-language**: Suporte a avaliações em múltiplos idiomas
+- [EMOJI] **Context 'REFINEMENT'**: Avaliação de diagnósticos refinados (feedback cliente)
+- [EMOJI] **Dynamic thresholds**: Ajustar thresholds de aprovação por contexto via config
+- [EMOJI] **Multi-language**: Suporte a avaliações em múltiplos idiomas
 
 ---
 
-## 📝 Changelog
+## [EMOJI] Changelog
 
 ### v1.0 - Novembro 2025
 
@@ -501,12 +501,12 @@ python examples/judge_context_aware_demo.py
 - `JudgeAgent.evaluate()`: Cria chain dinamicamente por contexto
 
 **Compatibilidade:**
-- ✅ Compatibilidade retroativa mantida (default 'RAG')
-- ✅ Comportamento original preservado para código existente
+- [OK] Compatibilidade retroativa mantida (default 'RAG')
+- [OK] Comportamento original preservado para código existente
 
 ---
 
-## 🤝 Contribuindo
+## [EMOJI] Contribuindo
 
 Ao adicionar novos contextos de avaliação:
 
@@ -531,10 +531,9 @@ def test_new_context_behavior(judge):
 
 ---
 
-## 📧 Contato
+## [EMOJI] Contato
 
-**Problema identificado por:** Usuário do sistema BSC RAG Agent  
-**Solução implementada por:** AI Agent (Cursor)  
-**Data:** Novembro 2025  
+**Problema identificado por:** Usuário do sistema BSC RAG Agent
+**Solução implementada por:** AI Agent (Cursor)
+**Data:** Novembro 2025
 **Versão:** 1.0
-

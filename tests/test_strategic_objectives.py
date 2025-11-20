@@ -21,21 +21,20 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 
-from src.tools.strategic_objectives import StrategicObjectivesTool
 from src.memory.schemas import (
-    StrategicObjective,
-    StrategicObjectivesFramework,
     CompanyInfo,
-    StrategicContext,
     CompleteDiagnostic,
     DiagnosticResult,
-    Recommendation,
+    KPIDefinition,
     KPIFramework,
-    KPIDefinition
+    Recommendation,
+    StrategicObjective,
+    StrategicObjectivesFramework,
 )
+from src.tools.strategic_objectives import StrategicObjectivesTool
 
 if TYPE_CHECKING:
-    from langchain_core.language_models import BaseLLM
+    pass
 
 
 # ============================================================================
@@ -46,20 +45,20 @@ if TYPE_CHECKING:
 @pytest.fixture
 def mock_llm() -> MagicMock:
     """Mock LLM que retorna lista de StrategicObjective valida usando itertools.cycle.
-    
+
     Usa itertools.cycle para retornar objetivos com perspectiva correta sequencialmente:
-    Financeira → Clientes → Processos Internos → Aprendizado e Crescimento
-    
+    Financeira -> Clientes -> Processos Internos -> Aprendizado e Crescimento
+
     Pattern validado Sessao 19 (KPI Definer mock).
     """
     llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
+
     # Simula structured output que retorna lista de objetivos
     from pydantic import BaseModel
-    
+
     class ObjectivesListOutput(BaseModel):
         objectives: list[dict]
-    
+
     # Define objetivos mock para cada perspectiva (2 objetivos por perspectiva)
     objectives_by_perspective = {
         "Financeira": [
@@ -74,11 +73,11 @@ def mock_llm() -> MagicMock:
                 "timeframe": "12 meses",
                 "success_criteria": [
                     "Margem EBITDA atingir 20% ou superior ao final de 12 meses",
-                    "Crescimento de receita recorrente (ARR) >= 15% year-over-year"
+                    "Crescimento de receita recorrente (ARR) >= 15% year-over-year",
                 ],
                 "related_kpis": ["Margem EBITDA", "Crescimento ARR"],
                 "priority": "Alta",
-                "dependencies": []
+                "dependencies": [],
             },
             {
                 "name": "Reduzir custos operacionais mantendo qualidade",
@@ -91,12 +90,12 @@ def mock_llm() -> MagicMock:
                 "timeframe": "18 meses",
                 "success_criteria": [
                     "Reducao de custos operacionais >= 10% vs baseline atual",
-                    "Manutencao de indicadores de qualidade (NPS >= 70, churn < 5%)"
+                    "Manutencao de indicadores de qualidade (NPS >= 70, churn < 5%)",
                 ],
                 "related_kpis": ["Custos Operacionais", "NPS"],
                 "priority": "Media",
-                "dependencies": []
-            }
+                "dependencies": [],
+            },
         ],
         "Clientes": [
             {
@@ -110,11 +109,11 @@ def mock_llm() -> MagicMock:
                 "timeframe": "18 meses",
                 "success_criteria": [
                     "NPS (Net Promoter Score) atingir 75 pontos ou superior",
-                    "Taxa de resolucao no primeiro contato >= 80%"
+                    "Taxa de resolucao no primeiro contato >= 80%",
                 ],
                 "related_kpis": ["NPS", "Taxa Resolucao Primeiro Contato"],
                 "priority": "Alta",
-                "dependencies": []
+                "dependencies": [],
             },
             {
                 "name": "Aumentar retencao e fidelizacao de clientes",
@@ -127,12 +126,12 @@ def mock_llm() -> MagicMock:
                 "timeframe": "12 meses",
                 "success_criteria": [
                     "Taxa de churn mensal <= 4% (target final)",
-                    "Customer Lifetime Value (LTV) aumentar em 25%"
+                    "Customer Lifetime Value (LTV) aumentar em 25%",
                 ],
                 "related_kpis": ["Taxa Churn", "Customer Lifetime Value"],
                 "priority": "Alta",
-                "dependencies": []
-            }
+                "dependencies": [],
+            },
         ],
         "Processos Internos": [
             {
@@ -146,11 +145,11 @@ def mock_llm() -> MagicMock:
                 "timeframe": "12 meses",
                 "success_criteria": [
                     "Lead time medio de desenvolvimento <= 3 semanas",
-                    "Taxa de automacao de testes >= 80% da cobertura"
+                    "Taxa de automacao de testes >= 80% da cobertura",
                 ],
                 "related_kpis": ["Lead Time Desenvolvimento", "Cobertura Testes"],
                 "priority": "Alta",
-                "dependencies": []
+                "dependencies": [],
             },
             {
                 "name": "Implementar cultura de melhoria continua",
@@ -163,12 +162,12 @@ def mock_llm() -> MagicMock:
                 "timeframe": "18 meses",
                 "success_criteria": [
                     "100% das areas operacionais participam de ciclos kaizen trimestrais",
-                    "Minimo de 50 melhorias implementadas por trimestre (target médio)"
+                    "Minimo de 50 melhorias implementadas por trimestre (target médio)",
                 ],
                 "related_kpis": ["Taxa Participacao Kaizen", "Melhorias Implementadas"],
                 "priority": "Media",
-                "dependencies": []
-            }
+                "dependencies": [],
+            },
         ],
         "Aprendizado e Crescimento": [
             {
@@ -182,11 +181,11 @@ def mock_llm() -> MagicMock:
                 "timeframe": "18 meses",
                 "success_criteria": [
                     "Taxa de retencao de funcionarios >= 90% anualmente",
-                    "Employee Net Promoter Score (eNPS) >= 60 pontos"
+                    "Employee Net Promoter Score (eNPS) >= 60 pontos",
                 ],
                 "related_kpis": ["Taxa Retencao Funcionarios", "eNPS"],
                 "priority": "Alta",
-                "dependencies": []
+                "dependencies": [],
             },
             {
                 "name": "Desenvolver competencias criticas para crescimento",
@@ -199,31 +198,31 @@ def mock_llm() -> MagicMock:
                 "timeframe": "12 meses",
                 "success_criteria": [
                     "100% dos funcionarios completam minimo 40 horas de treinamento/ano",
-                    "Avaliacao de competencias estrategicas media >= 4.0 (escala 1-5)"
+                    "Avaliacao de competencias estrategicas media >= 4.0 (escala 1-5)",
                 ],
                 "related_kpis": ["Horas Treinamento por Funcionario", "Avaliacao Competencias"],
                 "priority": "Media",
-                "dependencies": []
-            }
-        ]
+                "dependencies": [],
+            },
+        ],
     }
-    
+
     # SOLUCAO: itertools.cycle para retornar perspectivas corretas sequencialmente
-    # Tool chama: Financeira → Clientes → Processos → Aprendizado
+    # Tool chama: Financeira -> Clientes -> Processos -> Aprendizado
     perspective_order = [
         "Financeira",
         "Clientes",
         "Processos Internos",
-        "Aprendizado e Crescimento"
+        "Aprendizado e Crescimento",
     ]
     perspective_cycle = cycle(perspective_order)
-    
+
     def mock_invoke_side_effect(prompt: str):
         """Retorna objetivos da proxima perspectiva na sequencia."""
         perspective = next(perspective_cycle)
         objectives = objectives_by_perspective[perspective]
         return ObjectivesListOutput(objectives=objectives)
-    
+
     mock_structured_llm = MagicMock()
     mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
     llm.with_structured_output.return_value = mock_structured_llm
@@ -238,7 +237,7 @@ def valid_company_info() -> CompanyInfo:
         sector="Tecnologia",
         industry="Software as a Service",
         size="média",
-        founded_year=2018
+        founded_year=2018,
     )
 
 
@@ -264,15 +263,15 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
         gaps=[
             "Margens EBITDA baixas (15% vs target 20%)",
             "Falta visibilidade de custos por produto",
-            "CAC (Customer Acquisition Cost) alto"
+            "CAC (Customer Acquisition Cost) alto",
         ],
         opportunities=[
             "Implementar Activity-Based Costing para visibilidade custos",
-            "Otimizar investimentos marketing focando canais com ROI > 3x"
+            "Otimizar investimentos marketing focando canais com ROI > 3x",
         ],
-        priority="HIGH"
+        priority="HIGH",
     )
-    
+
     customer_diag = DiagnosticResult(
         perspective="Clientes",
         current_state=(
@@ -283,15 +282,15 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
         gaps=[
             "Taxa churn mensal de 8% vs target 4%",
             "NPS 60 pontos vs target 75 pontos",
-            "Customer Lifetime Value (LTV) baixo R$ 80K vs target R$ 100K"
+            "Customer Lifetime Value (LTV) baixo R$ 80K vs target R$ 100K",
         ],
         opportunities=[
             "Implementar programa Customer Success dedicado para SMB",
-            "Melhorar processo onboarding com automacao e personalizacao"
+            "Melhorar processo onboarding com automacao e personalizacao",
         ],
-        priority="HIGH"
+        priority="HIGH",
     )
-    
+
     process_diag = DiagnosticResult(
         perspective="Processos Internos",
         current_state=(
@@ -302,15 +301,15 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
         gaps=[
             "Lead time desenvolvimento 6 semanas vs target 3 semanas",
             "Taxa automacao de testes baixa 40% vs target 80%",
-            "Retrabalho frequente por falta QA automatizado"
+            "Retrabalho frequente por falta QA automatizado",
         ],
         opportunities=[
             "Implementar metodologias ageis (Scrum/Kanban) e CI/CD",
-            "Automacao de testes unitarios e integracao (target 80% cobertura)"
+            "Automacao de testes unitarios e integracao (target 80% cobertura)",
         ],
-        priority="MEDIUM"
+        priority="MEDIUM",
     )
-    
+
     learning_diag = DiagnosticResult(
         perspective="Aprendizado e Crescimento",
         current_state=(
@@ -321,15 +320,15 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
         gaps=[
             "Turnover anual 20% vs target 10%",
             "Falta programa estruturado de desenvolvimento carreira",
-            "Remuneracao 10-15% abaixo da media de mercado"
+            "Remuneracao 10-15% abaixo da media de mercado",
         ],
         opportunities=[
             "Criar academia interna de treinamento e certificacoes",
-            "Revisar politica remuneracao alinhando com mercado"
+            "Revisar politica remuneracao alinhando com mercado",
         ],
-        priority="MEDIUM"
+        priority="MEDIUM",
     )
-    
+
     return CompleteDiagnostic(
         financial=financial_diag,
         customer=customer_diag,
@@ -350,8 +349,8 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Contratar Scrum Master experiente",
                     "Treinar equipe em metodologias ageis",
-                    "Implementar CI/CD pipeline robusto"
-                ]
+                    "Implementar CI/CD pipeline robusto",
+                ],
             ),
             Recommendation(
                 title="Criar programa estruturado de retencao de talentos",
@@ -367,8 +366,8 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Mapear competencias e expectativas de carreira",
                     "Revisar politica de remuneracao vs mercado",
-                    "Implementar programa de desenvolvimento continuo"
-                ]
+                    "Implementar programa de desenvolvimento continuo",
+                ],
             ),
             Recommendation(
                 title="Implementar Activity-Based Costing para visibilidade custos",
@@ -384,9 +383,9 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Contratar consultor especializado em ABC Costing",
                     "Mapear processos e atividades atuais (2 meses)",
-                    "Pilotar ABC em 1 linha de produto (3 meses)"
-                ]
-            )
+                    "Pilotar ABC em 1 linha de produto (3 meses)",
+                ],
+            ),
         ],
         executive_summary=(
             "TechCorp Solutions esta em fase de crescimento acelerado com receita crescendo "
@@ -395,7 +394,7 @@ def valid_diagnostic_result() -> CompleteDiagnostic:
             "futuro se nao endereçados estrategicamente atraves de automacao de processos, "
             "melhorias em customer success e programa estruturado de retencao de talentos"
         ),
-        next_phase="APPROVAL_PENDING"
+        next_phase="APPROVAL_PENDING",
     )
 
 
@@ -416,7 +415,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="> 20%",
                 measurement_frequency="trimestral",
                 data_source="Sistema contabil + balanco patrimonial",
-                calculation_formula="(EBITDA / Receita_Total) * 100"
+                calculation_formula="(EBITDA / Receita_Total) * 100",
             ),
             KPIDefinition(
                 name="Crescimento ARR",
@@ -429,7 +428,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="> 15%",
                 measurement_frequency="mensal",
                 data_source="ERP financeiro + CRM (contratos recorrentes)",
-                calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100"
+                calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100",
             ),
             KPIDefinition(
                 name="Custos Operacionais",
@@ -442,8 +441,8 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="< R$ 3 milhoes/mes",
                 measurement_frequency="mensal",
                 data_source="Sistema contabil + centro de custos",
-                calculation_formula="Soma(Pessoal + Infra + Marketing + Vendas)"
-            )
+                calculation_formula="Soma(Pessoal + Infra + Marketing + Vendas)",
+            ),
         ],
         customer_kpis=[
             KPIDefinition(
@@ -457,7 +456,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value=">= 75 pontos",
                 measurement_frequency="trimestral",
                 data_source="Pesquisa NPS automatizada (email + in-app)",
-                calculation_formula="% Promotores (9-10) - % Detratores (0-6)"
+                calculation_formula="% Promotores (9-10) - % Detratores (0-6)",
             ),
             KPIDefinition(
                 name="Taxa Churn",
@@ -470,7 +469,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="<= 4%",
                 measurement_frequency="mensal",
                 data_source="CRM + plataforma de cobranca",
-                calculation_formula="(Clientes_Cancelados / Clientes_Ativos_Inicio_Mes) * 100"
+                calculation_formula="(Clientes_Cancelados / Clientes_Ativos_Inicio_Mes) * 100",
             ),
             KPIDefinition(
                 name="Customer Lifetime Value",
@@ -483,8 +482,8 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="> R$ 100.000",
                 measurement_frequency="trimestral",
                 data_source="CRM + financeiro (receita recorrente + upsells)",
-                calculation_formula="Receita_Media_Mensal / Taxa_Churn_Mensal"
-            )
+                calculation_formula="Receita_Media_Mensal / Taxa_Churn_Mensal",
+            ),
         ],
         process_kpis=[
             KPIDefinition(
@@ -498,7 +497,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="<= 3 semanas",
                 measurement_frequency="semanal",
                 data_source="Jira + GitHub + sistema CI/CD",
-                calculation_formula="Soma(Deploy_Date - Start_Date) / Total_Features"
+                calculation_formula="Soma(Deploy_Date - Start_Date) / Total_Features",
             ),
             KPIDefinition(
                 name="Cobertura Testes",
@@ -511,7 +510,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value=">= 80%",
                 measurement_frequency="semanal",
                 data_source="SonarQube + CI/CD pipeline",
-                calculation_formula="(Linhas_Cobertas / Total_Linhas_Codigo) * 100"
+                calculation_formula="(Linhas_Cobertas / Total_Linhas_Codigo) * 100",
             ),
             KPIDefinition(
                 name="Taxa Participacao Kaizen",
@@ -525,8 +524,8 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value="100%",
                 measurement_frequency="trimestral",
                 data_source="Sistema de gestao de melhorias + planilha tracking",
-                calculation_formula="(Areas_Participantes / Total_Areas_Operacionais) * 100"
-            )
+                calculation_formula="(Areas_Participantes / Total_Areas_Operacionais) * 100",
+            ),
         ],
         learning_kpis=[
             KPIDefinition(
@@ -540,7 +539,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value=">= 90%",
                 measurement_frequency="mensal",
                 data_source="Sistema RH + folha de pagamento",
-                calculation_formula="((Total_Funcionarios - Saidas_12_Meses) / Total_Funcionarios) * 100"
+                calculation_formula="((Total_Funcionarios - Saidas_12_Meses) / Total_Funcionarios) * 100",
             ),
             KPIDefinition(
                 name="eNPS Score (Employee Net Promoter Score)",
@@ -554,7 +553,7 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value=">= 60 pontos",
                 measurement_frequency="trimestral",
                 data_source="Pesquisa eNPS interna anonima",
-                calculation_formula="% Promotores (9-10) - % Detratores (0-6)"
+                calculation_formula="% Promotores (9-10) - % Detratores (0-6)",
             ),
             KPIDefinition(
                 name="Horas Treinamento por Funcionario",
@@ -567,9 +566,9 @@ def valid_kpi_framework() -> KPIFramework:
                 target_value=">= 40 horas/ano",
                 measurement_frequency="trimestral",
                 data_source="Plataforma LMS + planilha tracking treinamentos",
-                calculation_formula="Soma(Horas_Treinamento_Total) / Total_Funcionarios"
-            )
-        ]
+                calculation_formula="Soma(Horas_Treinamento_Total) / Total_Funcionarios",
+            ),
+        ],
     )
 
 
@@ -581,7 +580,7 @@ def valid_kpi_framework() -> KPIFramework:
 def test_create_tool_without_rag(mock_llm):
     """Deve criar StrategicObjectivesTool sem RAG."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     assert tool.llm == mock_llm
     assert tool.use_rag is False
     assert tool.rag_agents is None
@@ -597,7 +596,7 @@ def test_create_tool_with_rag_and_agents(mock_llm):
     """Deve criar StrategicObjectivesTool com RAG e agents."""
     rag_agents = (MagicMock(), MagicMock(), MagicMock(), MagicMock())
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=True, rag_agents=rag_agents)
-    
+
     assert tool.llm == mock_llm
     assert tool.use_rag is True
     assert tool.rag_agents == rag_agents
@@ -609,30 +608,27 @@ def test_create_tool_with_rag_and_agents(mock_llm):
 
 
 def test_define_objectives_without_rag(
-    mock_llm,
-    valid_company_info,
-    valid_strategic_context,
-    valid_diagnostic_result
+    mock_llm, valid_company_info, valid_strategic_context, valid_diagnostic_result
 ):
     """Deve definir objetivos estrategicos sem RAG agents."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     framework = tool.define_objectives(
         company_info=valid_company_info,
         strategic_context=valid_strategic_context,
-        diagnostic_result=valid_diagnostic_result
+        diagnostic_result=valid_diagnostic_result,
     )
-    
+
     # Validar retorno
     assert isinstance(framework, StrategicObjectivesFramework)
     assert framework.total_objectives() > 0
-    
+
     # Validar perspectivas (2 objetivos por perspectiva = 8 total)
     assert len(framework.financial_objectives) == 2
     assert len(framework.customer_objectives) == 2
     assert len(framework.process_objectives) == 2
     assert len(framework.learning_objectives) == 2
-    
+
     # Validar perspectivas corretas
     for obj in framework.financial_objectives:
         assert obj.perspective == "Financeira"
@@ -645,10 +641,7 @@ def test_define_objectives_without_rag(
 
 
 def test_define_objectives_with_rag(
-    mock_llm,
-    valid_company_info,
-    valid_strategic_context,
-    valid_diagnostic_result
+    mock_llm, valid_company_info, valid_strategic_context, valid_diagnostic_result
 ):
     """Deve definir objetivos estrategicos com RAG agents (mocked)."""
     # Mock RAG agents
@@ -660,21 +653,21 @@ def test_define_objectives_with_rag(
     mock_process.invoke.return_value = {"output": "Conhecimento BSC processos..."}
     mock_learning = MagicMock()
     mock_learning.invoke.return_value = {"output": "Conhecimento BSC aprendizado..."}
-    
+
     rag_agents = (mock_financial, mock_customer, mock_process, mock_learning)
-    
+
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=True, rag_agents=rag_agents)
-    
+
     framework = tool.define_objectives(
         company_info=valid_company_info,
         strategic_context=valid_strategic_context,
-        diagnostic_result=valid_diagnostic_result
+        diagnostic_result=valid_diagnostic_result,
     )
-    
+
     # Validar retorno
     assert isinstance(framework, StrategicObjectivesFramework)
     assert framework.total_objectives() == 8  # 2 objetivos por perspectiva
-    
+
     # Validar RAG agents foram chamados (1x cada)
     assert mock_financial.invoke.called
     assert mock_customer.invoke.called
@@ -687,72 +680,66 @@ def test_define_objectives_with_existing_kpis_linkage(
     valid_company_info,
     valid_strategic_context,
     valid_diagnostic_result,
-    valid_kpi_framework
+    valid_kpi_framework,
 ):
     """Deve definir objetivos e vincular com KPIs existentes."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     framework = tool.define_objectives(
         company_info=valid_company_info,
         strategic_context=valid_strategic_context,
         diagnostic_result=valid_diagnostic_result,
-        existing_kpis=valid_kpi_framework
+        existing_kpis=valid_kpi_framework,
     )
-    
+
     # Validar retorno
     assert isinstance(framework, StrategicObjectivesFramework)
     assert framework.total_objectives() == 8
-    
+
     # Validar vinculacao: todos objetivos devem ter related_kpis (mock configurado assim)
     objectives_with_kpis = framework.with_related_kpis()
     assert len(objectives_with_kpis) >= 4  # Pelo menos metade tem KPIs vinculados
 
 
 def test_validates_company_info_required(
-    mock_llm,
-    valid_strategic_context,
-    valid_diagnostic_result
+    mock_llm, valid_strategic_context, valid_diagnostic_result
 ):
     """Deve falhar se company_info nao fornecido."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     with pytest.raises(ValueError, match="company_info obrigatorio"):
         tool.define_objectives(
             company_info=None,
             strategic_context=valid_strategic_context,
-            diagnostic_result=valid_diagnostic_result
+            diagnostic_result=valid_diagnostic_result,
         )
 
 
 def test_validates_strategic_context_required(
-    mock_llm,
-    valid_company_info,
-    valid_diagnostic_result
+    mock_llm, valid_company_info, valid_diagnostic_result
 ):
     """Deve falhar se strategic_context nao fornecido ou vazio."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     with pytest.raises(ValueError, match="strategic_context obrigatorio"):
         tool.define_objectives(
             company_info=valid_company_info,
             strategic_context="   ",  # Apenas espacos
-            diagnostic_result=valid_diagnostic_result
+            diagnostic_result=valid_diagnostic_result,
         )
 
 
 def test_validates_diagnostic_result_required(
-    mock_llm,
-    valid_company_info,
-    valid_strategic_context
+    mock_llm, valid_company_info, valid_strategic_context
 ):
     """Deve falhar se diagnostic_result nao fornecido."""
     tool = StrategicObjectivesTool(llm=mock_llm, use_rag=False)
-    
+
     with pytest.raises(ValueError, match="diagnostic_result obrigatorio"):
         tool.define_objectives(
             company_info=valid_company_info,
             strategic_context=valid_strategic_context,
-            diagnostic_result=None
+            diagnostic_result=None,
         )
 
 
@@ -774,15 +761,15 @@ def test_strategic_objective_validators():
         timeframe="12 meses",
         success_criteria=[
             "Margem EBITDA >= 20% ao final de 12 meses",
-            "Crescimento receita recorrente >= 15% year-over-year"
+            "Crescimento receita recorrente >= 15% year-over-year",
         ],
-        priority="Alta"
+        priority="Alta",
     )
-    
+
     assert obj.name == "Aumentar rentabilidade sustentavel"
     assert obj.perspective == "Financeira"
     assert len(obj.success_criteria) == 2
-    
+
     # name vazio deve falhar
     with pytest.raises(ValidationError):
         StrategicObjective(
@@ -790,9 +777,9 @@ def test_strategic_objective_validators():
             description="Descricao valida com mais de 50 caracteres para passar validacao min_length",
             perspective="Financeira",
             timeframe="12 meses",
-            success_criteria=["Criterio 1 com 20 caracteres", "Criterio 2 com 20 chars"]
+            success_criteria=["Criterio 1 com 20 caracteres", "Criterio 2 com 20 chars"],
         )
-    
+
     # success_criteria com menos de 2 items deve falhar
     with pytest.raises(ValidationError):
         StrategicObjective(
@@ -800,9 +787,9 @@ def test_strategic_objective_validators():
             description="Descricao valida com mais de 50 caracteres para passar validacao min_length",
             perspective="Financeira",
             timeframe="12 meses",
-            success_criteria=["Apenas um criterio com 20 caracteres"]  # Menos de 2
+            success_criteria=["Apenas um criterio com 20 caracteres"],  # Menos de 2
         )
-    
+
     # success_criteria com criterio muito curto deve falhar
     with pytest.raises(ValidationError):
         StrategicObjective(
@@ -812,8 +799,8 @@ def test_strategic_objective_validators():
             timeframe="12 meses",
             success_criteria=[
                 "Criterio 1 valido com mais de 20 caracteres",
-                "Curto"  # Menos de 20 caracteres
-            ]
+                "Curto",  # Menos de 20 caracteres
+            ],
         )
 
 
@@ -826,10 +813,10 @@ def test_strategic_objectives_framework_cross_perspective_validation():
         timeframe="12 meses",
         success_criteria=[
             "Criterio 1 valido com 20 caracteres minimos",
-            "Criterio 2 valido com 20 caracteres tambem"
-        ]
+            "Criterio 2 valido com 20 caracteres tambem",
+        ],
     )
-    
+
     obj_clientes = StrategicObjective(
         name="Objetivo clientes valido",
         description="Descricao completa com mais de 50 caracteres para validacao Pydantic min_length",
@@ -837,24 +824,26 @@ def test_strategic_objectives_framework_cross_perspective_validation():
         timeframe="12 meses",
         success_criteria=[
             "Criterio 1 valido com 20 caracteres minimos",
-            "Criterio 2 valido com 20 caracteres tambem"
-        ]
+            "Criterio 2 valido com 20 caracteres tambem",
+        ],
     )
-    
+
     # Framework valido (objetivos nas perspectivas corretas)
     framework = StrategicObjectivesFramework(
-        financial_objectives=[obj_financeira],
-        customer_objectives=[obj_clientes]
+        financial_objectives=[obj_financeira], customer_objectives=[obj_clientes]
     )
-    
+
     assert len(framework.financial_objectives) == 1
     assert len(framework.customer_objectives) == 1
-    
+
     # Framework invalido (objetivo perspectiva errada)
-    with pytest.raises(ValidationError, match="customer_objectives deve conter apenas objetivos da perspectiva 'Clientes'"):
+    with pytest.raises(
+        ValidationError,
+        match="customer_objectives deve conter apenas objetivos da perspectiva 'Clientes'",
+    ):
         StrategicObjectivesFramework(
             financial_objectives=[],
-            customer_objectives=[obj_financeira]  # Financeira em customer_objectives!
+            customer_objectives=[obj_financeira],  # Financeira em customer_objectives!
         )
 
 
@@ -867,18 +856,18 @@ def test_strategic_objectives_framework_methods():
         timeframe="12 meses",
         success_criteria=["Criterio 1 com 20 chars", "Criterio 2 com 20 chars"],
         related_kpis=["EBITDA"],
-        priority="Alta"
+        priority="Alta",
     )
-    
+
     obj2_fin = StrategicObjective(
         name="Obj financeiro 2",
         description="Descricao com 50+ caracteres para validacao Pydantic min_length obrigatoria",
         perspective="Financeira",
         timeframe="18 meses",
         success_criteria=["Criterio A com 20 chars", "Criterio B com 20 chars"],
-        priority="Media"
+        priority="Media",
     )
-    
+
     obj1_cust = StrategicObjective(
         name="Obj clientes 1",
         description="Descricao com 50+ caracteres para validacao Pydantic min_length obrigatoria",
@@ -886,30 +875,29 @@ def test_strategic_objectives_framework_methods():
         timeframe="12 meses",
         success_criteria=["Criterio X com 20 chars", "Criterio Y com 20 chars"],
         related_kpis=["NPS", "Churn"],
-        priority="Alta"
+        priority="Alta",
     )
-    
+
     framework = StrategicObjectivesFramework(
-        financial_objectives=[obj1_fin, obj2_fin],
-        customer_objectives=[obj1_cust]
+        financial_objectives=[obj1_fin, obj2_fin], customer_objectives=[obj1_cust]
     )
-    
+
     # total_objectives()
     assert framework.total_objectives() == 3
-    
+
     # by_perspective()
     assert len(framework.by_perspective("Financeira")) == 2
     assert len(framework.by_perspective("Clientes")) == 1
     assert len(framework.by_perspective("Processos Internos")) == 0
-    
+
     # by_priority()
     assert len(framework.by_priority("Alta")) == 2
     assert len(framework.by_priority("Media")) == 1
     assert len(framework.by_priority("Baixa")) == 0
-    
+
     # with_related_kpis()
     assert len(framework.with_related_kpis()) == 2  # obj1_fin e obj1_cust tem KPIs
-    
+
     # summary()
     summary = framework.summary()
     assert "3 objetivos estrategicos" in summary
@@ -917,4 +905,3 @@ def test_strategic_objectives_framework_methods():
     assert "Clientes: 1 objetivos" in summary
     assert "Alta: 2 objetivos" in summary
     assert "Media: 1 objetivos" in summary
-

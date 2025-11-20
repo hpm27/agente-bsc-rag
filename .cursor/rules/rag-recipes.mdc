@@ -5,8 +5,8 @@ alwaysApply: false
 
 # 🎯 RAG RECIPES - BSC Project
 
-**Versão:** 1.0  
-**Última Atualização:** 2025-10-14  
+**Versão:** 1.0
+**Última Atualização:** 2025-10-14
 **Recipes Disponíveis:** 3 (Fase MVP + 2A validados)
 
 ---
@@ -206,20 +206,20 @@ from langchain_core.documents import Document
 async def parallel_retrieval_4_agents(query: str) -> List[List[Document]]:
     """
     Retrieval paralelo nas 4 perspectivas BSC.
-    
+
     Economiza: ~49s por query (3.34x mais rápido que sequencial)
     """
     from src.agents.financial_agent import FinancialAgent
     from src.agents.customer_agent import CustomerAgent
     from src.agents.process_agent import ProcessAgent
     from src.agents.learning_agent import LearningAgent
-    
+
     # Inicializar agentes (singleton ou injeção de dependência)
     financial = FinancialAgent()
     customer = CustomerAgent()
     process = ProcessAgent()
     learning = LearningAgent()
-    
+
     # Criar tasks assíncronas
     tasks = [
         financial.retrieve_async(query),
@@ -227,17 +227,17 @@ async def parallel_retrieval_4_agents(query: str) -> List[List[Document]]:
         process.retrieve_async(query),
         learning.retrieve_async(query)
     ]
-    
+
     # Executar em paralelo
     results = await asyncio.gather(*tasks)
-    
+
     # results = [
     #     [Doc1_financial, Doc2_financial, ...],
     #     [Doc1_customer, Doc2_customer, ...],
     #     [Doc1_process, Doc2_process, ...],
     #     [Doc1_learning, Doc2_learning, ...]
     # ]
-    
+
     return results
 
 # Uso em código síncrono
@@ -294,12 +294,12 @@ async def parallel_with_fusion(query: str, k: int = 10) -> List[Document]:
     """
     # Retrieval paralelo
     results_list = await parallel_retrieval_4_agents(query)
-    
+
     # Reciprocal Rank Fusion (k=60)
     from src.rag.retriever import BSCRetriever
     retriever = BSCRetriever()
     fused_docs = retriever._reciprocal_rank_fusion(results_list, k=60)
-    
+
     # Top-k final
     return fused_docs[:k]
 
@@ -340,35 +340,35 @@ import os
 class CachedEmbeddings:
     """
     Cache de embeddings em disco para reutilização.
-    
+
     Economia: 949x speedup (1.17s → 0.00123s)
     Dataset: 7.965 chunks = ~9.300s economizados
     """
-    
+
     def __init__(self, base_embeddings, cache_dir="data/contextual_cache"):
         self.base_embeddings = base_embeddings
         self.cache_dir = cache_dir
         os.makedirs(cache_dir, exist_ok=True)
-    
+
     def embed_query(self, text: str) -> List[float]:
         """Embed query com cache em disco."""
         # Cache key: hash MD5 do texto
         cache_key = hashlib.md5(text.encode()).hexdigest()
         cache_file = f"{self.cache_dir}/{cache_key}.npy"
-        
+
         # Verificar cache
         if os.path.exists(cache_file):
             embedding = np.load(cache_file).tolist()
             return embedding  # 949x mais rápido!
-        
+
         # Cache miss: gerar embedding
         embedding = self.base_embeddings.embed_query(text)
-        
+
         # Salvar em cache
         np.save(cache_file, np.array(embedding))
-        
+
         return embedding
-    
+
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """Embed múltiplos documentos com cache."""
         return [self.embed_query(text) for text in texts]
@@ -452,21 +452,21 @@ from collections import OrderedDict
 
 class LRUCachedEmbeddings(CachedEmbeddings):
     """Cache com LRU eviction (limita tamanho)."""
-    
+
     def __init__(self, base_embeddings, cache_dir, max_items=10000):
         super().__init__(base_embeddings, cache_dir)
         self.max_items = max_items
         self.access_log = OrderedDict()
-    
+
     def embed_query(self, text: str) -> List[float]:
         cache_key = hashlib.md5(text.encode()).hexdigest()
-        
+
         # Atualizar access log (LRU)
         if cache_key in self.access_log:
             self.access_log.move_to_end(cache_key)
         else:
             self.access_log[cache_key] = True
-        
+
         # Eviction: remover mais antigo se exceder limite
         if len(self.access_log) > self.max_items:
             oldest_key = next(iter(self.access_log))
@@ -474,7 +474,7 @@ class LRUCachedEmbeddings(CachedEmbeddings):
             cache_file = f"{self.cache_dir}/{oldest_key}.npy"
             if os.path.exists(cache_file):
                 os.remove(cache_file)
-        
+
         # Retrieve from cache or generate
         return super().embed_query(text)
 ```
@@ -532,17 +532,17 @@ import asyncio
 async def optimized_retrieval_workflow(query: str, k: int = 10):
     """
     Combina RECIPE-001 + RECIPE-002 + RECIPE-003.
-    
+
     - Hybrid search multilíngue
     - Retrieval paralelo 4 agentes
     - Embedding cache
     - Cohere re-ranking
-    
+
     ROI: 3.34x speedup + cache hits + precision 75%
     """
     # RECIPE-003: Embeddings cached (automático)
     retriever = BSCRetriever()  # Já usa CachedEmbeddings internamente
-    
+
     # RECIPE-002: Parallel retrieval
     tasks = [
         retriever.retrieve_async(query, perspective="financial", k=k),
@@ -551,13 +551,13 @@ async def optimized_retrieval_workflow(query: str, k: int = 10):
         retriever.retrieve_async(query, perspective="learning", k=k)
     ]
     results_list = await asyncio.gather(*tasks)
-    
+
     # RECIPE-001: RRF fusion + Cohere re-rank
     fused_docs = retriever._reciprocal_rank_fusion(results_list, k=60)
-    
+
     reranker = CohereReranker()
     final_docs = reranker.rerank(query, fused_docs, top_n=k)
-    
+
     return final_docs
 
 # Uso
@@ -660,6 +660,6 @@ docs = asyncio.run(optimized_retrieval_workflow(query, k=10))
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Status:** ✅ TIER 2 COMPLETO - 3 recipes validados  
+**Última Atualização:** 2025-10-14
+**Status:** ✅ TIER 2 COMPLETO - 3 recipes validados
 **Próxima Revisão:** Após Fase 2B.1 (adicionar recipes de Self-RAG/CRAG)

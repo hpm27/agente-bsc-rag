@@ -2,7 +2,7 @@
 
 Test Strategy:
 - Fixtures válidas com margem +20% (PONTO 15.4)
-- Alinhamento score ↔ priority_level (validator crítico)
+- Alinhamento score <-> priority_level (validator crítico)
 - Ranks únicos e sequenciais (validator crítico)
 - 15+ testes unitários (FASE 3.12 requirement)
 
@@ -10,26 +10,18 @@ Created: 2025-10-27 (FASE 3.12)
 """
 
 import pytest
-from datetime import datetime, timezone
 from pydantic import ValidationError
 
-from src.memory.schemas import (
-    PrioritizationCriteria,
-    PrioritizedItem,
-    PrioritizationMatrix
-)
-from src.tools.prioritization_matrix import PrioritizationMatrixTool
+from src.memory.schemas import PrioritizationCriteria, PrioritizationMatrix, PrioritizedItem
 from src.prompts.prioritization_prompts import (
-    build_company_context,
     build_items_context,
-    format_prioritization_matrix_for_display
+    format_prioritization_matrix_for_display,
 )
-from config.settings import settings
-
 
 # ============================================================================
 # FIXTURES - PRIORITIZATION CRITERIA
 # ============================================================================
+
 
 @pytest.fixture
 def valid_criteria_high_impact():
@@ -38,7 +30,7 @@ def valid_criteria_high_impact():
         strategic_impact=85.0,  # Alto impacto
         implementation_effort=30.0,  # Baixo esforço (invertido = 70)
         urgency=70.0,  # Média-alta urgência
-        strategic_alignment=90.0  # Alinhamento alto
+        strategic_alignment=90.0,  # Alinhamento alto
     )
 
 
@@ -49,7 +41,7 @@ def valid_criteria_medium_impact():
         strategic_impact=60.0,  # Médio impacto
         implementation_effort=50.0,  # Médio esforço (invertido = 50)
         urgency=55.0,  # Média urgência
-        strategic_alignment=65.0  # Alinhamento médio
+        strategic_alignment=65.0,  # Alinhamento médio
     )
 
 
@@ -60,7 +52,7 @@ def valid_criteria_low_impact():
         strategic_impact=30.0,  # Baixo impacto
         implementation_effort=80.0,  # Alto esforço (invertido = 20)
         urgency=20.0,  # Baixa urgência
-        strategic_alignment=25.0  # Alinhamento baixo
+        strategic_alignment=25.0,  # Alinhamento baixo
     )
 
 
@@ -68,10 +60,11 @@ def valid_criteria_low_impact():
 # FIXTURES - PRIORITIZED ITEM
 # ============================================================================
 
+
 @pytest.fixture
 def valid_prioritized_item_high(valid_criteria_high_impact):
     """Fixture PrioritizedItem válida - HIGH priority (score 50-74).
-    
+
     CRÍTICO: priority_level='HIGH' DEVE alinhar com final_score no range 50-74.
     """
     return PrioritizedItem(
@@ -83,7 +76,7 @@ def valid_prioritized_item_high(valid_criteria_high_impact):
         criteria=valid_criteria_high_impact,
         final_score=72.0,  # HIGH range (50-74)
         priority_level="HIGH",  # ALINHADO com score 72.0
-        rank=1
+        rank=1,
     )
 
 
@@ -99,7 +92,7 @@ def valid_prioritized_item_critical(valid_criteria_high_impact):
         criteria=valid_criteria_high_impact,
         final_score=85.0,  # CRITICAL range (75-100)
         priority_level="CRITICAL",  # ALINHADO com score 85.0
-        rank=1
+        rank=1,
     )
 
 
@@ -115,7 +108,7 @@ def valid_prioritized_item_medium(valid_criteria_medium_impact):
         criteria=valid_criteria_medium_impact,
         final_score=40.0,  # MEDIUM range (25-49)
         priority_level="MEDIUM",  # ALINHADO com score 40.0
-        rank=2
+        rank=2,
     )
 
 
@@ -131,7 +124,7 @@ def valid_prioritized_item_low(valid_criteria_low_impact):
         criteria=valid_criteria_low_impact,
         final_score=15.0,  # LOW range (0-24)
         priority_level="LOW",  # ALINHADO com score 15.0
-        rank=3
+        rank=3,
     )
 
 
@@ -139,40 +132,40 @@ def valid_prioritized_item_low(valid_criteria_low_impact):
 # FIXTURES - PRIORITIZATION MATRIX
 # ============================================================================
 
+
 @pytest.fixture
 def valid_prioritization_matrix(
-    valid_prioritized_item_high,
-    valid_prioritized_item_medium,
-    valid_prioritized_item_low
+    valid_prioritized_item_high, valid_prioritized_item_medium, valid_prioritized_item_low
 ):
     """Fixture PrioritizationMatrix válida com 3 items (ranks únicos e sequenciais 1, 2, 3).
-    
+
     CRÍTICO: Ranks DEVEM ser únicos e sequenciais (1, 2, 3).
     """
     # Ajustar ranks para serem sequenciais
     valid_prioritized_item_high.rank = 1
     valid_prioritized_item_medium.rank = 2
     valid_prioritized_item_low.rank = 3
-    
+
     return PrioritizationMatrix(
         items=[
             valid_prioritized_item_high,
             valid_prioritized_item_medium,
-            valid_prioritized_item_low
+            valid_prioritized_item_low,
         ],
         prioritization_context="Priorização objetivos estratégicos Q1 2025 - TechCorp Software",  # 71 chars (min=20, margem +255%)
         weights_config={
             "impact_weight": 0.40,
             "effort_weight": 0.30,
             "urgency_weight": 0.15,
-            "alignment_weight": 0.15
-        }
+            "alignment_weight": 0.15,
+        },
     )
 
 
 # ============================================================================
 # TESTES - PRIORITIZATION CRITERIA
 # ============================================================================
+
 
 def test_prioritization_criteria_valid(valid_criteria_high_impact):
     """Teste 1: PrioritizationCriteria válida aceita valores 0-100."""
@@ -184,7 +177,7 @@ def test_prioritization_criteria_valid(valid_criteria_high_impact):
 
 def test_prioritization_criteria_calculate_score(valid_criteria_high_impact):
     """Teste 2: calculate_score() calcula corretamente com pesos padrão.
-    
+
     Formula: (85*0.4) + ((100-30)*0.3) + (70*0.15) + (90*0.15)
              = 34 + 21 + 10.5 + 13.5 = 79.0
     """
@@ -198,7 +191,7 @@ def test_prioritization_criteria_calculate_score_custom_weights(valid_criteria_h
         impact_weight=0.50,  # Aumentar peso impacto
         effort_weight=0.25,
         urgency_weight=0.15,
-        alignment_weight=0.10
+        alignment_weight=0.10,
     )
     # (85*0.5) + ((100-30)*0.25) + (70*0.15) + (90*0.10)
     # = 42.5 + 17.5 + 10.5 + 9 = 79.5
@@ -208,18 +201,15 @@ def test_prioritization_criteria_calculate_score_custom_weights(valid_criteria_h
 def test_prioritization_criteria_invalid_weights_sum():
     """Teste 4: calculate_score() rejeita pesos que não somam 1.0."""
     criteria = PrioritizationCriteria(
-        strategic_impact=80.0,
-        implementation_effort=40.0,
-        urgency=60.0,
-        strategic_alignment=70.0
+        strategic_impact=80.0, implementation_effort=40.0, urgency=60.0, strategic_alignment=70.0
     )
-    
+
     with pytest.raises(ValueError, match="Pesos devem somar 1.0"):
         criteria.calculate_score(
             impact_weight=0.50,
             effort_weight=0.30,  # Soma = 0.95 (não 1.0)
             urgency_weight=0.10,
-            alignment_weight=0.05
+            alignment_weight=0.05,
         )
 
 
@@ -230,21 +220,22 @@ def test_prioritization_criteria_invalid_values_out_of_range():
             strategic_impact=120.0,  # INVÁLIDO (> 100)
             implementation_effort=30.0,
             urgency=70.0,
-            strategic_alignment=90.0
+            strategic_alignment=90.0,
         )
-    
+
     with pytest.raises(ValidationError):
         PrioritizationCriteria(
             strategic_impact=80.0,
             implementation_effort=-10.0,  # INVÁLIDO (< 0)
             urgency=70.0,
-            strategic_alignment=90.0
+            strategic_alignment=90.0,
         )
 
 
 # ============================================================================
 # TESTES - PRIORITIZED ITEM
 # ============================================================================
+
 
 def test_prioritized_item_valid(valid_prioritized_item_high):
     """Teste 6: PrioritizedItem válido aceita todos os campos obrigatórios."""
@@ -267,13 +258,13 @@ def test_prioritized_item_priority_level_matches_score_high():
             strategic_impact=70.0,
             implementation_effort=40.0,
             urgency=60.0,
-            strategic_alignment=75.0
+            strategic_alignment=75.0,
         ),
         final_score=65.0,  # HIGH range
         priority_level="HIGH",  # ALINHADO
-        rank=1
+        rank=1,
     )
-    
+
     assert item.priority_level == "HIGH"
     assert 50 <= item.final_score < 75
 
@@ -291,11 +282,11 @@ def test_prioritized_item_priority_level_mismatch_score():
                 strategic_impact=70.0,
                 implementation_effort=40.0,
                 urgency=60.0,
-                strategic_alignment=75.0
+                strategic_alignment=75.0,
             ),
             final_score=65.0,  # HIGH range (50-74)
             priority_level="CRITICAL",  # DESALINHADO (deveria ser HIGH)
-            rank=1
+            rank=1,
         )
 
 
@@ -311,13 +302,13 @@ def test_prioritized_item_is_critical_method():
             strategic_impact=90.0,
             implementation_effort=20.0,
             urgency=80.0,
-            strategic_alignment=95.0
+            strategic_alignment=95.0,
         ),
         final_score=85.0,  # CRITICAL range (75-100)
         priority_level="CRITICAL",
-        rank=1
+        rank=1,
     )
-    
+
     assert item.is_critical() is True
     assert item.is_high_or_critical() is True
 
@@ -334,13 +325,13 @@ def test_prioritized_item_is_high_or_critical_method():
             strategic_impact=70.0,
             implementation_effort=40.0,
             urgency=60.0,
-            strategic_alignment=65.0
+            strategic_alignment=65.0,
         ),
         final_score=60.0,  # HIGH range
         priority_level="HIGH",
-        rank=1
+        rank=1,
     )
-    
+
     assert item_high.is_high_or_critical() is True
     assert item_high.is_critical() is False
 
@@ -358,11 +349,11 @@ def test_prioritized_item_invalid_title_too_short():
                 strategic_impact=70.0,
                 implementation_effort=40.0,
                 urgency=60.0,
-                strategic_alignment=70.0
+                strategic_alignment=70.0,
             ),
             final_score=65.0,
             priority_level="HIGH",
-            rank=1
+            rank=1,
         )
 
 
@@ -379,17 +370,18 @@ def test_prioritized_item_invalid_description_too_short():
                 strategic_impact=70.0,
                 implementation_effort=40.0,
                 urgency=60.0,
-                strategic_alignment=70.0
+                strategic_alignment=70.0,
             ),
             final_score=65.0,
             priority_level="HIGH",
-            rank=1
+            rank=1,
         )
 
 
 # ============================================================================
 # TESTES - PRIORITIZATION MATRIX
 # ============================================================================
+
 
 def test_prioritization_matrix_valid(valid_prioritization_matrix):
     """Teste 13: PrioritizationMatrix válida aceita lista de items com ranks únicos."""
@@ -399,43 +391,44 @@ def test_prioritization_matrix_valid(valid_prioritization_matrix):
 
 
 def test_prioritization_matrix_unique_ranks_validator(
-    valid_prioritized_item_high,
-    valid_prioritized_item_medium
+    valid_prioritized_item_high, valid_prioritized_item_medium
 ):
     """Teste 14: VALIDATOR unique_ranks rejeita ranks duplicados."""
     # Criar items com ranks duplicados (1, 1 - INVÁLIDO)
     valid_prioritized_item_high.rank = 1
     valid_prioritized_item_medium.rank = 1  # DUPLICADO
-    
+
     with pytest.raises(ValidationError, match="Ranks devem ser únicos e sequenciais"):
         PrioritizationMatrix(
             items=[valid_prioritized_item_high, valid_prioritized_item_medium],
-            prioritization_context="Priorização teste ranks duplicados Q1 2025"
+            prioritization_context="Priorização teste ranks duplicados Q1 2025",
         )
 
 
 def test_prioritization_matrix_sequential_ranks_validator(
-    valid_prioritized_item_high,
-    valid_prioritized_item_medium,
-    valid_prioritized_item_low
+    valid_prioritized_item_high, valid_prioritized_item_medium, valid_prioritized_item_low
 ):
     """Teste 15: VALIDATOR unique_ranks rejeita ranks não-sequenciais."""
     # Criar items com ranks não-sequenciais (1, 2, 5 - INVÁLIDO, deveria ser 1, 2, 3)
     valid_prioritized_item_high.rank = 1
     valid_prioritized_item_medium.rank = 2
     valid_prioritized_item_low.rank = 5  # NÃO-SEQUENCIAL (gap: 3, 4 ausentes)
-    
+
     with pytest.raises(ValidationError, match="Ranks devem ser únicos e sequenciais"):
         PrioritizationMatrix(
-            items=[valid_prioritized_item_high, valid_prioritized_item_medium, valid_prioritized_item_low],
-            prioritization_context="Priorização teste ranks não-sequenciais Q1 2025"
+            items=[
+                valid_prioritized_item_high,
+                valid_prioritized_item_medium,
+                valid_prioritized_item_low,
+            ],
+            prioritization_context="Priorização teste ranks não-sequenciais Q1 2025",
         )
 
 
 def test_prioritization_matrix_top_n_method(valid_prioritization_matrix):
     """Teste 16: top_n() retorna top N items ordenados por rank."""
     top_2 = valid_prioritization_matrix.top_n(2)
-    
+
     assert len(top_2) == 2
     assert top_2[0].rank == 1  # Primeiro item (rank mais baixo = mais prioritário)
     assert top_2[1].rank == 2  # Segundo item
@@ -444,7 +437,7 @@ def test_prioritization_matrix_top_n_method(valid_prioritization_matrix):
 def test_prioritization_matrix_by_priority_level_method(valid_prioritization_matrix):
     """Teste 17: by_priority_level() filtra items por priority_level."""
     high_items = valid_prioritization_matrix.by_priority_level("HIGH")
-    
+
     assert len(high_items) == 1
     assert high_items[0].priority_level == "HIGH"
 
@@ -452,7 +445,7 @@ def test_prioritization_matrix_by_priority_level_method(valid_prioritization_mat
 def test_prioritization_matrix_by_perspective_method(valid_prioritization_matrix):
     """Teste 18: by_perspective() filtra items por perspectiva BSC."""
     clientes_items = valid_prioritization_matrix.by_perspective("Clientes")
-    
+
     assert len(clientes_items) == 1
     assert clientes_items[0].perspective == "Clientes"
 
@@ -471,25 +464,21 @@ def test_prioritization_matrix_is_balanced_method():
                 strategic_impact=70.0,
                 implementation_effort=40.0,
                 urgency=60.0,
-                strategic_alignment=70.0
+                strategic_alignment=70.0,
             ),
             final_score=65.0,
             priority_level="HIGH",
-            rank=i+1
+            rank=i + 1,
         )
-        for i, perspective in enumerate([
-            "Financeira",
-            "Clientes",
-            "Processos Internos",
-            "Aprendizado e Crescimento"
-        ])
+        for i, perspective in enumerate(
+            ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
+        )
     ]
-    
+
     matrix = PrioritizationMatrix(
-        items=items,
-        prioritization_context="Priorização teste balanceamento Q1 2025"
+        items=items, prioritization_context="Priorização teste balanceamento Q1 2025"
     )
-    
+
     assert matrix.is_balanced() is True
     assert matrix.total_items == 4
 
@@ -497,7 +486,7 @@ def test_prioritization_matrix_is_balanced_method():
 def test_prioritization_matrix_summary_method(valid_prioritization_matrix):
     """Teste 20: summary() gera resumo executivo estruturado."""
     summary = valid_prioritization_matrix.summary()
-    
+
     assert "Matriz de Priorização: 3 items priorizados" in summary
     assert "CRITICAL" in summary or "HIGH" in summary  # Contém distribuição prioridades
     assert "Top 3 Prioridades:" in summary
@@ -507,7 +496,7 @@ def test_prioritization_matrix_summary_method(valid_prioritization_matrix):
 def test_format_prioritization_matrix_for_display(valid_prioritization_matrix):
     """Teste 21: format_prioritization_matrix_for_display() formata matriz amigavelmente."""
     formatted = format_prioritization_matrix_for_display(valid_prioritization_matrix)
-    
+
     assert "MATRIZ DE PRIORIZAÇÃO BSC" in formatted
     assert "RESUMO EXECUTIVO:" in formatted
     assert "ITEMS PRIORIZADOS" in formatted
@@ -517,17 +506,26 @@ def test_format_prioritization_matrix_for_display(valid_prioritization_matrix):
 def test_build_items_context():
     """Teste 22: build_items_context() formata lista de items para prompt."""
     items = [
-        {"id": "obj_001", "type": "strategic_objective", "title": "Aumentar NPS",
-         "description": "Melhorar experiência cliente", "perspective": "Clientes"},
-        {"id": "obj_002", "type": "action_item", "title": "Reduzir custos",
-         "description": "Otimizar processos", "perspective": "Financeira"}
+        {
+            "id": "obj_001",
+            "type": "strategic_objective",
+            "title": "Aumentar NPS",
+            "description": "Melhorar experiência cliente",
+            "perspective": "Clientes",
+        },
+        {
+            "id": "obj_002",
+            "type": "action_item",
+            "title": "Reduzir custos",
+            "description": "Otimizar processos",
+            "perspective": "Financeira",
+        },
     ]
-    
+
     context = build_items_context(items)
-    
+
     assert "Total de 2 items a priorizar" in context
     assert "Aumentar NPS" in context
     assert "Reduzir custos" in context
     assert "Clientes" in context
     assert "Financeira" in context
-

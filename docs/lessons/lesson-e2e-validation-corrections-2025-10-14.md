@@ -1,25 +1,25 @@
 # Lição Aprendida: Correções de Validação E2E
 
-**Data:** 14 de Outubro de 2025  
-**Contexto:** Validação E2E completa da Fase 2A (22 testes)  
+**Data:** 14 de Outubro de 2025
+**Contexto:** Validação E2E completa da Fase 2A (22 testes)
 **Resultado:** 3 correções críticas implementadas
 
 ---
 
-## 📋 RESUMO EXECUTIVO
+## [EMOJI] RESUMO EXECUTIVO
 
 Durante a validação E2E completa da Fase 2A, identificamos e corrigimos **3 issues** que inicialmente causavam 2 testes falhando:
 
-1. ✅ **Query Translator** - Warning de detecção de idioma em queries técnicas BSC
-2. ✅ **test_parallel_agent_execution** - Threshold irrealista (60s)
-3. ✅ **test_latency_percentiles** - P95 threshold muito otimista (180s)
+1. [OK] **Query Translator** - Warning de detecção de idioma em queries técnicas BSC
+2. [OK] **test_parallel_agent_execution** - Threshold irrealista (60s)
+3. [OK] **test_latency_percentiles** - P95 threshold muito otimista (180s)
 
-**Tempo de Investigação + Correção:** ~30 minutos  
+**Tempo de Investigação + Correção:** ~30 minutos
 **ROI:** 100% testes E2E passando, validação completa Fase 2A
 
 ---
 
-## 🔍 ISSUE 1: Warning de Detecção de Idioma
+## [EMOJI] ISSUE 1: Warning de Detecção de Idioma
 
 ### **Problema**
 
@@ -34,7 +34,7 @@ WARNING | src.rag.query_translator:expand_query:164 - [WARN] Idioma desconhecido
 **Causa Raiz:**
 1. Keywords limitadas (19 termos) não capturavam vocabulário BSC
 2. Substring matching causava falsos positivos
-   - Exemplo: "financial" casava com "financeiros" → Empate PT=1, EN=1 → "other"
+   - Exemplo: "financial" casava com "financeiros" -> Empate PT=1, EN=1 -> "other"
 3. Warning sem contexto (não mostrava qual query)
 
 ### **Correção Implementada**
@@ -42,7 +42,7 @@ WARNING | src.rag.query_translator:expand_query:164 - [WARN] Idioma desconhecido
 ```python
 # src/rag/query_translator.py
 
-# 1. Expandiu keywords BSC (19 → 27)
+# 1. Expandiu keywords BSC (19 -> 27)
 pt_keywords = [
     # ... keywords base ...
     "perspectiva", "perspectivas", "criar", "desenvolver", "medir",
@@ -66,9 +66,9 @@ logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumin
 ### **Validação**
 
 **Teste com 10 queries:**
-- ✅ 100% accuracy (10/10 corretas)
-- ✅ Warnings apenas em casos realmente ambíguos
-- ✅ Logs informativos com contexto
+- [OK] 100% accuracy (10/10 corretas)
+- [OK] Warnings apenas em casos realmente ambíguos
+- [OK] Logs informativos com contexto
 
 **Antes:**
 ```
@@ -84,14 +84,14 @@ logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumin
 
 ### **Impacto**
 
-- ✅ Elimina warnings desnecessários em logs
-- ✅ Detecção robusta de termos técnicos BSC
-- ✅ Debugging facilitado (logs com contexto)
-- ✅ Fallback inteligente (PT-BR em contexto brasileiro)
+- [OK] Elimina warnings desnecessários em logs
+- [OK] Detecção robusta de termos técnicos BSC
+- [OK] Debugging facilitado (logs com contexto)
+- [OK] Fallback inteligente (PT-BR em contexto brasileiro)
 
 ---
 
-## 🔍 ISSUE 2: test_parallel_agent_execution - Threshold Irrealista
+## [EMOJI] ISSUE 2: test_parallel_agent_execution - Threshold Irrealista
 
 ### **Problema**
 
@@ -114,7 +114,7 @@ assert execution_time < 60, f"Paralelização esperada, mas levou {execution_tim
 
 **Breakdown:**
 - Routing: ~3s
-- **Agents (paralelos)**: 65.27s ✅
+- **Agents (paralelos)**: 65.27s [OK]
 - **Synthesis**: 77.36s (sequencial, LLM único)
 - **Judge**: 9.70s (sequencial)
 - **Total workflow**: 158.65s
@@ -124,7 +124,7 @@ assert execution_time < 60, f"Paralelização esperada, mas levou {execution_tim
 ### **Correção**
 
 ```python
-# Threshold ajustado de 60s → 200s
+# Threshold ajustado de 60s -> 200s
 
 # Workflow completo: routing (~3s) + agents paralelos (~60-70s) + synthesis (~70-80s) + judge (~10s)
 # Total esperado: ~150-180s com paralelização
@@ -137,18 +137,18 @@ if num_perspectives >= 3:
 ### **Validação**
 
 **Teste isolado:**
-- ✅ 158.65s < 200s → **PASSOU**
-- ✅ Speedup agents: 3.7x (240s sequencial → 65s paralelo)
+- [OK] 158.65s < 200s -> **PASSOU**
+- [OK] Speedup agents: 3.7x (240s sequencial -> 65s paralelo)
 
 ### **Impacto**
 
-- ✅ Teste reflete realidade (workflow completo, não só agents)
-- ✅ Paralelização validada e preservada
-- ✅ Threshold realista permite queries complexas
+- [OK] Teste reflete realidade (workflow completo, não só agents)
+- [OK] Paralelização validada e preservada
+- [OK] Threshold realista permite queries complexas
 
 ---
 
-## 🔍 ISSUE 3: test_latency_percentiles - P95 Otimista
+## [EMOJI] ISSUE 3: test_latency_percentiles - P95 Otimista
 
 ### **Problema**
 
@@ -161,9 +161,9 @@ assert p95 < 180, f"P95 latency muito alta: {p95:.2f}s (esperado <180s)"
 
 ### **Métricas Reais (8 queries)**
 
-- Mean: 97.39s ✅
-- P50: 74.84s ✅ (<90s)
-- P95: 230.18s ❌ (>180s)
+- Mean: 97.39s [OK]
+- P50: 74.84s [OK] (<90s)
+- P95: 230.18s [ERRO] (>180s)
 - P99: 230.18s
 
 ### **Investigação**
@@ -181,7 +181,7 @@ assert p95 < 180, f"P95 latency muito alta: {p95:.2f}s (esperado <180s)"
 ### **Correção**
 
 ```python
-# P95 threshold ajustado de 180s → 240s (4 min)
+# P95 threshold ajustado de 180s -> 240s (4 min)
 
 # Queries complexas com 4 agentes + decomposition + synthesis + judge podem levar 3-4 min
 assert p95 < 240, f"P95 latency muito alta: {p95:.2f}s (esperado <240s)"
@@ -190,24 +190,24 @@ assert p95 < 240, f"P95 latency muito alta: {p95:.2f}s (esperado <240s)"
 ### **Validação**
 
 **Teste isolado:**
-- ✅ P50: 74.84s < 90s → **PASSOU**
-- ✅ P95: 230.18s < 240s → **PASSOU**
+- [OK] P50: 74.84s < 90s -> **PASSOU**
+- [OK] P95: 230.18s < 240s -> **PASSOU**
 
 ### **Impacto**
 
-- ✅ Threshold reflete queries complexas da Fase 2A
-- ✅ P50 excelente (75s) para queries moderadas
-- ✅ Permite edge cases sem falsos negativos
+- [OK] Threshold reflete queries complexas da Fase 2A
+- [OK] P50 excelente (75s) para queries moderadas
+- [OK] Permite edge cases sem falsos negativos
 
 ---
 
-## 🎓 APRENDIZADOS-CHAVE
+## [EMOJI] APRENDIZADOS-CHAVE
 
 ### **1. Testes Devem Refletir Realidade Operacional**
 
-**❌ Armadilha:** Thresholds baseados em estimativas teóricas.
+**[ERRO] Armadilha:** Thresholds baseados em estimativas teóricas.
 
-**✅ Melhor Prática:**
+**[OK] Melhor Prática:**
 - Executar testes, medir valores reais
 - Adicionar margem de segurança (10-20%)
 - Revisar thresholds quando arquitetura muda
@@ -218,9 +218,9 @@ assert p95 < 240, f"P95 latency muito alta: {p95:.2f}s (esperado <240s)"
 
 ### **2. Word Boundaries São Essenciais em Detecção de Idioma**
 
-**❌ Problema:** `if kw in text_lower` → "financial" casa com "financeiros"
+**[ERRO] Problema:** `if kw in text_lower` -> "financial" casa com "financeiros"
 
-**✅ Solução:** `if re.search(r'\b' + re.escape(kw) + r'\b', text_lower)`
+**[OK] Solução:** `if re.search(r'\b' + re.escape(kw) + r'\b', text_lower)`
 
 **ROI:** Elimina 100% dos falsos positivos por substring.
 
@@ -249,13 +249,13 @@ if has_pt_suffixes:
 
 ### **4. Logs com Contexto Facilitam Debugging 100x**
 
-**❌ Antes:**
+**[ERRO] Antes:**
 ```python
 logger.warning(f"[WARN] Idioma desconhecido, assumindo PT-BR")
 ```
 **Problema:** Impossível saber qual query causou warning.
 
-**✅ Depois:**
+**[OK] Depois:**
 ```python
 logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumindo PT-BR como fallback")
 ```
@@ -266,8 +266,8 @@ logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumin
 ### **5. Paralelização Tem Limites Naturais**
 
 **Validado:**
-- ✅ Agents executam em paralelo (4 simultâneos)
-- ✅ Speedup real: 3.7x (não 4x devido a overhead)
+- [OK] Agents executam em paralelo (4 simultâneos)
+- [OK] Speedup real: 3.7x (não 4x devido a overhead)
 
 **Sequencial por necessidade:**
 - Synthesis precisa aguardar todos agents
@@ -278,9 +278,9 @@ logger.warning(f"[DETECT] Idioma ambíguo para query '{query[:50]}...' - Assumin
 
 ---
 
-## 🔧 ANTIPADRÕES IDENTIFICADOS
+## [EMOJI] ANTIPADRÕES IDENTIFICADOS
 
-### **❌ Antipadrão 1: Threshold Baseado em Componente Isolado**
+### **[ERRO] Antipadrão 1: Threshold Baseado em Componente Isolado**
 
 **Erro:**
 ```python
@@ -296,7 +296,7 @@ assert workflow_time < 200  # routing + agents + synthesis + judge
 
 ---
 
-### **❌ Antipadrão 2: Substring Matching em Keywords**
+### **[ERRO] Antipadrão 2: Substring Matching em Keywords**
 
 **Erro:**
 ```python
@@ -310,7 +310,7 @@ pt_count = sum(1 for kw in pt_keywords if re.search(r'\b' + re.escape(kw) + r'\b
 
 ---
 
-### **❌ Antipadrão 3: Logs Sem Contexto**
+### **[ERRO] Antipadrão 3: Logs Sem Contexto**
 
 **Erro:**
 ```python
@@ -324,7 +324,7 @@ logger.warning(f"Idioma ambíguo (PT={pt_count}, EN={en_count}) para '{query[:50
 
 ---
 
-## 📊 MÉTRICAS DE TEMPO
+## [EMOJI] MÉTRICAS DE TEMPO
 
 | Atividade | Tempo |
 |-----------|-------|
@@ -338,7 +338,7 @@ logger.warning(f"Idioma ambíguo (PT={pt_count}, EN={en_count}) para '{query[:50
 
 ---
 
-## ✅ CHECKLIST DE VALIDAÇÃO
+## [OK] CHECKLIST DE VALIDAÇÃO
 
 Para validações E2E futuras:
 
@@ -353,7 +353,7 @@ Para validações E2E futuras:
 
 ---
 
-## 🔗 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 - `docs/history/E2E_VALIDATION_FASE_2A_COMPLETA.md` - Relatório completo
 - `src/rag/query_translator.py` - Correções de detecção de idioma
@@ -361,6 +361,5 @@ Para validações E2E futuras:
 
 ---
 
-**Economiza:** 30-60 minutos em validações E2E futuras  
+**Economiza:** 30-60 minutos em validações E2E futuras
 **Evita:** Falsos negativos em testes por thresholds irrealistas
-

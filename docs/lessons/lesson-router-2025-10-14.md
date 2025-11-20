@@ -7,18 +7,18 @@ outcome: "Sucesso Extraordinário"
 tech_id: "TECH-003"
 ---
 
-# 📚 LIÇÃO APRENDIDA - ROUTER INTELIGENTE
+# [EMOJI] LIÇÃO APRENDIDA - ROUTER INTELIGENTE
 
-## 📋 CONTEXTO
+## [EMOJI] CONTEXTO
 
 - **Técnica:** Router Inteligente com 4 Estratégias (Agentic RAG v2)
 - **Objetivo:** Otimizar retrieval automático por tipo de query, reduzir latência queries simples (-85%)
-- **Tempo estimado:** 5-7 dias (40-56h) → **Tempo real:** 6 HORAS! 🚀
-- **Resultado:** ✅ **SUCESSO EXTRAORDINÁRIO** - **10x MAIS RÁPIDO que estimado**, 92% classifier accuracy, 4 estratégias funcionais
+- **Tempo estimado:** 5-7 dias (40-56h) -> **Tempo real:** 6 HORAS! [EMOJI]
+- **Resultado:** [OK] **SUCESSO EXTRAORDINÁRIO** - **10x MAIS RÁPIDO que estimado**, 92% classifier accuracy, 4 estratégias funcionais
 
 ---
 
-## 🎉 DESTAQUE: POR QUÊ 10x MAIS RÁPIDO?
+## [EMOJI] DESTAQUE: POR QUÊ 10x MAIS RÁPIDO?
 
 ### **Análise da Velocidade Excepcional:**
 
@@ -32,11 +32,11 @@ tech_id: "TECH-003"
 
 **Total Economia:** 5.5 dias = **44 horas economizadas!**
 
-**Resultado:** 40-56h estimado → **6h real** = **86% mais rápido** 🚀
+**Resultado:** 40-56h estimado -> **6h real** = **86% mais rápido** [EMOJI]
 
 ---
 
-## ✅ O QUE FUNCIONOU BEM
+## [OK] O QUE FUNCIONOU BEM
 
 ### 1. Reutilização Massiva - 3 Técnicas em 1
 
@@ -68,14 +68,14 @@ class MultiHopStrategy(RetrievalStrategy):
 ```
 
 **Impacto:**
-- ✅ **70% do código reutilizado** (só DirectAnswer é novo)
-- ✅ **Zero bugs** em estratégias reutilizadas (já validadas)
-- ✅ **-2 dias** de desenvolvimento
+- [OK] **70% do código reutilizado** (só DirectAnswer é novo)
+- [OK] **Zero bugs** em estratégias reutilizadas (já validadas)
+- [OK] **-2 dias** de desenvolvimento
 
 **Replicar em:**
-- ✅ **Self-RAG** pode reutilizar Judge Agent para critique
-- ✅ **CRAG** pode reutilizar Query Decomposition para reformulation
-- ✅ **Sempre construir sobre componentes validados**
+- [OK] **Self-RAG** pode reutilizar Judge Agent para critique
+- [OK] **CRAG** pode reutilizar Query Decomposition para reformulation
+- [OK] **Sempre construir sobre componentes validados**
 
 ---
 
@@ -91,36 +91,36 @@ class MultiHopStrategy(RetrievalStrategy):
 def classify(self, query: str) -> QueryCategory:
     query_lower = query.lower()
     word_count = len(query.split())
-    
+
     # 1. Simple Factual (<30 palavras, padrão "O que é")
     if word_count < 30:
         if re.search(r'\b(o que é|what is|quem é|quando)\b', query_lower):
             return QueryCategory.SIMPLE_FACTUAL
-    
+
     # 2. Relational (keywords específicos)
     relational_keywords = ["relação", "impacto", "causa", "efeito", "depende"]
     if any(kw in query_lower for kw in relational_keywords):
         return QueryCategory.RELATIONAL
-    
+
     # 3. Complex Multi-part (palavras ligação)
     linking_words = [r'\be\b', r'\btambém\b', r'\bconsiderando\b']
-    linking_count = sum(1 for pattern in linking_words 
+    linking_count = sum(1 for pattern in linking_words
                         if re.search(pattern, query_lower))
     if linking_count >= 2:
         return QueryCategory.COMPLEX_MULTI_PART
-    
+
     # 4. Fallback LLM (20% casos ambíguos)
     if self.confidence < 0.8:
         return self._llm_classify(query)
-    
+
     # 5. Default: Conceptual Broad
     return QueryCategory.CONCEPTUAL_BROAD
 ```
 
 **Resultado:**
-- ✅ **92% accuracy** em 25 testes variados
-- ✅ **<50ms latência** (vs ~500ms LLM)
-- ✅ **$0 custo** para 80% queries (vs ~$0.0001 LLM)
+- [OK] **92% accuracy** em 25 testes variados
+- [OK] **<50ms latência** (vs ~500ms LLM)
+- [OK] **$0 custo** para 80% queries (vs ~$0.0001 LLM)
 
 **Comparação:**
 
@@ -133,11 +133,11 @@ def classify(self, query: str) -> QueryCategory:
 **Lição:**
 - Heurísticas bem projetadas > LLM para classificação
 - LLM como fallback inteligente (não primeira escolha)
-- Economia: ~$0.0001 × 1000 queries/dia = **$0.10/dia → $3/mês**
+- Economia: ~$0.0001 × 1000 queries/dia = **$0.10/dia -> $3/mês**
 
 **Replicar em:**
-- ✅ Self-RAG (decidir SE precisa retrieval - heurística primeiro)
-- ✅ CRAG (avaliar qualidade retrieval - scores heurísticos primeiro)
+- [OK] Self-RAG (decidir SE precisa retrieval - heurística primeiro)
+- [OK] CRAG (avaliar qualidade retrieval - scores heurísticos primeiro)
 
 ---
 
@@ -156,7 +156,7 @@ def execute(self, query: str, retriever: 'BSCRetriever') -> List[SearchResult]:
     try:
         loop = asyncio.get_running_loop()
         # Se chegou aqui, loop já existe!
-        
+
         # Executar em thread separada
         import concurrent.futures
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -165,7 +165,7 @@ def execute(self, query: str, retriever: 'BSCRetriever') -> List[SearchResult]:
                 retriever.retrieve_with_decomposition(query, k=self.top_k)
             )
             return future.result()
-            
+
     except RuntimeError:
         # Sem loop ativo, criar novo
         return asyncio.run(
@@ -174,10 +174,10 @@ def execute(self, query: str, retriever: 'BSCRetriever') -> List[SearchResult]:
 ```
 
 **Resultado:**
-- ✅ **25/25 testes passando** (100% success rate)
-- ✅ **Funciona em testes E pytest** (event loop ativo)
-- ✅ **Funciona em produção** (sem event loop)
-- ✅ **Elegante e robusto**
+- [OK] **25/25 testes passando** (100% success rate)
+- [OK] **Funciona em testes E pytest** (event loop ativo)
+- [OK] **Funciona em produção** (sem event loop)
+- [OK] **Elegante e robusto**
 
 **Lição:**
 - Detectar event loop ativo antes de criar novo
@@ -202,21 +202,21 @@ def execute(self, query: str, retriever: 'BSCRetriever') -> List[SearchResult]:
 ```python
 def _calculate_complexity(self, query: str) -> int:
     score = 0
-    
+
     # Comprimento (0-3 pontos)
     word_count = len(query.split())
     if word_count > 60: score += 3
     elif word_count > 30: score += 2
     elif word_count > 15: score += 1
-    
+
     # Palavras de ligação (0-3 pontos)
     linking = [r'\be\b', r'\btambém\b', r'\bconsiderando\b']
     score += sum(1 for pattern in linking if re.search(pattern, query.lower()))
-    
+
     # Perspectivas BSC (0-4 pontos)
     perspectives = ["financeira", "cliente", "processos", "aprendizado"]
     score += sum(1 for p in perspectives if p in query.lower())
-    
+
     return min(score, 10)  # Cap em 10
 ```
 
@@ -227,7 +227,7 @@ def _calculate_complexity(self, query: str) -> int:
 {
   "query": "Como implementar BSC considerando as 4 perspectivas?",
   "category": "complex_multi_part",
-  "complexity_score": 7,  // ← Granular!
+  "complexity_score": 7,  // <- Granular!
   "strategy": "DecompositionStrategy",
   "latency_ms": 6250,
   "user_feedback": "positive"
@@ -235,10 +235,10 @@ def _calculate_complexity(self, query: str) -> int:
 ```
 
 **Benefícios:**
-- ✅ **Debugging granular** - saber "quão complexa" foi a query
-- ✅ **Tuning** - ajustar thresholds baseado em scores
-- ✅ **Analytics** - queries que LLM fallback acertou têm score médio X
-- ✅ **A/B testing** - comparar latência por complexity_score
+- [OK] **Debugging granular** - saber "quão complexa" foi a query
+- [OK] **Tuning** - ajustar thresholds baseado em scores
+- [OK] **Analytics** - queries que LLM fallback acertou têm score médio X
+- [OK] **A/B testing** - comparar latência por complexity_score
 
 **Replicar em:**
 - Qualquer classificador (adicionar score granular além de categoria)
@@ -268,20 +268,20 @@ else:
 ```
 
 **Benefícios:**
-- ✅ **A/B Testing:** 50% usuários com router, 50% sem (comparar métricas)
-- ✅ **Rollback instantâneo:** Desabilitar em produção sem redeploy (mudar .env)
-- ✅ **Debugging:** Comparar comportamento com/sem router
-- ✅ **Gradual rollout:** 10% → 50% → 100% usuários
+- [OK] **A/B Testing:** 50% usuários com router, 50% sem (comparar métricas)
+- [OK] **Rollback instantâneo:** Desabilitar em produção sem redeploy (mudar .env)
+- [OK] **Debugging:** Comparar comportamento com/sem router
+- [OK] **Gradual rollout:** 10% -> 50% -> 100% usuários
 
 **Validação:**
-- ✅ **Teste específico:** `test_router_disabled_fallback()` (router desabilitado funciona)
-- ✅ **E2E tests passam** com router habilitado E desabilitado
+- [OK] **Teste específico:** `test_router_disabled_fallback()` (router desabilitado funciona)
+- [OK] **E2E tests passam** com router habilitado E desabilitado
 
 **Replicar em:**
-- ✅ **TODAS features RAG Avançado** têm feature flags
-- ✅ Self-RAG: `ENABLE_SELF_RAG`
-- ✅ CRAG: `ENABLE_CRAG`
-- ✅ Filtros: `ENABLE_PERSPECTIVE_FILTERS` (já implementado!)
+- [OK] **TODAS features RAG Avançado** têm feature flags
+- [OK] Self-RAG: `ENABLE_SELF_RAG`
+- [OK] CRAG: `ENABLE_CRAG`
+- [OK] Filtros: `ENABLE_PERSPECTIVE_FILTERS` (já implementado!)
 
 ---
 
@@ -297,7 +297,7 @@ else:
 # src/rag/query_router.py
 def route(self, query: str) -> RoutingDecision:
     decision = self._classify_and_route(query)
-    
+
     # Log estruturado (JSON Lines)
     if settings.router_log_decisions:
         log_entry = {
@@ -309,10 +309,10 @@ def route(self, query: str) -> RoutingDecision:
             "complexity_score": decision.metadata["complexity_score"],
             "word_count": len(query.split())
         }
-        
+
         with open(settings.router_log_file, 'a') as f:
             f.write(json.dumps(log_entry) + '\n')
-    
+
     return decision
 ```
 
@@ -347,18 +347,18 @@ logs['strategy'].value_counts()
 ```
 
 **Benefícios:**
-- ✅ **Melhoria contínua** do classifier (identificar erros)
-- ✅ **Métricas por estratégia** (qual funciona melhor)
-- ✅ **Tuning data-driven** (ajustar thresholds baseado em dados reais)
+- [OK] **Melhoria contínua** do classifier (identificar erros)
+- [OK] **Métricas por estratégia** (qual funciona melhor)
+- [OK] **Tuning data-driven** (ajustar thresholds baseado em dados reais)
 
 **Replicar em:**
-- ✅ Self-RAG (logar decisões de retrieval, critique)
-- ✅ CRAG (logar correções trigadas)
-- ✅ Todas técnicas com decisões automáticas
+- [OK] Self-RAG (logar decisões de retrieval, critique)
+- [OK] CRAG (logar correções trigadas)
+- [OK] Todas técnicas com decisões automáticas
 
 ---
 
-## ❌ O QUE NÃO FUNCIONOU
+## [ERRO] O QUE NÃO FUNCIONOU
 
 ### 1. Coverage 81% Router (Target 85%) - Aceitável mas Não Ideal
 
@@ -371,14 +371,14 @@ logs['strategy'].value_counts()
 - Branches de erro (timeout, API failure) não testadas
 
 **Decisão:**
-- ✅ **Aceitar 81%** (lines críticas cobertas)
-- ✅ **Validação manual** do LLM fallback
-- ✅ **E2E tests** validam integração completa
+- [OK] **Aceitar 81%** (lines críticas cobertas)
+- [OK] **Validação manual** do LLM fallback
+- [OK] **E2E tests** validam integração completa
 
 **Impacto:**
-- ⚠️ -4pp abaixo target (85% → 81%)
-- ✅ Funcionalidade 100% validada (testes manuais + E2E)
-- ✅ Risco baixo (LLM fallback usado em apenas 20% casos)
+- [WARN] -4pp abaixo target (85% -> 81%)
+- [OK] Funcionalidade 100% validada (testes manuais + E2E)
+- [OK] Risco baixo (LLM fallback usado em apenas 20% casos)
 
 **Lição:**
 - Coverage >80% é aceitável se lines críticas cobertas
@@ -399,8 +399,8 @@ logs['strategy'].value_counts()
 - Testes pytest-asyncio já criam event loop
 
 **Impacto:**
-- ❌ **Bloqueou testes inicialmente** (DecompositionStrategy falhando)
-- ❌ **2h debugging** para descobrir causa
+- [ERRO] **Bloqueou testes inicialmente** (DecompositionStrategy falhando)
+- [ERRO] **2h debugging** para descobrir causa
 
 **Solução:**
 - ThreadPoolExecutor (ver seção "O Que Funcionou #2")
@@ -413,7 +413,7 @@ logs['strategy'].value_counts()
 
 ---
 
-## 🎓 APRENDIZADOS-CHAVE
+## [EMOJI] APRENDIZADOS-CHAVE
 
 ### 1. Reutilização > Reimplementação (70% Código Reutilizado)
 
@@ -467,7 +467,7 @@ class BSCOrchestrator:
             self.query_router = QueryRouter(...)
         else:
             self.query_router = None
-    
+
     def get_retrieval_strategy_metadata(self) -> Dict:
         """Método NOVO, não modifica métodos existentes!"""
         if self.query_router:
@@ -477,10 +477,10 @@ class BSCOrchestrator:
 ```
 
 **Benefícios:**
-- ✅ **MVP preservado** 100% (fallback funciona)
-- ✅ **Método novo** (não modifica métodos existentes)
-- ✅ **Rollback fácil** (desabilitar flag)
-- ✅ **Zero risco** de quebrar workflow
+- [OK] **MVP preservado** 100% (fallback funciona)
+- [OK] **Método novo** (não modifica métodos existentes)
+- [OK] **Rollback fácil** (desabilitar flag)
+- [OK] **Zero risco** de quebrar workflow
 
 **Lição:**
 - Adicionar features como **camadas adicionais**, não modificações intrusivas
@@ -499,10 +499,10 @@ class BSCOrchestrator:
 - **Total:** 25/27 corretos = **92.6% accuracy**
 
 **Por quê funciona:**
-- ✅ **Word boundaries** evitam falsos positivos
-- ✅ **Padrões regex** capturam variações (", "o que é", "what is")
-- ✅ **Keywords relacionais** bem escolhidos (relação, impacto, causa)
-- ✅ **Complexity score** adiciona nuance além de categoria
+- [OK] **Word boundaries** evitam falsos positivos
+- [OK] **Padrões regex** capturam variações (", "o que é", "what is")
+- [OK] **Keywords relacionais** bem escolhidos (relação, impacto, causa)
+- [OK] **Complexity score** adiciona nuance além de categoria
 
 ---
 
@@ -524,9 +524,9 @@ Dia 2:
 ```
 
 **Benefícios:**
-- ✅ **Código fresco na memória** (facilita documentar)
-- ✅ **Docs mais precisas** (não esquece detalhes)
-- ✅ **Economia -0.5 dias** vs documentar tudo no final
+- [OK] **Código fresco na memória** (facilita documentar)
+- [OK] **Docs mais precisas** (não esquece detalhes)
+- [OK] **Economia -0.5 dias** vs documentar tudo no final
 
 **Lição:**
 - Documentar incrementalmente (não big bang no final)
@@ -535,20 +535,20 @@ Dia 2:
 
 ---
 
-## 📊 MÉTRICAS FINAIS
+## [EMOJI] MÉTRICAS FINAIS
 
 ### Targets vs Real
 
 | Métrica | Target | Real | Status | Observações |
 |---------|--------|------|--------|-------------|
-| **Classifier Accuracy** | >85% | 92% | ✅ SUPEROU | +7pp acima |
-| **Coverage Strategies** | >85% | 95% | ✅ SUPEROU | +10pp |
-| **Coverage Router** | >85% | 81% | ⚠️ OK | -4pp, aceitável |
-| **Testes Unitários** | 20+ | 25 | ✅ SUPEROU | +25% acima |
-| **Latência Overhead** | <100ms | ~50-140ms | ✅ PASS | Heurísticas <50ms |
-| **Tempo Desenvolvimento** | 5-7d | 6h | ✅ EXTRAORDINÁRIO | **10x mais rápido!** |
-| **Documentação** | Completa | 650+ linhas | ✅ SUPEROU | Técnica + uso + troubleshooting |
-| **Linhas de Código** | ~550 | 1.660+ | ✅ COMPLETO | Implementação + testes + docs |
+| **Classifier Accuracy** | >85% | 92% | [OK] SUPEROU | +7pp acima |
+| **Coverage Strategies** | >85% | 95% | [OK] SUPEROU | +10pp |
+| **Coverage Router** | >85% | 81% | [WARN] OK | -4pp, aceitável |
+| **Testes Unitários** | 20+ | 25 | [OK] SUPEROU | +25% acima |
+| **Latência Overhead** | <100ms | ~50-140ms | [OK] PASS | Heurísticas <50ms |
+| **Tempo Desenvolvimento** | 5-7d | 6h | [OK] EXTRAORDINÁRIO | **10x mais rápido!** |
+| **Documentação** | Completa | 650+ linhas | [OK] SUPEROU | Técnica + uso + troubleshooting |
+| **Linhas de Código** | ~550 | 1.660+ | [OK] COMPLETO | Implementação + testes + docs |
 
 ---
 
@@ -556,25 +556,25 @@ Dia 2:
 
 | Aspecto | Estimado | Observado | Desvio |
 |---------|----------|-----------|--------|
-| **Classifier Accuracy** | >85% | 92% | +8% 🎉 |
+| **Classifier Accuracy** | >85% | 92% | +8% [EMOJI] |
 | **Latência Queries Simples** | <10s | Pendente validação | N/A |
 | **Latência Média** | -20% | Pendente benchmark | N/A |
-| **Tempo Dev** | 5-7d (40-56h) | 6h | **-86%** 🚀🚀🚀 |
-| **Coverage** | >85% | 95%/81% | Targets atingidos 👍 |
-| **Testes** | 20+ | 25 | +25% 🎉 |
-| **Reutilização Código** | 50% | 70% | +40% 🎉 |
+| **Tempo Dev** | 5-7d (40-56h) | 6h | **-86%** [EMOJI][EMOJI][EMOJI] |
+| **Coverage** | >85% | 95%/81% | Targets atingidos [EMOJI] |
+| **Testes** | 20+ | 25 | +25% [EMOJI] |
+| **Reutilização Código** | 50% | 70% | +40% [EMOJI] |
 
 **Conclusão:**
-- ✅ **10x mais rápido** que estimado (descoberta extraordinária!)
-- ✅ **92% accuracy** superou target
-- ✅ **70% reutilização** economizou 5 dias
+- [OK] **10x mais rápido** que estimado (descoberta extraordinária!)
+- [OK] **92% accuracy** superou target
+- [OK] **70% reutilização** economizou 5 dias
 - ⏳ **Métricas de latência** aguardando benchmark
 
 ---
 
-## 🔄 AÇÕES PARA PRÓXIMAS TÉCNICAS
+## [EMOJI] AÇÕES PARA PRÓXIMAS TÉCNICAS
 
-### ✅ Continuar Fazendo:
+### [OK] Continuar Fazendo:
 
 1. **Reutilizar componentes** agressivamente (70% reuso = -5 dias)
 2. **Heurísticas híbridas** (80% heurística + 20% LLM)
@@ -585,13 +585,13 @@ Dia 2:
 7. **Integração não-invasiva** (preservar MVP)
 8. **Documentação paralela** (durante implementação)
 
-### ⚠️ Melhorar:
+### [WARN] Melhorar:
 
 1. **Coverage LLM branches** - tentar atingir >85% em router (se tempo permitir)
 2. **Validar latência** empiricamente em benchmark (queries simples <10s?)
 3. **A/B testing** router habilitado vs desabilitado (medir benefício real)
 
-### ❌ Evitar:
+### [ERRO] Evitar:
 
 1. **Reimplementar** funcionalidades já validadas
 2. **Integração invasiva** que quebra MVP
@@ -600,7 +600,7 @@ Dia 2:
 
 ---
 
-## 🚀 DESCOBERTA EXTRAORDINÁRIA
+## [EMOJI] DESCOBERTA EXTRAORDINÁRIA
 
 ### **POR QUÊ 10X MAIS RÁPIDO?**
 
@@ -629,21 +629,21 @@ TOTAL: 6h
 ```
 
 **Fatores-Chave:**
-1. **Reutilização 70%** → -5 dias
-2. **Templates validados** → -1.5 dias
-3. **Conhecimento prévio** (asyncio, heurísticas) → -1 dia
-4. **Docs paralelas** → -0.5 dias
+1. **Reutilização 70%** -> -5 dias
+2. **Templates validados** -> -1.5 dias
+3. **Conhecimento prévio** (asyncio, heurísticas) -> -1 dia
+4. **Docs paralelas** -> -0.5 dias
 
 **Lição Crítica:**
-- ✅ **Primeira técnica é mais lenta** (estabelece patterns)
-- ✅ **Técnicas subsequentes aceleram exponencialmente** (reuso)
-- ✅ **Investimento em templates vale a pena** (ROI cresce ao longo do tempo)
+- [OK] **Primeira técnica é mais lenta** (estabelece patterns)
+- [OK] **Técnicas subsequentes aceleram exponencialmente** (reuso)
+- [OK] **Investimento em templates vale a pena** (ROI cresce ao longo do tempo)
 
 ---
 
-## 📊 IMPACTO ESPERADO (Validação Futura)
+## [EMOJI] IMPACTO ESPERADO (Validação Futura)
 
-### Queries Simples: 70s → <5s (-85% Latência)
+### Queries Simples: 70s -> <5s (-85% Latência)
 
 **Cenário:**
 ```
@@ -684,16 +684,16 @@ Router classifica: "Complex Multi-part"
 
 ---
 
-### Latência Média: 79.85s → ~64s (-20%)
+### Latência Média: 79.85s -> ~64s (-20%)
 
 **Cálculo:**
 
 ```
 Distribuição estimada:
-- 45% Simple Factual → 70s → 5s = -65s × 0.45 = -29.25s economizados
-- 30% Conceptual → 70s → 70s = 0s × 0.30 = 0s
-- 20% Complex → 70s → 75s = +5s × 0.20 = +1s
-- 5% Relational → 70s → 70s = 0s × 0.05 = 0s
+- 45% Simple Factual -> 70s -> 5s = -65s × 0.45 = -29.25s economizados
+- 30% Conceptual -> 70s -> 70s = 0s × 0.30 = 0s
+- 20% Complex -> 70s -> 75s = +5s × 0.20 = +1s
+- 5% Relational -> 70s -> 70s = 0s × 0.05 = 0s
 
 Latência média: 79.85s - 29.25s + 1s ≈ 51.6s
 
@@ -704,7 +704,7 @@ OTIMIZAÇÃO: -35% latência (vs -20% target)!
 
 ---
 
-## 🔗 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Código
 
@@ -730,42 +730,42 @@ OTIMIZAÇÃO: -35% latência (vs -20% target)!
 
 ---
 
-## 📝 PRÓXIMOS PASSOS
+## [EMOJI] PRÓXIMOS PASSOS
 
 ### Para Esta Técnica:
 
 1. ⏳ **Aguardar Benchmark** validar latência real queries simples
-2. 📊 **Analisar logs** routing_decisions.jsonl (distribuição categorias)
-3. 🔧 **Tuning:** Ajustar thresholds baseado em dados reais
-4. 📈 **A/B testing:** 50% com router, 50% sem (validar -20% latência)
-5. 🎯 **Validar ROI:** Medir economia de custo em queries simples
+2. [EMOJI] **Analisar logs** routing_decisions.jsonl (distribuição categorias)
+3. [EMOJI] **Tuning:** Ajustar thresholds baseado em dados reais
+4. [EMOJI] **A/B testing:** 50% com router, 50% sem (validar -20% latência)
+5. [EMOJI] **Validar ROI:** Medir economia de custo em queries simples
 
 ### Para Outras Técnicas:
 
-1. ✅ **Aplicar híbrido heurística+LLM** em Self-RAG e CRAG
-2. ✅ **ThreadPoolExecutor** em Self-RAG (iterações assíncronas)
-3. ✅ **Logging estruturado** em todas técnicas com decisões
-4. ✅ **Feature flags** em Self-RAG (`ENABLE_SELF_RAG`)
-5. ✅ **Reutilizar router** para decidir quando usar Self-RAG vs CRAG vs normal
-6. ✅ **Complexity score** útil para adaptar Self-RAG iterations (query simples = 1-2 iterations, complexa = 3)
+1. [OK] **Aplicar híbrido heurística+LLM** em Self-RAG e CRAG
+2. [OK] **ThreadPoolExecutor** em Self-RAG (iterações assíncronas)
+3. [OK] **Logging estruturado** em todas técnicas com decisões
+4. [OK] **Feature flags** em Self-RAG (`ENABLE_SELF_RAG`)
+5. [OK] **Reutilizar router** para decidir quando usar Self-RAG vs CRAG vs normal
+6. [OK] **Complexity score** útil para adaptar Self-RAG iterations (query simples = 1-2 iterations, complexa = 3)
 
 ---
 
-## 🎉 CONCLUSÃO
+## [EMOJI] CONCLUSÃO
 
 **Router Inteligente é a técnica MAIS BEM-SUCEDIDA da Fase 2A:**
 
 ```
-✅ 10x mais rápido que estimado (6h vs 5-7 dias)
-✅ 92% classifier accuracy (+7pp target)
-✅ 70% código reutilizado (economia massiva)
-✅ 95%/81% coverage (targets atingidos)
-✅ 4 estratégias funcionais
-✅ Integração não-invasiva (MVP preservado)
-✅ Feature flags para rollout seguro
-✅ Logging estruturado para analytics
-✅ 650+ linhas de documentação
-✅ 25 testes robustos
+[OK] 10x mais rápido que estimado (6h vs 5-7 dias)
+[OK] 92% classifier accuracy (+7pp target)
+[OK] 70% código reutilizado (economia massiva)
+[OK] 95%/81% coverage (targets atingidos)
+[OK] 4 estratégias funcionais
+[OK] Integração não-invasiva (MVP preservado)
+[OK] Feature flags para rollout seguro
+[OK] Logging estruturado para analytics
+[OK] 650+ linhas de documentação
+[OK] 25 testes robustos
 
 DESCOBERTA: Reutilização + Templates = Aceleração Exponencial!
 ```
@@ -775,11 +775,10 @@ DESCOBERTA: Reutilização + Templates = Aceleração Exponencial!
 - 2ª técnica (Adaptive Re-rank): 2 dias (reusa patterns)
 - 3ª técnica (Router): **6 HORAS!** (reusa tudo)
 
-**Aceleração:** 4d → 2d → 6h = **Curva exponencial de eficiência** 📈
+**Aceleração:** 4d -> 2d -> 6h = **Curva exponencial de eficiência** [EMOJI]
 
 ---
 
-**Criado:** 2025-10-14  
-**Autor:** Claude Sonnet 4.5 (via Cursor)  
+**Criado:** 2025-10-14
+**Autor:** Claude Sonnet 4.5 (via Cursor)
 **Próximo:** Antipadrões RAG
-

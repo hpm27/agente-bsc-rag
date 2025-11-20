@@ -13,9 +13,9 @@
             Prioridade: {{ perspective.priority }}
         </span>
     </div>
-    
+
     <p style="font-size: 12pt; color: #6b7280; margin-bottom: 8mm;">
-        Análise detalhada da perspectiva <strong>{{ perspective_name }}</strong> 
+        Análise detalhada da perspectiva <strong>{{ perspective_name }}</strong>
         para {{ profile.company.name }} ({{ profile.company.sector }}).
     </p>
 </section>
@@ -35,7 +35,7 @@
 <section>
     <h2>Gaps Identificados</h2>
     <p>Lacunas e deficiências identificadas na perspectiva {{ perspective_name }}:</p>
-    
+
     <ul style="list-style: none; padding-left: 0;">
         {% for gap in perspective.gaps %}
         <li style="background: #fef2f2; border-left: 3px solid #ef4444; padding: 3mm; margin-bottom: 3mm; border-radius: 2mm;">
@@ -43,7 +43,7 @@
         </li>
         {% endfor %}
     </ul>
-    
+
     <p style="margin-top: 5mm; padding: 4mm; background: #fffbeb; border-left: 3px solid #f59e0b; border-radius: 2mm;">
         <strong style="color: #92400e;">Total de gaps identificados:</strong> {{ perspective.gaps | length }}
     </p>
@@ -55,7 +55,7 @@
 <section>
     <h2>Oportunidades de Melhoria</h2>
     <p>Oportunidades estratégicas identificadas para alavancar a perspectiva {{ perspective_name }}:</p>
-    
+
     <ul style="list-style: none; padding-left: 0;">
         {% for opp in perspective.opportunities %}
         <li style="background: #f0fdf4; border-left: 3px solid #10b981; padding: 3mm; margin-bottom: 3mm; border-radius: 2mm;">
@@ -63,7 +63,7 @@
         </li>
         {% endfor %}
     </ul>
-    
+
     <p style="margin-top: 5mm; padding: 4mm; background: #ecfdf5; border-left: 3px solid #10b981; border-radius: 2mm;">
         <strong style="color: #065f46;">Total de oportunidades identificadas:</strong> {{ perspective.opportunities | length }}
     </p>
@@ -74,11 +74,11 @@
 <section>
     <h2>Recomendações Prioritárias</h2>
     <p>Top recomendações do diagnóstico completo (todas as perspectivas):</p>
-    
+
     {% for rec in diagnostic.recommendations[:3] %}
     <div class="recommendation">
         <h4>{{ loop.index }}. {{ rec.title }}</h4>
-        
+
         <div class="recommendation-meta">
             <span class="badge {{ rec.impact | lower | priority_badge }}">
                 Impacto: {{ rec.impact }}
@@ -93,16 +93,16 @@
             <span class="badge badge-high">Quick Win</span>
             {% endif %}
         </div>
-        
+
         <p><strong>Descrição:</strong></p>
         <p>{{ rec.description }}</p>
-        
+
         <p><strong>Timeframe:</strong> {{ rec.timeframe }}</p>
     </div>
     {% endfor %}
-    
+
     <p style="margin-top: 5mm; font-size: 10pt; color: #6b7280;">
-        <strong>Nota:</strong> Para consultar todas as {{ diagnostic.recommendations | length }} recomendações 
+        <strong>Nota:</strong> Para consultar todas as {{ diagnostic.recommendations | length }} recomendações
         do diagnóstico completo (4 perspectivas), solicite o relatório BSC completo.
     </p>
 </section>
@@ -110,7 +110,7 @@
 <!-- Contexto da Empresa -->
 <section style="margin-top: 10mm; padding-top: 5mm; border-top: 2px solid #e5e7eb;">
     <h2>Contexto Empresarial</h2>
-    
+
     <table>
         <tr>
             <th style="width: 30%;">Empresa</th>
@@ -142,7 +142,7 @@
 <!-- Próximos Passos -->
 <section>
     <h2>Próximos Passos Recomendados</h2>
-    
+
     <ol>
         <li>Validar análise da perspectiva {{ perspective_name }} com stakeholders relevantes</li>
         <li>Priorizar gaps por criticidade e urgência</li>
@@ -162,4 +162,3 @@
     </p>
 </section>
 {% endblock %}
-

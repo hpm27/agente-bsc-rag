@@ -60,9 +60,7 @@ class ChallengesList(BaseModel):
     """
 
     challenges: list[str] = Field(
-        min_length=3,
-        max_length=7,
-        description="Lista de 3-7 desafios estratégicos da empresa"
+        min_length=3, max_length=7, description="Lista de 3-7 desafios estratégicos da empresa"
     )
 
 
@@ -86,7 +84,7 @@ class ObjectivesList(BaseModel):
     objectives: list[str] = Field(
         min_length=3,
         max_length=5,
-        description="Lista de 3-5 objetivos estratégicos SMART alinhados às 4 perspectivas BSC"
+        description="Lista de 3-5 objetivos estratégicos SMART alinhados às 4 perspectivas BSC",
     )
 
 
@@ -130,12 +128,12 @@ class ClientProfileAgent:
             llm: LLM customizado (opcional). Se None, usa GPT-5 padrão.
         """
         from config.settings import settings
-        
+
         self.llm = llm or ChatOpenAI(
             model=settings.gpt5_model,
             temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
             max_completion_tokens=settings.gpt5_max_completion_tokens,
-            reasoning_effort="low"  # Low reasoning para extração estruturada (parâmetro direto)
+            reasoning_effort="low",  # Low reasoning para extração estruturada (parâmetro direto)
         )
 
         logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {self.llm.model_name}")
@@ -185,7 +183,7 @@ class ClientProfileAgent:
 
         logger.debug(
             f"[CONTEXT] Conversa montada | "
-            f"Messages: {len(messages)} → Chars: {len(conversation)}"
+            f"Messages: {len(messages)} -> Chars: {len(conversation)}"
         )
 
         return conversation
@@ -224,9 +222,21 @@ class ClientProfileAgent:
 
         # Setores válidos comuns (lista não exaustiva, aceita outros também)
         valid_sectors = [
-            "tecnologia", "manufatura", "serviços", "saúde", "educação",
-            "finanças", "varejo", "consultoria", "construção", "agronegócio",
-            "logística", "energia", "telecomunicações", "mídia", "turismo"
+            "tecnologia",
+            "manufatura",
+            "serviços",
+            "saúde",
+            "educação",
+            "finanças",
+            "varejo",
+            "consultoria",
+            "construção",
+            "agronegócio",
+            "logística",
+            "energia",
+            "telecomunicações",
+            "mídia",
+            "turismo",
         ]
 
         sector_lower = company_info.sector.lower().strip()
@@ -247,12 +257,10 @@ class ClientProfileAgent:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=5),
-        retry=retry_if_exception_type((ValidationError, ValueError))
+        retry=retry_if_exception_type((ValidationError, ValueError)),
     )
     def extract_company_info(
-        self, 
-        conversation: str,
-        conversation_history: str = ""
+        self, conversation: str, conversation_history: str = ""
     ) -> CompanyInfo:
         """Extrai CompanyInfo estruturado de conversa natural.
 
@@ -288,7 +296,7 @@ class ClientProfileAgent:
         full_conversation = conversation
         if conversation_history:
             full_conversation = f"{conversation_history}\n\n{conversation}"
-        
+
         # Validação pre-flight
         if not full_conversation or len(full_conversation.strip()) < 50:
             raise ValueError(
@@ -310,9 +318,9 @@ class ClientProfileAgent:
             # Usa full_conversation (history + current) para melhor contexto
             messages = [
                 SystemMessage(content=EXTRACT_COMPANY_INFO_SYSTEM),
-                HumanMessage(content=EXTRACT_COMPANY_INFO_USER.format(
-                    conversation=full_conversation
-                ))
+                HumanMessage(
+                    content=EXTRACT_COMPANY_INFO_USER.format(conversation=full_conversation)
+                ),
             ]
 
             # Invocar LLM
@@ -354,13 +362,10 @@ class ClientProfileAgent:
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=5),
-        retry=retry_if_exception_type((ValidationError, ValueError))
+        retry=retry_if_exception_type((ValidationError, ValueError)),
     )
     def identify_challenges(
-        self,
-        conversation: str,
-        company_info: CompanyInfo,
-        conversation_history: str = ""
+        self, conversation: str, company_info: CompanyInfo, conversation_history: str = ""
     ) -> list[str]:
         """Identifica desafios estratégicos da empresa context-aware.
 
@@ -404,24 +409,23 @@ class ClientProfileAgent:
 
             # Construir prompt context-aware
             system_prompt = IDENTIFY_CHALLENGES_SYSTEM.format(
-                company_name=company_info.name,
-                sector=company_info.sector,
-                size=company_info.size
+                company_name=company_info.name, sector=company_info.sector, size=company_info.size
             )
 
             # Concatenar histórico se fornecido
-            full_conversation = conversation if not conversation_history else f"{conversation_history}\n\n{conversation}"
+            full_conversation = (
+                conversation
+                if not conversation_history
+                else f"{conversation_history}\n\n{conversation}"
+            )
 
             user_prompt = IDENTIFY_CHALLENGES_USER.format(
                 conversation=full_conversation,
                 company_name=company_info.name,
-                sector=company_info.sector
+                sector=company_info.sector,
             )
 
-            messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=user_prompt)
-            ]
+            messages = [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
 
             # Invocar LLM
             raw_result = structured_llm.invoke(messages)
@@ -452,19 +456,18 @@ class ClientProfileAgent:
             raise  # Retry automático via tenacity
 
         except Exception as e:
-            logger.error(f"[CHALLENGES] Erro inesperado: {e}. Retornando lista vazia para follow-up.")
+            logger.error(
+                f"[CHALLENGES] Erro inesperado: {e}. Retornando lista vazia para follow-up."
+            )
             return []
 
     @retry(
         stop=stop_after_attempt(3),
         wait=wait_exponential(multiplier=1, min=1, max=5),
-        retry=retry_if_exception_type((ValidationError, ValueError))
+        retry=retry_if_exception_type((ValidationError, ValueError)),
     )
     def define_objectives(
-        self,
-        conversation: str,
-        challenges: list[str],
-        conversation_history: str = ""
+        self, conversation: str, challenges: list[str], conversation_history: str = ""
     ) -> list[str]:
         """Define objetivos estratégicos BSC SMART baseados em desafios.
 
@@ -499,10 +502,7 @@ class ClientProfileAgent:
             )
             return []
 
-        logger.info(
-            f"[OBJECTIVES] Iniciando definição | "
-            f"Challenges: {len(challenges)}"
-        )
+        logger.info(f"[OBJECTIVES] Iniciando definição | " f"Challenges: {len(challenges)}")
 
         try:
             # LangChain structured output com ObjectivesList wrapper
@@ -512,17 +512,20 @@ class ClientProfileAgent:
             challenges_text = "\n".join([f"- {challenge}" for challenge in challenges])
 
             # Concatenar histórico se fornecido
-            full_conversation = conversation if not conversation_history else f"{conversation_history}\n\n{conversation}"
+            full_conversation = (
+                conversation
+                if not conversation_history
+                else f"{conversation_history}\n\n{conversation}"
+            )
 
             # Construir prompt BSC-aware
             user_prompt = DEFINE_OBJECTIVES_USER.format(
-                conversation=full_conversation,
-                challenges=challenges_text
+                conversation=full_conversation, challenges=challenges_text
             )
 
             messages = [
                 SystemMessage(content=DEFINE_OBJECTIVES_SYSTEM),
-                HumanMessage(content=user_prompt)
+                HumanMessage(content=user_prompt),
             ]
 
             # Invocar LLM
@@ -535,8 +538,7 @@ class ClientProfileAgent:
             objectives_lower = [obj.lower() for obj in objectives]
 
             has_bsc_perspective = any(
-                perspective in " ".join(objectives_lower)
-                for perspective in bsc_perspectives
+                perspective in " ".join(objectives_lower) for perspective in bsc_perspectives
             )
 
             if not has_bsc_perspective:
@@ -544,10 +546,7 @@ class ClientProfileAgent:
                     "[OBJECTIVES] Nenhum objetivo menciona perspectiva BSC explicitamente"
                 )
 
-            logger.info(
-                f"[OBJECTIVES] Sucesso | "
-                f"Definidos: {len(objectives)} objetivos SMART"
-            )
+            logger.info(f"[OBJECTIVES] Sucesso | " f"Definidos: {len(objectives)} objetivos SMART")
 
             logger.debug(f"[OBJECTIVES] Lista: {objectives}")
 
@@ -558,7 +557,9 @@ class ClientProfileAgent:
             raise  # Retry automático via tenacity
 
         except Exception as e:
-            logger.error(f"[OBJECTIVES] Erro inesperado: {e}. Retornando lista vazia para follow-up.")
+            logger.error(
+                f"[OBJECTIVES] Erro inesperado: {e}. Retornando lista vazia para follow-up."
+            )
             return []
 
     def process_onboarding(self, state: BSCState) -> dict[str, Any]:
@@ -640,25 +641,21 @@ class ClientProfileAgent:
             except Exception as e:
                 logger.error(f"[ONBOARDING] Step 1/3 FALHOU: {e}")
                 return {
-                    "error": f"Não consegui identificar informações da empresa. "
-                             f"Por favor, me conte o nome, setor e porte da sua empresa."
+                    "error": "Não consegui identificar informações da empresa. "
+                    "Por favor, me conte o nome, setor e porte da sua empresa."
                 }
 
         # ====================================================================
         # STEP 2: IDENTIFY CHALLENGES
         # ====================================================================
 
-        if (
-            state.onboarding_progress.get("company_info_extracted")
-            and not state.onboarding_progress.get("challenges_identified")
-        ):
+        if state.onboarding_progress.get(
+            "company_info_extracted"
+        ) and not state.onboarding_progress.get("challenges_identified"):
             try:
                 logger.info("[ONBOARDING] Step 2/3: Identificar challenges")
 
-                challenges = self.identify_challenges(
-                    conversation,
-                    state.client_profile.company
-                )
+                challenges = self.identify_challenges(conversation, state.client_profile.company)
 
                 # Atualizar StrategicContext
                 if not state.client_profile.context:
@@ -672,10 +669,7 @@ class ClientProfileAgent:
                 updates["client_profile"] = state.client_profile
                 updates["onboarding_progress"] = state.onboarding_progress.copy()
 
-                logger.info(
-                    f"[ONBOARDING] Step 2/3 OK | "
-                    f"Challenges: {len(challenges)}"
-                )
+                logger.info(f"[ONBOARDING] Step 2/3 OK | " f"Challenges: {len(challenges)}")
 
             except Exception as e:
                 logger.warning(f"[ONBOARDING] Step 2/3 PARCIAL: {e}")
@@ -685,16 +679,14 @@ class ClientProfileAgent:
         # STEP 3: DEFINE OBJECTIVES
         # ====================================================================
 
-        if (
-            state.onboarding_progress.get("challenges_identified")
-            and not state.onboarding_progress.get("objectives_defined")
-        ):
+        if state.onboarding_progress.get(
+            "challenges_identified"
+        ) and not state.onboarding_progress.get("objectives_defined"):
             try:
                 logger.info("[ONBOARDING] Step 3/3: Definir objectives")
 
                 objectives = self.define_objectives(
-                    conversation,
-                    state.client_profile.context.current_challenges
+                    conversation, state.client_profile.context.current_challenges
                 )
 
                 # Atualizar StrategicContext
@@ -707,14 +699,14 @@ class ClientProfileAgent:
                 updates["client_profile"] = state.client_profile
                 updates["onboarding_progress"] = state.onboarding_progress.copy()
 
-                # TRANSIÇÃO DE FASE: ONBOARDING → DISCOVERY
+                # TRANSIÇÃO DE FASE: ONBOARDING -> DISCOVERY
                 updates["current_phase"] = ConsultingPhase.DISCOVERY
                 updates["previous_phase"] = ConsultingPhase.ONBOARDING
 
                 logger.info(
                     f"[ONBOARDING] Step 3/3 OK | "
                     f"Objectives: {len(objectives)} | "
-                    f"TRANSIÇÃO: ONBOARDING → DISCOVERY"
+                    f"TRANSIÇÃO: ONBOARDING -> DISCOVERY"
                 )
 
             except Exception as e:
@@ -746,4 +738,3 @@ class ClientProfileAgent:
         company = CompanyInfo(name="Empresa Desconhecida", sector="Desconhecido")
         profile = ClientProfile(company=company)
         return profile
-

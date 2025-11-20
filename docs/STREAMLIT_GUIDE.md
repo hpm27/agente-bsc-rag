@@ -337,7 +337,7 @@ Se ocorrer:
 
 Ajustar configuracoes:
 
-- **Reduzir Top K**: 20 → 10 → 5
+- **Reduzir Top K**: 20 -> 10 -> 5
 - **Desabilitar perspectivas**: Marcar apenas 1-2
 - **Desabilitar refinamento**: Max iteracoes = 0
 - **Simplificar query**: Perguntas mais diretas
@@ -449,6 +449,6 @@ CMD ["streamlit", "run", "app/main.py"]
 
 ---
 
-**Ultima atualizacao**: 2025-10-10  
-**Versao**: 1.0 (MVP)  
+**Ultima atualizacao**: 2025-10-10
+**Versao**: 1.0 (MVP)
 **Status**: COMPLETO E FUNCIONAL

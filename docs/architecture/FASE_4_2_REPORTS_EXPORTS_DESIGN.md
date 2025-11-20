@@ -1,12 +1,12 @@
 # FASE 4.2 - Reports & Exports: Design Técnico
 
-**Data:** 2025-11-18  
-**Versão:** 1.0  
-**Status:** 📐 DESIGN APROVADO - Pronto para implementação
+**Data:** 2025-11-18
+**Versão:** 1.0
+**Status:** [EMOJI] DESIGN APROVADO - Pronto para implementação
 
 ---
 
-## 🎯 Objetivos
+## [EMOJI] Objetivos
 
 Implementar sistema completo de exports e relatórios profissionais para diagnósticos BSC:
 
@@ -15,24 +15,24 @@ Implementar sistema completo de exports e relatórios profissionais para diagnó
 3. **Templates Jinja2** - HTML intermediário para consistência visual
 4. **Integração Streamlit** - Botões de download no dashboard e páginas de diagnóstico
 
-**Estimativa:** 3-4h (1 sessão)  
-**Dependências:** FASE 4.1 completa (Multi-Client Dashboard) ✅
+**Estimativa:** 3-4h (1 sessão)
+**Dependências:** FASE 4.1 completa (Multi-Client Dashboard) [OK]
 
 ---
 
-## 📊 Stack Tecnológico (Decisões Fundamentadas)
+## [EMOJI] Stack Tecnológico (Decisões Fundamentadas)
 
 ### **1. WeasyPrint para PDF Export**
 
-**Escolha:** WeasyPrint  
+**Escolha:** WeasyPrint
 **Alternativas consideradas:** ReportLab, pdfkit, xhtml2pdf
 
 **Razões:**
-- ✅ Converte HTML/CSS → PDF (templates Jinja2 reutilizáveis)
-- ✅ Suporta CSS moderno (Flexbox, Grid)
-- ✅ Manutenção mais fácil que ReportLab (low-level API)
-- ✅ Output profissional (fontes, cores, layouts complexos)
-- ✅ Open-source, ativo (last update 2024)
+- [OK] Converte HTML/CSS -> PDF (templates Jinja2 reutilizáveis)
+- [OK] Suporta CSS moderno (Flexbox, Grid)
+- [OK] Manutenção mais fácil que ReportLab (low-level API)
+- [OK] Output profissional (fontes, cores, layouts complexos)
+- [OK] Open-source, ativo (last update 2024)
 
 **Instalação:**
 ```bash
@@ -43,13 +43,13 @@ pip install weasyprint==62.3  # Python 3.12 compatible
 
 ### **2. Jinja2 para Templates**
 
-**Escolha:** Jinja2  
+**Escolha:** Jinja2
 **Razões:**
-- ✅ Padrão da indústria Python (Flask, Django, Ansible)
-- ✅ Sintaxe clara e poderosa (loops, condicionais, filtros)
-- ✅ Herança de templates (base.html → report.html)
-- ✅ Auto-escaping para segurança
-- ✅ Já instalado (dependência Streamlit)
+- [OK] Padrão da indústria Python (Flask, Django, Ansible)
+- [OK] Sintaxe clara e poderosa (loops, condicionais, filtros)
+- [OK] Herança de templates (base.html -> report.html)
+- [OK] Auto-escaping para segurança
+- [OK] Já instalado (dependência Streamlit)
 
 **Uso:**
 ```python
@@ -64,15 +64,15 @@ html = template.render(diagnostic=diagnostic, profile=profile)
 
 ### **3. pandas para CSV Export**
 
-**Escolha:** pandas  
+**Escolha:** pandas
 **Razões:**
-- ✅ Standard para manipulação tabular
-- ✅ `.to_csv()` robusto (encoding, separators, etc)
-- ✅ Já instalado (projeto usa pandas)
+- [OK] Standard para manipulação tabular
+- [OK] `.to_csv()` robusto (encoding, separators, etc)
+- [OK] Já instalado (projeto usa pandas)
 
 ---
 
-## 🗂️ Estrutura de Arquivos (Nova)
+## [EMOJI] Estrutura de Arquivos (Nova)
 
 ```
 agente-bsc-rag/
@@ -106,7 +106,7 @@ agente-bsc-rag/
 
 ---
 
-## 🔧 Contratos de API (3 Classes Principais)
+## [EMOJI] Contratos de API (3 Classes Principais)
 
 ### **1. PdfExporter** (`src/exports/pdf_exporter.py`)
 
@@ -117,52 +117,52 @@ from src.memory.schemas import CompleteDiagnostic, ClientProfile
 
 class PdfExporter:
     """Exporta diagnósticos BSC para PDF formatado profissionalmente.
-    
+
     Usa WeasyPrint para converter templates HTML (Jinja2) em PDF de alta qualidade.
     Suporta export completo (4 perspectivas) ou por perspectiva individual.
-    
+
     Attributes:
         template_manager: TemplateManager para renderizar HTML
         output_dir: Diretório padrão para salvar PDFs (default: "exports/pdf")
     """
-    
+
     def __init__(self, template_manager: TemplateManager, output_dir: str = "exports/pdf"):
         """Inicializa exporter com template manager.
-        
+
         Args:
             template_manager: TemplateManager configurado
             output_dir: Diretório de saída para PDFs
         """
         pass
-    
+
     def export_full_diagnostic(
-        self, 
-        diagnostic: CompleteDiagnostic, 
+        self,
+        diagnostic: CompleteDiagnostic,
         profile: ClientProfile,
         output_path: Optional[Path] = None
     ) -> Path:
         """Exporta diagnóstico BSC completo (4 perspectivas) para PDF.
-        
+
         Gera PDF formatado profissionalmente com:
         - Capa com logo e dados da empresa
         - Executive summary
         - Análise detalhada das 4 perspectivas
         - Recomendações priorizadas
         - Cross-perspective synergies
-        
+
         Args:
             diagnostic: CompleteDiagnostic com 4 perspectivas
             profile: ClientProfile com dados da empresa
             output_path: Caminho de saída (opcional). Se None, usa padrão:
                         {output_dir}/{company_name}_diagnostic_{timestamp}.pdf
-        
+
         Returns:
             Path: Caminho completo do PDF gerado
-        
+
         Raises:
             ValueError: Se diagnostic incompleto (missing perspectives)
             IOError: Se erro ao escrever arquivo
-        
+
         Example:
             >>> exporter = PdfExporter(template_manager)
             >>> pdf_path = exporter.export_full_diagnostic(diagnostic, profile)
@@ -170,27 +170,27 @@ class PdfExporter:
             PDF salvo em: exports/pdf/TechCorp_diagnostic_20251118_193045.pdf
         """
         pass
-    
+
     def export_perspective(
-        self, 
-        diagnostic: CompleteDiagnostic, 
+        self,
+        diagnostic: CompleteDiagnostic,
         profile: ClientProfile,
         perspective: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"],
         output_path: Optional[Path] = None
     ) -> Path:
         """Exporta apenas 1 perspectiva BSC para PDF.
-        
+
         Útil para reports focados em área específica (ex: C-level Financeiro).
-        
+
         Args:
             diagnostic: CompleteDiagnostic completo
             profile: ClientProfile
             perspective: Nome da perspectiva a exportar
             output_path: Caminho de saída (opcional)
-        
+
         Returns:
             Path: Caminho do PDF gerado
-        
+
         Example:
             >>> pdf_path = exporter.export_perspective(
             ...     diagnostic, profile, perspective="Financeira"
@@ -211,32 +211,32 @@ from src.memory.schemas import ClientProfile
 
 class CsvExporter:
     """Exporta dados tabulares para CSV (lista clientes, métricas, etc).
-    
+
     Usa pandas DataFrame para manipulação e export robusto.
     Suporta encoding UTF-8, separadores customizados.
-    
+
     Attributes:
         output_dir: Diretório padrão para CSVs (default: "exports/csv")
         encoding: Encoding padrão (default: "utf-8-sig" para Excel compatibility)
         separator: Separador CSV (default: ",")
     """
-    
+
     def __init__(
-        self, 
+        self,
         output_dir: str = "exports/csv",
         encoding: str = "utf-8-sig",
         separator: str = ","
     ):
         """Inicializa exporter com configurações padrão."""
         pass
-    
+
     def export_clients_list(
-        self, 
-        profiles: List[ClientProfile], 
+        self,
+        profiles: List[ClientProfile],
         output_path: Optional[Path] = None
     ) -> Path:
         """Exporta lista de clientes para CSV.
-        
+
         Colunas geradas:
         - client_id
         - company_name
@@ -248,15 +248,15 @@ class CsvExporter:
         - updated_at
         - total_challenges
         - total_objectives
-        
+
         Args:
             profiles: Lista de ClientProfile
             output_path: Caminho de saída (opcional). Se None:
                         {output_dir}/clients_list_{timestamp}.csv
-        
+
         Returns:
             Path: Caminho do CSV gerado
-        
+
         Example:
             >>> exporter = CsvExporter()
             >>> csv_path = exporter.export_clients_list(profiles)
@@ -264,15 +264,15 @@ class CsvExporter:
             CSV salvo em: exports/csv/clients_list_20251118_193045.csv
         """
         pass
-    
+
     def export_recommendations(
-        self, 
-        diagnostic: CompleteDiagnostic, 
+        self,
+        diagnostic: CompleteDiagnostic,
         profile: ClientProfile,
         output_path: Optional[Path] = None
     ) -> Path:
         """Exporta recomendações priorizadas para CSV.
-        
+
         Colunas:
         - priority (HIGH, MEDIUM, LOW)
         - title
@@ -282,14 +282,14 @@ class CsvExporter:
         - quick_win (True/False)
         - timeframe
         - perspective (Financeira, Clientes, etc)
-        
+
         Útil para tracking de implementação.
-        
+
         Args:
             diagnostic: CompleteDiagnostic com recommendations
             profile: ClientProfile (para metadata)
             output_path: Caminho de saída (opcional)
-        
+
         Returns:
             Path: Caminho do CSV gerado
         """
@@ -307,47 +307,47 @@ from src.memory.schemas import CompleteDiagnostic, ClientProfile
 
 class TemplateManager:
     """Gerencia templates Jinja2 para geração de relatórios HTML.
-    
+
     Carrega templates do diretório templates/reports/ e renderiza
     com contexto (diagnostic, profile, metadata).
-    
+
     Suporta herança de templates (base.html) e filtros customizados.
-    
+
     Attributes:
         env: Jinja2 Environment configurado
         template_dir: Diretório dos templates (default: "templates/reports")
     """
-    
+
     def __init__(self, template_dir: str = "templates/reports"):
         """Inicializa manager com diretório de templates.
-        
+
         Args:
             template_dir: Diretório contendo templates .html
-        
+
         Raises:
             FileNotFoundError: Se template_dir não existe
         """
         pass
-    
+
     def render_full_diagnostic(
-        self, 
-        diagnostic: CompleteDiagnostic, 
+        self,
+        diagnostic: CompleteDiagnostic,
         profile: ClientProfile,
         metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """Renderiza diagnóstico completo para HTML.
-        
+
         Usa template 'diagnostic_full.html' que herda de 'base.html'.
         Injeta dados do diagnostic e profile no contexto.
-        
+
         Args:
             diagnostic: CompleteDiagnostic com 4 perspectivas
             profile: ClientProfile com dados da empresa
             metadata: Dict opcional com metadados extras (ex: gerado_em, versão)
-        
+
         Returns:
             str: HTML renderizado pronto para WeasyPrint
-        
+
         Example:
             >>> manager = TemplateManager()
             >>> html = manager.render_full_diagnostic(diagnostic, profile)
@@ -355,35 +355,35 @@ class TemplateManager:
             15234  # ~15KB HTML
         """
         pass
-    
+
     def render_perspective(
-        self, 
-        diagnostic: CompleteDiagnostic, 
+        self,
+        diagnostic: CompleteDiagnostic,
         profile: ClientProfile,
         perspective: str,
         metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """Renderiza apenas 1 perspectiva para HTML.
-        
+
         Usa template 'diagnostic_perspective.html'.
-        
+
         Args:
             diagnostic: CompleteDiagnostic completo
             profile: ClientProfile
             perspective: Nome da perspectiva (ex: "Financeira")
             metadata: Dict opcional
-        
+
         Returns:
             str: HTML renderizado da perspectiva
         """
         pass
-    
+
     def _format_date(self, dt: datetime) -> str:
         """Filtro Jinja2 customizado para formatar datas brasileiras.
-        
+
         Args:
             dt: datetime object
-        
+
         Returns:
             str: Data formatada "DD/MM/AAAA HH:MM"
         """
@@ -392,7 +392,7 @@ class TemplateManager:
 
 ---
 
-## 🎨 Templates Jinja2 (Estrutura)
+## [EMOJI] Templates Jinja2 (Estrutura)
 
 ### **1. base.html** - Template Base
 
@@ -405,7 +405,7 @@ class TemplateManager:
     <style>
         /* CSS embutido para WeasyPrint */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        
+
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -414,17 +414,17 @@ class TemplateManager:
             font-size: 11pt;
             line-height: 1.6;
         }
-        
+
         h1 { color: #2563eb; font-size: 24pt; margin-bottom: 10mm; }
         h2 { color: #1e40af; font-size: 18pt; margin-top: 8mm; }
         h3 { color: #3b82f6; font-size: 14pt; margin-top: 6mm; }
-        
+
         .header {
             border-bottom: 2px solid #2563eb;
             padding-bottom: 5mm;
             margin-bottom: 10mm;
         }
-        
+
         .footer {
             position: fixed;
             bottom: 10mm;
@@ -435,7 +435,7 @@ class TemplateManager:
             font-size: 9pt;
             color: #6b7280;
         }
-        
+
         .badge {
             display: inline-block;
             padding: 2mm 4mm;
@@ -443,11 +443,11 @@ class TemplateManager:
             font-weight: 600;
             font-size: 9pt;
         }
-        
+
         .badge-high { background: #fecaca; color: #991b1b; }
         .badge-medium { background: #fed7aa; color: #9a3412; }
         .badge-low { background: #d1fae5; color: #065f46; }
-        
+
         /* Mais estilos... */
     </style>
 </head>
@@ -456,11 +456,11 @@ class TemplateManager:
         <h1>{% block header_title %}{% endblock %}</h1>
         <p><strong>Empresa:</strong> {{ profile.company.name }} | <strong>Gerado em:</strong> {{ now | format_date }}</p>
     </div>
-    
+
     <div class="content">
         {% block content %}{% endblock %}
     </div>
-    
+
     <div class="footer">
         <p>Agente BSC RAG | Balanced Scorecard Consulting | Pág. <span class="page-number"></span></p>
     </div>
@@ -484,26 +484,26 @@ class TemplateManager:
         <h2>Executive Summary</h2>
         <p>{{ diagnostic.executive_summary }}</p>
     </section>
-    
+
     <section class="perspectives">
         <h2>Análise por Perspectiva</h2>
-        
+
         {% for perspective_name in ["financial", "customer", "process", "learning"] %}
             {% set perspective = diagnostic[perspective_name] %}
             <div class="perspective">
                 <h3>{{ perspective.perspective }}</h3>
                 <span class="badge badge-{{ perspective.priority | lower }}">{{ perspective.priority }}</span>
-                
+
                 <h4>Estado Atual</h4>
                 <p>{{ perspective.current_state }}</p>
-                
+
                 <h4>Gaps Identificados</h4>
                 <ul>
                     {% for gap in perspective.gaps %}
                     <li>{{ gap }}</li>
                     {% endfor %}
                 </ul>
-                
+
                 <h4>Oportunidades</h4>
                 <ul>
                     {% for opp in perspective.opportunities %}
@@ -513,11 +513,11 @@ class TemplateManager:
             </div>
         {% endfor %}
     </section>
-    
+
     <section class="recommendations">
         <h2>Recomendações Priorizadas</h2>
         <p><strong>Total:</strong> {{ diagnostic.recommendations | length }} recomendações</p>
-        
+
         {% for rec in diagnostic.recommendations %}
             <div class="recommendation">
                 <h4>{{ loop.index }}. {{ rec.title }}</h4>
@@ -526,13 +526,13 @@ class TemplateManager:
                 {% if rec.quick_win %}
                 <span class="badge badge-high">Quick Win</span>
                 {% endif %}
-                
+
                 <p>{{ rec.description }}</p>
                 <p><strong>Timeframe:</strong> {{ rec.timeframe }}</p>
             </div>
         {% endfor %}
     </section>
-    
+
     {% if diagnostic.cross_perspective_synergies %}
     <section class="synergies">
         <h2>Sinergias Cross-Perspective</h2>
@@ -548,7 +548,7 @@ class TemplateManager:
 
 ---
 
-## 🔌 Integração Streamlit
+## [EMOJI] Integração Streamlit
 
 ### **1. Página de Diagnóstico** (`src/ui/pages/diagnostic_detail.py`)
 
@@ -560,66 +560,66 @@ from src.exports.template_manager import TemplateManager
 
 def render_diagnostic_detail(diagnostic: CompleteDiagnostic, profile: ClientProfile):
     """Renderiza página de detalhe do diagnóstico com botões de export."""
-    
+
     st.header(f"Diagnóstico BSC - {profile.company.name}")
-    
+
     # Botões de export no topo
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
-        if st.button("📄 Exportar PDF Completo"):
+        if st.button("[EMOJI] Exportar PDF Completo"):
             # Gerar PDF
             template_manager = TemplateManager()
             pdf_exporter = PdfExporter(template_manager)
             pdf_path = pdf_exporter.export_full_diagnostic(diagnostic, profile)
-            
+
             # Download button
             with open(pdf_path, "rb") as f:
                 st.download_button(
-                    label="⬇️ Baixar PDF",
+                    label="⬇ Baixar PDF",
                     data=f.read(),
                     file_name=pdf_path.name,
                     mime="application/pdf"
                 )
-            
+
             st.success(f"PDF gerado com sucesso! ({pdf_path.name})")
-    
+
     with col2:
-        if st.button("📊 Exportar Recomendações CSV"):
+        if st.button("[EMOJI] Exportar Recomendações CSV"):
             # Gerar CSV
             csv_exporter = CsvExporter()
             csv_path = csv_exporter.export_recommendations(diagnostic, profile)
-            
+
             # Download button
             with open(csv_path, "rb") as f:
                 st.download_button(
-                    label="⬇️ Baixar CSV",
+                    label="⬇ Baixar CSV",
                     data=f.read(),
                     file_name=csv_path.name,
                     mime="text/csv"
                 )
-            
+
             st.success(f"CSV gerado com sucesso! ({csv_path.name})")
-    
+
     with col3:
         # Selector de perspectiva
         perspective = st.selectbox(
             "Exportar Perspectiva Individual:",
             ["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
         )
-        
-        if st.button("📄 Exportar PDF Perspectiva"):
+
+        if st.button("[EMOJI] Exportar PDF Perspectiva"):
             pdf_exporter = PdfExporter(TemplateManager())
             pdf_path = pdf_exporter.export_perspective(diagnostic, profile, perspective)
-            
+
             with open(pdf_path, "rb") as f:
                 st.download_button(
-                    label="⬇️ Baixar PDF Perspectiva",
+                    label="⬇ Baixar PDF Perspectiva",
                     data=f.read(),
                     file_name=pdf_path.name,
                     mime="application/pdf"
                 )
-    
+
     # Resto da página (exibir diagnostic)...
 ```
 
@@ -630,13 +630,13 @@ def render_diagnostic_detail(diagnostic: CompleteDiagnostic, profile: ClientProf
 ```python
 # Adicionar botão de export CSV da lista de clientes
 
-if st.button("📊 Exportar Lista Clientes CSV"):
+if st.button("[EMOJI] Exportar Lista Clientes CSV"):
     csv_exporter = CsvExporter()
     csv_path = csv_exporter.export_clients_list(all_profiles)
-    
+
     with open(csv_path, "rb") as f:
         st.download_button(
-            label="⬇️ Baixar Lista Clientes",
+            label="⬇ Baixar Lista Clientes",
             data=f.read(),
             file_name=csv_path.name,
             mime="text/csv"
@@ -645,65 +645,65 @@ if st.button("📊 Exportar Lista Clientes CSV"):
 
 ---
 
-## 🧪 Estratégia de Testes
+## [EMOJI] Estratégia de Testes
 
 ### **1. Testes Unitários** (26+ testes total)
 
 #### **test_pdf_exporter.py** (10 testes)
-- ✅ `test_export_full_diagnostic_success()` - Export completo bem-sucedido
-- ✅ `test_export_full_diagnostic_generates_pdf_file()` - Arquivo PDF criado
-- ✅ `test_export_full_diagnostic_uses_custom_output_path()` - Path customizado respeitado
-- ✅ `test_export_perspective_financial()` - Export perspectiva Financeira
-- ✅ `test_export_perspective_customer()` - Export perspectiva Clientes
-- ✅ `test_export_invalid_perspective_raises_error()` - Valida perspectiva inválida
-- ✅ `test_export_incomplete_diagnostic_raises_error()` - Valida diagnostic incompleto
-- ✅ `test_pdf_contains_company_name()` - PDF contém nome da empresa
-- ✅ `test_pdf_contains_all_4_perspectives()` - PDF completo tem 4 perspectivas
-- ✅ `test_pdf_file_size_reasonable()` - Tamanho PDF ~200-500KB (não > 1MB)
+- [OK] `test_export_full_diagnostic_success()` - Export completo bem-sucedido
+- [OK] `test_export_full_diagnostic_generates_pdf_file()` - Arquivo PDF criado
+- [OK] `test_export_full_diagnostic_uses_custom_output_path()` - Path customizado respeitado
+- [OK] `test_export_perspective_financial()` - Export perspectiva Financeira
+- [OK] `test_export_perspective_customer()` - Export perspectiva Clientes
+- [OK] `test_export_invalid_perspective_raises_error()` - Valida perspectiva inválida
+- [OK] `test_export_incomplete_diagnostic_raises_error()` - Valida diagnostic incompleto
+- [OK] `test_pdf_contains_company_name()` - PDF contém nome da empresa
+- [OK] `test_pdf_contains_all_4_perspectives()` - PDF completo tem 4 perspectivas
+- [OK] `test_pdf_file_size_reasonable()` - Tamanho PDF ~200-500KB (não > 1MB)
 
 #### **test_csv_exporter.py** (8 testes)
-- ✅ `test_export_clients_list_success()` - CSV criado
-- ✅ `test_export_clients_list_has_correct_columns()` - Colunas esperadas presentes
-- ✅ `test_export_clients_list_row_count()` - Número de linhas = len(profiles)
-- ✅ `test_export_clients_list_encoding_utf8()` - Encoding UTF-8 correto
-- ✅ `test_export_recommendations_success()` - CSV recomendações criado
-- ✅ `test_export_recommendations_priority_high_first()` - Ordenação por priority
-- ✅ `test_empty_profiles_list_creates_empty_csv()` - Lista vazia = CSV header only
-- ✅ `test_csv_parseable_by_pandas()` - CSV pode ser lido de volta por pandas
+- [OK] `test_export_clients_list_success()` - CSV criado
+- [OK] `test_export_clients_list_has_correct_columns()` - Colunas esperadas presentes
+- [OK] `test_export_clients_list_row_count()` - Número de linhas = len(profiles)
+- [OK] `test_export_clients_list_encoding_utf8()` - Encoding UTF-8 correto
+- [OK] `test_export_recommendations_success()` - CSV recomendações criado
+- [OK] `test_export_recommendations_priority_high_first()` - Ordenação por priority
+- [OK] `test_empty_profiles_list_creates_empty_csv()` - Lista vazia = CSV header only
+- [OK] `test_csv_parseable_by_pandas()` - CSV pode ser lido de volta por pandas
 
 #### **test_template_manager.py** (8 testes)
-- ✅ `test_template_manager_loads_templates()` - Templates carregados
-- ✅ `test_render_full_diagnostic_returns_html()` - HTML retornado
-- ✅ `test_rendered_html_contains_company_name()` - HTML contém empresa
-- ✅ `test_rendered_html_contains_executive_summary()` - HTML contém summary
-- ✅ `test_render_perspective_financial()` - Render perspectiva individual
-- ✅ `test_format_date_filter_brazilian_format()` - Data formatada "DD/MM/AAAA"
-- ✅ `test_template_not_found_raises_error()` - Template inexistente = erro
-- ✅ `test_html_length_reasonable()` - HTML ~10-20KB (não > 50KB)
+- [OK] `test_template_manager_loads_templates()` - Templates carregados
+- [OK] `test_render_full_diagnostic_returns_html()` - HTML retornado
+- [OK] `test_rendered_html_contains_company_name()` - HTML contém empresa
+- [OK] `test_rendered_html_contains_executive_summary()` - HTML contém summary
+- [OK] `test_render_perspective_financial()` - Render perspectiva individual
+- [OK] `test_format_date_filter_brazilian_format()` - Data formatada "DD/MM/AAAA"
+- [OK] `test_template_not_found_raises_error()` - Template inexistente = erro
+- [OK] `test_html_length_reasonable()` - HTML ~10-20KB (não > 50KB)
 
 ---
 
 ### **2. Testes E2E** (3 testes)
 
 #### **test_exports_e2e.py**
-- ✅ `test_full_export_workflow()` - Workflow completo: carregar diagnostic → export PDF + CSV
-- ✅ `test_streamlit_download_buttons()` - Botões de download funcionam
-- ✅ `test_exported_files_readable()` - Arquivos exportados podem ser lidos novamente
+- [OK] `test_full_export_workflow()` - Workflow completo: carregar diagnostic -> export PDF + CSV
+- [OK] `test_streamlit_download_buttons()` - Botões de download funcionam
+- [OK] `test_exported_files_readable()` - Arquivos exportados podem ser lidos novamente
 
 ---
 
-## 📦 Dependências Novas (requirements.txt)
+## [EMOJI] Dependências Novas (requirements.txt)
 
 ```txt
 # FASE 4.2 - Reports & Exports
-weasyprint==62.3        # HTML → PDF conversion (Python 3.12 compatible)
+weasyprint==62.3        # HTML -> PDF conversion (Python 3.12 compatible)
 jinja2==3.1.4           # Template engine (já instalado via Streamlit)
 pandas==2.2.2           # CSV export (já instalado)
 ```
 
 ---
 
-## ⚡ ROI Esperado
+## [FAST] ROI Esperado
 
 ### **Antes da FASE 4.2:**
 - Usuário copia/cola dados do Streamlit para Word/Excel manualmente (~30 min por diagnóstico)
@@ -711,16 +711,16 @@ pandas==2.2.2           # CSV export (já instalado)
 - Dados não estruturados para tracking
 
 ### **Após FASE 4.2:**
-- ✅ Export PDF profissional em 1 clique (~5 segundos)
-- ✅ CSV pronto para tracking/análise (~3 segundos)
-- ✅ Templates customizáveis (fácil manutenção)
-- ✅ Branding profissional (logo, cores, layout)
+- [OK] Export PDF profissional em 1 clique (~5 segundos)
+- [OK] CSV pronto para tracking/análise (~3 segundos)
+- [OK] Templates customizáveis (fácil manutenção)
+- [OK] Branding profissional (logo, cores, layout)
 
 **Economia:** ~29 min por diagnóstico × 10 diagnósticos/mês = **4.8h/mês economizadas**
 
 ---
 
-## 🔄 Workflow de Implementação (6 etapas)
+## [EMOJI] Workflow de Implementação (6 etapas)
 
 ### **Etapa 1:** Setup Dependências (10 min)
 - Instalar WeasyPrint
@@ -759,7 +759,7 @@ pandas==2.2.2           # CSV export (já instalado)
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 - **WeasyPrint Docs:** https://doc.courtbouillon.org/weasyprint/stable/
 - **Jinja2 Docs:** https://jinja.palletsprojects.com/en/3.1.x/
@@ -768,7 +768,7 @@ pandas==2.2.2           # CSV export (já instalado)
 
 ---
 
-## ✅ Checklist de Conclusão
+## [OK] Checklist de Conclusão
 
 **Implementação:**
 - [ ] WeasyPrint instalado e configurado
@@ -791,5 +791,4 @@ pandas==2.2.2           # CSV export (já instalado)
 
 ---
 
-**Próximo Passo:** Implementação da Etapa 1 (Setup Dependências) 🚀
-
+**Próximo Passo:** Implementação da Etapa 1 (Setup Dependências) [EMOJI]

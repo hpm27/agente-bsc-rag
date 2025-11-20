@@ -4,13 +4,12 @@ Este modulo contem prompts especializados para facilitar a definicao de
 objetivos estrategicos SMART alinhados com as 4 perspectivas do Balanced Scorecard.
 """
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from src.memory.schemas import CompleteDiagnostic
 
 from src.memory.schemas import CompanyInfo, DiagnosticResult, KPIFramework
-
 
 # ============================================================================
 # CONTEXT BUILDERS - Funcoes reutilizaveis para montar contexto
@@ -19,13 +18,13 @@ from src.memory.schemas import CompanyInfo, DiagnosticResult, KPIFramework
 
 def build_company_context(company_info: CompanyInfo) -> str:
     """Constroi contexto da empresa a partir de CompanyInfo.
-    
+
     Args:
         company_info: Informacoes basicas da empresa
-    
+
     Returns:
         str: Contexto formatado para inclusao em prompts
-    
+
     Example:
         >>> company_info = CompanyInfo(name="TechCorp", sector="Tecnologia", size="media", industry="software")
         >>> context = build_company_context(company_info)
@@ -39,24 +38,24 @@ def build_company_context(company_info: CompanyInfo) -> str:
     lines.append(f"Empresa: {company_info.name}")
     lines.append(f"Setor: {company_info.sector}")
     lines.append(f"Porte: {company_info.size}")
-    
+
     if company_info.industry:
         lines.append(f"Industria: {company_info.industry}")
     if company_info.founded_year:
         lines.append(f"Ano de fundacao: {company_info.founded_year}")
-    
+
     return "\n".join(lines)
 
 
 def build_diagnostic_context(diagnostic_result: DiagnosticResult) -> str:
     """Constroi contexto do diagnostico BSC realizado.
-    
+
     Args:
         diagnostic_result: Resultado do diagnostico de UMA perspectiva BSC
-    
+
     Returns:
         str: Contexto formatado para inclusao em prompts
-    
+
     Example:
         >>> diagnostic_result = DiagnosticResult(...)
         >>> context = build_diagnostic_context(diagnostic_result)
@@ -64,26 +63,26 @@ def build_diagnostic_context(diagnostic_result: DiagnosticResult) -> str:
         Gaps identificados:
         - Margens EBITDA baixas (15% vs target 20%)
         - Falta visibilidade de custos por produto
-        
+
         Estado atual resumido:
         Receita em crescimento acelerado...
-        
+
         Oportunidades:
         - Implementar Activity-Based Costing
     """
     lines = []
-    
+
     # Perspectiva
     lines.append(f"Perspectiva: {diagnostic_result.perspective}")
     lines.append("")
-    
+
     # Gaps identificados
     if diagnostic_result.gaps:
         lines.append("Gaps identificados:")
         for gap in diagnostic_result.gaps[:5]:  # Top 5
             lines.append(f"- {gap}")
         lines.append("")
-    
+
     # Estado atual
     if diagnostic_result.current_state:
         lines.append("Estado atual resumido:")
@@ -93,34 +92,34 @@ def build_diagnostic_context(diagnostic_result: DiagnosticResult) -> str:
             state_summary += "..."
         lines.append(state_summary)
         lines.append("")
-    
+
     # Oportunidades
     if diagnostic_result.opportunities:
         lines.append("Oportunidades de melhoria:")
         for opp in diagnostic_result.opportunities[:3]:  # Top 3
             lines.append(f"- {opp}")
         lines.append("")
-    
+
     # Prioridade
     lines.append(f"Prioridade desta perspectiva: {diagnostic_result.priority}")
-    
+
     return "\n".join(lines)
 
 
 def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic") -> str:
     """Constroi contexto resumido do diagnostico completo (4 perspectivas).
-    
+
     Args:
         complete_diagnostic: Diagnostico completo das 4 perspectivas BSC
-    
+
     Returns:
         str: Contexto formatado resumido
-    
+
     Example:
         >>> context = build_complete_diagnostic_context(complete_diagnostic)
         >>> print(context)
         Diagnostico BSC Completo:
-        
+
         Financeira (HIGH): 3 gaps, 2 oportunidades
         Clientes (HIGH): 3 gaps, 2 oportunidades
         ...
@@ -128,83 +127,83 @@ def build_complete_diagnostic_context(complete_diagnostic: "CompleteDiagnostic")
     lines = []
     lines.append("Diagnostico BSC Completo:")
     lines.append("")
-    
+
     perspectives = [
         ("Financeira", complete_diagnostic.financial),
         ("Clientes", complete_diagnostic.customer),
         ("Processos Internos", complete_diagnostic.process),
-        ("Aprendizado e Crescimento", complete_diagnostic.learning)
+        ("Aprendizado e Crescimento", complete_diagnostic.learning),
     ]
-    
+
     for name, diag in perspectives:
         if diag:
             gaps_count = len(diag.gaps) if diag.gaps else 0
             opps_count = len(diag.opportunities) if diag.opportunities else 0
             lines.append(f"{name} ({diag.priority}): {gaps_count} gaps, {opps_count} oportunidades")
-    
+
     lines.append("")
     lines.append(f"Resumo Executivo: {complete_diagnostic.executive_summary[:200]}...")
-    
+
     return "\n".join(lines)
 
 
-def build_kpi_context(kpi_framework: Optional[KPIFramework] = None) -> str:
+def build_kpi_context(kpi_framework: KPIFramework | None = None) -> str:
     """Constroi contexto de KPIs existentes (se fornecido).
-    
+
     Args:
         kpi_framework: Framework de KPIs existente (opcional)
-    
+
     Returns:
         str: Contexto formatado ou string vazia se nao fornecido
-    
+
     Example:
         >>> kpi_framework = KPIFramework(...)
         >>> context = build_kpi_context(kpi_framework)
         >>> print(context)
         KPIs ja definidos (para vinculacao com objetivos):
-        
+
         Perspectiva Financeira:
         - Margem EBITDA
         - Crescimento Receita
-        
+
         Perspectiva Clientes:
         - NPS (Net Promoter Score)
     """
     if not kpi_framework:
         return ""
-    
+
     lines = []
     lines.append("KPIs ja definidos (para vinculacao com objetivos):")
     lines.append("")
-    
+
     # Financeira
     if kpi_framework.financial_kpis:
         lines.append("Perspectiva Financeira:")
         for kpi in kpi_framework.financial_kpis:
             lines.append(f"- {kpi.name}")
         lines.append("")
-    
+
     # Clientes
     if kpi_framework.customer_kpis:
         lines.append("Perspectiva Clientes:")
         for kpi in kpi_framework.customer_kpis:
             lines.append(f"- {kpi.name}")
         lines.append("")
-    
+
     # Processos
     if kpi_framework.process_kpis:
         lines.append("Perspectiva Processos Internos:")
         for kpi in kpi_framework.process_kpis:
             lines.append(f"- {kpi.name}")
         lines.append("")
-    
+
     # Aprendizado
     if kpi_framework.learning_kpis:
         lines.append("Perspectiva Aprendizado e Crescimento:")
         for kpi in kpi_framework.learning_kpis:
             lines.append(f"- {kpi.name}")
         lines.append("")
-    
+
     return "\n".join(lines)
 
 
@@ -311,7 +310,7 @@ CRITERIOS DE VALIDACAO:
 
 3. CONSISTENCIA INTERNA:
    - Objetivos de diferentes perspectivas devem ser complementares (nao contraditorios)
-   - Dependencies entre objetivos devem fazer sentido (ex: processos eficientes → clientes satisfeitos → rentabilidade)
+   - Dependencies entre objetivos devem fazer sentido (ex: processos eficientes -> clientes satisfeitos -> rentabilidade)
    - Timeframes coerentes (objetivos base antes de objetivos dependentes)
 
 4. QUALIDADE SMART:
@@ -350,15 +349,15 @@ Retorne apenas o objeto JSON de validacao.
 """
 
 
-def build_kpi_linkage_instruction(kpi_framework: Optional[KPIFramework] = None) -> str:
+def build_kpi_linkage_instruction(kpi_framework: KPIFramework | None = None) -> str:
     """Constroi instrucao sobre vinculacao com KPIs baseado em disponibilidade.
-    
+
     Args:
         kpi_framework: Framework de KPIs existente (opcional)
-    
+
     Returns:
         str: Instrucao formatada
-    
+
     Example:
         >>> kpi_framework = KPIFramework(...)
         >>> instruction = build_kpi_linkage_instruction(kpi_framework)
@@ -373,9 +372,7 @@ def build_kpi_linkage_instruction(kpi_framework: Optional[KPIFramework] = None) 
             "Esta vinculacao e critica para garantir alinhamento entre direcao estrategica (objetivos) "
             "e medicao operacional (KPIs)."
         )
-    else:
-        return (
-            "NOTA: KPIs ainda nao foram definidos para esta empresa. "
-            "Deixe o campo 'related_kpis' vazio ou com lista vazia."
-        )
-
+    return (
+        "NOTA: KPIs ainda nao foram definidos para esta empresa. "
+        "Deixe o campo 'related_kpis' vazio ou com lista vazia."
+    )

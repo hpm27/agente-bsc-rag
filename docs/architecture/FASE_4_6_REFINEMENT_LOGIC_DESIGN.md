@@ -1,13 +1,13 @@
 # FASE 4.6 - Refinement Logic: Design Técnico
 
-**Data:** 2025-11-19  
-**Versão:** 1.0  
-**Status:** 🚧 Em Design  
+**Data:** 2025-11-19
+**Versão:** 1.0
+**Status:** [EMOJI] Em Design
 **Fase:** 4.6 - Refinement Logic
 
 ---
 
-## 📋 EXECUTIVE SUMMARY
+## [EMOJI] EXECUTIVE SUMMARY
 
 ### Objetivo
 
@@ -15,8 +15,8 @@ Implementar lógica de refinamento de diagnóstico baseada em feedback do usuár
 
 ### Contexto
 
-- **FASE 4.5**: Sistema de feedback collection implementado ✅
-- **Workflow atual**: REJECTED/MODIFIED → DISCOVERY (refaz diagnóstico completo)
+- **FASE 4.5**: Sistema de feedback collection implementado [OK]
+- **Workflow atual**: REJECTED/MODIFIED -> DISCOVERY (refaz diagnóstico completo)
 - **Problema**: Refazer diagnóstico completo é ineficiente quando apenas ajustes são necessários
 - **Solução**: Refinement logic que melhora diagnóstico existente baseado em feedback específico
 
@@ -29,7 +29,7 @@ Implementar lógica de refinamento de diagnóstico baseada em feedback do usuár
 
 ---
 
-## 🏗️ ARQUITETURA
+## [EMOJI] ARQUITETURA
 
 ### Fluxo de Refinement
 
@@ -108,7 +108,7 @@ Implementar lógica de refinamento de diagnóstico baseada em feedback do usuár
 
 ---
 
-## 🔧 IMPLEMENTAÇÃO
+## [EMOJI] IMPLEMENTAÇÃO
 
 ### Etapa 1: Prompt de Refinement
 
@@ -153,18 +153,18 @@ async def refine_diagnostic(
     state: BSCState,
 ) -> CompleteDiagnostic:
     """Refina diagnóstico existente baseado em feedback do usuário.
-    
+
     Args:
         existing_diagnostic: Diagnóstico original a ser refinado
         feedback: Feedback textual do usuário sobre o que melhorar
         state: Estado atual com client_profile e contexto
-        
+
     Returns:
         CompleteDiagnostic refinado
-        
+
     Raises:
         ValueError: Se feedback vazio ou diagnóstico inválido
-        
+
     Example:
         >>> diagnostic = await agent.run_diagnostic(state)
         >>> refined = await agent.refine_diagnostic(
@@ -208,14 +208,14 @@ async def refine_diagnostic(
 ```python
 def discovery_handler(self, state: BSCState) -> dict[str, Any]:
     """Handler de discovery com suporte a refinement."""
-    
+
     # Detectar se refinement necessário
     needs_refinement = (
         state.diagnostic is not None and
         state.approval_status in (ApprovalStatus.REJECTED, ApprovalStatus.MODIFIED) and
         state.approval_feedback
     )
-    
+
     if needs_refinement:
         # Refinement: melhorar diagnóstico existente
         logger.info("[DISCOVERY] Refinement necessário baseado em feedback")
@@ -223,7 +223,7 @@ def discovery_handler(self, state: BSCState) -> dict[str, Any]:
     else:
         # Discovery normal: criar diagnóstico novo
         result = await self.consulting_orchestrator.coordinate_discovery(state)
-    
+
     return result
 ```
 
@@ -232,18 +232,18 @@ def discovery_handler(self, state: BSCState) -> dict[str, Any]:
 ```python
 async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
     """Coordena refinement de diagnóstico baseado em feedback."""
-    
+
     diagnostic_agent = self.diagnostic_agent
     existing_diagnostic = state.diagnostic
     feedback = state.approval_feedback or ""
-    
+
     # Refinar diagnóstico
     refined_diagnostic = await diagnostic_agent.refine_diagnostic(
         existing_diagnostic=existing_diagnostic,
         feedback=feedback,
         state=state
     )
-    
+
     return {
         "diagnostic": refined_diagnostic,
         "current_phase": ConsultingPhase.APPROVAL_PENDING,
@@ -257,7 +257,7 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## 📊 ESTRATÉGIAS DE REFINEMENT
+## [EMOJI] ESTRATÉGIAS DE REFINEMENT
 
 ### 1. Targeted Refinement (Preferencial)
 
@@ -314,7 +314,7 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## 🎯 MÉTRICAS DE SUCESSO
+## [EMOJI] MÉTRICAS DE SUCESSO
 
 | Métrica | Target | Como Medir |
 |---------|--------|------------|
@@ -326,7 +326,7 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## 🧪 TESTES
+## [EMOJI] TESTES
 
 ### Testes Unitários (8 testes)
 
@@ -350,7 +350,7 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Best Practices (2025)
 
@@ -374,9 +374,9 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## 🚀 PLANO DE IMPLEMENTAÇÃO
+## [EMOJI] PLANO DE IMPLEMENTAÇÃO
 
-### Etapa 0: Design Técnico ✅ (Esta etapa)
+### Etapa 0: Design Técnico [OK] (Esta etapa)
 
 - [x] Documento de design completo
 - [x] Arquitetura definida
@@ -421,7 +421,7 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-## ⚠️ RISCOS E MITIGAÇÕES
+## [WARN] RISCOS E MITIGAÇÕES
 
 | Risco | Probabilidade | Impacto | Mitigação |
 |-------|---------------|---------|-----------|
@@ -432,7 +432,6 @@ async def coordinate_refinement(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-**Última Atualização:** 2025-11-19  
-**Status:** 🚧 Design Completo - Pronto para Implementação  
+**Última Atualização:** 2025-11-19
+**Status:** [EMOJI] Design Completo - Pronto para Implementação
 **Próximo:** Etapa 1 - Criar Prompt de Refinement
-

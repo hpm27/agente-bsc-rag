@@ -1,10 +1,10 @@
-# 🚀 Guia de Deployment - Agente BSC RAG
+# [EMOJI] Guia de Deployment - Agente BSC RAG
 
 > Deploy do sistema BSC RAG em ambientes local, Docker e cloud (AWS/Azure/GCP)
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 - [Pré-requisitos de Produção](#pré-requisitos-de-produção)
 - [Opção 1: Deploy Local](#opção-1-deploy-local)
@@ -19,7 +19,7 @@
 
 ---
 
-## 🛠️ Pré-requisitos de Produção
+## [EMOJI] Pré-requisitos de Produção
 
 ### Recursos Mínimos Recomendados
 
@@ -32,23 +32,23 @@
 
 ### Software Necessário
 
-- ✅ **Python 3.12+**
-- ✅ **Docker 24.0+** (para Qdrant)
-- ✅ **Docker Compose 2.20+**
-- ✅ **Git**
-- ✅ **HTTPS/SSL** (Let's Encrypt recomendado)
+- [OK] **Python 3.12+**
+- [OK] **Docker 24.0+** (para Qdrant)
+- [OK] **Docker Compose 2.20+**
+- [OK] **Git**
+- [OK] **HTTPS/SSL** (Let's Encrypt recomendado)
 
 ### API Keys
 
-- ✅ **OpenAI API Key** (tier 2+ recomendado para produção)
-- ✅ **Cohere API Key** (Trial ou Production)
-- ✅ **Anthropic API Key** (tier 2+ recomendado)
+- [OK] **OpenAI API Key** (tier 2+ recomendado para produção)
+- [OK] **Cohere API Key** (Trial ou Production)
+- [OK] **Anthropic API Key** (tier 2+ recomendado)
 
-💡 **Dica**: Configure rate limits adequados para produção.
+[EMOJI] **Dica**: Configure rate limits adequados para produção.
 
 ---
 
-## 🖥️ Opção 1: Deploy Local
+## [EMOJI] Opção 1: Deploy Local
 
 Deploy em servidor Linux/Windows físico ou VM.
 
@@ -211,7 +211,7 @@ server {
     listen 80;
     server_name seu-dominio.com;
 
-    # Redirecionar HTTP → HTTPS
+    # Redirecionar HTTP -> HTTPS
     return 301 https://$server_name$request_uri;
 }
 
@@ -239,7 +239,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # WebSocket support (para Streamlit)
         proxy_read_timeout 86400;
     }
@@ -282,11 +282,11 @@ sudo journalctl -u agente-bsc -f
 curl https://seu-dominio.com/health
 ```
 
-✅ **Deploy completo!** Acesse: `https://seu-dominio.com`
+[OK] **Deploy completo!** Acesse: `https://seu-dominio.com`
 
 ---
 
-## 🐳 Opção 2: Deploy com Docker
+## [EMOJI] Opção 2: Deploy com Docker
 
 Deploy completo usando Docker Compose.
 
@@ -477,7 +477,7 @@ docker exec agente-bsc-qdrant tar xzf /backup.tar.gz -C /
 
 ---
 
-## ☁️ Opção 3: Deploy em Cloud
+## [EMOJI] Opção 3: Deploy em Cloud
 
 ### AWS (Amazon Web Services)
 
@@ -649,7 +649,7 @@ gcloud compute ssh agente-bsc-vm --zone=us-central1-a
 
 ---
 
-## ⚙️ Configuração de Produção
+## [EMOJI] Configuração de Produção
 
 ### Variáveis de Ambiente (.env Produção)
 
@@ -702,7 +702,7 @@ ALLOWED_ORIGINS=https://seu-dominio.com
 
 ---
 
-## 📊 Monitoramento e Logs
+## [EMOJI] Monitoramento e Logs
 
 ### 1. Logs Centralizados
 
@@ -804,10 +804,10 @@ def health_check():
         # Verificar Qdrant
         client = QdrantClient("localhost", port=6333)
         collections = client.get_collections()
-        
+
         # Verificar cache
         cache_ok = os.path.exists("/var/cache/agente-bsc/embeddings")
-        
+
         return {
             "status": "healthy",
             "qdrant": "ok",
@@ -820,7 +820,7 @@ def health_check():
 
 ---
 
-## 💾 Backup e Disaster Recovery
+## [EMOJI] Backup e Disaster Recovery
 
 ### 1. Backup do Qdrant
 
@@ -895,7 +895,7 @@ sudo systemctl start agente-bsc
 
 ---
 
-## 📈 Escalabilidade
+## [EMOJI] Escalabilidade
 
 ### Horizontal Scaling (Load Balancer)
 
@@ -951,7 +951,7 @@ Aumentar recursos da VM/container conforme necessidade:
 
 ---
 
-## 🔒 Segurança
+## [EMOJI] Segurança
 
 ### 1. Autenticação (Streamlit)
 
@@ -962,7 +962,7 @@ import hmac
 
 def check_password():
     """Returns True if user entered correct password."""
-    
+
     def password_entered():
         """Callback when password is entered."""
         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
@@ -1003,9 +1003,9 @@ password = "SuaSenhaSegura123"
 
 ### 2. HTTPS Obrigatório
 
-- ✅ Let's Encrypt (gratuito)
-- ✅ TLS 1.2+ apenas
-- ✅ HSTS Header
+- [OK] Let's Encrypt (gratuito)
+- [OK] TLS 1.2+ apenas
+- [OK] HSTS Header
 
 **Nginx HSTS**:
 
@@ -1044,7 +1044,7 @@ openai_key = get_secret('prod/agente-bsc/openai-key')
 
 ---
 
-## 💰 Custos Estimados
+## [EMOJI] Custos Estimados
 
 ### AWS (US East - Mensais)
 
@@ -1079,22 +1079,21 @@ openai_key = get_secret('prod/agente-bsc/openai-key')
 | Load Balancer | HTTPS | $20 |
 | **Total Infraestrutura** | | **~$137/mês** |
 
-💡 **Dica**: Use Spot/Preemptible instances para economizar ~70% em cargas não-críticas.
+[EMOJI] **Dica**: Use Spot/Preemptible instances para economizar ~70% em cargas não-críticas.
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Para dúvidas sobre deployment:
 
-- 📖 Consulte [README.md](../README.md) para visão geral
-- 📘 Veja [TUTORIAL.md](TUTORIAL.md) para uso pós-deploy
-- 🐛 Reporte issues: [GitHub Issues](https://github.com/seu-usuario/agente-bsc-rag/issues)
+- [EMOJI] Consulte [README.md](../README.md) para visão geral
+- [EMOJI] Veja [TUTORIAL.md](TUTORIAL.md) para uso pós-deploy
+- [EMOJI] Reporte issues: [GitHub Issues](https://github.com/seu-usuario/agente-bsc-rag/issues)
 
 ---
 
 <p align="center">
-  <strong>🚀 Deployment Guide v1.0</strong><br>
+  <strong>[EMOJI] Deployment Guide v1.0</strong><br>
   <em>Agente BSC RAG - MVP Out/2025</em>
 </p>
-

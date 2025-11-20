@@ -2,13 +2,13 @@
 
 **Data**: 2025-10-16 (Sessão 10)  
 **Contexto**: Implementação DiagnosticAgent + suite de testes (16 testes)  
-**Resultado**: ✅ 100% testes passando, 78% coverage, 2h30min real  
+**Resultado**: [OK] 100% testes passando, 78% coverage, 2h30min real  
 **Custo Real**: 40 minutos perdidos em debugging evitável  
 **ROI**: 60 minutos economizados com boas práticas aplicadas
 
 ---
 
-## 📋 VISÃO GERAL
+## [EMOJI] VISÃO GERAL
 
 ### O Que Foi Implementado
 
@@ -31,27 +31,27 @@
 
 ---
 
-## ⏱️ TIMELINE DOS PROBLEMAS
+## [TIMER] TIMELINE DOS PROBLEMAS
 
 ### Cronologia Completa (40 minutos debugging)
 
 | Tempo | Problema | Impacto | Status |
 |-------|----------|---------|--------|
-| T+0min | Testes escritos SEM aplicar checklist | 0 min | ❌ Erro processo |
-| T+5min | Linter errors (blank lines, imports) | 3 min | ✅ Corrigido |
-| T+8min | Type compatibility (api_key, json.loads) | 5 min | ✅ Corrigido |
-| T+13min | process_query() não existe | 8 min | ✅ Descoberto |
-| T+21min | Dados inválidos em fixtures (<20 chars) | 6 min | ✅ Corrigido |
-| T+27min | BSCState.query obrigatório | 4 min | ✅ Descoberto |
-| T+31min | @retry com reraise=True comportamento | 10 min | ✅ Estudado |
-| T+41min | ValidationError.from_exception_data() | 4 min | ✅ Corrigido |
-| **T+45min** | **16/16 testes PASSANDO** | **-** | ✅ **SUCESSO** |
+| T+0min | Testes escritos SEM aplicar checklist | 0 min | [ERRO] Erro processo |
+| T+5min | Linter errors (blank lines, imports) | 3 min | [OK] Corrigido |
+| T+8min | Type compatibility (api_key, json.loads) | 5 min | [OK] Corrigido |
+| T+13min | process_query() não existe | 8 min | [OK] Descoberto |
+| T+21min | Dados inválidos em fixtures (<20 chars) | 6 min | [OK] Corrigido |
+| T+27min | BSCState.query obrigatório | 4 min | [OK] Descoberto |
+| T+31min | @retry com reraise=True comportamento | 10 min | [OK] Estudado |
+| T+41min | ValidationError.from_exception_data() | 4 min | [OK] Corrigido |
+| **T+45min** | **16/16 testes PASSANDO** | **-** | [OK] **SUCESSO** |
 
 **Total tempo debugging evitável**: 40 minutos (se checklist aplicado ANTES)
 
 ---
 
-## 🔍 ANÁLISE DETALHADA DOS PROBLEMAS
+## [EMOJI] ANÁLISE DETALHADA DOS PROBLEMAS
 
 ### PROBLEMA 1: Linter Errors Iniciais (3 minutos)
 
@@ -111,7 +111,7 @@ consolidated = json.loads(str(response.content))  # type: ignore
 
 ---
 
-### PROBLEMA 3: process_query() Não Existe (8 minutos) ⚠️ **CRÍTICO**
+### PROBLEMA 3: process_query() Não Existe (8 minutos) [WARN] **CRÍTICO**
 
 **Erro**:
 ```python
@@ -184,7 +184,7 @@ mock_results = {
 mock_results = {
     "Financeira": DiagnosticResult(
         perspective="Financeira",
-        current_state="Estado financeiro atual da empresa com 20+ caracteres",  # 55 chars ✅
+        current_state="Estado financeiro atual da empresa com 20+ caracteres",  # 55 chars [OK]
         gaps=["Gap 1", "Gap 2", "Gap 3"],  # Mínimo 3 items
         ...
     ),
@@ -223,7 +223,7 @@ def sample_bsc_state(sample_client_profile):
 @pytest.fixture
 def sample_bsc_state(sample_client_profile):
     state = BSCState(
-        query="Como implementar BSC?",  # Campo obrigatório ✅
+        query="Como implementar BSC?",  # Campo obrigatório [OK]
         conversation_history=[],
         client_profile=sample_client_profile,
     )
@@ -242,7 +242,7 @@ grep "class BSCState" src/graph/states.py -A 15
 
 ---
 
-### PROBLEMA 6: @retry com reraise=True (10 minutos) ⚠️ **CRÍTICO**
+### PROBLEMA 6: @retry com reraise=True (10 minutos) [WARN] **CRÍTICO**
 
 **Erro**:
 ```python
@@ -263,7 +263,7 @@ def test_analyze_perspective_retry():
     )
     
     # ESPERAVA: RetryError após 3 tentativas
-    with pytest.raises(RetryError):  # ❌ FALHA!
+    with pytest.raises(RetryError):  # [ERRO] FALHA!
         diagnostic_agent.analyze_perspective(...)
 ```
 
@@ -272,7 +272,7 @@ def test_analyze_perspective_retry():
 @retry(
     stop=stop_after_attempt(3),
     wait=wait_exponential(multiplier=1, min=2, max=10),
-    reraise=True,  # ← IMPORTANTE! Relança exceção ORIGINAL
+    reraise=True,  # <- IMPORTANTE! Relança exceção ORIGINAL
 )
 def analyze_perspective(...):
     pass
@@ -294,7 +294,7 @@ def test_analyze_perspective_retry():
         return_value=Mock(invoke=mock_error)
     )
     
-    # Com reraise=True, lança ValidationError original ✅
+    # Com reraise=True, lança ValidationError original [OK]
     with pytest.raises(ValidationError):
         diagnostic_agent.analyze_perspective(...)
 ```
@@ -363,7 +363,7 @@ structured_llm.invoke = Mock(return_value=mock_result)
 
 ---
 
-## ✅ METODOLOGIA QUE FUNCIONOU (5 Práticas Vitoriosas)
+## [OK] METODOLOGIA QUE FUNCIONOU (5 Práticas Vitoriosas)
 
 ### 1. Traceback Completo SEM Filtros (Memória 9969628)
 
@@ -374,17 +374,17 @@ pytest tests/test_diagnostic_agent.py -v --tb=long 2>&1
 
 **Comandos ERRADOS** (causam perda de informação):
 ```bash
-# ❌ NUNCA usar --tb=short ou --tb=line
+# [ERRO] NUNCA usar --tb=short ou --tb=line
 pytest ... --tb=short
 
-# ❌ NUNCA usar Select-Object ou Select-String
+# [ERRO] NUNCA usar Select-Object ou Select-String
 pytest ... | Select-Object -First 50
 pytest ... | Select-String -Pattern "PASSED"
 ```
 
 **Por Que Funcionou**:
 - Traceback completo mostrou linha exata do erro
-- Stack trace revelou chamadas intermediárias (patch.object → invoke)
+- Stack trace revelou chamadas intermediárias (patch.object -> invoke)
 - Identificou causa raiz em 1-2 minutos vs 10+ minutos com traceback truncado
 
 **ROI**: 15 minutos economizados por erro (4 erros × 15 min = **60 minutos economizados**)
@@ -403,7 +403,7 @@ grep "def analyze_perspective" src/agents/diagnostic_agent.py -A 10
 
 # STEP 3: Contar parâmetros (não contar self)
 # Output: def analyze_perspective(self, perspective, client_profile, state)
-# → 3 parâmetros (não contar self)
+# -> 3 parâmetros (não contar self)
 
 # STEP 4: Verificar specialist agents
 grep "def " src/agents/financial_agent.py -C 2
@@ -420,16 +420,16 @@ grep "def " src/agents/financial_agent.py -C 2
 ```python
 # STEP 1: Revisar Pydantic schema ANTES de criar fixture
 class DiagnosticResult(BaseModel):
-    current_state: str = Field(min_length=20)  # ← ATENÇÃO!
-    gaps: list[str] = Field(default_factory=list)  # ← Mínimo 3 items no @field_validator
+    current_state: str = Field(min_length=20)  # <- ATENÇÃO!
+    gaps: list[str] = Field(default_factory=list)  # <- Mínimo 3 items no @field_validator
 
 # STEP 2: Criar fixture com dados que PASSAM validações
 @pytest.fixture
 def sample_diagnostic_result():
     return DiagnosticResult(
         perspective="Financeira",
-        current_state="Estado financeiro detalhado com mais de 20 caracteres necessários",  # 70 chars ✅
-        gaps=["Gap 1", "Gap 2", "Gap 3"],  # 3 items ✅
+        current_state="Estado financeiro detalhado com mais de 20 caracteres necessários",  # 70 chars [OK]
+        gaps=["Gap 1", "Gap 2", "Gap 3"],  # 3 items [OK]
         opportunities=["Opp 1", "Opp 2"],
         priority="HIGH",
         key_insights=["Insight 1"],
@@ -450,12 +450,12 @@ def analyze_perspective(...):
     pass
 
 # STEP 2: Estudar documentação ANTES de testar
-# tenacity docs: reraise=True → relança exceção original após tentativas esgotadas
+# tenacity docs: reraise=True -> relança exceção original após tentativas esgotadas
 
 # STEP 3: Escrever teste baseado no comportamento REAL
 def test_analyze_perspective_retry():
     # Com reraise=True, lança ValidationError (não RetryError)
-    with pytest.raises(ValidationError):  # ✅
+    with pytest.raises(ValidationError):  # [OK]
         agent.analyze_perspective(...)
 ```
 
@@ -469,18 +469,18 @@ def test_analyze_perspective_retry():
 ```bash
 # Ciclo 1: Corrigir linter errors
 pytest tests/test_diagnostic_agent.py --co  # Collect only (sintaxe)
-# → 3 minutos
+# -> 3 minutos
 
 # Ciclo 2: Corrigir type compatibility
 pytest tests/test_diagnostic_agent.py -v --tb=long
-# → 5 minutos
+# -> 5 minutos
 
-# Ciclo 3: Corrigir process_query → invoke
+# Ciclo 3: Corrigir process_query -> invoke
 pytest tests/test_diagnostic_agent.py::test_analyze_perspective_financial -v --tb=long
-# → 8 minutos
+# -> 8 minutos
 
 # Ciclo 4: Corrigir dados inválidos em fixtures
-# → 6 minutos
+# -> 6 minutos
 
 # Total: 4 ciclos × 5-8 min = 22-32 minutos debugging focado
 ```
@@ -489,31 +489,31 @@ pytest tests/test_diagnostic_agent.py::test_analyze_perspective_financial -v --t
 
 ---
 
-## 📊 CHECKLIST APLICADO VS REALIDADE
+## [EMOJI] CHECKLIST APLICADO VS REALIDADE
 
 ### Memória 9969868: Checklist de 7 Pontos
 
 | # | Item | Deveria? | Fiz? | Impacto Real |
 |---|------|----------|------|--------------|
-| 1 | **Ler assinatura completa** (grep) | ✅ SIM | ❌ NÃO | 8 min perdidos (process_query) |
-| 2 | **Verificar tipo de retorno** | ✅ SIM | ✅ SIM | 0 min perdidos |
-| 3 | **Contar parâmetros** | ✅ SIM | ✅ SIM | 0 min perdidos |
-| 4 | **Validações pré-flight** | ✅ SIM | ❌ NÃO | 10 min perdidos (query obrigatório + min_length) |
-| 5 | **Entender decorators** | ✅ SIM | ❌ NÃO | 10 min perdidos (@retry reraise=True) |
-| 6 | **Fixtures Pydantic** | ✅ SIM | ⚠️ PARCIAL | 6 min perdidos (dados <20 chars) |
-| 7 | **Dados válidos em mocks** | ✅ SIM | ⚠️ PARCIAL | 4 min perdidos (ValidationError syntax) |
+| 1 | **Ler assinatura completa** (grep) | [OK] SIM | [ERRO] NÃO | 8 min perdidos (process_query) |
+| 2 | **Verificar tipo de retorno** | [OK] SIM | [OK] SIM | 0 min perdidos |
+| 3 | **Contar parâmetros** | [OK] SIM | [OK] SIM | 0 min perdidos |
+| 4 | **Validações pré-flight** | [OK] SIM | [ERRO] NÃO | 10 min perdidos (query obrigatório + min_length) |
+| 5 | **Entender decorators** | [OK] SIM | [ERRO] NÃO | 10 min perdidos (@retry reraise=True) |
+| 6 | **Fixtures Pydantic** | [OK] SIM | [WARN] PARCIAL | 6 min perdidos (dados <20 chars) |
+| 7 | **Dados válidos em mocks** | [OK] SIM | [WARN] PARCIAL | 4 min perdidos (ValidationError syntax) |
 
 **TOTAL EVITÁVEL**: 38 minutos (se aplicasse checklist 100%)
 
-**REALIDADE**: Apliquei checklist ~30% → 40 minutos perdidos
+**REALIDADE**: Apliquei checklist ~30% -> 40 minutos perdidos
 
 **CONCLUSÃO**: Checklist FUNCIONA, mas só se aplicado ANTES de escrever testes!
 
 ---
 
-## 🚀 DESCOBERTAS TÉCNICAS (5 Insights Novos)
+## [EMOJI] DESCOBERTAS TÉCNICAS (5 Insights Novos)
 
-### Descoberta 1: Specialist Agents Usam invoke() ⚠️ **CRÍTICO**
+### Descoberta 1: Specialist Agents Usam invoke() [WARN] **CRÍTICO**
 
 **Contexto**: Todos specialist agents (FinancialAgent, CustomerAgent, ProcessAgent, LearningAgent) herdam de BaseLLMAgent.
 
@@ -529,7 +529,7 @@ class FinancialAgent(BaseLLMAgent):
 
 **NÃO existe**:
 ```python
-def process_query(self, state: BSCState, query: str):  # ❌ NUNCA EXISTIU!
+def process_query(self, state: BSCState, query: str):  # [ERRO] NUNCA EXISTIU!
     pass
 ```
 
@@ -546,7 +546,7 @@ def process_query(self, state: BSCState, query: str):  # ❌ NUNCA EXISTIU!
 **Schema**:
 ```python
 class BSCState(BaseModel):
-    query: str = Field(..., description="Query do usuário")  # ← SEM DEFAULT!
+    query: str = Field(..., description="Query do usuário")  # <- SEM DEFAULT!
     conversation_history: list[dict] = Field(default_factory=list)
     client_profile: ClientProfile | None = Field(default=None)
 ```
@@ -558,7 +558,7 @@ class BSCState(BaseModel):
 @pytest.fixture
 def sample_bsc_state():
     return BSCState(
-        query="Query obrigatória",  # ✅ Sempre incluir
+        query="Query obrigatória",  # [OK] Sempre incluir
         conversation_history=[],
         client_profile=None,
     )
@@ -583,22 +583,22 @@ def method():
     raise ValidationError("Erro")
 
 # Comportamento:
-# - Tentativa 1: ValidationError → retry
-# - Tentativa 2: ValidationError → retry
-# - Tentativa 3: ValidationError → RELANÇA ValidationError (NÃO RetryError!)
+# - Tentativa 1: ValidationError -> retry
+# - Tentativa 2: ValidationError -> retry
+# - Tentativa 3: ValidationError -> RELANÇA ValidationError (NÃO RetryError!)
 
 # Com reraise=False (padrão):
-# - Tentativa 3: ValidationError → Lança RetryError(last_attempt=...)
+# - Tentativa 3: ValidationError -> Lança RetryError(last_attempt=...)
 ```
 
 **Testes Corretos**:
 ```python
 # Com reraise=True:
-with pytest.raises(ValidationError):  # ✅ Exceção original
+with pytest.raises(ValidationError):  # [OK] Exceção original
     method()
 
 # Com reraise=False:
-with pytest.raises(RetryError):  # ✅ Wrapped em RetryError
+with pytest.raises(RetryError):  # [OK] Wrapped em RetryError
     method()
 ```
 
@@ -628,7 +628,7 @@ def test_diagnostic_result_validation():
             gaps=[],  # Lista vazia (min 3)
             ...
         )
-    # Pydantic lança ValidationError automaticamente ✅
+    # Pydantic lança ValidationError automaticamente [OK]
 ```
 
 **Aplicação**: Preferir testar validações via dados inválidos vs criar exceções manualmente.
@@ -691,7 +691,7 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 
 ---
 
-## 💰 IMPACTO E ROI
+## [EMOJI] IMPACTO E ROI
 
 ### Custo Real vs Custo Evitável
 
@@ -725,50 +725,50 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 
 ---
 
-## 📝 RECOMENDAÇÕES ACIONÁVEIS (8 Action Items)
+## [EMOJI] RECOMENDAÇÕES ACIONÁVEIS (8 Action Items)
 
 ### Para Próxima Sessão (FASE 2.6)
 
-1. **✅ APLICAR CHECKLIST ANTES** de escrever qualquer teste (não durante/depois)
+1. **[OK] APLICAR CHECKLIST ANTES** de escrever qualquer teste (não durante/depois)
    - Tempo: +10 minutos investidos
    - ROI: 40 minutos economizados
 
-2. **✅ Grep PRIMEIRO** para verificar assinaturas de métodos
+2. **[OK] Grep PRIMEIRO** para verificar assinaturas de métodos
    ```bash
    grep "def method_name" src/file.py -A 10
    ```
 
-3. **✅ Revisar Pydantic Schemas** antes de criar fixtures
+3. **[OK] Revisar Pydantic Schemas** antes de criar fixtures
    - Campos obrigatórios (sem default)
    - Validações (min_length, Literal, field_validator)
 
-4. **✅ Estudar Decorators** antes de testar
+4. **[OK] Estudar Decorators** antes de testar
    - @retry: verificar `reraise`, `stop`, `wait`
    - @cache: verificar invalidação
    - Outros: verificar side effects
 
-5. **✅ Traceback Completo SEMPRE**
+5. **[OK] Traceback Completo SEMPRE**
    ```bash
    pytest tests/file.py -v --tb=long 2>&1
    ```
 
-6. **✅ Dados Válidos em Mocks**
+6. **[OK] Dados Válidos em Mocks**
    - current_state: 50+ chars (não 20 mínimo)
    - gaps: 5 items (não 3 mínimo)
    - Margem de segurança vs limite exato
 
-7. **✅ Test-First para AsyncIO**
+7. **[OK] Test-First para AsyncIO**
    - Identificar métodos async ANTES de testar
    - Usar `asyncio.run()` ou `@pytest.mark.asyncio`
 
-8. **✅ Iteração Rápida**
+8. **[OK] Iteração Rápida**
    - 1 problema por ciclo
    - Re-executar testes após cada correção
    - Não acumular mudanças
 
 ---
 
-## 📊 MÉTRICAS FINAIS
+## [EMOJI] MÉTRICAS FINAIS
 
 ### Testes
 
@@ -806,11 +806,11 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 
 ---
 
-## 🔗 CROSS-REFERENCES
+## [EMOJI] CROSS-REFERENCES
 
 ### Memórias Relacionadas
 
-- [[memory:9969868]] - Checklist OBRIGATÓRIO antes de escrever testes (7 pontos) → **SERÁ EXPANDIDO PARA 8**
+- [[memory:9969868]] - Checklist OBRIGATÓRIO antes de escrever testes (7 pontos) -> **SERÁ EXPANDIDO PARA 8**
 - [[memory:9969628]] - Ao executar pytest para debug, SEMPRE usar --tb=long
 - [[memory:9969501]] - NUNCA tentar encurtar passos ou fazer trabalho parcial
 
@@ -829,7 +829,7 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 
 ---
 
-## ✅ CONCLUSÃO
+## [OK] CONCLUSÃO
 
 ### O Que Aprendemos
 
@@ -841,10 +841,10 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 
 ### Próximos Passos
 
-1. ✅ Atualizar memória 9969868 (7 → 8 pontos)
-2. ✅ Aplicar checklist expandido em FASE 2.6
-3. ✅ Economizar 40 minutos em próxima implementação
-4. ✅ Documentar antipadrões de testing identificados
+1. [OK] Atualizar memória 9969868 (7 -> 8 pontos)
+2. [OK] Aplicar checklist expandido em FASE 2.6
+3. [OK] Economizar 40 minutos em próxima implementação
+4. [OK] Documentar antipadrões de testing identificados
 
 ### ROI Final
 
@@ -856,6 +856,6 @@ async def test_run_parallel_analysis_async(diagnostic_agent, sample_bsc_state):
 ---
 
 **Última Atualização**: 2025-10-16  
-**Status**: ✅ LIÇÃO COMPLETA E VALIDADA  
+**Status**: [OK] LIÇÃO COMPLETA E VALIDADA  
 **Sessão**: 10 (FASE 2.5 - DiagnosticAgent)
 

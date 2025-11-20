@@ -10,25 +10,22 @@ Versão: 1.0 (FASE 2.4)
 Coverage esperado: >85%
 """
 
+from unittest.mock import Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock, patch
 from langchain_openai import ChatOpenAI
 from pydantic import ValidationError
 from tenacity import RetryError
 
-from src.agents.client_profile_agent import (
-    ClientProfileAgent,
-    ChallengesList,
-    ObjectivesList
-)
-from src.memory.schemas import CompanyInfo, ClientProfile, StrategicContext
-from src.graph.states import BSCState
+from src.agents.client_profile_agent import ChallengesList, ClientProfileAgent, ObjectivesList
 from src.graph.consulting_states import ConsultingPhase
-
+from src.graph.states import BSCState
+from src.memory.schemas import ClientProfile, CompanyInfo, StrategicContext
 
 # ============================================================================
 # FIXTURES
 # ============================================================================
+
 
 @pytest.fixture
 def mock_llm():
@@ -53,7 +50,7 @@ def sample_company_info():
         sector="Tecnologia",
         size="média",
         industry="SaaS B2B",
-        founded_year=2015
+        founded_year=2015,
     )
 
 
@@ -71,13 +68,10 @@ def initial_state():
         needs_followup=False,
         client_profile=ClientProfile(
             user_id="test_user_456",
-            company=CompanyInfo(
-                name="Pending",
-                sector="Pending"
-            ),
-            context=StrategicContext()
+            company=CompanyInfo(name="Pending", sector="Pending"),
+            context=StrategicContext(),
         ),
-        current_phase=ConsultingPhase.ONBOARDING
+        current_phase=ConsultingPhase.ONBOARDING,
     )
     return state
 
@@ -85,6 +79,7 @@ def initial_state():
 # ============================================================================
 # TESTES DE INICIALIZAÇÃO
 # ============================================================================
+
 
 def test_client_profile_agent_initialization(client_profile_agent):
     """Testa inicialização correta do agente."""
@@ -95,9 +90,9 @@ def test_client_profile_agent_with_custom_llm():
     """Testa criação com LLM customizado."""
     custom_llm = Mock(spec=ChatOpenAI)
     custom_llm.model_name = "custom-model"
-    
+
     agent = ClientProfileAgent(llm=custom_llm)
-    
+
     assert agent.llm == custom_llm
 
 
@@ -105,20 +100,19 @@ def test_client_profile_agent_with_custom_llm():
 # TESTES DE extract_company_info()
 # ============================================================================
 
+
 def test_extract_company_info_success(client_profile_agent, mock_llm):
     """Testa extração bem-sucedida de CompanyInfo."""
     # Mock structured output do LLM
-    mock_company = CompanyInfo(
-        name="TechCorp",
-        sector="Tecnologia",
-        size="média"
-    )
+    mock_company = CompanyInfo(name="TechCorp", sector="Tecnologia", size="média")
     mock_llm.with_structured_output.return_value.invoke.return_value = mock_company
-    
-    conversation = "Sou da TechCorp, atuamos em tecnologia, somos empresa média com 150 funcionários."
-    
+
+    conversation = (
+        "Sou da TechCorp, atuamos em tecnologia, somos empresa média com 150 funcionários."
+    )
+
     result = client_profile_agent.extract_company_info(conversation)
-    
+
     assert isinstance(result, CompanyInfo)
     assert result.name == "TechCorp"
     assert result.sector == "Tecnologia"
@@ -135,9 +129,7 @@ def test_extract_company_info_invalid_extraction_raises_error(client_profile_age
     """Testa que extração inválida (nome genérico) lança RetryError após 3 tentativas."""
     # Mock extração com nome genérico
     mock_company = CompanyInfo(
-        name="Empresa",  # Nome genérico inválido
-        sector="Tecnologia",
-        size="média"
+        name="Empresa", sector="Tecnologia", size="média"  # Nome genérico inválido
     )
     mock_llm.with_structured_output.return_value.invoke.return_value = mock_company
 
@@ -153,14 +145,17 @@ def test_extract_company_info_invalid_extraction_raises_error(client_profile_age
 # TESTES DE identify_challenges()
 # ============================================================================
 
+
 def test_identify_challenges_success(client_profile_agent, mock_llm, sample_company_info):
     """Testa identificação bem-sucedida de desafios."""
     # Mock structured output
-    mock_challenges = ChallengesList(challenges=[
-        "Perda de clientes para concorrentes",
-        "Equipe sobrecarregada",
-        "Falta de capital para crescimento"
-    ])
+    mock_challenges = ChallengesList(
+        challenges=[
+            "Perda de clientes para concorrentes",
+            "Equipe sobrecarregada",
+            "Falta de capital para crescimento",
+        ]
+    )
     mock_llm.with_structured_output.return_value.invoke.return_value = mock_challenges
 
     conversation = "Estamos perdendo clientes e a equipe está cansada."
@@ -173,7 +168,9 @@ def test_identify_challenges_success(client_profile_agent, mock_llm, sample_comp
     assert all(isinstance(challenge, str) for challenge in result)
 
 
-def test_identify_challenges_empty_conversation_raises_error(client_profile_agent, sample_company_info):
+def test_identify_challenges_empty_conversation_raises_error(
+    client_profile_agent, sample_company_info
+):
     """Testa que conversação vazia lança RetryError (após 3 tentativas do @retry decorator)."""
     with pytest.raises(RetryError):
         client_profile_agent.identify_challenges("", sample_company_info)
@@ -183,14 +180,17 @@ def test_identify_challenges_empty_conversation_raises_error(client_profile_agen
 # TESTES DE define_objectives()
 # ============================================================================
 
+
 def test_define_objectives_success(client_profile_agent, mock_llm):
     """Testa definição bem-sucedida de objetivos BSC."""
     # Mock structured output
-    mock_objectives = ObjectivesList(objectives=[
-        "Aumentar receita 30% em 12 meses (Financeira)",
-        "Reduzir churn para 5% (Clientes)",
-        "Automatizar 50% processos em 6 meses (Processos)"
-    ])
+    mock_objectives = ObjectivesList(
+        objectives=[
+            "Aumentar receita 30% em 12 meses (Financeira)",
+            "Reduzir churn para 5% (Clientes)",
+            "Automatizar 50% processos em 6 meses (Processos)",
+        ]
+    )
     mock_llm.with_structured_output.return_value.invoke.return_value = mock_objectives
 
     conversation = "Queremos crescer 30%, reter clientes e melhorar processos."
@@ -216,47 +216,32 @@ def test_define_objectives_empty_conversation_raises_error(client_profile_agent)
 # TESTES DE _validate_extraction()
 # ============================================================================
 
+
 def test_validate_extraction_valid_company_info(client_profile_agent):
     """Testa validação de CompanyInfo válido."""
-    company = CompanyInfo(
-        name="TechCorp Brasil",
-        sector="Tecnologia",
-        size="média"
-    )
-    
+    company = CompanyInfo(name="TechCorp Brasil", sector="Tecnologia", size="média")
+
     assert client_profile_agent._validate_extraction(company) is True
 
 
 def test_validate_extraction_invalid_generic_name(client_profile_agent):
     """Testa que nome genérico falha na validação."""
-    company = CompanyInfo(
-        name="Empresa",  # Nome genérico
-        sector="Tecnologia",
-        size="média"
-    )
-    
+    company = CompanyInfo(name="Empresa", sector="Tecnologia", size="média")  # Nome genérico
+
     assert client_profile_agent._validate_extraction(company) is False
 
 
 def test_validate_extraction_invalid_empty_sector(client_profile_agent):
     """Testa que setor vazio falha na validação."""
-    company = CompanyInfo(
-        name="TechCorp",
-        sector="",  # Setor vazio
-        size="média"
-    )
-    
+    company = CompanyInfo(name="TechCorp", sector="", size="média")  # Setor vazio
+
     assert client_profile_agent._validate_extraction(company) is False
 
 
 def test_validate_extraction_invalid_short_sector(client_profile_agent):
     """Testa que setor muito curto falha na validação."""
-    company = CompanyInfo(
-        name="TechCorp",
-        sector="TI",  # Apenas 2 caracteres (< 3)
-        size="média"
-    )
-    
+    company = CompanyInfo(name="TechCorp", sector="TI", size="média")  # Apenas 2 caracteres (< 3)
+
     assert client_profile_agent._validate_extraction(company) is False
 
 
@@ -264,13 +249,14 @@ def test_validate_extraction_invalid_short_sector(client_profile_agent):
 # TESTE DE COBERTURA GERAL
 # ============================================================================
 
+
 def test_client_profile_agent_has_correct_methods(client_profile_agent):
     """Testa que o agente possui todos os métodos públicos esperados."""
-    assert hasattr(client_profile_agent, 'extract_company_info')
-    assert hasattr(client_profile_agent, 'identify_challenges')
-    assert hasattr(client_profile_agent, 'define_objectives')
-    assert hasattr(client_profile_agent, 'process_onboarding')
-    assert hasattr(client_profile_agent, '_validate_extraction')
+    assert hasattr(client_profile_agent, "extract_company_info")
+    assert hasattr(client_profile_agent, "identify_challenges")
+    assert hasattr(client_profile_agent, "define_objectives")
+    assert hasattr(client_profile_agent, "process_onboarding")
+    assert hasattr(client_profile_agent, "_validate_extraction")
 
 
 def test_challenges_list_schema_validation():
@@ -278,11 +264,11 @@ def test_challenges_list_schema_validation():
     # Válido: 3-7 desafios
     valid = ChallengesList(challenges=["D1", "D2", "D3"])
     assert len(valid.challenges) == 3
-    
+
     # Inválido: < 3 desafios
     with pytest.raises(ValidationError):
         ChallengesList(challenges=["D1", "D2"])
-    
+
     # Inválido: > 7 desafios
     with pytest.raises(ValidationError):
         ChallengesList(challenges=["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8"])
@@ -293,12 +279,11 @@ def test_objectives_list_schema_validation():
     # Válido: 3-5 objetivos
     valid = ObjectivesList(objectives=["O1", "O2", "O3"])
     assert len(valid.objectives) == 3
-    
+
     # Inválido: < 3 objetivos
     with pytest.raises(ValidationError):
         ObjectivesList(objectives=["O1", "O2"])
-    
+
     # Inválido: > 5 objetivos
     with pytest.raises(ValidationError):
         ObjectivesList(objectives=["O1", "O2", "O3", "O4", "O5", "O6"])
-

@@ -102,35 +102,31 @@ Princípios:
 
 
 def get_document_summary_prompt(
-    content: str,
-    source: str = "documento desconhecido",
-    title: str = "",
-    **kwargs
+    content: str, source: str = "documento desconhecido", title: str = "", **kwargs
 ) -> str:
     """
     Gera prompt para resumo de documento.
-    
+
     Args:
         content: Conteúdo do documento (truncado se necessário)
         source: Nome do arquivo fonte
         title: Título do documento (opcional)
         **kwargs: Outros metadados
-        
+
     Returns:
         Prompt formatado
     """
     metadata_info = f"Fonte: {source}"
     if title:
         metadata_info += f"\nTítulo: {title}"
-    
+
     # Adiciona outros metadados relevantes
     for key, value in kwargs.items():
-        if key not in ['content', 'source', 'title']:
+        if key not in ["content", "source", "title"]:
             metadata_info += f"\n{key.capitalize()}: {value}"
-    
+
     return DOCUMENT_SUMMARY_PROMPT.format(
-        metadata_info=metadata_info,
-        content=content[:10000]  # Trunca para 10k caracteres
+        metadata_info=metadata_info, content=content[:10000]  # Trunca para 10k caracteres
     )
 
 
@@ -138,23 +134,23 @@ def get_chunk_context_prompt(
     chunk_content: str,
     document_summary: str,
     chunk_type: str = "text",
-    use_bsc_specific: bool = True
+    use_bsc_specific: bool = True,
 ) -> str:
     """
     Gera prompt para contexto de chunk.
-    
+
     Args:
         chunk_content: Conteúdo do chunk
         document_summary: Resumo do documento
         chunk_type: 'text', 'table', etc.
         use_bsc_specific: Se True, usa prompt específico BSC
-        
+
     Returns:
         Prompt formatado
     """
     # Trunca chunk se muito longo
     truncated_content = chunk_content[:1000] if len(chunk_content) > 1000 else chunk_content
-    
+
     # Escolhe template baseado no tipo e domínio
     if chunk_type == "table":
         template = TABLE_CONTEXT_PROMPT
@@ -162,20 +158,19 @@ def get_chunk_context_prompt(
         template = CHUNK_CONTEXT_BSC_SPECIFIC_PROMPT
     else:
         template = CHUNK_CONTEXT_PROMPT
-    
+
     return template.format(
         document_summary=document_summary,
         chunk_content=truncated_content,
-        table_content=truncated_content if chunk_type == "table" else ""
+        table_content=truncated_content if chunk_type == "table" else "",
     )
 
 
 def get_system_prompt() -> str:
     """
     Retorna system prompt para contextualização.
-    
+
     Returns:
         System prompt
     """
     return SYSTEM_PROMPT_CONTEXTUALIZATION
-

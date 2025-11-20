@@ -1,7 +1,7 @@
 # ===================================================================
 # FORCE FULL RELOAD - Mata Python, limpa cache, reinicia Streamlit
 # ===================================================================
-# 
+#
 # Este script resolve problemas de cache de módulos Python em Streamlit.
 # Força reload completo do código atualizado.
 #
@@ -20,11 +20,11 @@ if ($pythonProcesses) {
         Write-Host "  [KILL] PID $($_.Id) - $($_.ProcessName)" -ForegroundColor Red
         Stop-Process -Id $_.Id -Force -ErrorAction SilentlyContinue
     }
-    
+
     # Aguardar 2 segundos para garantir que processos foram terminados
     Write-Host "  [WAIT] Aguardando 2 segundos..." -ForegroundColor Gray
     Start-Sleep -Seconds 2
-    
+
     Write-Host "  [OK] $($pythonProcesses.Count) processos terminados" -ForegroundColor Green
 } else {
     Write-Host "  [INFO] Nenhum processo Python/Streamlit encontrado" -ForegroundColor Gray
@@ -63,7 +63,7 @@ Write-Host "`n[STEP 3] Verificando versão do código..." -ForegroundColor Yello
 $diagnosticFile = "src\agents\diagnostic_agent.py"
 if (Test-Path $diagnosticFile) {
     $v32Count = (Select-String -Path $diagnosticFile -Pattern "DIAGNOSTIC v3\.2" -AllMatches).Matches.Count
-    
+
     if ($v32Count -gt 0) {
         Write-Host "  [OK] Código v3.2 encontrado ($v32Count occorrências)" -ForegroundColor Green
     } else {
@@ -118,4 +118,3 @@ Write-Host "`n4. Se os logs v3.2 NÃO aparecerem, PARE e reporte o problema." -F
 Write-Host "==================================================================" -ForegroundColor Cyan
 
 exit 0
-

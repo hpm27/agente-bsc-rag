@@ -87,7 +87,7 @@ Se informação não foi mencionada, deixe null."""
 IDENTIFY_CHALLENGES_SYSTEM = """Você é um consultor BSC identificando desafios estratégicos.
 Analise a conversa e identifique 2-5 PROBLEMAS/DIFICULDADES que a empresa enfrenta.
 
-IMPORTANTE: Desafio NÃO é objetivo/meta! 
+IMPORTANTE: Desafio NÃO é objetivo/meta!
 - [ERRADO]: "crescimento de 10%", "aumento da eficiencia em 15%" (isso e OBJETIVO)
 - [CORRETO]: "crescimento atual insuficiente", "eficiencia operacional abaixo do desejado"
 
@@ -216,7 +216,7 @@ REGRAS DE CONFIDENCE SCORE:
 EXEMPLOS DE EXTRAÇÃO:
 
 EXEMPLO 1 (Extração completa):
-Texto: "Sou da TechCorp Brasil, startup de software com 30 funcionários em São Paulo. Faturamos cerca de R$ 3 milhões ao ano. 
+Texto: "Sou da TechCorp Brasil, startup de software com 30 funcionários em São Paulo. Faturamos cerca de R$ 3 milhões ao ano.
 Nossos principais desafios são crescimento lento e falta de capital. Queremos crescer 50% em receita nos próximos 12 meses."
 
 Saída:
@@ -948,8 +948,8 @@ SUA MISSAO:
 REGRA CRITICA - NAO CONFIRMAR DADOS INCOMPLETOS:
 - APENAS confirme quando completeness >= 1.0 (100%)
 - Se completeness < 1.0, NUNCA peca confirmacao! Pergunte o que falta
-- Exemplo: completeness=0.65 + missing_info=["objectives"] → "Quais as metas de voces?"
-- Exemplo: completeness=1.0 + missing_info=[] → "Ta tudo certo?" (CONFIRMAR)
+- Exemplo: completeness=0.65 + missing_info=["objectives"] -> "Quais as metas de voces?"
+- Exemplo: completeness=1.0 + missing_info=[] -> "Ta tudo certo?" (CONFIRMAR)
 
 REGRA CRITICA 2 - USAR INFORMACOES JA COLETADAS:
 - NUNCA pergunte informacao que JA FOI COLETADA!
@@ -957,7 +957,7 @@ REGRA CRITICA 2 - USAR INFORMACOES JA COLETADAS:
 - Se sector != "N/A", NUNCA pergunte "qual o setor?"
 - Se challenges_list != "Nenhum ainda", NUNCA pergunte "quais os desafios?" novamente
 - SEMPRE use dados ja coletados para personalizar proxima pergunta
-- Exemplo: Se company_name="Engelar" + missing_info=["objectives"] → "E ai, Engelar, quais as metas de voces?"
+- Exemplo: Se company_name="Engelar" + missing_info=["objectives"] -> "E ai, Engelar, quais as metas de voces?"
 
 ---
 CONTEXTO ATUAL DA CONVERSA:

@@ -1,14 +1,14 @@
 # Licao Aprendida: Onboarding Conversacional Inteligente
 
-**Data:** 23/10/2025  
-**Sessao:** 8 horas (BLOCO 1: 5h + BLOCO 2: 3h)  
-**Status:** ✅ BLOCO 1 COMPLETO (100%) | ⏳ BLOCO 2 87% COMPLETO (mocks pendentes)  
-**Fase:** Refatoracao Onboarding Agent - 3 Padroes RAG Avancados  
+**Data:** 23/10/2025
+**Sessao:** 8 horas (BLOCO 1: 5h + BLOCO 2: 3h)
+**Status:** [OK] BLOCO 1 COMPLETO (100%) | ⏳ BLOCO 2 87% COMPLETO (mocks pendentes)
+**Fase:** Refatoracao Onboarding Agent - 3 Padroes RAG Avancados
 **Metodologia:** Sequential Thinking + Brightdata Research + TDD
 
 ---
 
-## 📋 INDICE NAVEGAVEL
+## [EMOJI] INDICE NAVEGAVEL
 
 1. [Problema Identificado](#problema-identificado)
 2. [Root Cause Analysis](#root-cause-analysis-5-whys)
@@ -21,7 +21,7 @@
 
 ---
 
-## 🚨 PROBLEMA IDENTIFICADO
+## [EMOJI] PROBLEMA IDENTIFICADO
 
 ### Contexto
 
@@ -40,7 +40,7 @@ AGENT: Entendi. Quais sao os objetivos da empresa?
 
 **3 Falhas Criticas de UX:**
 
-1. **Rigidez de fluxo** - Segue script fixo (Empresa → Challenges → Objectives), nao adapt
+1. **Rigidez de fluxo** - Segue script fixo (Empresa -> Challenges -> Objectives), nao adapt
 
 avel
 2. **Falta de reconhecimento** - Nao identifica informacoes ja fornecidas, repete perguntas
@@ -54,31 +54,31 @@ avel
 
 ---
 
-## 🔍 ROOT CAUSE ANALYSIS (5 Whys)
+## [EMOJI] ROOT CAUSE ANALYSIS (5 Whys)
 
 **Why 1:** Por que o agente nao reconheceu os objectives?
 
-→ Esperava "challenges", recebeu "objectives" fora da ordem
+-> Esperava "challenges", recebeu "objectives" fora da ordem
 
 **Why 2:** Por que nao adaptou quando recebeu informacao diferente?
 
-→ Fluxo rigido baseado em `current_step` fixo
+-> Fluxo rigido baseado em `current_step` fixo
 
 **Why 3:** Por que o fluxo e rigido?
 
-→ `current_step` define mono-processamento (1 entidade por turn)
+-> `current_step` define mono-processamento (1 entidade por turn)
 
 **Why 4:** Por que mono-processamento?
 
-→ `_extract_information()` processa apenas step atual
+-> `_extract_information()` processa apenas step atual
 
 **Why 5 (ROOT CAUSE):**
 
-→ **Design e "formulario sequencial" ao inves de "consultor conversacional"**
+-> **Design e "formulario sequencial" ao inves de "consultor conversacional"**
 
 ---
 
-## 💡 SOLUCAO IMPLEMENTADA
+## [EMOJI] SOLUCAO IMPLEMENTADA
 
 ### Visao Geral
 
@@ -151,10 +151,10 @@ Gerar resposta adaptada ao scenario conversacional...\"\"\"
 
 **BEST PRACTICES APLICADAS (Brightdata 2025):**
 
-- ✅ **ICL zero-shot suficiente** (Paper Telepathy Labs: F1 0.86 zero-shot vs 0.84 two-shot)
-- ✅ **Full conversation context** (vs last utterance only: +38% F1)
-- ✅ **Empathy-first approach** (Sobot.io 2025: reconhecer emocoes antes de solucoes)
-- ✅ **Progressive disclosure** (nao sobrecarregar com multiplas perguntas)
+- [OK] **ICL zero-shot suficiente** (Paper Telepathy Labs: F1 0.86 zero-shot vs 0.84 two-shot)
+- [OK] **Full conversation context** (vs last utterance only: +38% F1)
+- [OK] **Empathy-first approach** (Sobot.io 2025: reconhecer emocoes antes de solucoes)
+- [OK] **Progressive disclosure** (nao sobrecarregar com multiplas perguntas)
 
 ---
 
@@ -169,9 +169,9 @@ async def _extract_all_entities(
     conversation_history: list[dict[str, str]] | None = None
 ) -> ExtractedEntities:
     \"\"\"Extrai TODAS entidades (empresa, challenges, objectives) simultaneamente.
-    
-    Opportunistic Extraction pattern: 1 chamada LLM → multiplas entidades.
-    
+
+    Opportunistic Extraction pattern: 1 chamada LLM -> multiplas entidades.
+
     ROI: Reduz turns de 10-15 para 6-8 (-40%).
     \"\"\"
     # Implementacao: 145 linhas
@@ -185,9 +185,9 @@ async def _analyze_conversation_context(
     extracted_entities: ExtractedEntities
 ) -> ConversationContext:
     \"\"\"Analisa contexto conversacional para detectar cenarios especiais.
-    
+
     Context-Aware Response pattern (Paper Telepathy Labs 2025).
-    
+
     Detecta: objectives_before_challenges, frustration, information_complete, etc.
     \"\"\"
     # Implementacao: 183 linhas + 3 helpers
@@ -202,9 +202,9 @@ async def _generate_contextual_response(
     extracted_entities: ExtractedEntities
 ) -> str:
     \"\"\"Gera resposta adaptativa baseada no contexto conversacional.
-    
+
     Adaptive Response Generation pattern (Sobot.io 2025).
-    
+
     5 Cenarios: frustration, redirect, confirmation, repeated, standard.
     \"\"\"
     # Implementacao: 133 linhas + 1 helper (_get_fallback_response)
@@ -239,9 +239,9 @@ def _get_fallback_response(extracted_entities: ExtractedEntities) -> str
 
 | Metodo | Cenarios Testados | Status |
 |---|---|---|
-| `_extract_all_entities()` | todas categorias, company only, objectives antes | ✅ 3/3 PASS |
-| `_analyze_conversation_context()` | frustracao, standard flow, info completa | ✅ 3/3 PASS |
-| `_generate_contextual_response()` | frustracao, confirmation, redirect | ✅ 3/3 PASS |
+| `_extract_all_entities()` | todas categorias, company only, objectives antes | [OK] 3/3 PASS |
+| `_analyze_conversation_context()` | frustracao, standard flow, info completa | [OK] 3/3 PASS |
+| `_generate_contextual_response()` | frustracao, confirmation, redirect | [OK] 3/3 PASS |
 
 **TESTES E2E (6 testes, 147 linhas):**
 
@@ -252,7 +252,7 @@ def _get_fallback_response(extracted_entities: ExtractedEntities) -> str
 | `test_e2e_incremental_completion` | Gradual (3 turns) | ⏳ MOCK |
 | `test_e2e_no_regression_standard_flow` | Fluxo padrao funciona | ⏳ MOCK |
 | `test_e2e_frustration_recovery` | Empatia + correcao | ⏳ MOCK |
-| `test_e2e_integration_complete` | Integracao completa | ✅ PASS? |
+| `test_e2e_integration_complete` | Integracao completa | [OK] PASS? |
 
 **NOTA:** 5 testes E2E precisam ajuste de mocks (AsyncMock), sao falhas de TESTE nao de CODIGO.
 
@@ -309,23 +309,23 @@ state.metadata["conversation_history"] = conversation_history
 # METODO NOVO (linha 294):
 async def collect_client_info(user_id: str, user_message: str, state: BSCState):
     \"\"\"Coleta informacoes usando Opportunistic Extraction (FASE 1).\"\"\"
-    # ✅ USA _extract_all_entities()
-    # ✅ USA _analyze_conversation_context()
-    # ✅ USA _generate_contextual_response()
+    # [OK] USA _extract_all_entities()
+    # [OK] USA _analyze_conversation_context()
+    # [OK] USA _generate_contextual_response()
 
 # METODO ANTIGO (linha 1228):
 def _extract_information(user_message: str, current_step: int, state: BSCState):
     \"\"\"Extrai informacoes usando ClientProfileAgent (LEGACY).\"\"\"
-    # ❌ USA profile_agent (design antigo)
-    # ❌ Mono-processamento (1 entidade por turn)
-    # ❌ Sem context awareness
+    # [ERRO] USA profile_agent (design antigo)
+    # [ERRO] Mono-processamento (1 entidade por turn)
+    # [ERRO] Sem context awareness
 ```
 
 **DECISAO:** `collect_client_info()` e o metodo OFICIAL. `_extract_information()` e LEGACY (usado por `process_turn()`, sera deprecado em FASE 2B).
 
 ---
 
-## 📊 RESULTADOS
+## [EMOJI] RESULTADOS
 
 ### Metricas Tecnicas
 
@@ -358,10 +358,10 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 
 | Tipo | Quantidade | Status | Observacao |
 |---|---|---|---|
-| **Smoke Tests** | 9 | ✅ 9/9 PASS (100%) | 100% mockados, zero custo API |
-| **Testes Unitarios (antigos)** | 24 | ✅ 24/24 PASS (100%) | Zero regressoes introduzidas |
+| **Smoke Tests** | 9 | [OK] 9/9 PASS (100%) | 100% mockados, zero custo API |
+| **Testes Unitarios (antigos)** | 24 | [OK] 24/24 PASS (100%) | Zero regressoes introduzidas |
 | **Testes E2E (novos)** | 6 | ⏳ 1/6 PASS (17%) | 5 precisam AsyncMock |
-| **Bugs Corrigidos** | 5 | ✅ 5/5 FIXED (100%) | Mocks sem .model_dump() |
+| **Bugs Corrigidos** | 5 | [OK] 5/5 FIXED (100%) | Mocks sem .model_dump() |
 | **TOTAL** | **44** | **34/39 PASS (87%)** | +11 testes vs inicial |
 
 ---
@@ -388,7 +388,7 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 
 ---
 
-## 💰 ROI ESTIMADO
+## [EMOJI] ROI ESTIMADO
 
 ### Investimento
 
@@ -405,7 +405,7 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 | **Turns medios por onboarding** | 10-15 | 6-8 (-40%) | ⏳ Pendente benchmark | TBD |
 | **Taxa de reconhecimento** | 60% | 100% (+67%) | ⏳ Validacao manual | TBD |
 | **Taxa de frustracao NAO detectada** | 100% | 20% (-80%) | ⏳ Analise contexto | TBD |
-| **Adaptacao contextual** | 0% | 100% | ✅ **100%** (codigo OK) | ✅ PASS |
+| **Adaptacao contextual** | 0% | 100% | [OK] **100%** (codigo OK) | [OK] PASS |
 | **Latencia adicional por turn** | - | <1s | ⏳ Benchmark | TBD |
 
 **NOTA:** Metricas UX (turns, reconhecimento, frustracao) aguardam ajuste de mocks E2E + benchmark 20 queries.
@@ -416,10 +416,10 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 
 **Beneficios Qualitativos:**
 
-- ✅ **UX Superior** - First impression positiva, retencao maior
-- ✅ **Base Solida** - Pattern conversacional reutilizavel em outros agentes
-- ✅ **Menos Bugs UX** - Context awareness previne confusoes futuras
-- ✅ **Documentacao** - Licoes aprendidas para proximas refatoracoes
+- [OK] **UX Superior** - First impression positiva, retencao maior
+- [OK] **Base Solida** - Pattern conversacional reutilizavel em outros agentes
+- [OK] **Menos Bugs UX** - Context awareness previne confusoes futuras
+- [OK] **Documentacao** - Licoes aprendidas para proximas refatoracoes
 
 **Economia Futura Estimada:**
 
@@ -445,13 +445,13 @@ def _extract_information(user_message: str, current_step: int, state: BSCState):
 
 ---
 
-## 🎓 TOP 5 LICOES-CHAVE
+## [EMOJI] TOP 5 LICOES-CHAVE
 
 ### 1. **ICL Zero-Shot > Few-Shot (Paper Telepathy Labs 2025)**
 
 **Descoberta:** GPT-4o zero-shot alcancou F1 0.86, adicionar 2 exemplos = 0.84 (nao melhorou).
 
-**Aplicacao:** 
+**Aplicacao:**
 - ANALYZE_CONVERSATION_CONTEXT_PROMPT: zero-shot (economia 50 linhas)
 - GENERATE_CONTEXTUAL_RESPONSE_PROMPT: 4 exemplos (cenarios complexos)
 
@@ -527,31 +527,31 @@ def _calculate_completeness(extracted_entities: ExtractedEntities) -> float:
     return round(min(score, 100.0), 2)
 ```
 
-**LLM apenas analisa:** Cenarios, sentiment, context_summary (tarefas qualitativas).  
+**LLM apenas analisa:** Cenarios, sentiment, context_summary (tarefas qualitativas).
 **Codigo calcula:** Completeness, missing_info (metricas quantitativas).
 
 **ROI:** Precisao 100% vs ~85-90% se LLM calculasse.
 
 ---
 
-## 🚫 TOP 5 ANTIPADRAO EVITADOS
+## [EMOJI] TOP 5 ANTIPADRAO EVITADOS
 
-### 1. ❌ **Structured Output para Free-Form Text**
+### 1. [ERRO] **Structured Output para Free-Form Text**
 
 **Antipadrao:** Usar `with_structured_output()` para gerar respostas conversacionais livres.
 
 **Problema:** Overhead desnecessario, respostas menos naturais.
 
 **Solucao Aplicada:**
-- _extract_all_entities(): Structured output (ExtractedEntities schema) ✅
-- _analyze_conversation_context(): Structured output (ConversationContext schema) ✅
-- _generate_contextual_response(): Free-form text (ainvoke direto) ✅
+- _extract_all_entities(): Structured output (ExtractedEntities schema) [OK]
+- _analyze_conversation_context(): Structured output (ConversationContext schema) [OK]
+- _generate_contextual_response(): Free-form text (ainvoke direto) [OK]
 
 **ROI Evitado:** Latencia -20%, respostas mais naturais.
 
 ---
 
-### 2. ❌ **Mocks sem AsyncMock para Metodos Async**
+### 2. [ERRO] **Mocks sem AsyncMock para Metodos Async**
 
 **Antipadrao:** Usar `Mock()` para metodos que usam `await`.
 
@@ -571,7 +571,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-### 3. ❌ **Nao Ler Codigo Antes de Refatorar**
+### 3. [ERRO] **Nao Ler Codigo Antes de Refatorar**
 
 **Antipadrao:** Assumir estrutura do codigo sem ler.
 
@@ -586,7 +586,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-### 4. ❌ **Testes DEPOIS da Implementacao**
+### 4. [ERRO] **Testes DEPOIS da Implementacao**
 
 **Antipadrao:** Implementar codigo, depois escrever testes.
 
@@ -601,7 +601,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-### 5. ❌ **Filtros PowerShell em pytest Output**
+### 5. [ERRO] **Filtros PowerShell em pytest Output**
 
 **Antipadrao:** `pytest ... | Select-Object -Last 20` (oculta informacao critica).
 
@@ -616,7 +616,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-## 📚 REFERENCIAS
+## [EMOJI] REFERENCIAS
 
 ### Documentacao do Projeto
 
@@ -655,7 +655,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-## 📝 PROXIMOS PASSOS
+## [EMOJI] PROXIMOS PASSOS
 
 ### Curto Prazo (1-2h)
 
@@ -672,7 +672,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-## ✍️ NOTAS FINAIS (MANHÃ)
+## ✍ NOTAS FINAIS (MANHÃ)
 
 ### Principais Descobertas
 
@@ -703,22 +703,22 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-# 📊 ATUALIZAÇÃO BLOCO 2 - TARDE (23/10/2025)
+# [EMOJI] ATUALIZAÇÃO BLOCO 2 - TARDE (23/10/2025)
 
-**Sessao:** 3 horas (BLOCO 2 completado com LLM REAL)  
-**Status:** ✅ **100% COMPLETO** (39/39 testes passando)  
+**Sessao:** 3 horas (BLOCO 2 completado com LLM REAL)
+**Status:** [OK] **100% COMPLETO** (39/39 testes passando)
 **Metodologia:** Sequential Thinking (15 thoughts) + Debug Sistemático + Prompt-Schema Alignment
 
 ---
 
-## 📋 CONTEXTO (TARDE)
+## [EMOJI] CONTEXTO (TARDE)
 
 **Objetivo:** Completar BLOCO 2 com testes E2E usando **LLM REAL** ao invés de mocks.
 
 **Status Inicial (MANHÃ):**
-- ✅ 34/39 testes passando (87%)
-- ❌ 5 testes E2E falhando (mocks AsyncMock pendentes)
-- ⚠️ Testes E2E usavam mocks estáticos, não validavam comportamento real do LLM
+- [OK] 34/39 testes passando (87%)
+- [ERRO] 5 testes E2E falhando (mocks AsyncMock pendentes)
+- [WARN] Testes E2E usavam mocks estáticos, não validavam comportamento real do LLM
 
 **Mudança Estratégica:**
 - **DECISÃO:** Usar LLM REAL (GPT-5 mini) nos testes E2E ao invés de ajustar mocks
@@ -727,7 +727,7 @@ mock_llm.ainvoke = AsyncMock(return_value=response)
 
 ---
 
-## 🐛 PROBLEMAS ENCONTRADOS E RESOLVIDOS
+## [EMOJI] PROBLEMAS ENCONTRADOS E RESOLVIDOS
 
 ### ERRO #1: TypeError - mock_llm got unexpected keyword argument 'method'
 
@@ -798,16 +798,16 @@ mock_context = ConversationContext(
 def _validate_extraction(extracted: ExtractedEntities, step: str) -> bool:
     if step == "COMPANY_INFO":
         return extracted.has_company_info and extracted.company_info.name is not None
-    # LLM extraiu company_name → has_company_info=True → is_complete=True ✅
+    # LLM extraiu company_name -> has_company_info=True -> is_complete=True [OK]
 ```
 
 **Solução:**
 ```python
 # ANTES (expectativa errada):
-assert result["is_complete"] is False  # ❌
+assert result["is_complete"] is False  # [ERRO]
 
 # DEPOIS (alinhado com lógica real):
-assert result["is_complete"] is True   # ✅
+assert result["is_complete"] is True   # [OK]
 ```
 
 **Lição:** Validar lógica DO CÓDIGO antes de escrever assertion, não assumir comportamento esperado.
@@ -835,7 +835,7 @@ def real_llm():
 def real_llm():
     from langchain_openai import ChatOpenAI
     from config.settings import settings
-    
+
     return ChatOpenAI(
         model=settings.onboarding_llm_model,
         temperature=1.0,
@@ -864,10 +864,10 @@ print(f"[DEBUG] extracted keys: {extracted.keys()}")  # Mostra: dict_keys(['comp
 
 # PASSO 2: Corrigir
 # ANTES:
-assert len(extracted["objectives"]) >= 3  # ❌ KeyError
+assert len(extracted["objectives"]) >= 3  # [ERRO] KeyError
 
 # DEPOIS:
-assert len(extracted.get("goals", [])) >= 3  # ✅ Campo correto + defensive programming
+assert len(extracted.get("goals", [])) >= 3  # [OK] Campo correto + defensive programming
 ```
 
 **Lição:** Print `.keys()` ANTES de acessar campos desconhecidos em dicts/objects.
@@ -887,7 +887,7 @@ assert len(extracted.get("goals", [])) >= 3  # ✅ Campo correto + defensive pro
 # ANTES (FRÁGIL):
 question = result["question"]
 assert "objetivo" in question.lower() or "meta" in question.lower()
-# ❌ Falha se LLM usar "finalidade", "propósito", "alvo", etc
+# [ERRO] Falha se LLM usar "finalidade", "propósito", "alvo", etc
 ```
 
 **Best Practice Aplicada (OrangeLoops Oct 2025):**
@@ -906,7 +906,7 @@ company_name = extracted.get("company_name")
 assert len(goals) >= 3, f"Esperava 3+ goals, got {len(goals)}"
 assert company_name is not None, "Company name deveria ter sido extraido"
 assert "question" in result  # Sistema gerou próxima pergunta
-# ✅ Valida COMPORTAMENTO (dados extraídos, próximo passo gerado) não TEXTO específico
+# [OK] Valida COMPORTAMENTO (dados extraídos, próximo passo gerado) não TEXTO específico
 ```
 
 **Lição:** Testes E2E com LLM real devem validar **FUNCIONALIDADE** (dados extraídos, próximo estado), não **TEXTO** (palavras específicas).
@@ -943,7 +943,7 @@ Outros campos (size, industry, founded_year) são opcionais.
 CAMPOS:
 - name: Nome da empresa (OBRIGATÓRIO se company_info != null)
 - sector: Setor de atuação (OBRIGATÓRIO se company_info != null) - Ex: Tecnologia, Manufatura, Serviços
-- sector é OBRIGATÓRIO: se usuário não mencionou explicitamente, INFIRA do contexto (ex: "startup de apps" → "Tecnologia")
+- sector é OBRIGATÓRIO: se usuário não mencionou explicitamente, INFIRA do contexto (ex: "startup de apps" -> "Tecnologia")
 - Se nenhum campo foi mencionado E não é possível inferir, company_info = null
 """
 ```
@@ -954,7 +954,7 @@ CAMPOS:
 
 ---
 
-## 📊 RESULTADOS FINAIS (TARDE)
+## [EMOJI] RESULTADOS FINAIS (TARDE)
 
 ### Métricas de Sucesso
 
@@ -984,7 +984,7 @@ CAMPOS:
 
 ---
 
-## 🎓 TOP 5 LIÇÕES-CHAVE (TARDE)
+## [EMOJI] TOP 5 LIÇÕES-CHAVE (TARDE)
 
 ### 1. **Real LLM para E2E > Mocks Sofisticados**
 
@@ -1017,7 +1017,7 @@ def onboarding_agent_real(real_llm, ...):  # Fixture E2E
 - **Mock LLM:** Testes unitários (método isolated), smoke tests (fast feedback), CI/CD (custo zero)
 - **Real LLM:** Testes E2E (fluxo completo), validação de prompts (após mudanças), pré-deploy (garantir comportamento)
 
-**ROI:** 
+**ROI:**
 - Detecta 100% problemas prompt-schema vs 40-60% com mocks
 - Custo: ~$0.20 por execução suite E2E (6 testes) - aceitável
 - Confiança: 100% vs 70-80% com mocks sofisticados
@@ -1030,14 +1030,14 @@ def onboarding_agent_real(real_llm, ...):  # Fixture E2E
 
 **Pattern ERRADO:**
 ```python
-# ❌ FRÁGIL - Depende de palavras exatas
+# [ERRO] FRÁGIL - Depende de palavras exatas
 assert "objetivo" in response.lower()
 assert "desafio" in response.lower()
 ```
 
 **Pattern CORRETO:**
 ```python
-# ✅ ROBUSTO - Valida funcionalidade
+# [OK] ROBUSTO - Valida funcionalidade
 extracted = result["extracted_entities"]
 assert len(extracted.get("goals", [])) >= 3  # Objectives detectados
 assert extracted.get("company_name") is not None  # Company name extraído
@@ -1045,11 +1045,11 @@ assert "question" in result  # Próximo passo gerado
 ```
 
 **Checklist Functional Assertions:**
-1. ✅ Dados foram extraídos? (entidades, metadata)
-2. ✅ Estado foi atualizado? (is_complete, current_step)
-3. ✅ Próximo passo foi gerado? (question, action)
-4. ❌ Texto contém palavra X? (EVITAR - frágil)
-5. ❌ Resposta tem formato Y? (EVITAR - não-determinístico)
+1. [OK] Dados foram extraídos? (entidades, metadata)
+2. [OK] Estado foi atualizado? (is_complete, current_step)
+3. [OK] Próximo passo foi gerado? (question, action)
+4. [ERRO] Texto contém palavra X? (EVITAR - frágil)
+5. [ERRO] Resposta tem formato Y? (EVITAR - não-determinístico)
 
 **ROI:** Testes 100% estáveis vs 50-70% com text assertions.
 
@@ -1065,24 +1065,24 @@ assert "question" in result  # Próximo passo gerado
 class CompanyInfo(BaseModel):
     name: str  # obrigatório
     sector: str  # obrigatório
-    
+
 # Mas Prompt NÃO menciona:
 PROMPT = """
 Extraia informações da empresa:
 - name: Nome
-- sector: Setor (opcional)  # ❌ CONFLITO!
+- sector: Setor (opcional)  # [ERRO] CONFLITO!
 """
 
-# Resultado: LLM omite sector → ValidationError
+# Resultado: LLM omite sector -> ValidationError
 ```
 
 **Checklist Obrigatório (baseado em memória [[10230048]]):**
-1. ✅ Prompt menciona TODOS campos obrigatórios explicitamente?
-2. ✅ Prompt usa MESMOS nomes de campos do schema?
-3. ✅ Prompt tem exemplos para campos complexos (Literal, nested)?
-4. ✅ Schema tem `Field(description=..., examples=[...])` para TODOS campos?
-5. ✅ Schema tem `json_schema_extra` com exemplo completo válido?
-6. ✅ Testar com 3+ queries variadas ANTES de commit?
+1. [OK] Prompt menciona TODOS campos obrigatórios explicitamente?
+2. [OK] Prompt usa MESMOS nomes de campos do schema?
+3. [OK] Prompt tem exemplos para campos complexos (Literal, nested)?
+4. [OK] Schema tem `Field(description=..., examples=[...])` para TODOS campos?
+5. [OK] Schema tem `json_schema_extra` com exemplo completo válido?
+6. [OK] Testar com 3+ queries variadas ANTES de commit?
 
 **ROI:** Evita 40-60% ValidationErrors recorrentes.
 
@@ -1115,8 +1115,8 @@ value = getattr(result, "field_name", default_value)  # object
 **Descoberta:** Duplicação massiva de 496 linhas no Plano de Refatoração não foi detectada em análise linear.
 
 **Problema:**
-- Análise superficial: "2225 linhas é razoável para plano detalhado" ✓ (conclusão errada)
-- Sequential Thinking: grep headers duplicados → descobriu 7 seções repetidas → removeu 496 linhas
+- Análise superficial: "2225 linhas é razoável para plano detalhado" [OK] (conclusão errada)
+- Sequential Thinking: grep headers duplicados -> descobriu 7 seções repetidas -> removeu 496 linhas
 
 **Pattern Aplicado:**
 ```bash
@@ -1126,7 +1126,7 @@ grep "^##\s+" documento.md | sort | uniq -c
 
 # STEP 2: Investigar duplicações
 grep -n "^## IMPACTO FASE 3" documento.md
-# Linhas: 1306, 1730 → Duplicação começa na 1730
+# Linhas: 1306, 1730 -> Duplicação começa na 1730
 
 # STEP 3: Remover duplicação
 Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
@@ -1136,13 +1136,13 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-## 🚫 TOP 5 ANTIPADRÕES EVITADOS (TARDE)
+## [EMOJI] TOP 5 ANTIPADRÕES EVITADOS (TARDE)
 
-### 1. ❌ **Usar Mocks para Testes E2E de LLM**
+### 1. [ERRO] **Usar Mocks para Testes E2E de LLM**
 
 **Antipadrão:** Criar mocks sofisticados que simulam comportamento do LLM.
 
-**Problema:** 
+**Problema:**
 - Mocks não capturam bugs de prompt-schema alignment
 - Mocks não validam inferência do LLM
 - Mocks criam falso sentimento de segurança
@@ -1153,11 +1153,11 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-### 2. ❌ **Assertions em Texto Não-Determinístico**
+### 2. [ERRO] **Assertions em Texto Não-Determinístico**
 
 **Antipadrão:** `assert "palavra_especifica" in response.lower()`
 
-**Problema:** LLM pode usar sinônimos ("objetivo" → "finalidade", "propósito", "meta", "alvo", etc).
+**Problema:** LLM pode usar sinônimos ("objetivo" -> "finalidade", "propósito", "meta", "alvo", etc).
 
 **Solução Aplicada:** Functional assertions (validar dados extraídos, estado atualizado).
 
@@ -1165,11 +1165,11 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-### 3. ❌ **Criar Fixture sem Ler Schema Pydantic**
+### 3. [ERRO] **Criar Fixture sem Ler Schema Pydantic**
 
 **Antipadrão:** Assumir estrutura do schema baseado em memória ou nome de campos.
 
-**Problema:** Campos obrigatórios não preenchidos → ValidationError (memória [[9969868]] PONTO 15).
+**Problema:** Campos obrigatórios não preenchidos -> ValidationError (memória [[9969868]] PONTO 15).
 
 **Solução Aplicada:** SEMPRE `grep "class SchemaName" src/memory/schemas.py -A 50` ANTES de criar fixture.
 
@@ -1177,7 +1177,7 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-### 4. ❌ **Rodar pytest COM Filtros PowerShell**
+### 4. [ERRO] **Rodar pytest COM Filtros PowerShell**
 
 **Antipadrão:** `pytest ... | Select-Object -Last 20` (oculta informação crítica).
 
@@ -1189,7 +1189,7 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-### 5. ❌ **Análise Linear de Duplicação em Documentos**
+### 5. [ERRO] **Análise Linear de Duplicação em Documentos**
 
 **Antipadrão:** Revisar documento linha por linha procurando duplicações.
 
@@ -1201,7 +1201,7 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-## 📚 REFERÊNCIAS (TARDE)
+## [EMOJI] REFERÊNCIAS (TARDE)
 
 ### Memórias Aplicadas
 
@@ -1223,7 +1223,7 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-## 📝 CHECKLIST FINAL PARA PRÓXIMAS SESSÕES LLM TESTING
+## [EMOJI] CHECKLIST FINAL PARA PRÓXIMAS SESSÕES LLM TESTING
 
 **PRÉ-IMPLEMENTAÇÃO (15 min):**
 - [ ] Ler schemas Pydantic via grep ANTES de criar fixtures
@@ -1247,8 +1247,7 @@ Get-Content documento.md -TotalCount 1729 | Set-Content documento.md
 
 ---
 
-**Ultima Atualizacao:** 2025-10-23 (TARDE)  
-**Autor:** AI Agent (Claude Sonnet 4.5)  
-**Status:** ✅ **100% COMPLETO** (39/39 testes passando com LLM real)  
+**Ultima Atualizacao:** 2025-10-23 (TARDE)
+**Autor:** AI Agent (Claude Sonnet 4.5)
+**Status:** [OK] **100% COMPLETO** (39/39 testes passando com LLM real)
 **Proxima Sessao:** BLOCO FINALIZAÇÃO (documentação + commit)
-

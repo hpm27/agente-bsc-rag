@@ -1,7 +1,7 @@
 # API Contracts Documentation - Agente Consultor BSC
 
-**Data**: 2025-10-19  
-**Versao**: 1.0.0  
+**Data**: 2025-10-19
+**Versao**: 1.0.0
 **Objetivo**: Documentar interfaces publicas de todos os agentes consultorios BSC para acelerar desenvolvimento FASE 3
 
 ---
@@ -467,7 +467,7 @@ print(result2["response"])
 **Notes**:
 - Usa ClientProfileAgent internamente para extracao progressiva
 - Implementa follow-up inteligente: se informacao incompleta, faz nova pergunta
-- Tracking de progresso: step 1 (CompanyInfo) → step 2 (Challenges) → step 3 (Objectives)
+- Tracking de progresso: step 1 (CompanyInfo) -> step 2 (Challenges) -> step 3 (Objectives)
 - Conversation_history acumula todos os turnos
 
 ---
@@ -519,7 +519,7 @@ print(is_complete2)  # True
 
 **Notes**:
 - Verifica se step == 3 E company_info, challenges, objectives preenchidos
-- Usado pelo workflow para decidir transicao ONBOARDING → DISCOVERY
+- Usado pelo workflow para decidir transicao ONBOARDING -> DISCOVERY
 
 **Visual Reference**: Ver Diagrama 5 (State Transitions) em `DATA_FLOW_DIAGRAMS.md`
 
@@ -623,7 +623,7 @@ def consolidate_diagnostic(
 **Purpose**: Consolida analises das 4 perspectivas identificando synergies cross-perspective e executive summary.
 
 **Parameters**:
-- `perspective_results` (dict): Mapa perspectiva → DiagnosticResult das 4 analises individuais
+- `perspective_results` (dict): Mapa perspectiva -> DiagnosticResult das 4 analises individuais
 
 **Returns**:
 - `dict[str, Any]`: Consolidacao com:
@@ -681,7 +681,7 @@ def generate_recommendations(
 **Purpose**: Gera recomendacoes priorizadas (impacto vs esforco) baseadas em diagnostico completo.
 
 **Parameters**:
-- `perspective_results` (dict): Mapa perspectiva → DiagnosticResult das 4 analises
+- `perspective_results` (dict): Mapa perspectiva -> DiagnosticResult das 4 analises
 - `consolidated` (dict): Resultado de consolidate_diagnostic com synergies
 
 **Returns**:
@@ -797,7 +797,7 @@ print(complete_diagnostic.executive_summary)
 
 **Purpose**: Agentes especializados em cada perspectiva BSC (Financeira, Clientes, Processos Internos, Aprendizado e Crescimento). Usados para RAG tradicional e analise diagnostica.
 
-**Location**: 
+**Location**:
 - `src/agents/financial_agent.py`
 - `src/agents/customer_agent.py`
 - `src/agents/process_agent.py`
@@ -987,7 +987,7 @@ print(decision.is_general_question)  # False
 
 **Notes**:
 - Usa Query Router interno (ver ROUTER.md) para classificacao inicial
-- Heuristicas: palavras-chave por perspectiva (ex: "retencao" → cliente, "ROI" → financeira)
+- Heuristicas: palavras-chave por perspectiva (ex: "retencao" -> cliente, "ROI" -> financeira)
 - Fallback LLM: se heuristicas incertas, usa GPT-5 mini para classificacao
 - Queries gerais (ex: "O que e BSC?") acionam todos 4 agentes
 
@@ -1093,7 +1093,7 @@ synthesized = orchestrator.synthesize_responses(
 
 print(synthesized)
 # "Para melhorar a retencao de clientes, considerando as perspectivas de Clientes e Financeira:
-#  1. Implementar programa de fidelidade... 
+#  1. Implementar programa de fidelidade...
 #  2. Impacto financeiro esperado: aumento de 15-20% no LTV..."
 ```
 
@@ -1117,7 +1117,7 @@ def process_query(
 ) -> Dict[str, Any]
 ```
 
-**Purpose**: Orquestra workflow completo RAG tradicional: routing → invocacao → sintese (→ judge opcional).
+**Purpose**: Orquestra workflow completo RAG tradicional: routing -> invocacao -> sintese (-> judge opcional).
 
 **Parameters**:
 - `query` (str): Pergunta do usuario
@@ -1620,7 +1620,7 @@ diagnostic = CompleteDiagnostic(
 
 ## CROSS-REFERENCES
 
-### API Contracts ↔ Data Flow Diagrams
+### API Contracts <-> Data Flow Diagrams
 
 - **ClientProfileAgent.extract_company_info**: Ver Diagrama 1 (ClientProfile Lifecycle) para fluxo Mem0 save/load
 - **ClientProfileAgent.process_onboarding**: Ver Diagrama 4 (Agent Interactions) para workflow completo onboarding
@@ -1645,7 +1645,7 @@ diagnostic = CompleteDiagnostic(
 ### 2. OpenAPI-Style Documentation
 
 - **Fonte**: Speakeasy Sep 2024
-- **Aplicacao**: Formato Signature → Parameters → Returns → Raises → Example
+- **Aplicacao**: Formato Signature -> Parameters -> Returns -> Raises -> Example
 - **Beneficio**: Documentacao clara e consistente, similar a OpenAPI specs
 
 ### 3. Semantic Versioning
@@ -1675,11 +1675,11 @@ diagnostic = CompleteDiagnostic(
 - **GPT-5 mini**: ClientProfileAgent, OnboardingAgent, DiagnosticAgent, ConsultingOrchestrator (routing), JudgeAgent
   - Cost-effective para tarefas simples (extracao, classificacao, avaliacao)
   - Temperature 0.1 (precisao maxima)
-  
+
 - **GPT-5 (gpt-5-2025-08-07)**: Specialist Agents (Financial, Customer, Process, Learning)
   - Reasoning_effort="high" para analise profunda
   - Max_completion_tokens=128000 (outputs longos)
-  
+
 - **GPT-4o**: ConsultingOrchestrator (sintese multi-agente)
   - Temperature 0.1 para sintese precisa
   - Max_tokens=64000
@@ -1713,4 +1713,3 @@ diagnostic = CompleteDiagnostic(
 
 **Ultima Atualizacao**: 2025-10-19 (v1.0.0)
 **Proxima Revisao**: FASE 3 (adicao de SWOT, 5 Whys, KPIs customizados)
-

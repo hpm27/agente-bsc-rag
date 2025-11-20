@@ -1,6 +1,6 @@
-# 🚀 Guia de Execução - Agente BSC RAG
+# [EMOJI] Guia de Execução - Agente BSC RAG
 
-## ⚡ Início Rápido (Para Usuários)
+## [FAST] Início Rápido (Para Usuários)
 
 ### 1. Verifique Pré-requisitos
 
@@ -46,12 +46,12 @@ docker-compose up -d qdrant weaviate redis
 python scripts/build_knowledge_base.py
 ```
 
-**⏱️ Tempo estimado:**
+**[TIMER] Tempo estimado:**
 
 - Com Contextual Retrieval (recomendado): ~10-15 minutos
 - Sem Contextual Retrieval: ~2-3 minutos
 
-**💡 Dica:** A primeira indexação demora mais. Depois, você pode adicionar novos documentos e re-executar.
+**[EMOJI] Dica:** A primeira indexação demora mais. Depois, você pode adicionar novos documentos e re-executar.
 
 ### 5. Inicie a Interface Web
 
@@ -65,7 +65,7 @@ Aguarde a mensagem:
 Local URL: http://localhost:8501
 ```
 
-### 6. Use o Sistema! 🎉
+### 6. Use o Sistema! [EMOJI]
 
 Abra seu navegador em: [http://localhost:8501](http://localhost:8501)
 
@@ -77,7 +77,7 @@ Abra seu navegador em: [http://localhost:8501](http://localhost:8501)
 
 ---
 
-## 🔍 Troubleshooting Comum
+## [EMOJI] Troubleshooting Comum
 
 ### Problema: Docker não inicia
 
@@ -153,7 +153,7 @@ streamlit run app/main.py --server.port 8502
 
 ---
 
-## 🧪 Executar Testes
+## [EMOJI] Executar Testes
 
 ### Testes Unitários
 
@@ -164,7 +164,7 @@ pytest tests/ -v
 
 ### Testes End-to-End
 
-⚠️ **Requer documentos indexados**
+[WARN] **Requer documentos indexados**
 
 ```powershell
 pytest tests/integration/test_e2e.py -v -s
@@ -179,7 +179,7 @@ pytest tests/ --cov=src --cov-report=html
 
 ---
 
-## 📊 Monitorar Sistema
+## [EMOJI] Monitorar Sistema
 
 ### 1. Logs da Aplicação
 
@@ -220,7 +220,7 @@ Acesse: [http://localhost:8001](http://localhost:8001)
 
 ---
 
-## ⚙️ Configurações Avançadas
+## [EMOJI] Configurações Avançadas
 
 ### Ajustar Performance
 
@@ -273,7 +273,7 @@ TEMPERATURE=0.7
 
 ---
 
-## 📈 Adicionar Mais Documentos
+## [EMOJI] Adicionar Mais Documentos
 
 ### 1. Adicione arquivos
 
@@ -295,7 +295,7 @@ data/bsc_literature/
 python scripts/build_knowledge_base.py
 ```
 
-**💡 Dica:** O sistema detecta documentos já indexados e pula (indexação incremental).
+**[EMOJI] Dica:** O sistema detecta documentos já indexados e pula (indexação incremental).
 
 ### 3. Verifique no Qdrant UI
 
@@ -305,7 +305,7 @@ python scripts/build_knowledge_base.py
 
 ---
 
-## 🔄 Reiniciar Completamente
+## [EMOJI] Reiniciar Completamente
 
 ### Limpar TUDO e recomeçar
 
@@ -330,7 +330,7 @@ streamlit run app/main.py
 
 ---
 
-## 📚 Comandos Úteis
+## [EMOJI] Comandos Úteis
 
 ```powershell
 # Status geral
@@ -358,20 +358,20 @@ netstat -ano | Select-String "6333|8501|6379"
 
 **Antes de abrir issue:**
 
-1. ✅ Verifique logs: `logs/app.log` e `logs/errors.log`
-2. ✅ Execute: `python scripts/validate_setup.py`
-3. ✅ Confirme Docker rodando: `docker ps`
-4. ✅ Verifique API keys no `.env`
+1. [OK] Verifique logs: `logs/app.log` e `logs/errors.log`
+2. [OK] Execute: `python scripts/validate_setup.py`
+3. [OK] Confirme Docker rodando: `docker ps`
+4. [OK] Verifique API keys no `.env`
 
 **Se ainda tiver problemas:**
 
-- 📧 Abra uma issue no GitHub
-- 📝 Inclua logs relevantes
-- 💻 Mencione sistema operacional e versão Python
+- [EMOJI] Abra uma issue no GitHub
+- [EMOJI] Inclua logs relevantes
+- [EMOJI] Mencione sistema operacional e versão Python
 
 ---
 
-## 🎯 Checklist Pré-Execução
+## [EMOJI] Checklist Pré-Execução
 
 Antes de usar o sistema, confirme:
 
@@ -389,11 +389,11 @@ Antes de usar o sistema, confirme:
 streamlit run app/main.py
 ```
 
-E aproveite! 🎉
+E aproveite! [EMOJI]
 
 ---
 
-## 📖 Documentação Adicional
+## [EMOJI] Documentação Adicional
 
 - [Guia Rápido](docs/QUICKSTART.md) - Tutorial completo
 - [API Reference](docs/API_REFERENCE.md) - Documentação da API

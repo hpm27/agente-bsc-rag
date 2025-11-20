@@ -1,6 +1,6 @@
 # Implementacao GPT-5 para Contextual Retrieval - CONCLUIDA
 
-**Data**: 11/10/2025  
+**Data**: 11/10/2025
 **Status**: [OK] IMPLEMENTADO E TESTADO
 
 ## Resumo da Implementacao
@@ -77,13 +77,13 @@ python scripts/test_gpt5_contextual.py
 [OK] Chunker inicializado: provider=openai, model=gpt-5-2025-08-07
 
 [OK] Resumo gerado em 3.39s
-   Resumo: O documento apresenta uma introducao ao Balanced Scorecard (BSC) 
-   como sistema de gestao estrategica que traduz missao e estrategia em 
+   Resumo: O documento apresenta uma introducao ao Balanced Scorecard (BSC)
+   como sistema de gestao estrategica que traduz missao e estrategia em
    metricas de desempenho...
 
 [OK] Contexto gerado em 2.58s
-   Contexto: Este trecho detalha os principais indicadores da Perspectiva 
-   Financeira do BSC, destacando como metricas como ROI, crescimento de 
+   Contexto: Este trecho detalha os principais indicadores da Perspectiva
+   Financeira do BSC, destacando como metricas como ROI, crescimento de
    receita e margens se conectam a estrategia de crescimento...
 
 [SUCCESS] Todos os testes concluidos!
@@ -196,8 +196,8 @@ IMPLEMENTATION_GPT5_CONTEXTUAL.md        # Este arquivo
    - Compare chunks contextualizados vs. originais
 
 4. **Ajustar reasoning_effort se necessário**:
-   - `minimal` → `low` (se qualidade insuficiente)
-   - `low` → `minimal` (se custo muito alto)
+   - `minimal` -> `low` (se qualidade insuficiente)
+   - `low` -> `minimal` (se custo muito alto)
 
 ## Checklist de Validacao
 
@@ -221,7 +221,6 @@ IMPLEMENTATION_GPT5_CONTEXTUAL.md        # Este arquivo
 
 ---
 
-**Status Final**: [OK] IMPLEMENTACAO COMPLETA E TESTADA  
-**Autor**: Agente BSC RAG  
+**Status Final**: [OK] IMPLEMENTACAO COMPLETA E TESTADA
+**Autor**: Agente BSC RAG
 **Data**: 11/10/2025 23:33 BRT
-

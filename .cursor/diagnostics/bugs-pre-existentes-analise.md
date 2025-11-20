@@ -1,28 +1,28 @@
 # Análise de Bugs Pré-Existentes - Onboarding Agent
 
-**Data:** 22/10/2025  
-**Contexto:** Detectados 5 bugs pré-existentes durante validação do BLOCO 1  
-**Status:** ❌ **BUGS REAIS NO CÓDIGO** (não são testes defasados)
+**Data:** 22/10/2025
+**Contexto:** Detectados 5 bugs pré-existentes durante validação do BLOCO 1
+**Status:** [ERRO] **BUGS REAIS NO CÓDIGO** (não são testes defasados)
 
 ---
 
-## 📊 RESUMO EXECUTIVO
+## [EMOJI] RESUMO EXECUTIVO
 
 **CONCLUSÃO:** Os 5 bugs são **BUGS REAIS NA LÓGICA DE VALIDAÇÃO** do método `process_turn()`. Os testes estão **corretos** e refletem o comportamento esperado. O código de produção tem **falha crítica** na detecção de informações incompletas.
 
 **IMPACTO NO PROJETO:**
-- ⚠️ **MÉDIO-ALTO** - Afeta experiência do usuário no onboarding
+- [WARN] **MÉDIO-ALTO** - Afeta experiência do usuário no onboarding
 - O agent **avança steps prematuramente** sem coletar informações necessárias
 - Pode resultar em diagnósticos BSC incompletos/inadequados
 - **NÃO bloqueia funcionalidade core** (DISCOVERY, SWOT, KPI funcionam), mas **degrada qualidade** do onboarding inicial
 
 ---
 
-## 🐛 BUGS IDENTIFICADOS (5 TOTAL)
+## [EMOJI] BUGS IDENTIFICADOS (5 TOTAL)
 
 ### **BUG #1: test_process_turn_step1_incomplete_triggers_followup**
 
-**Status:** ❌ FALHANDO
+**Status:** [ERRO] FALHANDO
 
 **Comportamento Esperado (teste):**
 - Usuário fornece informação **incompleta** (falta `sector`)
@@ -42,7 +42,7 @@ is_complete, missing_info = self._validate_extraction(extraction_result, current
 
 # Linha 222
 if not is_complete and self.followup_count[current_step] < self.max_followups_per_step:
-    # ❌ ESTE BLOCO NÃO ESTÁ SENDO EXECUTADO
+    # [ERRO] ESTE BLOCO NÃO ESTÁ SENDO EXECUTADO
 ```
 
 **Hipótese:** `_validate_extraction()` retorna **is_complete=True** mesmo com `sector=None`
@@ -51,7 +51,7 @@ if not is_complete and self.followup_count[current_step] < self.max_followups_pe
 
 ### **BUG #2: test_process_turn_step1_max_followups_forces_continue**
 
-**Status:** ❌ FALHANDO
+**Status:** [ERRO] FALHANDO
 
 **Comportamento Esperado (teste):**
 - Após **2 follow-ups** (max_followups=2), mesmo com informação **ainda incompleta**
@@ -68,7 +68,7 @@ Lógica de "forçar avanço após max follow-ups" (linha 249-250) pode não esta
 
 ### **BUG #3: test_process_turn_step2_challenges_extracted**
 
-**Status:** ❌ FALHANDO (similar ao BUG #1)
+**Status:** [ERRO] FALHANDO (similar ao BUG #1)
 
 **Comportamento:** Agent não valida corretamente **mínimo de 2 challenges**
 
@@ -76,7 +76,7 @@ Lógica de "forçar avanço após max follow-ups" (linha 249-250) pode não esta
 
 ### **BUG #4: test_process_turn_step3_objectives_extracted**
 
-**Status:** ❌ FALHANDO (similar ao BUG #1)
+**Status:** [ERRO] FALHANDO (similar ao BUG #1)
 
 **Comportamento:** Agent não valida corretamente **mínimo de 3 objectives**
 
@@ -84,50 +84,50 @@ Lógica de "forçar avanço após max follow-ups" (linha 249-250) pode não esta
 
 ### **BUG #5: test_process_turn_initial_company_extraction**
 
-**Status:** ❌ FALHANDO (similar ao BUG #1)
+**Status:** [ERRO] FALHANDO (similar ao BUG #1)
 
 **Comportamento:** Validação inicial de extração completa falhando
 
 ---
 
-## 🔍 ROOT CAUSE ANALYSIS (5 WHYS)
+## [EMOJI] ROOT CAUSE ANALYSIS (5 WHYS)
 
 **Problema:** Agent avança steps com informações incompletas
 
-**Why #1:** Por que agent avança?  
-→ Porque condição `if not is_complete` (linha 222) retorna False
+**Why #1:** Por que agent avança?
+-> Porque condição `if not is_complete` (linha 222) retorna False
 
-**Why #2:** Por que `is_complete` é True?  
-→ Porque `_validate_extraction()` não detecta campos faltantes
+**Why #2:** Por que `is_complete` é True?
+-> Porque `_validate_extraction()` não detecta campos faltantes
 
-**Why #3:** Por que validação não detecta?  
-→ Possível causa: `extraction.get("sector")` retorna algo que não é None/False
+**Why #3:** Por que validação não detecta?
+-> Possível causa: `extraction.get("sector")` retorna algo que não é None/False
 
-**Why #4:** Por que `sector` não é None?  
-→ Hipótese 1: Mock do teste não está funcionando corretamente  
-→ Hipótese 2: `_extract_information()` está retornando formato diferente (dict vazio vs None)  
-→ Hipótese 3: Validação compara contra string vazia "" (Pythonic: `if not extraction.get("sector")` captura None E "")
+**Why #4:** Por que `sector` não é None?
+-> Hipótese 1: Mock do teste não está funcionando corretamente
+-> Hipótese 2: `_extract_information()` está retornando formato diferente (dict vazio vs None)
+-> Hipótese 3: Validação compara contra string vazia "" (Pythonic: `if not extraction.get("sector")` captura None E "")
 
-**Why #5:** Por que formato mudou?  
-→ **PROVÁVEL INTERFERÊNCIA** com nossos novos métodos (`_extract_all_entities()`, adapter linha 352-364)
+**Why #5:** Por que formato mudou?
+-> **PROVÁVEL INTERFERÊNCIA** com nossos novos métodos (`_extract_all_entities()`, adapter linha 352-364)
 
 ---
 
-## 🧪 EVIDÊNCIAS
+## [EMOJI] EVIDÊNCIAS
 
 ### **Evidência 1: Erro Concreto do Teste**
 ```python
 assert result["step"] == OnboardingStep.COMPANY_INFO
 AssertionError: assert 2 == <OnboardingStep.COMPANY_INFO: 1>
 ```
-Step retornado: **2** (CHALLENGES)  
+Step retornado: **2** (CHALLENGES)
 Step esperado: **1** (COMPANY_INFO)
 
 ### **Evidência 2: Mock do Teste (correto)**
 ```python
 incomplete_info = Mock()
 incomplete_info.name = "Empresa X"
-incomplete_info.sector = None  # ← EXPLICITAMENTE None
+incomplete_info.sector = None  # <- EXPLICITAMENTE None
 incomplete_info.size = "100"
 incomplete_info.dict = Mock(return_value={
     "name": "Empresa X",
@@ -140,16 +140,16 @@ incomplete_info.dict = Mock(return_value={
 ```python
 def _validate_extraction(self, extraction: dict[str, Any], step: int) -> tuple[bool, list[str]]:
     missing = []
-    
+
     if step == OnboardingStep.COMPANY_INFO:
-        if not extraction.get("name"):  # ✅ Pythonic check
+        if not extraction.get("name"):  # [OK] Pythonic check
             missing.append("nome da empresa")
-        if not extraction.get("sector"):  # ❌ DEVERIA detectar None!
+        if not extraction.get("sector"):  # [ERRO] DEVERIA detectar None!
             missing.append("setor/indústria")
         if not extraction.get("size"):
             missing.append("tamanho (número de funcionários)")
-    
-    is_complete = len(missing) == 0  # ❌ Se missing vazio → True (ERRADO!)
+
+    is_complete = len(missing) == 0  # [ERRO] Se missing vazio -> True (ERRADO!)
     return is_complete, missing
 ```
 
@@ -157,7 +157,7 @@ def _validate_extraction(self, extraction: dict[str, Any], step: int) -> tuple[b
 
 ---
 
-## 💡 HIPÓTESE PRINCIPAL
+## [EMOJI] HIPÓTESE PRINCIPAL
 
 **INTERFERÊNCIA COM NOVOS MÉTODOS (BLOCO 1):**
 
@@ -179,28 +179,28 @@ extracted_entities = {
 
 ---
 
-## 🚨 IMPACTO NO PROJETO
+## [EMOJI] IMPACTO NO PROJETO
 
 ### **Severidade: MÉDIA-ALTA**
 
 | Aspecto | Impacto |
 |---|---|
-| **Funcionalidade Core** | ✅ **NÃO afetada** (DISCOVERY, SWOT, KPI funcionam) |
-| **Experiência de Onboarding** | ❌ **DEGRADADA** (usuário pode pular informações) |
-| **Qualidade de Diagnósticos** | ⚠️ **RISCO MÉDIO** (diagnósticos com base incompleta) |
-| **Produção Atual** | ⚠️ **DESCONHECIDO** (não sabemos se bug existe em prod ou só em testes) |
+| **Funcionalidade Core** | [OK] **NÃO afetada** (DISCOVERY, SWOT, KPI funcionam) |
+| **Experiência de Onboarding** | [ERRO] **DEGRADADA** (usuário pode pular informações) |
+| **Qualidade de Diagnósticos** | [WARN] **RISCO MÉDIO** (diagnósticos com base incompleta) |
+| **Produção Atual** | [WARN] **DESCONHECIDO** (não sabemos se bug existe em prod ou só em testes) |
 
 ### **Cenário de Falha Real:**
 ```
-USUÁRIO: "Sou da TechCorp"  
-AGENT: "Ótimo! Quais são os 2-3 principais desafios?" ← ❌ PULOU VALIDAÇÃO (falta sector, size)
+USUÁRIO: "Sou da TechCorp"
+AGENT: "Ótimo! Quais são os 2-3 principais desafios?" <- [ERRO] PULOU VALIDAÇÃO (falta sector, size)
 
 [Resultado: Diagnóstico BSC sem contexto de indústria/tamanho]
 ```
 
 ---
 
-## ✅ TESTES ESTÃO **CORRETOS** (NÃO defasados)
+## [OK] TESTES ESTÃO **CORRETOS** (NÃO defasados)
 
 **Evidências:**
 1. Testes refletem **comportamento esperado** de onboarding progressivo
@@ -210,7 +210,7 @@ AGENT: "Ótimo! Quais são os 2-3 principais desafios?" ← ❌ PULOU VALIDAÇÃ
 
 ---
 
-## 🔧 RECOMENDAÇÕES DE CORREÇÃO
+## [EMOJI] RECOMENDAÇÕES DE CORREÇÃO
 
 ### **Prioridade 1: DEBUGGING IMEDIATO (1-2h)**
 
@@ -220,14 +220,14 @@ def _validate_extraction(self, extraction: dict[str, Any], step: int) -> tuple[b
     logger.info("[VALIDATE] Extraction recebido: %s", extraction)
     logger.info("[VALIDATE] Step: %d", step)
     missing = []
-    
+
     if step == OnboardingStep.COMPANY_INFO:
         name_value = extraction.get("name")
         sector_value = extraction.get("sector")
         size_value = extraction.get("size")
-        
+
         logger.info("[VALIDATE] name=%s, sector=%s, size=%s", name_value, sector_value, size_value)
-        
+
         if not name_value:
             missing.append("nome da empresa")
             logger.info("[VALIDATE] FALTANDO: nome da empresa")
@@ -237,7 +237,7 @@ def _validate_extraction(self, extraction: dict[str, Any], step: int) -> tuple[b
         if not size_value:
             missing.append("tamanho (número de funcionários)")
             logger.info("[VALIDATE] FALTANDO: tamanho")
-    
+
     is_complete = len(missing) == 0
     logger.info("[VALIDATE] is_complete=%s, missing=%s", is_complete, missing)
     return is_complete, missing
@@ -275,19 +275,19 @@ if not sector_value or sector_value == "" or sector_value == "None":
 
 ---
 
-## 📝 CONCLUSÃO
+## [EMOJI] CONCLUSÃO
 
 **RESPOSTA DIRETA À PERGUNTA:**
 
 > **Os bugs pré-existentes indicam algum erro que pode prejudicar o funcionamento do projeto, ou são testes defasados?**
 
-✅ **Eram BUGS REAIS nos MOCKS dos testes** (não no código de produção!)  
-✅ **Testes estavam corretos** (comportamento esperado adequado)  
-✅ **TODOS OS 5 BUGS RESOLVIDOS** (2025-10-23)
+[OK] **Eram BUGS REAIS nos MOCKS dos testes** (não no código de produção!)
+[OK] **Testes estavam corretos** (comportamento esperado adequado)
+[OK] **TODOS OS 5 BUGS RESOLVIDOS** (2025-10-23)
 
 ---
 
-## ✅ **SOLUÇÃO COMPLETA IMPLEMENTADA (2025-10-23)**
+## [OK] **SOLUÇÃO COMPLETA IMPLEMENTADA (2025-10-23)**
 
 ### **ROOT CAUSE FINAL:**
 
@@ -299,8 +299,8 @@ return result.model_dump() if hasattr(result, "model_dump") else (result.dict() 
 ```
 
 Mocks antigos só tinham `.dict()`, mas Mock objects **TÊM hasattr "model_dump"** naturalmente, retornando **outro Mock**. Resultado:
-- `extraction.get("sector")` → **Mock object** (não None!)
-- `if not mock_object` → **False** (Mocks são truthy!)
+- `extraction.get("sector")` -> **Mock object** (não None!)
+- `if not mock_object` -> **False** (Mocks são truthy!)
 - `is_complete=True` (ERRADO!)
 
 ---
@@ -314,8 +314,8 @@ company_info.dict = Mock(return_value={...})
 
 # DEPOIS (CORRETO):
 company_info_dict = {"name": "...", "sector": "...", "size": "..."}
-company_info.model_dump = Mock(return_value=company_info_dict)  # ✅ Pydantic V2
-company_info.dict = Mock(return_value=company_info_dict)  # ✅ Fallback V1
+company_info.model_dump = Mock(return_value=company_info_dict)  # [OK] Pydantic V2
+company_info.dict = Mock(return_value=company_info_dict)  # [OK] Fallback V1
 ```
 
 **2. Testes Específicos (4 locais)**
@@ -343,10 +343,10 @@ Além do mock, precisava popular `state.client_profile.context.current_challenge
 
 ### **DESCOBERTAS CRÍTICAS:**
 
-1. ✅ **Código de produção está CORRETO** - `_validate_extraction()` funciona perfeitamente
-2. ✅ **Validação pythonica funciona** - `if not value` detecta None, "", [] corretamente
-3. ❌ **Mocks Pydantic V2** - SEMPRE adicionar `.model_dump()` E `.dict()` (ordem importa!)
-4. ❌ **State precisa de dados reais** - Marcar step completo NÃO basta, precisa popular dados
+1. [OK] **Código de produção está CORRETO** - `_validate_extraction()` funciona perfeitamente
+2. [OK] **Validação pythonica funciona** - `if not value` detecta None, "", [] corretamente
+3. [ERRO] **Mocks Pydantic V2** - SEMPRE adicionar `.model_dump()` E `.dict()` (ordem importa!)
+4. [ERRO] **State precisa de dados reais** - Marcar step completo NÃO basta, precisa popular dados
 
 ---
 
@@ -358,7 +358,7 @@ mock_object = Mock()
 mock_object.field1 = value1
 mock_object.field2 = value2
 
-# ✅ CORRETO (Pydantic V2 + V1 fallback):
+# [OK] CORRETO (Pydantic V2 + V1 fallback):
 data_dict = {"field1": value1, "field2": value2}
 mock_object.model_dump = Mock(return_value=data_dict)
 mock_object.dict = Mock(return_value=data_dict)
@@ -368,10 +368,10 @@ mock_object.dict = Mock(return_value=data_dict)
 
 ---
 
-**IMPACTO NO PROJETO:** ✅ **ZERO** - Bugs eram apenas nos testes, não afetavam produção
+**IMPACTO NO PROJETO:** [OK] **ZERO** - Bugs eram apenas nos testes, não afetavam produção
 
 ---
 
-**Última Atualização:** 2025-10-23 ✅ **BUGS RESOLVIDOS 100%**  
-**Autor:** AI Agent (Claude Sonnet 4.5)  
+**Última Atualização:** 2025-10-23 [OK] **BUGS RESOLVIDOS 100%**
+**Autor:** AI Agent (Claude Sonnet 4.5)
 **Tempo Total:** 75 min (Sequential Thinking + debugging + correções + validação)

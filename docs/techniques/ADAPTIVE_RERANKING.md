@@ -1,14 +1,14 @@
 # Adaptive Re-ranking com MMR - Documentação Técnica
 
-**Técnica:** TECH-002 - Adaptive Re-ranking  
-**Fase:** 2A.2 (Quick Wins)  
-**Status:** ✅ COMPLETO (14/10/2025)  
-**Complexidade:** ⭐⭐ (Simples)  
+**Técnica:** TECH-002 - Adaptive Re-ranking
+**Fase:** 2A.2 (Quick Wins)
+**Status:** [OK] COMPLETO (14/10/2025)
+**Complexidade:** ⭐⭐ (Simples)
 **ROI:** ⭐⭐⭐⭐ (Alto)
 
 ---
 
-## 📋 Visão Geral
+## [EMOJI] Visão Geral
 
 Adaptive Re-ranking é um sistema de re-ranqueamento inteligente que combina **3 técnicas avançadas**:
 
@@ -20,39 +20,39 @@ Adaptive Re-ranking é um sistema de re-ranqueamento inteligente que combina **3
 
 ---
 
-## 🎯 Casos de Uso BSC
+## [EMOJI] Casos de Uso BSC
 
 ### Caso 1: Evitar Redundância de Fonte Única
 
-**Problema:**  
-Query: "Como implementar BSC?"  
+**Problema:**
+Query: "Como implementar BSC?"
 Resultado sem MMR: Top-5 documentos todos do mesmo livro (Kaplan & Norton 1996), repetindo informações similares.
 
-**Solução com MMR:**  
-Top-5 documentos de 3 fontes diferentes: Kaplan & Norton (1996), BSC Implementação (2005), BSC Processos (2010) → **variedade de perspectivas e épocas**.
+**Solução com MMR:**
+Top-5 documentos de 3 fontes diferentes: Kaplan & Norton (1996), BSC Implementação (2005), BSC Processos (2010) -> **variedade de perspectivas e épocas**.
 
 ### Caso 2: Queries Complexas Multi-Perspectiva
 
-**Problema:**  
-Query: "Como integrar as 4 perspectivas BSC com foco em financeira e clientes?"  
+**Problema:**
+Query: "Como integrar as 4 perspectivas BSC com foco em financeira e clientes?"
 Resultado sem diversidade: Documentos focados apenas em perspectiva financeira.
 
-**Solução com Metadata Boost:**  
+**Solução com Metadata Boost:**
 Sistema identifica que query menciona "financeira" e "clientes", prioriza docs que cobrem **ambas perspectivas**, evita docs muito similares sobre apenas 1 perspectiva.
 
 ### Caso 3: Ajuste Dinâmico para Queries Simples vs Complexas
 
-**Problema:**  
-Query simples: "O que é BSC?" → Sistema retorna 10 docs (overhead desnecessário)  
-Query complexa: "Como BSC integra perspectivas com KPIs?" → Sistema retorna 5 docs (contexto insuficiente)
+**Problema:**
+Query simples: "O que é BSC?" -> Sistema retorna 10 docs (overhead desnecessário)
+Query complexa: "Como BSC integra perspectivas com KPIs?" -> Sistema retorna 5 docs (contexto insuficiente)
 
-**Solução com Adaptive Top-N:**  
-- Query simples → **top_n = 5** (resposta concisa)
-- Query complexa → **top_n = 15** (contexto amplo)
+**Solução com Adaptive Top-N:**
+- Query simples -> **top_n = 5** (resposta concisa)
+- Query complexa -> **top_n = 15** (contexto amplo)
 
 ---
 
-## 🔧 Componentes Técnicos
+## [EMOJI] Componentes Técnicos
 
 ### 1. Algoritmo MMR (Maximal Marginal Relevance)
 
@@ -63,9 +63,9 @@ MMR = λ * relevance - (1-λ) * max_similarity_to_selected
 
 **Parâmetros:**
 - `λ` (lambda): Balanceamento relevância vs diversidade
-  - λ = 1.0 → Só relevância (sem diversidade)
-  - λ = 0.5 → Balanceado (padrão)
-  - λ = 0.0 → Só diversidade (pode perder relevância)
+  - λ = 1.0 -> Só relevância (sem diversidade)
+  - λ = 0.5 -> Balanceado (padrão)
+  - λ = 0.0 -> Só diversidade (pode perder relevância)
 
 **Workflow:**
 1. Recebe documentos re-ranked pelo Cohere (com `rerank_score`)
@@ -86,22 +86,22 @@ remaining_indices = list(range(len(documents)))
 
 while len(selected_indices) < top_n and remaining_indices:
     mmr_scores = []
-    
+
     for idx in remaining_indices:
         relevance = relevance_scores[idx]
-        
+
         if not selected_indices:
             # Primeiro documento: só relevância
             mmr_score = relevance
         else:
             # Calcular max similarity com docs já selecionados
             max_similarity = np.max(doc_similarities[idx, selected_indices])
-            
+
             # MMR formula
             mmr_score = lambda_param * relevance - (1 - lambda_param) * max_similarity
-        
+
         mmr_scores.append(mmr_score)
-    
+
     # Selecionar doc com maior MMR score
     best_idx = remaining_indices[np.argmax(mmr_scores)]
     selected_indices.append(best_idx)
@@ -133,25 +133,25 @@ perspective_keywords = {
 ```python
 def _boost_by_metadata(documents, selected_indices):
     boost_scores = {}
-    
+
     # Coletar sources e perspectives já selecionadas
     selected_sources = {doc["metadata"]["source"] for doc in selected_docs}
     selected_perspectives = detect_perspectives(selected_docs)
-    
+
     for idx, doc in enumerate(documents):
         boost = 1.0  # Base multiplier
-        
+
         # Boost por source diferente
         if doc["metadata"]["source"] not in selected_sources:
             boost += 0.2  # +20%
-        
+
         # Boost por perspective diferente
         doc_perspective = detect_perspective(doc)
         if doc_perspective not in selected_perspectives:
             boost += 0.15  # +15%
-        
+
         boost_scores[idx] = boost
-    
+
     return boost_scores
 ```
 
@@ -175,11 +175,11 @@ mmr_score = lambda_param * boosted_relevance - (1 - lambda_param) * max_similari
 | **Múltiplas perguntas** | +1 | 2+ palavras: "como", "por que", "quando", "onde", "qual" |
 | **Palavras de complexidade** | +1 | "implementar", "integrar", "relação", "impacto", "diferença" |
 
-**Mapeamento Score → Top-N:**
+**Mapeamento Score -> Top-N:**
 ```python
 def calculate_adaptive_topn(query: str) -> int:
     complexity_score = calculate_complexity(query)
-    
+
     if complexity_score <= 1:
         return 5   # Queries simples
     elif complexity_score <= 3:
@@ -189,13 +189,13 @@ def calculate_adaptive_topn(query: str) -> int:
 ```
 
 **Exemplos:**
-- "O que é BSC?" → Score 0 → **top_n = 5**
-- "Como implementar BSC considerando perspectiva financeira?" → Score 2 → **top_n = 10**
-- "Como BSC integra perspectivas financeira, clientes e processos?" → Score 4 → **top_n = 15**
+- "O que é BSC?" -> Score 0 -> **top_n = 5**
+- "Como implementar BSC considerando perspectiva financeira?" -> Score 2 -> **top_n = 10**
+- "Como BSC integra perspectivas financeira, clientes e processos?" -> Score 4 -> **top_n = 15**
 
 ---
 
-## 💻 Uso Prático
+## [EMOJI] Uso Prático
 
 ### Exemplo 1: Re-ranking com Diversidade (Básico)
 
@@ -269,7 +269,7 @@ answer = llm.generate(query, context=final_docs)
 
 ---
 
-## ⚙️ Configuração
+## [EMOJI] Configuração
 
 ### Arquivo `.env`
 
@@ -303,12 +303,12 @@ adaptive_topn_enabled: bool = True
 
 ---
 
-## 🧪 Testes e Validação
+## [EMOJI] Testes e Validação
 
 ### Testes Unitários
 
-**Arquivo:** `tests/test_adaptive_reranking.py`  
-**Total:** 20 testes (100% passando)  
+**Arquivo:** `tests/test_adaptive_reranking.py`
+**Total:** 20 testes (100% passando)
 **Coverage:** 68% em `src/rag/reranker.py`
 
 **Categorias de Testes:**
@@ -353,47 +353,47 @@ python -m pytest tests/test_adaptive_reranking.py --cov=src/rag/reranker --cov-r
 
 ---
 
-## 📊 Métricas e ROI
+## [EMOJI] Métricas e ROI
 
 ### Métricas Esperadas vs Observadas
 
 | Métrica | Target | Observado | Status |
 |---------|--------|-----------|--------|
-| **Diversity Score** | > 0.7 | N/A* | ⚠️ Pendente |
-| **Fontes Únicas (Top-5)** | ≥ 2 | N/A* | ⚠️ Pendente |
-| **User Satisfaction** | +10% | N/A* | ⚠️ Pendente |
-| **Coverage Testes** | > 80% | 68% | 🟡 Bom |
-| **Testes Passando** | 15+ | 20 | ✅ Excelente |
-| **Tempo Implementação** | 2-3 dias | 1 dia** | ✅ Acima |
+| **Diversity Score** | > 0.7 | N/A* | [WARN] Pendente |
+| **Fontes Únicas (Top-5)** | ≥ 2 | N/A* | [WARN] Pendente |
+| **User Satisfaction** | +10% | N/A* | [WARN] Pendente |
+| **Coverage Testes** | > 80% | 68% | [EMOJI] Bom |
+| **Testes Passando** | 15+ | 20 | [OK] Excelente |
+| **Tempo Implementação** | 2-3 dias | 1 dia** | [OK] Acima |
 
-*Métricas de produção - requerem validação com usuários reais  
+*Métricas de produção - requerem validação com usuários reais
 **Implementação completa em 1 sessão intensiva (14/10/2025)
 
 ### Trade-offs
 
 **Benefícios:**
-- ✅ **Diversidade**: Evita redundância de docs similares
-- ✅ **Variedade**: Garante múltiplas fontes e perspectivas BSC
-- ✅ **Adaptativo**: Ajusta top_n automaticamente
-- ✅ **Reutilização**: Integra com Cohere reranker existente
-- ✅ **Configurável**: Parâmetros ajustáveis via .env
+- [OK] **Diversidade**: Evita redundância de docs similares
+- [OK] **Variedade**: Garante múltiplas fontes e perspectivas BSC
+- [OK] **Adaptativo**: Ajusta top_n automaticamente
+- [OK] **Reutilização**: Integra com Cohere reranker existente
+- [OK] **Configurável**: Parâmetros ajustáveis via .env
 
 **Custos:**
-- ⚠️ **Latência**: +1-2s (cálculo de embeddings + MMR)
-- ⚠️ **Memória**: Matriz de similaridade O(n²)
-- ⚠️ **Relevância**: λ < 0.7 pode reduzir precision em 5-10%
+- [WARN] **Latência**: +1-2s (cálculo de embeddings + MMR)
+- [WARN] **Memória**: Matriz de similaridade O(n²)
+- [WARN] **Relevância**: λ < 0.7 pode reduzir precision em 5-10%
 
 **Recomendação:** Usar λ=0.5 (balanceado) como padrão. Ajustar baseado em feedback de usuários.
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### 1. Embeddings Pré-computados São Essenciais
 
-**Problema Inicial:** MMR precisava gerar embeddings on-the-fly para todos docs.  
-**Impacto:** Latência proibitiva (+5-10s por query).  
-**Solução:** Reutilizar embeddings do retrieval (já computados e cached).  
+**Problema Inicial:** MMR precisava gerar embeddings on-the-fly para todos docs.
+**Impacto:** Latência proibitiva (+5-10s por query).
+**Solução:** Reutilizar embeddings do retrieval (já computados e cached).
 **Resultado:** Latência aceitável (+1-2s).
 
 ### 2. Metadata Boost Simples é Suficiente
@@ -403,18 +403,18 @@ python -m pytest tests/test_adaptive_reranking.py --cov=src/rag/reranker --cov-r
 2. Boost com decay exponencial
 3. Boost com scoring complexo multi-critério
 
-**Resultado:** Estratégia #1 (simples) teve **mesmo desempenho** que #2 e #3, mas com **50% menos código**.  
+**Resultado:** Estratégia #1 (simples) teve **mesmo desempenho** que #2 e #3, mas com **50% menos código**.
 **Lição:** Simplicidade > Complexidade desnecessária.
 
 ### 3. Adaptive Top-N Requer Heurísticas Rápidas
 
-**Problema:** LLM para classificar complexidade era lento (+500ms).  
-**Solução:** Heurísticas baseadas em regex (< 1ms).  
+**Problema:** LLM para classificar complexidade era lento (+500ms).
+**Solução:** Heurísticas baseadas em regex (< 1ms).
 **Resultado:** Accuracy 85-90% (suficiente), latência negligível.
 
 ### 4. λ=0.5 É Sweet Spot
 
-**Experimento:** Testamos λ ∈ {0.3, 0.5, 0.7, 0.9} em 50 queries.  
+**Experimento:** Testamos λ ∈ {0.3, 0.5, 0.7, 0.9} em 50 queries.
 **Resultado:**
 - λ=0.3: Diversidade alta, mas precision -15%
 - λ=0.5: **Balanceado**, precision -5%, diversidade +40%
@@ -425,13 +425,13 @@ python -m pytest tests/test_adaptive_reranking.py --cov=src/rag/reranker --cov-r
 
 ### 5. Graceful Degradation É Crítico
 
-**Descoberta:** Metadata pode estar ausente/incompleta em alguns documentos.  
-**Solução:** Fallback gracioso (boost=1.0 se metadata ausente).  
+**Descoberta:** Metadata pode estar ausente/incompleta em alguns documentos.
+**Solução:** Fallback gracioso (boost=1.0 se metadata ausente).
 **Resultado:** Sistema robusto, nunca falha por metadata ausente.
 
 ---
 
-## 🔧 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Problema 1: Latência Alta (> 5s)
 
@@ -498,7 +498,7 @@ for doc in documents:
 
 ---
 
-## 🔗 Referências
+## [EMOJI] Referências
 
 ### Papers e Artigos
 
@@ -529,7 +529,7 @@ for doc in documents:
 
 ---
 
-## 📝 Próximos Passos
+## [EMOJI] Próximos Passos
 
 ### Fase 2A.3 - Router Inteligente (5-7 dias)
 
@@ -557,7 +557,6 @@ Integrar Adaptive Re-ranking com Query Router que decide automaticamente:
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Autor:** Claude Sonnet 4.5 (via Cursor)  
-**Status:** ✅ IMPLEMENTAÇÃO COMPLETA (20 testes, 100% passando)
-
+**Última Atualização:** 2025-10-14
+**Autor:** Claude Sonnet 4.5 (via Cursor)
+**Status:** [OK] IMPLEMENTAÇÃO COMPLETA (20 testes, 100% passando)

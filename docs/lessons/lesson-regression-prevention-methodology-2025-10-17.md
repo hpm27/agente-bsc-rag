@@ -1,9 +1,9 @@
 # Lição Aprendida: Metodologia de Prevenção de Regressões em Testes
 
-**Data**: 2025-10-17  
-**Sessão**: 14 (Final - FASE 2 Completa)  
-**Contexto**: BSC Consulting Agent - Correções E2E + CHECKPOINT 2  
-**Duração**: ~1.5h (debugging estruturado SFL + 5 Whys)  
+**Data**: 2025-10-17
+**Sessão**: 14 (Final - FASE 2 Completa)
+**Contexto**: BSC Consulting Agent - Correções E2E + CHECKPOINT 2
+**Duração**: ~1.5h (debugging estruturado SFL + 5 Whys)
 **Resultado**: 351/353 testes passando (99.4% success), FASE 2 100% completa
 
 ---
@@ -41,7 +41,7 @@ Seguimos o **fluxo recomendado** de `.cursor/rules/Metodologias_causa_raiz.md`:
 
 ### Lições Críticas
 
-1. **SFL acelera debug 50%**: Priorizar por impacto (10 fails → 3 causas raiz) economiza metade do tempo
+1. **SFL acelera debug 50%**: Priorizar por impacto (10 fails -> 3 causas raiz) economiza metade do tempo
 2. **Singleton Settings imutável**: validate_memory_config deve usar settings global, não criar nova instância
 3. **Robustez dict keys**: Mocks variam formato, usar .get() com fallbacks múltiplos
 4. **Paralelo CI/CD**: -n 8 economiza 30-40% tempo (47 min vs 60-90 min)
@@ -64,7 +64,7 @@ Seguimos o **fluxo recomendado** de `.cursor/rules/Metodologias_causa_raiz.md`:
 - **Progresso**: 17/48 tarefas (35.4%), FASE 2: 9/10 tarefas (90%)
 - **Última etapa completa**: FASE 2.9 Consulting Orchestrator
 - **Schemas P0 criados**: DiagnosticResult, Recommendation, CompleteDiagnostic (268 linhas)
-- **Testes diagnostic_agent**: 0 collected → 16/16 PASSING (100%)
+- **Testes diagnostic_agent**: 0 collected -> 16/16 PASSING (100%)
 - **Expectativa**: FASE 2.10 simples (testes E2E já existem, handlers criados)
 
 ### 1.2. Trigger do Problema
@@ -82,13 +82,13 @@ pytest -n 8 --dist=loadfile -v --tb=long
 
 ### 1.3. Contexto Histórico
 
-Durante FASE 2 (tarefas 2.1 → 2.9), validamos incrementalmente:
-- **FASE 2.4**: OnboardingAgent → 40 testes novos passando
-- **FASE 2.5**: DiagnosticAgent → 16 testes novos passando
-- **FASE 2.6**: ONBOARDING State → 5 testes E2E passando
-- **FASE 2.7**: DISCOVERY State → 10 testes E2E passando
-- **FASE 2.8**: APPROVAL Logic → 9 testes passando
-- **FASE 2.9**: Orchestrator → 19 testes passando (5 ok, 14 dependências)
+Durante FASE 2 (tarefas 2.1 -> 2.9), validamos incrementalmente:
+- **FASE 2.4**: OnboardingAgent -> 40 testes novos passando
+- **FASE 2.5**: DiagnosticAgent -> 16 testes novos passando
+- **FASE 2.6**: ONBOARDING State -> 5 testes E2E passando
+- **FASE 2.7**: DISCOVERY State -> 10 testes E2E passando
+- **FASE 2.8**: APPROVAL Logic -> 9 testes passando
+- **FASE 2.9**: Orchestrator -> 19 testes passando (5 ok, 14 dependências)
 
 **Pattern observado**: Cada etapa validava apenas **testes NOVOS**, não regressão completa de etapas anteriores.
 
@@ -130,7 +130,7 @@ KeyError: 'question'
    - Edge case completo (is_complete=True) não estava coberto
 
 5. **Por quê é problema crítico?**
-   - Bloqueia transição ONBOARDING → DISCOVERY
+   - Bloqueia transição ONBOARDING -> DISCOVERY
    - Cliente fica "preso" em onboarding infinito
    - Produção: 100% clientes novos afetados
 
@@ -143,7 +143,7 @@ KeyError: 'question'
 "final_response": result.get("question", result.get("response", ""))
 ```
 
-**Impacto**: 3 linhas corrigidas (linhas 177, 193, 239), teste passou ✅
+**Impacto**: 3 linhas corrigidas (linhas 177, 193, 239), teste passou [OK]
 
 ---
 
@@ -166,7 +166,7 @@ AssertionError: assert 'test.pdf' in context
 
 2. **Por quê SearchResult tinha source='unknown'?**
    - Testes criam `SearchResult(id=..., content=..., metadata={'source': 'test.pdf'}, score=...)`
-   - Não fornecem `source` explícito → usa default `source='unknown'`
+   - Não fornecem `source` explícito -> usa default `source='unknown'`
    - Teste assume metadata será respeitada
 
 3. **Por quê defaults foram adicionados?**
@@ -182,7 +182,7 @@ AssertionError: assert 'test.pdf' in context
 
 5. **Por quê é problema crítico?**
    - format_context gera contexto para LLM
-   - Source/page incorretos → citações erradas nas respostas
+   - Source/page incorretos -> citações erradas nas respostas
    - Produção: usuário não confia nas referências
 
 **Solução**:
@@ -201,7 +201,7 @@ source = source_attr if (source_attr and source_attr != "unknown") else (source_
 page = page_attr if (isinstance(page_attr, int) and page_attr > 0) else (page_meta or 0)
 ```
 
-**Impacto**: Linhas 472-481 refinadas, teste passou ✅
+**Impacto**: Linhas 472-481 refinadas, teste passou [OK]
 
 ---
 
@@ -253,7 +253,7 @@ current_settings = Settings(_env_file=".env")
 current_settings = settings
 ```
 
-**Impacto**: Linha 300 corrigida, 2 testes passaram ✅
+**Impacto**: Linha 300 corrigida, 2 testes passaram [OK]
 
 ---
 
@@ -281,9 +281,9 @@ pytest -n 8 -v --tb=long 2>&1
 **Timeline mudanças recentes**:
 - **T-3h**: Schemas P0 criados (DiagnosticResult, Recommendation, CompleteDiagnostic)
 - **T-2h**: Testes diagnostic_agent corrigidos (16/16 passando)
-- **T-1h**: Mudanças em CompanyInfo.size (Literal → str flexible)
-- **T-0.5h**: Mudanças em ClientProfile.company (required → default_factory)
-- **T-0h**: Full regression suite → 10 fails detectados
+- **T-1h**: Mudanças em CompanyInfo.size (Literal -> str flexible)
+- **T-0.5h**: Mudanças em ClientProfile.company (required -> default_factory)
+- **T-0h**: Full regression suite -> 10 fails detectados
 
 #### Step 2: SFL (Spectrum-Based Fault Localization)
 
@@ -302,9 +302,9 @@ pytest -n 8 -v --tb=long 2>&1
 #### Step 3: 5 Whys com evidências
 
 Para cada problema prioritário, aplicamos **5 Whys recursivos** com evidências de código:
-- Problema 1: 5 whys → Causa raiz: Mock dict keys inconsistentes (seção 2.1)
-- Problema 2: 5 whys → Causa raiz: Defaults SearchResult sobrescrevem metadata (seção 2.2)
-- Problema 3: 5 whys → Causa raiz: Settings singleton recriado ignora monkeypatch (seção 2.3)
+- Problema 1: 5 whys -> Causa raiz: Mock dict keys inconsistentes (seção 2.1)
+- Problema 2: 5 whys -> Causa raiz: Defaults SearchResult sobrescrevem metadata (seção 2.2)
+- Problema 3: 5 whys -> Causa raiz: Settings singleton recriado ignora monkeypatch (seção 2.3)
 
 #### Step 4: Correções targeted
 
@@ -345,7 +345,7 @@ pytest -n 8 tests/test_consulting_orchestrator.py::test_coordinate_onboarding_co
 pytest -n 8 --dist=loadfile -v --tb=long
 ```
 
-**Resultado**: 351 passed, 2 skipped, 0 failed ✅
+**Resultado**: 351 passed, 2 skipped, 0 failed [OK]
 
 **Postmortem blameless** (não fazemos culpa, apenas aprendizados):
 - Não é "erro" não ter rodado full regression após cada etapa (trade-off velocidade vs segurança)
@@ -361,9 +361,9 @@ pytest -n 8 --dist=loadfile -v --tb=long
 **Problema**: `coordinate_onboarding()` esperava `result["question"]`, mas mocks retornavam `{"response": ...}` ou string simples.
 
 **Análise**:
-- `OnboardingAgent.start_onboarding()` → `{"question": "...", "onboarding_progress": {...}, "is_complete": False}`
-- `OnboardingAgent.process_turn()` → `{"response": "...", "onboarding_progress": {...}, "is_complete": False}`
-- Mocks em testes → às vezes `"Welcome message"` (string simples)
+- `OnboardingAgent.start_onboarding()` -> `{"question": "...", "onboarding_progress": {...}, "is_complete": False}`
+- `OnboardingAgent.process_turn()` -> `{"response": "...", "onboarding_progress": {...}, "is_complete": False}`
+- Mocks em testes -> às vezes `"Welcome message"` (string simples)
 - Orchestrator não tratava variações
 
 **Código antes** (frágil):
@@ -416,7 +416,7 @@ return {
 **Validação**:
 ```bash
 pytest tests/test_consulting_orchestrator.py::test_coordinate_onboarding_complete -v
-# [PASS] ✅
+# [PASS] [OK]
 ```
 
 **Lição**: Quando integrando com mocks/fixtures, assumir variação de formato e usar `.get()` defensivo.
@@ -463,14 +463,14 @@ page = page_attr if (isinstance(page_attr, int) and page_attr > 0) else (page_me
 
 **Raciocínio**:
 - Ler AMBOS (atributo E metadata)
-- SE atributo é "valor real" (source != 'unknown', page > 0) → usar atributo
-- SENÃO (atributo é default vazio) → usar metadata
+- SE atributo é "valor real" (source != 'unknown', page > 0) -> usar atributo
+- SENÃO (atributo é default vazio) -> usar metadata
 - Fallback final: 'unknown'/0
 
 **Validação**:
 ```bash
 pytest tests/test_retriever.py::TestBSCRetriever::test_format_context -v
-# [PASS] ✅
+# [PASS] [OK]
 # Output: "Fonte: test.pdf, Página: 1" (metadata respeitada!)
 ```
 
@@ -495,7 +495,7 @@ pytest tests/test_retriever.py::TestBSCRetriever::test_format_context -v
 def validate_memory_config() -> None:
     ...
     # Instancia Settings fresco carregando .env para execução normal
-    # (ambiente/monkeypatch ainda prevalece sobre .env)  ← FALSO!
+    # (ambiente/monkeypatch ainda prevalece sobre .env)  <- FALSO!
     current_settings = Settings(_env_file=".env")
 ```
 
@@ -524,7 +524,7 @@ def validate_memory_config() -> None:
 **Validação**:
 ```bash
 pytest tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_missing_raises_error -v
-# [PASS] ✅ (ValidationError levantada corretamente)
+# [PASS] [OK] (ValidationError levantada corretamente)
 ```
 
 **Lição**: Singleton Pydantic Settings não pode ser recriado durante execução. Sempre usar instância global.
@@ -538,15 +538,15 @@ pytest tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_missin
 **Categoria 1: Schema Changes (6 regressões)**
 
 1. `test_mem0_client.py::test_deserialize_profile_success`
-   - Causa: CompanyInfo.size Literal → str (aceita "50-100" agora)
+   - Causa: CompanyInfo.size Literal -> str (aceita "50-100" agora)
    - Fix: Adicionar field_validator aceitar categórico ou faixa
 
 2. `test_mem0_client.py::test_save_profile_validation_error`
-   - Causa: ClientProfile.company required → default_factory
+   - Causa: ClientProfile.company required -> default_factory
    - Fix: Permitir extra='allow' para patch método to_mem0 em testes
 
 3. `test_consulting_workflow.py::test_discovery_transicao_automatica_para_approval`
-   - Causa: BSCState.model_dump() incluía campos None → kwargs duplicados
+   - Causa: BSCState.model_dump() incluía campos None -> kwargs duplicados
    - Fix: Sobrescrever model_dump(exclude_none=True) por padrão
 
 4. `test_retriever.py::TestBSCRetriever::test_format_context`
@@ -578,7 +578,7 @@ pytest tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_missin
    - Fix: Atualizar lógica save_client_memory
 
 10. `test_embeddings.py::TestEmbeddingManager::test_embed_text_openai`
-    - Causa: embed_text retorno mudou list → np.ndarray
+    - Causa: embed_text retorno mudou list -> np.ndarray
     - Fix: Converter finetuned para list (consistência OpenAI)
 
 ### 5.2. Pattern Comum
@@ -659,9 +659,9 @@ pytest -k "smoke" -v --tb=short
 ```
 
 **Quando executar**:
-- ✅ Após completar cada subtarefa FASE N.M (ex: 2.5 DiagnosticAgent)
-- ✅ Antes de commit/push (CI local)
-- ✅ Antes de marcar etapa como "COMPLETA"
+- [OK] Após completar cada subtarefa FASE N.M (ex: 2.5 DiagnosticAgent)
+- [OK] Antes de commit/push (CI local)
+- [OK] Antes de marcar etapa como "COMPLETA"
 
 **ROI esperado**: 5-10 min investidos, 1-2h debugging evitado (detecção precoce)
 
@@ -684,8 +684,8 @@ pytest -n 8 --dist=loadfile -v --tb=long > regression_report_$(date +%Y%m%d).txt
 - Se 10+ fails: CRÍTICO, pausar features e estabilizar
 
 **Checkpoint formal** (antes de desbloquear próxima fase):
-- FASE N 100% → Regression suite → 0 fails → Desbloquear FASE N+1
-- Exemplo: FASE 2 100% → 351 passed → FASE 3 desbloqueada ✅
+- FASE N 100% -> Regression suite -> 0 fails -> Desbloquear FASE N+1
+- Exemplo: FASE 2 100% -> 351 passed -> FASE 3 desbloqueada [OK]
 
 **ROI esperado**: 1h investida/semana, 4-6h debugging evitado (correções antecipadas)
 
@@ -712,12 +712,12 @@ pytest -n 8 --dist=loadfile -v --tb=long > regression_report_$(date +%Y%m%d).txt
    ```
 
 3. **Validar mudança segura**:
-   - Se todos passam → mudança OK
-   - Se falhas → corrigir antes de prosseguir
+   - Se todos passam -> mudança OK
+   - Se falhas -> corrigir antes de prosseguir
 
 **Exemplo real (Sessão 14)**:
 
-Mudamos `CompanyInfo.size: Literal → str`. Impacto esperado:
+Mudamos `CompanyInfo.size: Literal -> str`. Impacto esperado:
 ```bash
 grep -r "CompanyInfo" tests/
 # tests/test_memory_schemas.py: 8 testes
@@ -735,9 +735,9 @@ pytest -k "CompanyInfo or company_info" -v
 ```
 
 **Quando aplicar**:
-- ✅ Ao mudar qualquer schema Pydantic (CompanyInfo, ClientProfile, BSCState, SearchResult, etc)
-- ✅ Ao adicionar/remover campos obrigatórios
-- ✅ Ao mudar validators (@field_validator, @model_validator)
+- [OK] Ao mudar qualquer schema Pydantic (CompanyInfo, ClientProfile, BSCState, SearchResult, etc)
+- [OK] Ao adicionar/remover campos obrigatórios
+- [OK] Ao mudar validators (@field_validator, @model_validator)
 
 **ROI esperado**: 20-25 min economizados vs full suite, detecção 100% impactados
 
@@ -771,15 +771,15 @@ graph LR
     L --> M[to_mem0 serialization]
     M --> N[Mem0 API add]
     N --> O[Mem0 Database]
-    
+
     style J fill:#90EE90
     style K fill:#87CEEB
     style O fill:#FFD700
-    
+
     subgraph "INPUT"
     A
     end
-    
+
     subgraph "TRANSFORM"
     B
     C
@@ -787,18 +787,18 @@ graph LR
     E
     I
     end
-    
+
     subgraph "VALIDATE"
     F
     G
     H
     J
     end
-    
+
     subgraph "STATE"
     K
     end
-    
+
     subgraph "PERSIST"
     L
     M
@@ -808,9 +808,9 @@ graph LR
 ```
 
 **Benefícios para agente IA**:
-- Entende INPUT → TRANSFORM → VALIDATE → PERSIST sem ler código
-- Identifica onde adicionar lógica nova (ex: validação extra → VALIDATE block)
-- Vê impacto mudanças (mudar CompanyInfo → impacta C, F, I, J, K, L, M)
+- Entende INPUT -> TRANSFORM -> VALIDATE -> PERSIST sem ler código
+- Identifica onde adicionar lógica nova (ex: validação extra -> VALIDATE block)
+- Vê impacto mudanças (mudar CompanyInfo -> impacta C, F, I, J, K, L, M)
 
 **Diagrama 2: Diagnostic Workflow Flow**
 
@@ -839,18 +839,18 @@ graph TB
     L --> M[save_client_memory]
     M --> N[ClientProfile.complete_diagnostic]
     N --> O[Mem0 persist]
-    
+
     style C fill:#87CEEB
     style J fill:#90EE90
     style L fill:#FFD700
-    
+
     subgraph "PARALLEL EXECUTION"
     D1
     D2
     D3
     D4
     end
-    
+
     subgraph "VALIDATION"
     E1
     E2
@@ -858,11 +858,11 @@ graph TB
     E4
     J
     end
-    
+
     subgraph "STATE"
     L
     end
-    
+
     subgraph "PERSIST"
     M
     N
@@ -880,49 +880,49 @@ graph TB
     CP --> CD[CompleteDiagnostic]
     CD --> DR1[DiagnosticResult]
     CD --> REC[Recommendation]
-    
+
     CI -.usado por.-> OA[OnboardingAgent]
     CI -.usado por.-> CPA[ClientProfileAgent]
     CI -.usado por.-> MCN[Memory Nodes]
     CI -.usado por.-> TMem[20+ testes memory]
-    
+
     SC -.usado por.-> OA
     SC -.usado por.-> DA[DiagnosticAgent]
-    
+
     CD -.usado por.-> DA
     CD -.usado por.-> CO[ConsultingOrchestrator]
     CD -.usado por.-> DH[discovery_handler]
-    
+
     DR -.usado por.-> DA
     DR -.usado por.-> TDA[16 testes diagnostic]
-    
+
     REC -.usado por.-> DA
     REC -.usado por.-> TDA
-    
+
     style CI fill:#FF6B6B
     style CP fill:#4ECDC4
     style CD fill:#95E1D3
-    
+
     subgraph "SCHEMAS CORE"
     CI
     CP
     CD
     end
-    
+
     subgraph "AGENTS"
     OA
     CPA
     DA
     CO
     end
-    
+
     subgraph "TESTES"
     TMem
     TDA
     end
 ```
 
-**USO**: Antes de mudar `CompanyInfo` → consultar diagrama → ver impacto em OA, CPA, MCN, TMem → executar pytest -k "CompanyInfo"
+**USO**: Antes de mudar `CompanyInfo` -> consultar diagrama -> ver impacto em OA, CPA, MCN, TMem -> executar pytest -k "CompanyInfo"
 
 ---
 
@@ -991,8 +991,8 @@ def extract_profile(self, state: BSCState) -> ClientProfile:
 
 **Inputs**:
 - `state` (BSCState): Estado workflow atual
-  - SE `state.client_profile` existe → retorna direto (idempotente)
-  - SE `state.client_profile` None → cria fallback mínimo
+  - SE `state.client_profile` existe -> retorna direto (idempotente)
+  - SE `state.client_profile` None -> cria fallback mínimo
 
 **Output**:
 - Tipo: `ClientProfile` Pydantic
@@ -1060,13 +1060,13 @@ profile = agent.extract_profile(state)
 3. Testes fixtures (`valid_company_info`)
 
 ### Agents (3):
-4. `OnboardingAgent.extract_company_info()` → cria CompanyInfo
-5. `ClientProfileAgent._validate_extraction()` → valida CompanyInfo
-6. `DiagnosticAgent.run_diagnostic()` → lê company context
+4. `OnboardingAgent.extract_company_info()` -> cria CompanyInfo
+5. `ClientProfileAgent._validate_extraction()` -> valida CompanyInfo
+6. `DiagnosticAgent.run_diagnostic()` -> lê company context
 
 ### Memory (2):
-7. `Mem0Client.to_mem0()` → serializa company dict
-8. `Mem0Client.from_mem0()` → deserializa company dict
+7. `Mem0Client.to_mem0()` -> serializa company dict
+8. `Mem0Client.from_mem0()` -> deserializa company dict
 
 ### Testes (7):
 9. `tests/test_memory_schemas.py::test_company_info_*` (8 testes)
@@ -1086,7 +1086,7 @@ profile = agent.extract_profile(state)
 | Adicionar campo opcional | BAIXO | pytest -k "company_info" (10-15 testes) |
 | Remover campo | ALTO | pytest -k "CompanyInfo" (32 testes) |
 | Mudar validator | MÉDIO | pytest -k "company_info or validate_extraction" (20 testes) |
-| Mudar Literal → str | MÉDIO | pytest -k "CompanyInfo" + manual review fixtures (32 testes) |
+| Mudar Literal -> str | MÉDIO | pytest -k "CompanyInfo" + manual review fixtures (32 testes) |
 
 **Comando validação**:
 ```bash
@@ -1096,7 +1096,7 @@ pytest -k "CompanyInfo or company_info" -v --tb=long
 
 **ROI para agente IA**:
 - Sabe exatamente quantos testes rodar (32 vs 353)
-- Impact analysis visual (mudar X → impacta Y testes)
+- Impact analysis visual (mudar X -> impacta Y testes)
 - Economiza 20-25 min por mudança schema
 
 ---
@@ -1175,17 +1175,17 @@ pytest -k "CompanyInfo or company_info" -v --tb=long
   # Execução: ~30-45s (5 testes representativos)
   ```
 
-- [ ] **3. Se smoke falha → PARAR e investigar**
+- [ ] **3. Se smoke falha -> PARAR e investigar**
   - Não prosseguir para próxima etapa
   - Corrigir imediatamente (regressão detectada cedo)
 
-- [ ] **4. Se smoke passa → Continuar**
+- [ ] **4. Se smoke passa -> Continuar**
   - Marcar etapa como completa
   - Commit/push
 
 - [ ] **5. Registrar no progress**
   - Adicionar seção em consulting-progress.md
-  - Nota: "Smoke tests OK ✅"
+  - Nota: "Smoke tests OK [OK]"
 
 ---
 
@@ -1217,8 +1217,8 @@ pytest -k "CompanyInfo or company_info" -v --tb=long
   - Atualizar checklist prevenção (se aplicável)
 
 - [ ] **6. Checkpoint formal**
-  - SE FASE N 100% E regression suite 0 fails → Desbloquear FASE N+1
-  - SENÃO → Corrigir antes de prosseguir
+  - SE FASE N 100% E regression suite 0 fails -> Desbloquear FASE N+1
+  - SENÃO -> Corrigir antes de prosseguir
 
 ---
 
@@ -1238,16 +1238,16 @@ pytest -k "CompanyInfo or company_info" -v --tb=long
 2. Rankear por impacto: frequência × severidade × módulos afetados
 3. Priorizar top-3 (score > 0.7)
 4. Ignorar low-priority (<0.3) se tempo limitado
-5. Corrigir top-3 → revalidar → se outros persistem, continuar
+5. Corrigir top-3 -> revalidar -> se outros persistem, continuar
 
 **Quando usar**:
-- ✅ 3+ testes falhando
-- ✅ Múltiplos módulos impactados
-- ✅ Tempo limitado (< 2h para correções)
+- [OK] 3+ testes falhando
+- [OK] Múltiplos módulos impactados
+- [OK] Tempo limitado (< 2h para correções)
 
 **Quando NÃO usar**:
-- ❌ 1-2 falhas isoladas (correção direta é mais rápida)
-- ❌ Falha óbvia (typo, import faltando)
+- [ERRO] 1-2 falhas isoladas (correção direta é mais rápida)
+- [ERRO] Falha óbvia (typo, import faltando)
 
 **ROI validado**: 50% redução tempo debugging (Sessão 14: 1.5h vs 4-6h estimado)
 
@@ -1276,13 +1276,13 @@ def validate_memory_config():
 **Por quê**:
 - Pydantic BaseSettings: singleton inicializado no `import` (1x apenas)
 - Precedência quando `_env_file` explícito: `.env` > environment variables
-- Testes: monkeypatch altera env ANTES de import → singleton respeita
-- Recriar Settings durante execução → relê .env, sobrescreve env vars
+- Testes: monkeypatch altera env ANTES de import -> singleton respeita
+- Recriar Settings durante execução -> relê .env, sobrescreve env vars
 
 **Quando aplicar**:
-- ✅ Sempre usar `settings` singleton global
-- ✅ Validações/helpers que leem config: `from config.settings import settings`
-- ❌ NUNCA criar `Settings()` ou `Settings(_env_file=...)` em runtime
+- [OK] Sempre usar `settings` singleton global
+- [OK] Validações/helpers que leem config: `from config.settings import settings`
+- [ERRO] NUNCA criar `Settings()` ou `Settings(_env_file=...)` em runtime
 
 **ROI validado**: Previne falhas de testes monkeypatch (2 testes corrigidos Sessão 14)
 
@@ -1302,14 +1302,14 @@ final_response = result["question"]  # KeyError se mock retorna "response"!
 ```python
 # PATTERN CORRETO (robusto a variações)
 final_response = result.get("question", result.get("response", ""))
-# Tenta "question" → se não existe, tenta "response" → fallback ""
+# Tenta "question" -> se não existe, tenta "response" -> fallback ""
 ```
 
 **Variações observadas**:
-- `OnboardingAgent.start_onboarding()` → `{"question": ...}`
-- `OnboardingAgent.process_turn()` → `{"response": ...}`
-- Mocks em testes → `{"question": ...}` ou `{"response": ...}` ou `"string simples"`
-- Orchestrator conversão robusta → `if isinstance(result, str): result = {"question": result, ...}`
+- `OnboardingAgent.start_onboarding()` -> `{"question": ...}`
+- `OnboardingAgent.process_turn()` -> `{"response": ...}`
+- Mocks em testes -> `{"question": ...}` ou `{"response": ...}` ou `"string simples"`
+- Orchestrator conversão robusta -> `if isinstance(result, str): result = {"question": result, ...}`
 
 **Pattern geral**:
 ```python
@@ -1318,9 +1318,9 @@ value = result.get("key1", result.get("key2", result.get("key3", default)))
 ```
 
 **Quando aplicar**:
-- ✅ Integrando com mocks/fixtures (testes)
-- ✅ Consumindo APIs externas (response format pode variar)
-- ✅ Handlers que aceitam múltiplos agentes (cada um retorna formato diferente)
+- [OK] Integrando com mocks/fixtures (testes)
+- [OK] Consumindo APIs externas (response format pode variar)
+- [OK] Handlers que aceitam múltiplos agentes (cada um retorna formato diferente)
 
 **ROI validado**: Previne KeyError em produção (3 linhas corrigidas, teste crítico passou)
 
@@ -1349,13 +1349,13 @@ pytest -n 8 --dist=loadfile -v --tb=long
 - `-n auto`: Auto-detecta workers (usar CPU count - 1)
 
 **Quando usar**:
-- ✅ Regression suite completa (350+ testes)
-- ✅ CI/CD pipelines (economiza tempo build)
-- ✅ Desenvolvimento local (feedback rápido)
+- [OK] Regression suite completa (350+ testes)
+- [OK] CI/CD pipelines (economiza tempo build)
+- [OK] Desenvolvimento local (feedback rápido)
 
 **Quando NÃO usar**:
-- ❌ Debugging teste específico (serial com --tb=long mais claro)
-- ❌ Testes com shared state (race conditions possíveis)
+- [ERRO] Debugging teste específico (serial com --tb=long mais claro)
+- [ERRO] Testes com shared state (race conditions possíveis)
 
 **Configuração pytest.ini**:
 ```ini
@@ -1405,9 +1405,9 @@ page = page_attr if (isinstance(page_attr, int) and page_attr > 0) else (page_me
 ```
 
 **Quando aplicar**:
-- ✅ Dataclasses com defaults "vazios" (unknown, 0, "", None)
-- ✅ Metadata contém valores "reais" (source real, page real)
-- ✅ Compatibilidade testes (mínimos vs completos)
+- [OK] Dataclasses com defaults "vazios" (unknown, 0, "", None)
+- [OK] Metadata contém valores "reais" (source real, page real)
+- [OK] Compatibilidade testes (mínimos vs completos)
 
 **ROI validado**: Previne dados incorretos em prod (citações erradas), teste passou
 
@@ -1462,15 +1462,15 @@ page = page_attr if (isinstance(page_attr, int) and page_attr > 0) else (page_me
 
 ### Antipadrão 1: Validar Apenas Testes Novos
 
-❌ **ANTI-PATTERN**:
+[ERRO] **ANTI-PATTERN**:
 ```python
 # Implementou OnboardingAgent (FASE 2.4)
 # Criou 40 testes novos
 pytest tests/test_onboarding_agent.py -v
-# [40/40 PASS] ✅ Marca como completo, segue para FASE 2.5
+# [40/40 PASS] [OK] Marca como completo, segue para FASE 2.5
 ```
 
-✅ **PATTERN CORRETO**:
+[OK] **PATTERN CORRETO**:
 ```python
 # Implementou OnboardingAgent (FASE 2.4)
 # Criou 40 testes novos
@@ -1479,7 +1479,7 @@ pytest tests/test_onboarding_agent.py -v
 
 # ADICIONA: Smoke tests core (5-10 min)
 pytest -k "smoke" -v
-# [5/5 PASS] ✅ Agora sim, marca como completo
+# [5/5 PASS] [OK] Agora sim, marca como completo
 ```
 
 **Por quê**: Mudanças em core classes (ClientProfile, BSCState) podem quebrar testes antigos silenciosamente.
@@ -1490,16 +1490,16 @@ pytest -k "smoke" -v
 
 ### Antipadrão 2: Mudar Schema Sem Impact Analysis
 
-❌ **ANTI-PATTERN**:
+[ERRO] **ANTI-PATTERN**:
 ```python
-# Mudar CompanyInfo.size: Literal → str
+# Mudar CompanyInfo.size: Literal -> str
 # Commit direto sem validar testes
 
 class CompanyInfo(BaseModel):
     size: str = "média"  # Antes: Literal["micro", "pequena", "média", "grande"]
 ```
 
-✅ **PATTERN CORRETO**:
+[OK] **PATTERN CORRETO**:
 ```python
 # 1. Antes de mudar: identificar dependentes
 grep -r "CompanyInfo" tests/
@@ -1528,14 +1528,14 @@ diff before.txt after.txt
 
 ### Antipadrão 3: Singleton Settings Recriado
 
-❌ **ANTI-PATTERN**:
+[ERRO] **ANTI-PATTERN**:
 ```python
 def validate_config():
     fresh_settings = Settings(_env_file=".env")  # Nova instância!
     # Quebra testes monkeypatch
 ```
 
-✅ **PATTERN CORRETO**:
+[OK] **PATTERN CORRETO**:
 ```python
 def validate_config():
     current_settings = settings  # Singleton global
@@ -1550,12 +1550,12 @@ def validate_config():
 
 ### Antipadrão 4: Dict Keys Hard-Coded
 
-❌ **ANTI-PATTERN**:
+[ERRO] **ANTI-PATTERN**:
 ```python
 response_text = result["question"]  # KeyError se mock retorna "response"!
 ```
 
-✅ **PATTERN CORRETO**:
+[OK] **PATTERN CORRETO**:
 ```python
 response_text = result.get("question", result.get("response", ""))
 # Robusto a variações mock
@@ -1569,7 +1569,7 @@ response_text = result.get("question", result.get("response", ""))
 
 ### Antipadrão 5: Defaults Mascarando Metadata
 
-❌ **ANTI-PATTERN**:
+[ERRO] **ANTI-PATTERN**:
 ```python
 @dataclass
 class SearchResult:
@@ -1580,7 +1580,7 @@ class SearchResult:
 source = getattr(doc, 'source', ...)  # Sempre 'unknown', nunca metadata
 ```
 
-✅ **PATTERN CORRETO**:
+[OK] **PATTERN CORRETO**:
 ```python
 # Lógica híbrida: preferir valor real vs default vazio
 source_attr = getattr(doc, 'source', None)
@@ -1614,11 +1614,11 @@ source = source_attr if (source_attr and source_attr != "unknown") else (source_
 
 | Módulo | Statements | Miss | Cover | Nota |
 |---|---|---|---|---|
-| **consulting_orchestrator.py** | 159 | 6 | **96%** | ✅ Target alcançado |
-| **memory/schemas.py** | 129 | 8 | **94%** | ✅ Schemas bem testados |
-| **diagnostic_agent.py** | 120 | 3 | **98%** | ✅ Excelente |
-| **rag/retriever.py** | 191 | 91 | 52% | ⚠️ Retrieval real não mockado |
-| **TOTAL** | 3.806 | 1.326 | **65%** | ✅ Threshold 60% ultrapassado |
+| **consulting_orchestrator.py** | 159 | 6 | **96%** | [OK] Target alcançado |
+| **memory/schemas.py** | 129 | 8 | **94%** | [OK] Schemas bem testados |
+| **diagnostic_agent.py** | 120 | 3 | **98%** | [OK] Excelente |
+| **rag/retriever.py** | 191 | 91 | 52% | [WARN] Retrieval real não mockado |
+| **TOTAL** | 3.806 | 1.326 | **65%** | [OK] Threshold 60% ultrapassado |
 
 ---
 
@@ -1777,7 +1777,7 @@ grep -r "SchemaName" src/ tests/
 **Validação**:
 ```bash
 pytest <teste> -v
-# [PASS] ✅
+# [PASS] [OK]
 ```
 
 **Lição**: [Aprendizado-chave reutilizável]
@@ -1794,13 +1794,13 @@ import pytest
 def test_smoke_<modulo>_<feature>():
     """Smoke: [Descrição 1 linha do que testa]."""
     from src.<modulo>.<classe> import Classe
-    
+
     # Setup mínimo
     instance = Classe()
-    
+
     # Operação crítica
     result = instance.critical_method()
-    
+
     # Asserção básica
     assert result is not None
     assert <condição mínima>
@@ -1832,7 +1832,7 @@ def test_smoke_<modulo>_<feature>():
 
 ### 15.2. Ações Imediatas
 
-- [x] Criar lição aprendida ✅ (este documento)
+- [x] Criar lição aprendida [OK] (este documento)
 - [ ] Criar Data Flow Diagrams (docs/architecture/DATA_FLOW_DIAGRAMS.md)
 - [ ] Criar API Contracts (docs/architecture/API_CONTRACTS.md)
 - [ ] Atualizar derived-cursor-rules.mdc (seção Regression Prevention)
@@ -1853,7 +1853,6 @@ def test_smoke_<modulo>_<feature>():
 
 **FIM DA LIÇÃO APRENDIDA**
 
-**Última Atualização**: 2025-10-17  
-**Autor**: BSC Consulting Agent Development Team  
+**Última Atualização**: 2025-10-17
+**Autor**: BSC Consulting Agent Development Team
 **Validado**: Sessão 14, CHECKPOINT 2 aprovado, FASE 2 100% completa (351 testes passando)
-

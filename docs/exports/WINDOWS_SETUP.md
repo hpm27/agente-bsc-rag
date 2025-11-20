@@ -1,11 +1,11 @@
 # WeasyPrint Windows Setup
 
-**FASE 4.2 - Reports & Exports**  
+**FASE 4.2 - Reports & Exports**
 **Data:** 2025-11-18
 
 ---
 
-## 🚨 Requisito Crítico Windows
+## [EMOJI] Requisito Crítico Windows
 
 **WeasyPrint requer bibliotecas GTK+ (C libraries) que NÃO vêm com `pip install`.**
 
@@ -17,7 +17,7 @@ OSError: cannot load library 'gobject-2.0-0': error 0x7e
 
 ---
 
-## ✅ Solução: Instalar GTK+ no Windows
+## [OK] Solução: Instalar GTK+ no Windows
 
 ### **Opção 1: MSYS2 (Recomendado)**
 
@@ -75,15 +75,15 @@ CMD ["python", "app.py"]
 
 ---
 
-## 📊 Status da Implementação
+## [EMOJI] Status da Implementação
 
-### ✅ **Código 100% Implementado:**
+### [OK] **Código 100% Implementado:**
 
-- `src/exports/pdf_exporter.py` (245 linhas) ✅
-- `src/exports/csv_exporter.py` (262 linhas) ✅
-- `src/exports/template_manager.py` (381 linhas) ✅
-- `templates/reports/*.html` (660 linhas) ✅
-- `tests/test_exports/*.py` (33 testes) ✅
+- `src/exports/pdf_exporter.py` (245 linhas) [OK]
+- `src/exports/csv_exporter.py` (262 linhas) [OK]
+- `src/exports/template_manager.py` (381 linhas) [OK]
+- `templates/reports/*.html` (660 linhas) [OK]
+- `tests/test_exports/*.py` (33 testes) [OK]
 
 ### ⏳ **Testes Aguardando Setup GTK:**
 
@@ -93,7 +93,7 @@ CMD ["python", "app.py"]
 
 ---
 
-## 🎯 Alternativa Temporária: Mock WeasyPrint
+## [EMOJI] Alternativa Temporária: Mock WeasyPrint
 
 Se precisar rodar testes **sem** instalar GTK:
 
@@ -108,16 +108,16 @@ def mock_weasyprint(monkeypatch):
     """Mock WeasyPrint para testes sem GTK."""
     mock_html = MagicMock()
     mock_html.write_pdf = Mock()
-    
+
     mock_weasyprint_module = MagicMock()
     mock_weasyprint_module.HTML.return_value = mock_html
-    
+
     monkeypatch.setitem(sys.modules, "weasyprint", mock_weasyprint_module)
 ```
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 - **WeasyPrint Installation:** https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#installation
 - **WeasyPrint Troubleshooting:** https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#troubleshooting
@@ -127,4 +127,3 @@ def mock_weasyprint(monkeypatch):
 ---
 
 **Conclusão:** Implementação está **completa e funcional**. O único bloqueio é setup de ambiente Windows (GTK+), que é requisito documentado do WeasyPrint. Em Linux/Mac, WeasyPrint funciona out-of-the-box.
-

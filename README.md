@@ -1,4 +1,4 @@
-# 🎯 Agente BSC RAG - Sistema Multi-Agente para Consultoria em Balanced Scorecard
+# [EMOJI] Agente BSC RAG - Sistema Multi-Agente para Consultoria em Balanced Scorecard
 
 <p align="center">
   <strong>Sistema avançado de IA para consultoria especializada em Balanced Scorecard</strong><br>
@@ -16,7 +16,7 @@
 
 ---
 
-## 📋 Índice
+## [EMOJI] Índice
 
 - [Visão Geral](#-visão-geral)
 - [Características Principais](#-características-principais)
@@ -33,67 +33,67 @@
 
 ---
 
-## 🌟 Visão Geral
+## [EMOJI] Visão Geral
 
 O **Agente BSC RAG** é um sistema inteligente baseado em IA para consultoria especializada em **Balanced Scorecard** (metodologia de Kaplan & Norton). Combina:
 
-- 🤖 **Sistema Multi-Agente**: 4 especialistas BSC (Financeira, Clientes, Processos, Aprendizado) + Judge + Orchestrator
-- 📚 **RAG Contextual Otimizado**: Recuperação augmentada com contexto (Anthropic), +106% precisão multilíngue
-- 🔗 **LangGraph Workflow**: Orquestração com grafo de estados, refinamento iterativo
-- 🖥️ **Interface Streamlit**: Chat web responsivo com visualização completa
-- ⚡ **Otimizações de Performance**: 949x speedup (cache), 3.34x (paralelização), busca multilíngue nativa
+- [EMOJI] **Sistema Multi-Agente**: 4 especialistas BSC (Financeira, Clientes, Processos, Aprendizado) + Judge + Orchestrator
+- [EMOJI] **RAG Contextual Otimizado**: Recuperação augmentada com contexto (Anthropic), +106% precisão multilíngue
+- [EMOJI] **LangGraph Workflow**: Orquestração com grafo de estados, refinamento iterativo
+- [EMOJI] **Interface Streamlit**: Chat web responsivo com visualização completa
+- [FAST] **Otimizações de Performance**: 949x speedup (cache), 3.34x (paralelização), busca multilíngue nativa
 
-### 🎯 Casos de Uso
+### [EMOJI] Casos de Uso
 
-- ✅ Análise estratégica e desenvolvimento de BSC
-- ✅ Geração de KPIs e iniciativas por perspectiva
-- ✅ Consultas sobre metodologia BSC (framework Kaplan & Norton)
-- ✅ Validação de mapas estratégicos
-- ✅ Consultoria especializada em implementação BSC
+- [OK] Análise estratégica e desenvolvimento de BSC
+- [OK] Geração de KPIs e iniciativas por perspectiva
+- [OK] Consultas sobre metodologia BSC (framework Kaplan & Norton)
+- [OK] Validação de mapas estratégicos
+- [OK] Consultoria especializada em implementação BSC
 
 ---
 
 ## ✨ Características Principais
 
-### 🤖 Sistema Multi-Agente LangGraph
+### [EMOJI] Sistema Multi-Agente LangGraph
 
 ```
-START → analyze_query → execute_agents → synthesize_response 
-→ judge_evaluation → decide_next_step → [finalize OR refine loop] → END
+START -> analyze_query -> execute_agents -> synthesize_response
+-> judge_evaluation -> decide_next_step -> [finalize OR refine loop] -> END
 ```
 
 **Agentes Especialistas**:
-- 💰 **Financial Agent** - Perspectiva Financeira (ROI, crescimento de receita, produtividade)
-- 👥 **Customer Agent** - Perspectiva de Clientes (satisfação, retenção, valor)
-- ⚙️ **Process Agent** - Perspectiva de Processos Internos (qualidade, eficiência, inovação)
-- 🎓 **Learning Agent** - Perspectiva de Aprendizado e Crescimento (capacitação, clima, sistemas)
+- [EMOJI] **Financial Agent** - Perspectiva Financeira (ROI, crescimento de receita, produtividade)
+- [EMOJI] **Customer Agent** - Perspectiva de Clientes (satisfação, retenção, valor)
+- [EMOJI] **Process Agent** - Perspectiva de Processos Internos (qualidade, eficiência, inovação)
+- [EMOJI] **Learning Agent** - Perspectiva de Aprendizado e Crescimento (capacitação, clima, sistemas)
 
 **Orquestração Inteligente**:
-- ✅ Execução paralela assíncrona (AsyncIO)
-- ✅ Refinamento iterativo baseado em feedback do Judge (até 2 ciclos)
-- ✅ State management com Pydantic (type-safe)
-- ✅ Recuperação de erros em cada nó
+- [OK] Execução paralela assíncrona (AsyncIO)
+- [OK] Refinamento iterativo baseado em feedback do Judge (até 2 ciclos)
+- [OK] State management com Pydantic (type-safe)
+- [OK] Recuperação de erros em cada nó
 
 **Documentação**: [LANGGRAPH_WORKFLOW.md](docs/LANGGRAPH_WORKFLOW.md)
 
-### 📚 RAG Avançado e Multilíngue 🌐
+### [EMOJI] RAG Avançado e Multilíngue [EMOJI]
 
 **Pipeline Completo**:
 1. **Chunking Semântico** - Preserva contexto semântico
 2. **Contextual Retrieval** - Contextos bilíngues PT-BR + EN (Anthropic)
 3. **Hybrid Search** - 70% semântica + 30% BM25 (Qdrant nativo)
-4. **Query Expansion** - Tradução automática PT-BR ↔ EN + Reciprocal Rank Fusion
+4. **Query Expansion** - Tradução automática PT-BR <-> EN + Reciprocal Rank Fusion
 5. **Adaptive Reranking** - Cohere Rerank Multilingual v3.0 (detecção automática de idioma)
 
 **Resultados**:
-- 🎯 **+106% precisão top-1** (busca cross-lingual)
-- 🎯 **+70% recall** (query expansion com RRF)
-- 🌐 **Busca multilíngue nativa** (queries PT-BR + docs EN, automático)
-- 📚 **7.965 chunks indexados** (5 livros BSC + contextos bilíngues)
+- [EMOJI] **+106% precisão top-1** (busca cross-lingual)
+- [EMOJI] **+70% recall** (query expansion com RRF)
+- [EMOJI] **Busca multilíngue nativa** (queries PT-BR + docs EN, automático)
+- [EMOJI] **7.965 chunks indexados** (5 livros BSC + contextos bilíngues)
 
 **Documentação**: [MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)
 
-### ⚡ Performance Otimizada
+### [FAST] Performance Otimizada
 
 | Otimização | Speedup | Descrição |
 |------------|---------|-----------|
@@ -104,33 +104,33 @@ START → analyze_query → execute_agents → synthesize_response
 | **Query Expansion RRF** | **+106%** | Fusão de resultados PT-BR + EN |
 
 **Economia de Custos**:
-- 💰 87.5% redução em chamadas OpenAI Embeddings (cache)
-- 💰 ~$0.001/query para tradução multilíngue (GPT-5 mini)
-- 💰 Tradução gratuita de contextos (Google Translate vs LLM)
+- [EMOJI] 87.5% redução em chamadas OpenAI Embeddings (cache)
+- [EMOJI] ~$0.001/query para tradução multilíngue (GPT-5 mini)
+- [EMOJI] Tradução gratuita de contextos (Google Translate vs LLM)
 
-### 🖥️ Interface Streamlit Moderna
+### [EMOJI] Interface Streamlit Moderna
 
-- 💬 **Chat Interface** - Histórico de conversação persistente
-- 📊 **Visualização BSC** - Perspectivas consultadas com confidence scores
-- 📖 **Display de Fontes** - Documentos recuperados com relevância
-- ⚖️ **Judge Evaluation** - Score, feedback, issues, sugestões
-- ⚙️ **Configurações** - Parâmetros de retrieval e perspectivas
+- [EMOJI] **Chat Interface** - Histórico de conversação persistente
+- [EMOJI] **Visualização BSC** - Perspectivas consultadas com confidence scores
+- [EMOJI] **Display de Fontes** - Documentos recuperados com relevância
+- [EMOJI] **Judge Evaluation** - Score, feedback, issues, sugestões
+- [EMOJI] **Configurações** - Parâmetros de retrieval e perspectivas
 
-**Executar**: `python run_streamlit.py` → [http://localhost:8501](http://localhost:8501)
+**Executar**: `python run_streamlit.py` -> [http://localhost:8501](http://localhost:8501)
 
 **Documentação**: [STREAMLIT_GUIDE.md](docs/STREAMLIT_GUIDE.md)
 
-### ⚖️ Validação com LLM as Judge
+### [EMOJI] Validação com LLM as Judge
 
-- ✅ Avaliação automática de completude, relevância e fundamentação
-- ✅ Score 0-1 com threshold configurável (padrão: 0.7)
-- ✅ Feedback detalhado e sugestões de melhoria
-- ✅ Detecção de alucinações e problemas de qualidade
-- ✅ Taxa de aprovação validada >70% (testes E2E)
+- [OK] Avaliação automática de completude, relevância e fundamentação
+- [OK] Score 0-1 com threshold configurável (padrão: 0.7)
+- [OK] Feedback detalhado e sugestões de melhoria
+- [OK] Detecção de alucinações e problemas de qualidade
+- [OK] Taxa de aprovação validada >70% (testes E2E)
 
 ---
 
-## 🏗️ Arquitetura
+## [EMOJI] Arquitetura
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -142,7 +142,7 @@ START → analyze_query → execute_agents → synthesize_response
 ┌─────────────────────────────────────────────────────────────────┐
 │                    LANGGRAPH WORKFLOW                            │
 │  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    │
-│  │ Analyze  │ → │ Execute  │ → │Synthesize│ → │  Judge   │    │
+│  │ Analyze  │ -> │ Execute  │ -> │Synthesize│ -> │  Judge   │    │
 │  │  Query   │   │  Agents  │   │ Response │   │  Eval    │    │
 │  └──────────┘   └──────────┘   └──────────┘   └──────────┘    │
 │       │               ║                             │            │
@@ -163,7 +163,7 @@ START → analyze_query → execute_agents → synthesize_response
 ┌─────────────────────────────────────────────────────────────────┐
 │                       BSC RETRIEVER                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │   Query      │→ │ Multilingual │→ │   Adaptive   │          │
+│  │   Query      │-> │ Multilingual │-> │   Adaptive   │          │
 │  │  Translator  │  │     RRF      │  │   Reranker   │          │
 │  └──────────────┘  └──────────────┘  └──────────────┘          │
 └──────────────────────────┬──────────────────────────────────────┘
@@ -181,7 +181,7 @@ START → analyze_query → execute_agents → synthesize_response
 
 ---
 
-## 🔧 Tecnologias
+## [EMOJI] Tecnologias
 
 ### LLMs e APIs
 
@@ -212,21 +212,21 @@ START → analyze_query → execute_agents → synthesize_response
 
 ---
 
-## 🚀 Instalação Rápida
+## [EMOJI] Instalação Rápida
 
 ### Pré-requisitos
 
-- ✅ **Python 3.12+** (testado em 3.12)
-- ✅ **Docker Desktop** (para Qdrant)
-- ✅ **8GB RAM** mínimo recomendado
-- ✅ **API Keys**:
+- [OK] **Python 3.12+** (testado em 3.12)
+- [OK] **Docker Desktop** (para Qdrant)
+- [OK] **8GB RAM** mínimo recomendado
+- [OK] **API Keys**:
   - OpenAI API Key (embeddings + GPT-5 mini)
   - Cohere API Key (re-ranking)
   - Anthropic API Key (Claude Sonnet 4.5 + contextual retrieval)
 
 ### Setup em 5 Passos (10 minutos)
 
-#### 1️⃣ Clone e Configure Ambiente
+#### 1⃣ Clone e Configure Ambiente
 
 ```powershell
 # Clone o repositório
@@ -238,13 +238,13 @@ cd agente-bsc-rag
 ```
 
 O script `setup.ps1` faz automaticamente:
-- ✅ Criar ambiente virtual Python
-- ✅ Instalar todas as dependências (requirements.txt)
-- ✅ Iniciar Docker containers (Qdrant em localhost:6333)
-- ✅ Criar arquivo .env com templates
-- ✅ Validar configuração completa
+- [OK] Criar ambiente virtual Python
+- [OK] Instalar todas as dependências (requirements.txt)
+- [OK] Iniciar Docker containers (Qdrant em localhost:6333)
+- [OK] Criar arquivo .env com templates
+- [OK] Validar configuração completa
 
-#### 2️⃣ Configure API Keys
+#### 2⃣ Configure API Keys
 
 Edite `.env` e adicione suas chaves:
 
@@ -254,7 +254,7 @@ COHERE_API_KEY=...
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-#### 3️⃣ Indexe Dataset BSC
+#### 3⃣ Indexe Dataset BSC
 
 ```powershell
 # Ativar ambiente virtual
@@ -266,15 +266,15 @@ python scripts/build_knowledge_base.py
 
 **Resultado**: 7.965 chunks indexados com contextos bilíngues (~12 min)
 
-#### 4️⃣ Inicie a Interface
+#### 4⃣ Inicie a Interface
 
 ```powershell
 python run_streamlit.py
 ```
 
-🎉 **Pronto!** Interface abrirá em [http://localhost:8501](http://localhost:8501)
+[EMOJI] **Pronto!** Interface abrirá em [http://localhost:8501](http://localhost:8501)
 
-#### 5️⃣ Primeira Query
+#### 5⃣ Primeira Query
 
 Digite na interface:
 
@@ -283,54 +283,54 @@ Quais são os principais KPIs da perspectiva financeira segundo Kaplan & Norton?
 ```
 
 Você verá:
-- ✅ Resposta fundamentada em documentos BSC
-- ✅ Perspectivas consultadas (Financial Agent)
-- ✅ Fontes com scores de relevância
-- ✅ Avaliação do Judge (score, feedback)
+- [OK] Resposta fundamentada em documentos BSC
+- [OK] Perspectivas consultadas (Financial Agent)
+- [OK] Fontes com scores de relevância
+- [OK] Avaliação do Judge (score, feedback)
 
 ---
 
-## 📖 Documentação
+## [EMOJI] Documentação
 
-### 🗂️ Índice Navegável de Toda Documentação
+### [EMOJI] Índice Navegável de Toda Documentação
 
-- 📖 **[DOCS_INDEX.md](docs/DOCS_INDEX.md)** ← **NOVO!** Índice completo com Tags A-Z, Quick Search Matrix, e cross-references
+- [EMOJI] **[DOCS_INDEX.md](docs/DOCS_INDEX.md)** <- **NOVO!** Índice completo com Tags A-Z, Quick Search Matrix, e cross-references
 
 ### Guias de Início Rápido
 
-- 📘 **[QUICKSTART.md](docs/QUICKSTART.md)** - Onboarding em 10 minutos, primeiros passos
-- 📗 **[TUTORIAL.md](docs/TUTORIAL.md)** - Uso avançado, casos práticos, customização
-- 📕 **[STREAMLIT_GUIDE.md](docs/STREAMLIT_GUIDE.md)** - Interface web completa
+- [EMOJI] **[QUICKSTART.md](docs/QUICKSTART.md)** - Onboarding em 10 minutos, primeiros passos
+- [EMOJI] **[TUTORIAL.md](docs/TUTORIAL.md)** - Uso avançado, casos práticos, customização
+- [EMOJI] **[STREAMLIT_GUIDE.md](docs/STREAMLIT_GUIDE.md)** - Interface web completa
 
 ### Referência Técnica
 
-- 📙 **[API_REFERENCE.md](docs/API_REFERENCE.md)** - API de agentes, tools, workflow
-- 📔 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura detalhada
-- 📓 **[LANGGRAPH_WORKFLOW.md](docs/LANGGRAPH_WORKFLOW.md)** - Workflow LangGraph
+- [EMOJI] **[API_REFERENCE.md](docs/API_REFERENCE.md)** - API de agentes, tools, workflow
+- [EMOJI] **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Arquitetura detalhada
+- [EMOJI] **[LANGGRAPH_WORKFLOW.md](docs/LANGGRAPH_WORKFLOW.md)** - Workflow LangGraph
 
 ### Deployment e Operação
 
-- 🚀 **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deploy local, Docker, cloud (AWS/Azure/GCP)
-- 🧪 **[TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** - Testes E2E, métricas, validação
+- [EMOJI] **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deploy local, Docker, cloud (AWS/Azure/GCP)
+- [EMOJI] **[TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** - Testes E2E, métricas, validação
 
 ### Otimizações e Análises
 
-- ⚡ **[MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)** - Busca cross-lingual
-- 📊 **[VECTOR_DB_COMPARISON.md](docs/VECTOR_DB_COMPARISON.md)** - Benchmark Qdrant vs Weaviate
-- 📚 **[GPT5_CONTEXTUAL_RETRIEVAL.md](docs/GPT5_CONTEXTUAL_RETRIEVAL.md)** - Contextual chunking
-- 🎓 **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** - Lições aprendidas
+- [FAST] **[MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)** - Busca cross-lingual
+- [EMOJI] **[VECTOR_DB_COMPARISON.md](docs/VECTOR_DB_COMPARISON.md)** - Benchmark Qdrant vs Weaviate
+- [EMOJI] **[GPT5_CONTEXTUAL_RETRIEVAL.md](docs/GPT5_CONTEXTUAL_RETRIEVAL.md)** - Contextual chunking
+- [EMOJI] **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** - Lições aprendidas
 
 ### Organização e Discovery (Cursor Rules)
 
-- 🎯 **[rag-bsc-core.mdc](.cursor/rules/rag-bsc-core.mdc)** - Router central (sempre aplicado)
-- 📘 **[rag-techniques-catalog.mdc](.cursor/rules/rag-techniques-catalog.mdc)** - Catálogo de técnicas RAG avançadas
-- 🎯 **[rag-recipes.mdc](.cursor/rules/rag-recipes.mdc)** - Padrões RAG rápidos de 1 página
+- [EMOJI] **[rag-bsc-core.mdc](.cursor/rules/rag-bsc-core.mdc)** - Router central (sempre aplicado)
+- [EMOJI] **[rag-techniques-catalog.mdc](.cursor/rules/rag-techniques-catalog.mdc)** - Catálogo de técnicas RAG avançadas
+- [EMOJI] **[rag-recipes.mdc](.cursor/rules/rag-recipes.mdc)** - Padrões RAG rápidos de 1 página
 
 **ROI:** Economia de 15-20 min/uso em decisões técnicas e discovery de soluções.
 
 ---
 
-## ⚡ Performance e Otimizações
+## [FAST] Performance e Otimizações
 
 ### Métricas de Performance (MVP Validado)
 
@@ -341,7 +341,7 @@ Você verá:
 | **Embedding Cache Hit Rate** | >80% | Validado em testes E2E |
 | **Taxa Aprovação Judge** | >70% | Threshold configurável |
 | **Precisão Top-1 (Multilíngue)** | +106% | vs busca monolíngue |
-| **Recall (Query Expansion)** | +70% | 10 → 17 docs únicos |
+| **Recall (Query Expansion)** | +70% | 10 -> 17 docs únicos |
 
 ### Otimizações Implementadas
 
@@ -357,7 +357,7 @@ Você verá:
    - Métodos ainvoke() em todos os agentes
 
 3. **Busca Multilíngue** (+106% precisão)
-   - Query expansion PT-BR ↔ EN automática
+   - Query expansion PT-BR <-> EN automática
    - Reciprocal Rank Fusion (RRF, k=60)
    - Contextos bilíngues em metadata
    - Adaptive reranking com detecção de idioma
@@ -383,7 +383,7 @@ Você verá:
 
 ---
 
-## 📁 Estrutura do Projeto
+## [EMOJI] Estrutura do Projeto
 
 ```
 agente-bsc-rag/
@@ -472,7 +472,7 @@ agente-bsc-rag/
 
 ---
 
-## 🧪 Testes e Validação
+## [EMOJI] Testes e Validação
 
 ### Suite de Testes E2E
 
@@ -509,26 +509,26 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 
 ### Métricas Validadas (Testes E2E)
 
-✅ **Sistema 100% operacional**:
+[OK] **Sistema 100% operacional**:
 - Qdrant rodando e acessível
 - 7.965 chunks indexados
 - API keys configuradas corretamente
 
-✅ **Workflow funcional**:
+[OK] **Workflow funcional**:
 - Query simple factual: OK
 - Query multi-perspectiva: OK
 - Refinamento iterativo: OK
 
-✅ **Otimizações confirmadas**:
+[OK] **Otimizações confirmadas**:
 - Cache hit rate >80%
 - Latências aceitáveis (P50<90s, P95<180s)
 - Judge approval rate >70%
 
 ---
 
-## 🗺️ Roadmap
+## [EMOJI] Roadmap
 
-### ✅ Fase 1 - MVP (COMPLETA - Out/2025)
+### [OK] Fase 1 - MVP (COMPLETA - Out/2025)
 
 - [x] Pipeline RAG completo (embeddings, retrieval, reranking)
 - [x] Sistema Multi-Agente (4 especialistas + Judge + Orchestrator)
@@ -539,39 +539,39 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 - [x] Documentação completa (2500+ linhas)
 - [x] Dataset BSC (7.965 chunks, 5 livros)
 
-**Status**: **MVP 100% CONCLUÍDO** 🎉
+**Status**: **MVP 100% CONCLUÍDO** [EMOJI]
 
-### 🔥 Fase 2A - Quick Wins RAG Avançado (COMPLETA - Out/2025) ✅
+### [EMOJI] Fase 2A - Quick Wins RAG Avançado (COMPLETA - Out/2025) [OK]
 
-- [x] **Query Decomposition** - Queries complexas em sub-queries + RRF ✅
-- [x] **Adaptive Re-ranking** - Diversity + metadata boosting ✅
-- [x] **Router Inteligente** - Roteamento por complexidade (92% accuracy) ✅
-- [x] **Validação E2E** - 22/22 testes passing (100%) ✅
-- [x] **Benchmark Fase 2A** - 50 queries × 2 sistemas validado ✅
-- [x] **Métricas Consolidadas** - RAGAS + latência por categoria ✅
-- [x] **Auto-Geração Metadados** - GPT-5 mini + cache ✅
-- [x] **TIER 3 Organização** - Índice navegável + lições aprendidas ✅
+- [x] **Query Decomposition** - Queries complexas em sub-queries + RRF [OK]
+- [x] **Adaptive Re-ranking** - Diversity + metadata boosting [OK]
+- [x] **Router Inteligente** - Roteamento por complexidade (92% accuracy) [OK]
+- [x] **Validação E2E** - 22/22 testes passing (100%) [OK]
+- [x] **Benchmark Fase 2A** - 50 queries × 2 sistemas validado [OK]
+- [x] **Métricas Consolidadas** - RAGAS + latência por categoria [OK]
+- [x] **Auto-Geração Metadados** - GPT-5 mini + cache [OK]
+- [x] **TIER 3 Organização** - Índice navegável + lições aprendidas [OK]
 
-**Status**: **Fase 2A 100% COMPLETA** 🎉 - **PRONTO PARA PRODUÇÃO**
+**Status**: **Fase 2A 100% COMPLETA** [EMOJI] - **PRONTO PARA PRODUÇÃO**
 
 **Resultados Validados (Benchmark 50 queries):**
-- ✅ **Latência Média**: +3.1% mais rápido (128.7s → 124.7s)
-- ✅ **Answer Relevancy (RAGAS)**: +2.1% (0.889 → 0.907)
-- ✅ **Queries Simples**: +10.6% mais rápido (64.6s → 57.7s) ⭐⭐⭐
-- ✅ **Queries Conceituais**: +8.5% mais rápido (95.8s → 87.7s) ⭐⭐
-- ✅ **Faithfulness (RAGAS)**: 0.968 (>0.85 threshold)
-- ✅ **22/22 testes E2E passing** (100%)
+- [OK] **Latência Média**: +3.1% mais rápido (128.7s -> 124.7s)
+- [OK] **Answer Relevancy (RAGAS)**: +2.1% (0.889 -> 0.907)
+- [OK] **Queries Simples**: +10.6% mais rápido (64.6s -> 57.7s) ⭐⭐⭐
+- [OK] **Queries Conceituais**: +8.5% mais rápido (95.8s -> 87.7s) ⭐⭐
+- [OK] **Faithfulness (RAGAS)**: 0.968 (>0.85 threshold)
+- [OK] **22/22 testes E2E passing** (100%)
 
-**Documentação**: 
-- [FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md](docs/history/FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md) ← Histórico Completo
-- [executive_report.md](tests/benchmark_fase2a/results/executive_report.md) ← Relatório Benchmark
-- [DOCS_INDEX.md](docs/DOCS_INDEX.md) ← Índice Navegável de Toda Documentação
+**Documentação**:
+- [FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md](docs/history/FASE_2A_COMPLETE_AND_TIER3_2025_10_15.md) <- Histórico Completo
+- [executive_report.md](tests/benchmark_fase2a/results/executive_report.md) <- Relatório Benchmark
+- [DOCS_INDEX.md](docs/DOCS_INDEX.md) <- Índice Navegável de Toda Documentação
 
 ---
 
-### 📋 Fase 2B - Advanced RAG (PLANEJADO - Out-Nov/2025)
+### [EMOJI] Fase 2B - Advanced RAG (PLANEJADO - Out-Nov/2025)
 
-**Status:** Aguardando validação Benchmark Fase 2A  
+**Status:** Aguardando validação Benchmark Fase 2A
 **Duração Estimada:** 2-3 semanas (8-10 dias úteis)
 
 - [ ] **Self-RAG** (3-4 dias) - Self-reflection, -40-50% alucinações
@@ -580,15 +580,15 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 - [ ] **Documentação** (1-2 dias) - Lições aprendidas, técnicas
 
 **Decisão Condicional:**
-- ✅ Implementar SE: Faithfulness <0.85 OU Precision <0.70
-- ❌ Pular SE: Métricas excelentes (Faithfulness >0.90, Precision >0.80)
+- [OK] Implementar SE: Faithfulness <0.85 OU Precision <0.70
+- [ERRO] Pular SE: Métricas excelentes (Faithfulness >0.90, Precision >0.80)
 
-**Plano Detalhado:** `.cursor/plans/fase-2b-rag-avancado.plan.md`  
+**Plano Detalhado:** `.cursor/plans/fase-2b-rag-avancado.plan.md`
 **Técnicas:** `docs/techniques/FASE_2B_OVERVIEW.md`
 
 **HyDE, RAPTOR, Graph RAG:** Avaliação condicional pós-Fase 2B.
 
-### 🚀 Fase 3 - Produção (Planejada - Dez/2025+)
+### [EMOJI] Fase 3 - Produção (Planejada - Dez/2025+)
 
 - [ ] Autenticação e autorização (multi-tenant)
 - [ ] Rate limiting e quotas
@@ -600,16 +600,16 @@ pytest tests/integration/test_e2e.py --cov=src --cov-report=html
 
 ---
 
-## 🛡️ Qualidade de Código
+## [EMOJI] Qualidade de Código
 
 ### Pre-Commit Hooks
 
 Hooks configurados para garantir qualidade:
 
-- ✅ **Anti-Emoji Hook** - Bloqueia emojis em código Python (previne `UnicodeEncodeError` Windows)
-- ✅ **Ruff Linter** - Linting rápido e moderno (150-200x mais rápido que flake8)
-- ✅ **Black Formatter** - Formatação automática consistente
-- ✅ **MyPy** - Verificação de tipos gradual
+- [OK] **Anti-Emoji Hook** - Bloqueia emojis em código Python (previne `UnicodeEncodeError` Windows)
+- [OK] **Ruff Linter** - Linting rápido e moderno (150-200x mais rápido que flake8)
+- [OK] **Black Formatter** - Formatação automática consistente
+- [OK] **MyPy** - Verificação de tipos gradual
 
 **Instalar hooks**:
 
@@ -622,7 +622,7 @@ pre-commit run --all-files
 
 ---
 
-## 🤝 Contribuindo
+## [EMOJI] Contribuindo
 
 Contribuições são bem-vindas! Siga o processo:
 
@@ -640,19 +640,19 @@ Contribuições são bem-vindas! Siga o processo:
 
 ---
 
-## 📄 Licença
+## [EMOJI] Licença
 
 Este projeto está sob a licença **MIT**. Veja [LICENSE](LICENSE) para detalhes.
 
 ---
 
-## 👥 Autores
+## [EMOJI] Autores
 
 - **Você** - *Desenvolvimento Inicial* - [GitHub](https://github.com/seu-usuario)
 
 ---
 
-## 🙏 Agradecimentos
+## [EMOJI] Agradecimentos
 
 - **Robert S. Kaplan e David P. Norton** - Criadores do Balanced Scorecard
 - **Anthropic** - Contextual Retrieval, Claude Sonnet 4.5
@@ -662,17 +662,17 @@ Este projeto está sob a licença **MIT**. Veja [LICENSE](LICENSE) para detalhes
 
 ---
 
-## 📞 Suporte
+## [EMOJI] Suporte
 
 Dúvidas ou problemas?
 
-- 🐛 Abra uma [Issue](https://github.com/seu-usuario/agente-bsc-rag/issues)
-- 💬 Email: <seu-email@exemplo.com>
-- 📖 Consulte a [Documentação Completa](docs/)
+- [EMOJI] Abra uma [Issue](https://github.com/seu-usuario/agente-bsc-rag/issues)
+- [EMOJI] Email: <seu-email@exemplo.com>
+- [EMOJI] Consulte a [Documentação Completa](docs/)
 
 ---
 
 <p align="center">
-  <strong>Desenvolvido com 💙 usando LangGraph, Claude Sonnet 4.5, Qdrant e Streamlit</strong><br>
+  <strong>Desenvolvido com [EMOJI] usando LangGraph, Claude Sonnet 4.5, Qdrant e Streamlit</strong><br>
   <em>MVP 100% Completo - Out/2025</em>
 </p>

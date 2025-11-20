@@ -1,8 +1,8 @@
 # ===================================================================
 # SCRIPT DE LIMPEZA AGRESSIVA DE CACHE PYTHON + STREAMLIT
 # ===================================================================
-# 
-# USO: 
+#
+# USO:
 # 1. PARE o Streamlit completamente (Ctrl+C)
 # 2. Execute: .\clear_all_cache.ps1
 # 3. Reinicie Streamlit: streamlit run main.py
@@ -64,4 +64,3 @@ Write-Host "2. Procure pelo log:" -ForegroundColor White
 Write-Host "   🚀🚀🚀 [DIAGNOSTIC v2.1-20251021-16:10] run_diagnostic() VERSÃO NOVA EXECUTANDO! 🚀🚀🚀" -ForegroundColor Magenta
 Write-Host "3. Se NÃO aparecer, cache ainda está ativo (considere reiniciar PowerShell/IDE)" -ForegroundColor White
 Write-Host ""
-

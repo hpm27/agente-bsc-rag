@@ -19,19 +19,19 @@ from unittest.mock import MagicMock
 import pytest
 from pydantic import ValidationError
 
-from src.tools.kpi_definer import KPIDefinerTool
 from src.memory.schemas import (
-    KPIDefinition,
-    KPIFramework,
     CompanyInfo,
-    StrategicContext,
     CompleteDiagnostic,
     DiagnosticResult,
+    KPIDefinition,
+    KPIFramework,
     Recommendation,
+    StrategicContext,
 )
+from src.tools.kpi_definer import KPIDefinerTool
 
 if TYPE_CHECKING:
-    from langchain_core.language_models import BaseLLM
+    pass
 
 
 # ============================================================================
@@ -42,17 +42,17 @@ if TYPE_CHECKING:
 @pytest.fixture
 def mock_llm() -> MagicMock:
     """Mock LLM que retorna lista de KPIDefinition valida.
-    
+
     Side effect detecta perspectiva no prompt e retorna KPIs correspondentes.
     """
     llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
+
     # Simula structured output que retorna lista de KPIs
     from pydantic import BaseModel
-    
+
     class KPIListOutput(BaseModel):
         kpis: list[KPIDefinition]
-    
+
     # Define KPIs mock para cada perspectiva
     kpis_by_perspective = {
         "Financeira": [
@@ -67,7 +67,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 40%",
                 measurement_frequency="mensal",
                 data_source="ERP financeiro + CRM (contratos recorrentes)",
-                calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100"
+                calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100",
             ),
             KPIDefinition(
                 name="EBITDA Margin",
@@ -81,7 +81,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 25%",
                 measurement_frequency="trimestral",
                 data_source="Sistema contabil + balanco patrimonial",
-                calculation_formula="(EBITDA / Receita_Total) * 100"
+                calculation_formula="(EBITDA / Receita_Total) * 100",
             ),
             KPIDefinition(
                 name="Customer Acquisition Cost (CAC)",
@@ -95,7 +95,7 @@ def mock_llm() -> MagicMock:
                 target_value="< R$ 5.000",
                 measurement_frequency="mensal",
                 data_source="CRM + plataforma marketing + financeiro",
-                calculation_formula="Custos_Marketing_Vendas_Total / Numero_Novos_Clientes"
+                calculation_formula="Custos_Marketing_Vendas_Total / Numero_Novos_Clientes",
             ),
         ],
         "Clientes": [
@@ -110,7 +110,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 50",
                 measurement_frequency="trimestral",
                 data_source="Pesquisa NPS automatizada pos-interacao",
-                calculation_formula="% Promotores (9-10) - % Detratores (0-6)"
+                calculation_formula="% Promotores (9-10) - % Detratores (0-6)",
             ),
             KPIDefinition(
                 name="Customer Churn Rate",
@@ -123,7 +123,7 @@ def mock_llm() -> MagicMock:
                 target_value="< 5%",
                 measurement_frequency="mensal",
                 data_source="CRM + sistema de billing",
-                calculation_formula="(Clientes_Cancelados / Clientes_Inicio_Periodo) * 100"
+                calculation_formula="(Clientes_Cancelados / Clientes_Inicio_Periodo) * 100",
             ),
             KPIDefinition(
                 name="Customer Lifetime Value (CLV)",
@@ -136,7 +136,7 @@ def mock_llm() -> MagicMock:
                 target_value="> R$ 50.000",
                 measurement_frequency="trimestral",
                 data_source="CRM + historico financeiro",
-                calculation_formula="(Receita_Media_Mensal * Tempo_Vida_Cliente) - CAC"
+                calculation_formula="(Receita_Media_Mensal * Tempo_Vida_Cliente) - CAC",
             ),
         ],
         "Processos Internos": [
@@ -151,7 +151,7 @@ def mock_llm() -> MagicMock:
                 target_value="< 15 dias",
                 measurement_frequency="mensal",
                 data_source="Jira + GitLab (pipeline CI/CD)",
-                calculation_formula="Data_Deploy - Data_Inicio_Feature"
+                calculation_formula="Data_Deploy - Data_Inicio_Feature",
             ),
             KPIDefinition(
                 name="Taxa de Automacao de Processos",
@@ -164,7 +164,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 70%",
                 measurement_frequency="trimestral",
                 data_source="Auditoria processos + sistema workflow",
-                calculation_formula="(Processos_Automatizados / Total_Processos) * 100"
+                calculation_formula="(Processos_Automatizados / Total_Processos) * 100",
             ),
             KPIDefinition(
                 name="Taxa de Incidentes Criticos",
@@ -177,7 +177,7 @@ def mock_llm() -> MagicMock:
                 target_value="< 3 por mes",
                 measurement_frequency="mensal",
                 data_source="Sistema monitoring (Datadog, New Relic)",
-                calculation_formula="Count(Incidentes_P1 + Incidentes_P2)"
+                calculation_formula="Count(Incidentes_P1 + Incidentes_P2)",
             ),
         ],
         "Aprendizado e Crescimento": [
@@ -192,7 +192,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 90%",
                 measurement_frequency="anual",
                 data_source="Sistema RH (desligamentos)",
-                calculation_formula="(Colaboradores_Permanentes / Total_Inicial) * 100"
+                calculation_formula="(Colaboradores_Permanentes / Total_Inicial) * 100",
             ),
             KPIDefinition(
                 name="Horas de Treinamento por Colaborador",
@@ -205,7 +205,7 @@ def mock_llm() -> MagicMock:
                 target_value="> 40 horas/ano",
                 measurement_frequency="anual",
                 data_source="Plataforma LMS + registros treinamento",
-                calculation_formula="Total_Horas_Treinamento / Numero_Colaboradores"
+                calculation_formula="Total_Horas_Treinamento / Numero_Colaboradores",
             ),
             KPIDefinition(
                 name="Indice de Inovacao",
@@ -218,36 +218,36 @@ def mock_llm() -> MagicMock:
                 target_value="> 20%",
                 measurement_frequency="trimestral",
                 data_source="Sistema financeiro + catalogo produtos",
-                calculation_formula="(Receita_Novos_Produtos / Receita_Total) * 100"
+                calculation_formula="(Receita_Novos_Produtos / Receita_Total) * 100",
             ),
         ],
     }
-    
+
     # SOLUCAO: Usar contador de chamadas para retornar perspectiva correta sequencialmente
     # A tool chama 4x: Financeira -> Clientes -> Processos Internos -> Aprendizado
     from itertools import cycle
-    
+
     perspective_order = [
         "Financeira",
-        "Clientes", 
+        "Clientes",
         "Processos Internos",
-        "Aprendizado e Crescimento"
+        "Aprendizado e Crescimento",
     ]
     perspective_cycle = cycle(perspective_order)
-    
+
     def mock_invoke_side_effect(prompt: str):
         """Retorna KPIs da proxima perspectiva na sequencia.
-        
+
         Usa itertools.cycle para iterar pelas 4 perspectivas na ordem
         que a tool as chama (Financeira, Clientes, Processos, Aprendizado).
         """
         perspective = next(perspective_cycle)
         kpis = kpis_by_perspective[perspective]
         return KPIListOutput(kpis=kpis)
-    
+
     mock_structured_llm = MagicMock()
     mock_structured_llm.invoke.side_effect = mock_invoke_side_effect
-    
+
     llm.with_structured_output.return_value = mock_structured_llm
     return llm
 
@@ -299,7 +299,7 @@ def company_info() -> CompanyInfo:
         name="TechInova Solutions",
         sector="Tecnologia",
         size="média",  # Corrigido: schema espera com acento
-        industry="Desenvolvimento de Software B2B"
+        industry="Desenvolvimento de Software B2B",
     )
 
 
@@ -313,13 +313,13 @@ def strategic_context() -> StrategicContext:
         strategic_objectives=[
             "Aumentar receita recorrente (ARR) em 40% em 2025",
             "Reduzir churn para <5% ao ano",
-            "Lancar 3 novos produtos no portfolio"
+            "Lancar 3 novos produtos no portfolio",
         ],
         current_challenges=[
             "Competir com grandes players internacionais",
             "Escalar operacoes mantendo qualidade",
-            "Reduzir churn de clientes"
-        ]
+            "Reduzir churn de clientes",
+        ],
     )
 
 
@@ -331,33 +331,36 @@ def diagnostic_result() -> CompleteDiagnostic:
             perspective="Financeira",
             current_state="Empresa apresenta crescimento de receita mas margens em queda devido custos operacionais elevados",
             gaps=["Falta de controle rigoroso de custos", "Margens em declinio"],
-            opportunities=["Automacao para reduzir custos", "Renegociacao de contratos fornecedores"],
-            priority="HIGH"
+            opportunities=[
+                "Automacao para reduzir custos",
+                "Renegociacao de contratos fornecedores",
+            ],
+            priority="HIGH",
         ),
         customer=DiagnosticResult(
             perspective="Clientes",
             current_state="Alta satisfacao inicial mas churn crescente apos 6 meses de uso do produto",
             gaps=["Onboarding insuficiente", "Suporte tecnico reativo"],
             opportunities=["Programa de sucesso do cliente", "Comunidade de usuarios"],
-            priority="HIGH"
+            priority="HIGH",
         ),
         process=DiagnosticResult(
             perspective="Processos Internos",
             current_state="Processos manuais geram gargalos e erros operacionais frequentes",
             gaps=["Automacao limitada", "Falta de padronizacao"],
             opportunities=["RPA para processos repetitivos", "Documentacao de workflows"],
-            priority="MEDIUM"
+            priority="MEDIUM",
         ),
         learning=DiagnosticResult(
             perspective="Aprendizado e Crescimento",
             current_state="Equipe tecnica qualificada mas com gaps em gestao de projetos ageis",
             gaps=["Falta de treinamento em metodologias ageis", "Cultura de feedback limitada"],
             opportunities=["Certificacoes Scrum/Kanban", "Programas de mentoria interna"],
-            priority="MEDIUM"
+            priority="MEDIUM",
         ),
         synergies=[
             "Automacao de processos internos pode reduzir custos operacionais (Processos + Financeira)",
-            "Programa de sucesso do cliente pode melhorar retencao e receita (Clientes + Financeira)"
+            "Programa de sucesso do cliente pode melhorar retencao e receita (Clientes + Financeira)",
         ],
         executive_summary="TechInova Solutions apresenta crescimento solido mas enfrenta desafios de margens e churn. Priorizar automacao e sucesso do cliente.",
         recommendations=[
@@ -371,8 +374,8 @@ def diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Contratar lider de Customer Success",
                     "Definir jornada do cliente e milestones",
-                    "Criar playbooks de onboarding"
-                ]
+                    "Criar playbooks de onboarding",
+                ],
             ),
             Recommendation(
                 title="Automatizar processos operacionais repetitivos com RPA",
@@ -384,8 +387,8 @@ def diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Mapear processos repetitivos candidatos a RPA",
                     "Selecionar ferramenta RPA",
-                    "Pilotar em 2-3 processos criticos"
-                ]
+                    "Pilotar em 2-3 processos criticos",
+                ],
             ),
             Recommendation(
                 title="Implementar programa de capacitacao em metodologias ageis",
@@ -397,10 +400,10 @@ def diagnostic_result() -> CompleteDiagnostic:
                 next_steps=[
                     "Contratar consultoria especializada em Agile",
                     "Certificar 5 colaboradores em Scrum Master",
-                    "Implementar sprints em 2 squads piloto"
-                ]
+                    "Implementar sprints em 2 squads piloto",
+                ],
             ),
-        ]
+        ],
     )
 
 
@@ -411,11 +414,8 @@ def diagnostic_result() -> CompleteDiagnostic:
 
 def test_kpi_definer_tool_initialization(mock_llm, mock_financial_agent):
     """TESTE 1: Criacao basica de KPIDefinerTool."""
-    tool = KPIDefinerTool(
-        llm=mock_llm,
-        financial_agent=mock_financial_agent
-    )
-    
+    tool = KPIDefinerTool(llm=mock_llm, financial_agent=mock_financial_agent)
+
     assert tool.llm == mock_llm
     assert tool.financial_agent == mock_financial_agent
     assert tool.customer_agent is None
@@ -424,11 +424,7 @@ def test_kpi_definer_tool_initialization(mock_llm, mock_financial_agent):
 
 
 def test_kpi_definer_tool_initialization_with_all_agents(
-    mock_llm,
-    mock_financial_agent,
-    mock_customer_agent,
-    mock_process_agent,
-    mock_learning_agent
+    mock_llm, mock_financial_agent, mock_customer_agent, mock_process_agent, mock_learning_agent
 ):
     """TESTE 2: Criacao com todos 4 specialist agents."""
     tool = KPIDefinerTool(
@@ -436,9 +432,9 @@ def test_kpi_definer_tool_initialization_with_all_agents(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     assert tool.llm == mock_llm
     assert tool.financial_agent == mock_financial_agent
     assert tool.customer_agent == mock_customer_agent
@@ -451,29 +447,24 @@ def test_kpi_definer_tool_initialization_with_all_agents(
 # ============================================================================
 
 
-def test_define_kpis_without_rag(
-    mock_llm,
-    company_info,
-    strategic_context,
-    diagnostic_result
-):
+def test_define_kpis_without_rag(mock_llm, company_info, strategic_context, diagnostic_result):
     """TESTE 3: Definir KPIs sem RAG (use_rag=False)."""
     tool = KPIDefinerTool(llm=mock_llm)
-    
+
     # Mock para retornar KPIs diferentes por perspectiva
     # (mesmo mock retorna KPIs 'Financeira' mas tool deve ajustar perspective)
     framework = tool.define_kpis(
         company_info=company_info,
         strategic_context=strategic_context,
         diagnostic_result=diagnostic_result,
-        use_rag=False
+        use_rag=False,
     )
-    
+
     # Validar estrutura
     assert isinstance(framework, KPIFramework)
     assert framework.total_kpis() >= 8  # Minimo 2 por perspectiva
     assert framework.total_kpis() <= 32  # Maximo 8 por perspectiva
-    
+
     # Validar cada perspectiva tem 2-8 KPIs
     assert 2 <= len(framework.financial_kpis) <= 8
     assert 2 <= len(framework.customer_kpis) <= 8
@@ -489,7 +480,7 @@ def test_define_kpis_with_rag(
     mock_learning_agent,
     company_info,
     strategic_context,
-    diagnostic_result
+    diagnostic_result,
 ):
     """TESTE 4: Definir KPIs com RAG (use_rag=True)."""
     tool = KPIDefinerTool(
@@ -497,75 +488,63 @@ def test_define_kpis_with_rag(
         financial_agent=mock_financial_agent,
         customer_agent=mock_customer_agent,
         process_agent=mock_process_agent,
-        learning_agent=mock_learning_agent
+        learning_agent=mock_learning_agent,
     )
-    
+
     framework = tool.define_kpis(
         company_info=company_info,
         strategic_context=strategic_context,
         diagnostic_result=diagnostic_result,
-        use_rag=True
+        use_rag=True,
     )
-    
+
     # Validar que RAG foi chamado (4 agents invoked)
     assert mock_financial_agent.invoke.called
     assert mock_customer_agent.invoke.called
     assert mock_process_agent.invoke.called
     assert mock_learning_agent.invoke.called
-    
+
     # Validar estrutura framework
     assert isinstance(framework, KPIFramework)
     assert framework.total_kpis() >= 8
 
 
-def test_define_kpis_missing_company_info(
-    mock_llm,
-    strategic_context,
-    diagnostic_result
-):
+def test_define_kpis_missing_company_info(mock_llm, strategic_context, diagnostic_result):
     """TESTE 5: Erro se company_info None."""
     tool = KPIDefinerTool(llm=mock_llm)
-    
+
     with pytest.raises(ValueError, match="company_info ausente"):
         tool.define_kpis(
             company_info=None,  # type: ignore
             strategic_context=strategic_context,
             diagnostic_result=diagnostic_result,
-            use_rag=False
+            use_rag=False,
         )
 
 
-def test_define_kpis_missing_strategic_context(
-    mock_llm,
-    company_info,
-    diagnostic_result
-):
+def test_define_kpis_missing_strategic_context(mock_llm, company_info, diagnostic_result):
     """TESTE 6: Erro se strategic_context None."""
     tool = KPIDefinerTool(llm=mock_llm)
-    
+
     with pytest.raises(ValueError, match="strategic_context ausente"):
         tool.define_kpis(
             company_info=company_info,
             strategic_context=None,  # type: ignore
             diagnostic_result=diagnostic_result,
-            use_rag=False
+            use_rag=False,
         )
 
 
-def test_define_kpis_missing_diagnostic_result(
-    mock_llm,
-    company_info,
-    strategic_context
-):
+def test_define_kpis_missing_diagnostic_result(mock_llm, company_info, strategic_context):
     """TESTE 7: Erro se diagnostic_result None."""
     tool = KPIDefinerTool(llm=mock_llm)
-    
+
     with pytest.raises(ValueError, match="diagnostic_result ausente"):
         tool.define_kpis(
             company_info=company_info,
             strategic_context=strategic_context,
             diagnostic_result=None,  # type: ignore
-            use_rag=False
+            use_rag=False,
         )
 
 
@@ -584,9 +563,9 @@ def test_kpi_definition_valid():
         target_value="> 30%",
         measurement_frequency="mensal",
         data_source="ERP financeiro",
-        calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100"
+        calculation_formula="((ARR_atual - ARR_anterior) / ARR_anterior) * 100",
     )
-    
+
     assert kpi.name == "Crescimento de Receita Recorrente"
     assert kpi.perspective == "Financeira"
     assert kpi.metric_type == "quantidade"
@@ -604,7 +583,7 @@ def test_kpi_definition_invalid_name_too_short():
             metric_type="quantidade",
             target_value="> 30%",
             measurement_frequency="mensal",
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -618,7 +597,7 @@ def test_kpi_definition_invalid_name_empty():
             metric_type="quantidade",
             target_value="> 30%",
             measurement_frequency="mensal",
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -632,7 +611,7 @@ def test_kpi_definition_invalid_description_too_short():
             metric_type="quantidade",
             target_value="> 30%",
             measurement_frequency="mensal",
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -646,7 +625,7 @@ def test_kpi_definition_invalid_perspective():
             metric_type="quantidade",
             target_value="> 30%",
             measurement_frequency="mensal",
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -660,7 +639,7 @@ def test_kpi_definition_invalid_metric_type():
             metric_type="percentual",  # type: ignore  # Invalido (permitidos: quantidade, qualidade, tempo, custo)
             target_value="> 30%",
             measurement_frequency="mensal",
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -674,7 +653,7 @@ def test_kpi_definition_invalid_measurement_frequency():
             metric_type="quantidade",
             target_value="> 30%",
             measurement_frequency="bimestral",  # type: ignore  # Invalido (permitidos: diario, semanal, mensal, trimestral, anual)
-            data_source="ERP financeiro"
+            data_source="ERP financeiro",
         )
 
 
@@ -687,9 +666,9 @@ def test_kpi_framework_valid():
         metric_type="quantidade",
         target_value="> 30%",
         measurement_frequency="mensal",
-        data_source="ERP financeiro"
+        data_source="ERP financeiro",
     )
-    
+
     kpi2 = KPIDefinition(
         name="EBITDA Margin percentual de lucro operacional",
         description="Mede margem de lucro operacional em relacao a receita total",
@@ -697,9 +676,9 @@ def test_kpi_framework_valid():
         metric_type="qualidade",
         target_value="> 25%",
         measurement_frequency="trimestral",
-        data_source="Sistema contabil"
+        data_source="Sistema contabil",
     )
-    
+
     kpi3 = KPIDefinition(
         name="Customer Satisfaction Score CSAT pesquisa clientes",
         description="Mede nivel de satisfacao dos clientes atraves de pesquisas pos-atendimento",
@@ -707,9 +686,9 @@ def test_kpi_framework_valid():
         metric_type="qualidade",
         target_value="> 85%",
         measurement_frequency="mensal",
-        data_source="Plataforma de pesquisas"
+        data_source="Plataforma de pesquisas",
     )
-    
+
     kpi4 = KPIDefinition(
         name="Net Promoter Score NPS indicador lealdade",
         description="Mede lealdade e propensao a recomendar a empresa para outros clientes",
@@ -717,9 +696,9 @@ def test_kpi_framework_valid():
         metric_type="qualidade",
         target_value="> 50",
         measurement_frequency="trimestral",
-        data_source="Pesquisa NPS automatizada"
+        data_source="Pesquisa NPS automatizada",
     )
-    
+
     kpi5 = KPIDefinition(
         name="Lead Time medio de processos operacionais criticos",
         description="Mede tempo medio desde inicio ate conclusao dos processos operacionais",
@@ -727,9 +706,9 @@ def test_kpi_framework_valid():
         metric_type="tempo",
         target_value="< 5 dias",
         measurement_frequency="semanal",
-        data_source="Sistema de workflow"
+        data_source="Sistema de workflow",
     )
-    
+
     kpi6 = KPIDefinition(
         name="Taxa de Defeitos em Processos percentual erros",
         description="Mede percentual de erros ou falhas em processos operacionais criticos",
@@ -737,9 +716,9 @@ def test_kpi_framework_valid():
         metric_type="qualidade",
         target_value="< 2%",
         measurement_frequency="mensal",
-        data_source="Sistema de qualidade"
+        data_source="Sistema de qualidade",
     )
-    
+
     kpi7 = KPIDefinition(
         name="Horas de Treinamento por Funcionario media anual",
         description="Mede numero medio de horas de capacitacao investidas por colaborador",
@@ -747,9 +726,9 @@ def test_kpi_framework_valid():
         metric_type="quantidade",
         target_value="> 40 horas/ano",
         measurement_frequency="trimestral",
-        data_source="Sistema de RH"
+        data_source="Sistema de RH",
     )
-    
+
     kpi8 = KPIDefinition(
         name="Employee Engagement Score indice engajamento equipes",
         description="Mede nivel de engajamento e satisfacao dos colaboradores com a empresa",
@@ -757,16 +736,16 @@ def test_kpi_framework_valid():
         metric_type="qualidade",
         target_value="> 80%",
         measurement_frequency="trimestral",  # Corrigido: semestral nao existe no schema
-        data_source="Pesquisa de clima organizacional"
+        data_source="Pesquisa de clima organizacional",
     )
-    
+
     framework = KPIFramework(
         financial_kpis=[kpi1, kpi2],
         customer_kpis=[kpi3, kpi4],
         process_kpis=[kpi5, kpi6],
-        learning_kpis=[kpi7, kpi8]
+        learning_kpis=[kpi7, kpi8],
     )
-    
+
     assert framework.total_kpis() == 8
     assert len(framework.financial_kpis) == 2
     assert len(framework.customer_kpis) == 2
@@ -783,9 +762,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="quantidade",
         target_value="> 30%",
         measurement_frequency="mensal",
-        data_source="ERP financeiro"
+        data_source="ERP financeiro",
     )
-    
+
     kpi2 = KPIDefinition(
         name="Customer Satisfaction Score CSAT pesquisa clientes",
         description="Mede nivel de satisfacao dos clientes atraves de pesquisas pos-atendimento",
@@ -793,9 +772,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="qualidade",
         target_value="> 85%",
         measurement_frequency="mensal",
-        data_source="Plataforma de pesquisas"
+        data_source="Plataforma de pesquisas",
     )
-    
+
     kpi3 = KPIDefinition(
         name="Net Promoter Score NPS indicador lealdade",
         description="Mede lealdade e propensao a recomendar a empresa para outros clientes",
@@ -803,9 +782,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="qualidade",
         target_value="> 50",
         measurement_frequency="trimestral",
-        data_source="Pesquisa NPS automatizada"
+        data_source="Pesquisa NPS automatizada",
     )
-    
+
     kpi4 = KPIDefinition(
         name="Lead Time medio de processos operacionais criticos",
         description="Mede tempo medio desde inicio ate conclusao dos processos operacionais",
@@ -813,9 +792,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="tempo",
         target_value="< 5 dias",
         measurement_frequency="semanal",
-        data_source="Sistema de workflow"
+        data_source="Sistema de workflow",
     )
-    
+
     kpi5 = KPIDefinition(
         name="Taxa de Defeitos em Processos percentual erros",
         description="Mede percentual de erros ou falhas em processos operacionais criticos",
@@ -823,9 +802,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="qualidade",
         target_value="< 2%",
         measurement_frequency="mensal",
-        data_source="Sistema de qualidade"
+        data_source="Sistema de qualidade",
     )
-    
+
     kpi6 = KPIDefinition(
         name="Horas de Treinamento por Funcionario media anual",
         description="Mede numero medio de horas de capacitacao investidas por colaborador",
@@ -833,9 +812,9 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="quantidade",
         target_value="> 40 horas/ano",
         measurement_frequency="trimestral",
-        data_source="Sistema de RH"
+        data_source="Sistema de RH",
     )
-    
+
     kpi7 = KPIDefinition(
         name="Employee Engagement Score indice engajamento equipes",
         description="Mede nivel de engajamento e satisfacao dos colaboradores com a empresa",
@@ -843,15 +822,15 @@ def test_kpi_framework_invalid_too_few_kpis_per_perspective():
         metric_type="qualidade",
         target_value="> 80%",
         measurement_frequency="trimestral",  # Corrigido: semestral nao existe no schema
-        data_source="Pesquisa de clima organizacional"
+        data_source="Pesquisa de clima organizacional",
     )
-    
+
     with pytest.raises(ValidationError, match="at least 2 items"):
         KPIFramework(
             financial_kpis=[kpi1],  # Apenas 1 KPI (minimo 2)
             customer_kpis=[kpi2, kpi3],
             process_kpis=[kpi4, kpi5],
-            learning_kpis=[kpi6, kpi7]
+            learning_kpis=[kpi6, kpi7],
         )
 
 
@@ -864,9 +843,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="quantidade",
         target_value="> 30%",
         measurement_frequency="mensal",
-        data_source="ERP financeiro"
+        data_source="ERP financeiro",
     )
-    
+
     kpi_financeira2 = KPIDefinition(
         name="EBITDA Margin percentual de lucro operacional",
         description="Mede margem de lucro operacional em relacao a receita total",
@@ -874,9 +853,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="qualidade",
         target_value="> 25%",
         measurement_frequency="trimestral",
-        data_source="Sistema contabil"
+        data_source="Sistema contabil",
     )
-    
+
     kpi_clientes = KPIDefinition(
         name="Customer Satisfaction Score CSAT pesquisa clientes",
         description="Mede nivel de satisfacao dos clientes atraves de pesquisas pos-atendimento",
@@ -884,9 +863,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="qualidade",
         target_value="> 85%",
         measurement_frequency="mensal",
-        data_source="Plataforma de pesquisas"
+        data_source="Plataforma de pesquisas",
     )
-    
+
     kpi_clientes2 = KPIDefinition(
         name="Net Promoter Score NPS indicador lealdade",
         description="Mede lealdade e propensao a recomendar a empresa para outros clientes",
@@ -894,9 +873,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="qualidade",
         target_value="> 50",
         measurement_frequency="trimestral",
-        data_source="Pesquisa NPS automatizada"
+        data_source="Pesquisa NPS automatizada",
     )
-    
+
     kpi_processos = KPIDefinition(
         name="Lead Time medio de processos operacionais criticos",
         description="Mede tempo medio desde inicio ate conclusao dos processos operacionais",
@@ -904,9 +883,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="tempo",
         target_value="< 5 dias",
         measurement_frequency="semanal",
-        data_source="Sistema de workflow"
+        data_source="Sistema de workflow",
     )
-    
+
     kpi_processos2 = KPIDefinition(
         name="Taxa de Defeitos em Processos percentual erros",
         description="Mede percentual de erros ou falhas em processos operacionais criticos",
@@ -914,9 +893,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="qualidade",
         target_value="< 2%",
         measurement_frequency="mensal",
-        data_source="Sistema de qualidade"
+        data_source="Sistema de qualidade",
     )
-    
+
     kpi_aprendizado = KPIDefinition(
         name="Horas de Treinamento por Funcionario media anual",
         description="Mede numero medio de horas de capacitacao investidas por colaborador",
@@ -924,9 +903,9 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="quantidade",
         target_value="> 40 horas/ano",
         measurement_frequency="trimestral",
-        data_source="Sistema de RH"
+        data_source="Sistema de RH",
     )
-    
+
     kpi_aprendizado2 = KPIDefinition(
         name="Employee Engagement Score indice engajamento equipes",
         description="Mede nivel de engajamento e satisfacao dos colaboradores com a empresa",
@@ -934,15 +913,17 @@ def test_kpi_framework_invalid_wrong_perspective():
         metric_type="qualidade",
         target_value="> 80%",
         measurement_frequency="trimestral",  # Corrigido: semestral nao existe no schema
-        data_source="Pesquisa de clima organizacional"
+        data_source="Pesquisa de clima organizacional",
     )
-    
-    with pytest.raises(ValidationError, match="financial_kpis deve conter apenas KPIs da perspectiva 'Financeira'"):
+
+    with pytest.raises(
+        ValidationError, match="financial_kpis deve conter apenas KPIs da perspectiva 'Financeira'"
+    ):
         KPIFramework(
             financial_kpis=[kpi_financeira, kpi_clientes],  # kpi_clientes em lista errada!
             customer_kpis=[kpi_clientes2, kpi_financeira2],  # Tambem invertido
             process_kpis=[kpi_processos, kpi_processos2],
-            learning_kpis=[kpi_aprendizado, kpi_aprendizado2]
+            learning_kpis=[kpi_aprendizado, kpi_aprendizado2],
         )
 
 
@@ -955,9 +936,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="quantidade",
         target_value="> 30%",
         measurement_frequency="mensal",
-        data_source="ERP financeiro"
+        data_source="ERP financeiro",
     )
-    
+
     kpi2 = KPIDefinition(
         name="EBITDA Margin percentual de lucro operacional",
         description="Mede margem de lucro operacional em relacao a receita total",
@@ -965,9 +946,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="qualidade",
         target_value="> 25%",
         measurement_frequency="trimestral",
-        data_source="Sistema contabil"
+        data_source="Sistema contabil",
     )
-    
+
     kpi3 = KPIDefinition(
         name="Customer Satisfaction Score CSAT pesquisa clientes",
         description="Mede nivel de satisfacao dos clientes atraves de pesquisas pos-atendimento",
@@ -975,9 +956,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="qualidade",
         target_value="> 85%",
         measurement_frequency="mensal",
-        data_source="Plataforma de pesquisas"
+        data_source="Plataforma de pesquisas",
     )
-    
+
     kpi4 = KPIDefinition(
         name="Net Promoter Score NPS indicador lealdade",
         description="Mede lealdade e propensao a recomendar a empresa para outros clientes",
@@ -985,9 +966,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="qualidade",
         target_value="> 50",
         measurement_frequency="trimestral",
-        data_source="Pesquisa NPS automatizada"
+        data_source="Pesquisa NPS automatizada",
     )
-    
+
     kpi5 = KPIDefinition(
         name="Lead Time medio de processos operacionais criticos",
         description="Mede tempo medio desde inicio ate conclusao dos processos operacionais",
@@ -995,9 +976,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="tempo",
         target_value="< 5 dias",
         measurement_frequency="semanal",
-        data_source="Sistema de workflow"
+        data_source="Sistema de workflow",
     )
-    
+
     kpi6 = KPIDefinition(
         name="Taxa de Defeitos em Processos percentual erros",
         description="Mede percentual de erros ou falhas em processos operacionais criticos",
@@ -1005,9 +986,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="qualidade",
         target_value="< 2%",
         measurement_frequency="mensal",
-        data_source="Sistema de qualidade"
+        data_source="Sistema de qualidade",
     )
-    
+
     kpi7 = KPIDefinition(
         name="Horas de Treinamento por Funcionario media anual",
         description="Mede numero medio de horas de capacitacao investidas por colaborador",
@@ -1015,9 +996,9 @@ def test_kpi_framework_by_perspective_method():
         metric_type="quantidade",
         target_value="> 40 horas/ano",
         measurement_frequency="trimestral",
-        data_source="Sistema de RH"
+        data_source="Sistema de RH",
     )
-    
+
     kpi8 = KPIDefinition(
         name="Employee Engagement Score indice engajamento equipes",
         description="Mede nivel de engajamento e satisfacao dos colaboradores com a empresa",
@@ -1025,29 +1006,29 @@ def test_kpi_framework_by_perspective_method():
         metric_type="qualidade",
         target_value="> 80%",
         measurement_frequency="trimestral",  # Corrigido: semestral nao existe no schema
-        data_source="Pesquisa de clima organizacional"
+        data_source="Pesquisa de clima organizacional",
     )
-    
+
     framework = KPIFramework(
         financial_kpis=[kpi1, kpi2],
         customer_kpis=[kpi3, kpi4],
         process_kpis=[kpi5, kpi6],
-        learning_kpis=[kpi7, kpi8]
+        learning_kpis=[kpi7, kpi8],
     )
-    
+
     # Testar by_perspective para cada perspectiva
     financial_kpis = framework.by_perspective("Financeira")
     assert len(financial_kpis) == 2
     assert all(kpi.perspective == "Financeira" for kpi in financial_kpis)
-    
+
     customer_kpis = framework.by_perspective("Clientes")
     assert len(customer_kpis) == 2
     assert all(kpi.perspective == "Clientes" for kpi in customer_kpis)
-    
+
     process_kpis = framework.by_perspective("Processos Internos")
     assert len(process_kpis) == 2
     assert all(kpi.perspective == "Processos Internos" for kpi in process_kpis)
-    
+
     learning_kpis = framework.by_perspective("Aprendizado e Crescimento")
     assert len(learning_kpis) == 2
     assert all(kpi.perspective == "Aprendizado e Crescimento" for kpi in learning_kpis)
@@ -1062,9 +1043,9 @@ def test_kpi_framework_summary_method():
         metric_type="quantidade",
         target_value="> 30%",
         measurement_frequency="mensal",
-        data_source="ERP financeiro"
+        data_source="ERP financeiro",
     )
-    
+
     kpi2 = KPIDefinition(
         name="EBITDA Margin percentual de lucro operacional",
         description="Mede margem de lucro operacional em relacao a receita total",
@@ -1072,9 +1053,9 @@ def test_kpi_framework_summary_method():
         metric_type="qualidade",
         target_value="> 25%",
         measurement_frequency="trimestral",
-        data_source="Sistema contabil"
+        data_source="Sistema contabil",
     )
-    
+
     kpi3 = KPIDefinition(
         name="Customer Satisfaction Score CSAT pesquisa clientes",
         description="Mede nivel de satisfacao dos clientes atraves de pesquisas pos-atendimento",
@@ -1082,9 +1063,9 @@ def test_kpi_framework_summary_method():
         metric_type="qualidade",
         target_value="> 85%",
         measurement_frequency="mensal",
-        data_source="Plataforma de pesquisas"
+        data_source="Plataforma de pesquisas",
     )
-    
+
     kpi4 = KPIDefinition(
         name="Net Promoter Score NPS indicador lealdade",
         description="Mede lealdade e propensao a recomendar a empresa para outros clientes",
@@ -1092,9 +1073,9 @@ def test_kpi_framework_summary_method():
         metric_type="qualidade",
         target_value="> 50",
         measurement_frequency="trimestral",
-        data_source="Pesquisa NPS automatizada"
+        data_source="Pesquisa NPS automatizada",
     )
-    
+
     kpi5 = KPIDefinition(
         name="Lead Time medio de processos operacionais criticos",
         description="Mede tempo medio desde inicio ate conclusao dos processos operacionais",
@@ -1102,9 +1083,9 @@ def test_kpi_framework_summary_method():
         metric_type="tempo",
         target_value="< 5 dias",
         measurement_frequency="semanal",
-        data_source="Sistema de workflow"
+        data_source="Sistema de workflow",
     )
-    
+
     kpi6 = KPIDefinition(
         name="Taxa de Defeitos em Processos percentual erros",
         description="Mede percentual de erros ou falhas em processos operacionais criticos",
@@ -1112,9 +1093,9 @@ def test_kpi_framework_summary_method():
         metric_type="qualidade",
         target_value="< 2%",
         measurement_frequency="mensal",
-        data_source="Sistema de qualidade"
+        data_source="Sistema de qualidade",
     )
-    
+
     kpi7 = KPIDefinition(
         name="Horas de Treinamento por Funcionario media anual",
         description="Mede numero medio de horas de capacitacao investidas por colaborador",
@@ -1122,9 +1103,9 @@ def test_kpi_framework_summary_method():
         metric_type="quantidade",
         target_value="> 40 horas/ano",
         measurement_frequency="trimestral",
-        data_source="Sistema de RH"
+        data_source="Sistema de RH",
     )
-    
+
     kpi8 = KPIDefinition(
         name="Employee Engagement Score indice engajamento equipes",
         description="Mede nivel de engajamento e satisfacao dos colaboradores com a empresa",
@@ -1132,22 +1113,21 @@ def test_kpi_framework_summary_method():
         metric_type="qualidade",
         target_value="> 80%",
         measurement_frequency="trimestral",  # Corrigido: semestral nao existe no schema
-        data_source="Pesquisa de clima organizacional"
+        data_source="Pesquisa de clima organizacional",
     )
-    
+
     framework = KPIFramework(
         financial_kpis=[kpi1, kpi2],
         customer_kpis=[kpi3, kpi4],
         process_kpis=[kpi5, kpi6],
-        learning_kpis=[kpi7, kpi8]
+        learning_kpis=[kpi7, kpi8],
     )
-    
+
     summary = framework.summary()
-    
+
     # Validar que summary contem informacoes chave
     assert "8 KPIs" in summary
     assert "Financeira: 2" in summary
     assert "Clientes: 2" in summary
     assert "Processos Internos: 2" in summary
     assert "Aprendizado e Crescimento: 2" in summary
-

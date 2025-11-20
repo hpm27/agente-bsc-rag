@@ -1,13 +1,13 @@
 # Fase 2B - RAG Avançado: Self-RAG + CRAG
 
-**Status:** 📋 PLANEJADO  
-**Início Previsto:** Após validação Benchmark Fase 2A  
-**Duração Estimada:** 2-3 semanas (8-10 dias úteis)  
+**Status:** [EMOJI] PLANEJADO
+**Início Previsto:** Após validação Benchmark Fase 2A
+**Duração Estimada:** 2-3 semanas (8-10 dias úteis)
 **Última Atualização:** 2025-10-14
 
 ---
 
-## 🎯 OBJETIVOS FASE 2B
+## [EMOJI] OBJETIVOS FASE 2B
 
 Implementar técnicas RAG avançadas focadas em:
 
@@ -18,7 +18,7 @@ Implementar técnicas RAG avançadas focadas em:
 
 ---
 
-## 📊 DECISÃO CONDICIONAL (Baseada em Benchmark Fase 2A)
+## [EMOJI] DECISÃO CONDICIONAL (Baseada em Benchmark Fase 2A)
 
 ### Cenário 1: Implementar Self-RAG
 
@@ -53,12 +53,12 @@ Implementar técnicas RAG avançadas focadas em:
 
 ---
 
-## 🗺️ ROADMAP FASE 2B
+## [EMOJI] ROADMAP FASE 2B
 
 ### Fase 2B.1 - Self-RAG (Semana 1)
 
-**Duração:** 3-4 dias úteis (13-16h)  
-**Complexidade:** ⭐⭐⭐⭐ Média-Alta  
+**Duração:** 3-4 dias úteis (13-16h)
+**Complexidade:** ⭐⭐⭐⭐ Média-Alta
 **ROI Esperado:** ⭐⭐⭐⭐ Alto
 
 #### Etapas
@@ -99,17 +99,17 @@ Implementar técnicas RAG avançadas focadas em:
    - [ ] Atualizar `README.md` e plano
 
 **Métricas de Sucesso:**
-- ✅ Hallucination rate < 5% (vs 10-15% baseline)
-- ✅ Faithfulness > 0.90 (vs 0.80-0.85 baseline)
-- ✅ Judge approval > 90%
-- ⚠️ Latência +20-30% (trade-off aceitável)
+- [OK] Hallucination rate < 5% (vs 10-15% baseline)
+- [OK] Faithfulness > 0.90 (vs 0.80-0.85 baseline)
+- [OK] Judge approval > 90%
+- [WARN] Latência +20-30% (trade-off aceitável)
 
 ---
 
 ### Fase 2B.2 - CRAG (Semana 2)
 
-**Duração:** 4-5 dias úteis (18-21h)  
-**Complexidade:** ⭐⭐⭐⭐⭐ Alta  
+**Duração:** 4-5 dias úteis (18-21h)
+**Complexidade:** ⭐⭐⭐⭐⭐ Alta
 **ROI Esperado:** ⭐⭐⭐⭐ Alto (SE retrieval ruim)
 
 #### Etapas
@@ -124,9 +124,9 @@ Implementar técnicas RAG avançadas focadas em:
 2. **Design & Architecture** (1.5h)
    - [ ] Desenhar workflow com 4 decisões:
      * Grade retrieval (Correct/Incorrect/Ambiguous)
-     * SE Correct → usar docs
-     * SE Incorrect → web search fallback
-     * SE Ambiguous → combinar docs + web
+     * SE Correct -> usar docs
+     * SE Incorrect -> web search fallback
+     * SE Ambiguous -> combinar docs + web
    - [ ] Planejar query rewriter (reformulação automática)
    - [ ] Definir knowledge refinement strategy
 
@@ -149,7 +149,7 @@ Implementar técnicas RAG avançadas focadas em:
    - [ ] Criar `tests/test_crag.py` (15+ testes unitários)
    - [ ] Criar benchmark específico (20 queries ambíguas)
    - [ ] Medir retrieval quality (baseline vs CRAG)
-   - [ ] Validar métricas: Precision 0.65 → 0.80, Correction rate 10-15%
+   - [ ] Validar métricas: Precision 0.65 -> 0.80, Correction rate 10-15%
 
 6. **Documentation** (2h)
    - [ ] Criar `docs/techniques/CRAG.md` (300+ linhas)
@@ -157,10 +157,10 @@ Implementar técnicas RAG avançadas focadas em:
    - [ ] Atualizar documentação geral
 
 **Métricas de Sucesso:**
-- ✅ Context Precision: 0.65 → 0.80 (+23%)
-- ✅ Correction triggered: 10-15% queries
-- ✅ Accuracy em queries corrigidas: +15%
-- ⚠️ Latência +30-40% (mais que Self-RAG)
+- [OK] Context Precision: 0.65 -> 0.80 (+23%)
+- [OK] Correction triggered: 10-15% queries
+- [OK] Accuracy em queries corrigidas: +15%
+- [WARN] Latência +30-40% (mais que Self-RAG)
 
 ---
 
@@ -181,14 +181,14 @@ Implementar técnicas RAG avançadas focadas em:
 
 3. **Benchmark Fase 2B** (4h)
    - [ ] Executar benchmark com 50 queries
-   - [ ] Comparar: Baseline → Fase 2A → Fase 2B
+   - [ ] Comparar: Baseline -> Fase 2A -> Fase 2B
    - [ ] Validar ROI incremental
    - [ ] Gerar relatório comparativo
 
 **Métricas de Sucesso:**
-- ✅ E2E tests 100% passando
-- ✅ Nenhuma regressão vs Fase 2A
-- ✅ Melhoria incremental em qualidade
+- [OK] E2E tests 100% passando
+- [OK] Nenhuma regressão vs Fase 2A
+- [OK] Melhoria incremental em qualidade
 
 ---
 
@@ -213,7 +213,7 @@ Implementar técnicas RAG avançadas focadas em:
 
 ---
 
-## 📚 REFERÊNCIAS TÉCNICAS
+## [EMOJI] REFERÊNCIAS TÉCNICAS
 
 ### Self-RAG
 
@@ -246,17 +246,17 @@ Implementar técnicas RAG avançadas focadas em:
 
 ---
 
-## 🎯 CRITÉRIOS DE DECISÃO
+## [EMOJI] CRITÉRIOS DE DECISÃO
 
 ### Quando Implementar Self-RAG?
 
-✅ **SIM, implementar SE:**
+[OK] **SIM, implementar SE:**
 - Hallucination rate > 10%
 - Faithfulness < 0.85
 - Judge rejeita >15% respostas
 - Queries complexas geram informação não suportada
 
-❌ **NÃO implementar SE:**
+[ERRO] **NÃO implementar SE:**
 - Faithfulness já > 0.90
 - Judge approval > 90%
 - Alucinações raras (<5%)
@@ -265,20 +265,20 @@ Implementar técnicas RAG avançadas focadas em:
 
 ### Quando Implementar CRAG?
 
-✅ **SIM, implementar SE:**
+[OK] **SIM, implementar SE:**
 - Context Precision < 0.70
 - Retrieval falha em >20% queries
 - Queries ambíguas com docs irrelevantes
 - Dataset incompleto para domínio
 
-❌ **NÃO implementar SE:**
+[ERRO] **NÃO implementar SE:**
 - Context Precision > 0.80
 - Retrieval já muito bom
 - Dataset completo e bem curado
 
 ---
 
-## ⚙️ ARQUITETURA PLANEJADA
+## [EMOJI] ARQUITETURA PLANEJADA
 
 ### Self-RAG Workflow
 
@@ -290,21 +290,21 @@ Implementar técnicas RAG avançadas focadas em:
 1. Query Input
    ↓
 2. Retrieve Decision (LLM)
-   ├─ [Retrieve] → Continuar
-   └─ [No Retrieve] → Generate direto
+   ├─ [Retrieve] -> Continuar
+   └─ [No Retrieve] -> Generate direto
    ↓
 3. Retrieve Documents (k=50)
    ↓
 4. Grade Documents (LLM)
-   ├─ [Relevant] → Keep
-   └─ [Irrelevant] → Discard
+   ├─ [Relevant] -> Keep
+   └─ [Irrelevant] -> Discard
    ↓
 5. Generate Answer (LLM com docs relevantes)
    ↓
 6. Grade Answer (LLM)
-   ├─ [Supported] → Retornar resposta
-   ├─ [Partially Supported] → Re-retrieve (iteração)
-   └─ [Not Supported] → Re-generate
+   ├─ [Supported] -> Retornar resposta
+   ├─ [Partially Supported] -> Re-retrieve (iteração)
+   └─ [Not Supported] -> Re-generate
    ↓
 7. Final Answer
 ```
@@ -329,24 +329,24 @@ Implementar técnicas RAG avançadas focadas em:
 2. Retrieve Documents (k=50, hybrid search)
    ↓
 3. Grade Retrieval Quality (LLM)
-   ├─ [Correct] → Usar docs (confidence > 0.7)
-   ├─ [Incorrect] → Web search fallback
-   └─ [Ambiguous] → Combinar docs + web
+   ├─ [Correct] -> Usar docs (confidence > 0.7)
+   ├─ [Incorrect] -> Web search fallback
+   └─ [Ambiguous] -> Combinar docs + web
    ↓
 4a. SE Correct:
-    → Knowledge Refinement (decompor docs longos)
-    → Generate com docs refinados
+    -> Knowledge Refinement (decompor docs longos)
+    -> Generate com docs refinados
     ↓
 4b. SE Incorrect:
-    → Query Rewrite (reformular query)
-    → Web Search (Tavily/Bing)
-    → Generate com web results
+    -> Query Rewrite (reformular query)
+    -> Web Search (Tavily/Bing)
+    -> Generate com web results
     ↓
 4c. SE Ambiguous:
-    → Knowledge Refinement
-    → Web Search
-    → Combinar (RRF) docs + web
-    → Generate com combinação
+    -> Knowledge Refinement
+    -> Web Search
+    -> Combinar (RRF) docs + web
+    -> Generate com combinação
     ↓
 5. Final Answer
 ```
@@ -359,7 +359,7 @@ Implementar técnicas RAG avançadas focadas em:
 
 ---
 
-## 📋 MICRO-TAREFAS DETALHADAS
+## [EMOJI] MICRO-TAREFAS DETALHADAS
 
 ### FASE 2B.1 - Self-RAG (13-16h)
 
@@ -396,21 +396,21 @@ Implementar técnicas RAG avançadas focadas em:
 # src/rag/self_rag.py
 class SelfRAG:
     """Self-Reflective RAG com grading de docs e respostas."""
-    
+
     def __init__(self, retriever, llm):
         self.retriever = retriever
         self.llm = llm
         self.retrieval_grader = RetrievalGrader(llm)
         self.answer_grader = AnswerGrader(llm)
-    
+
     def should_retrieve(self, query: str) -> bool:
         """Decide se query precisa de retrieval."""
         pass
-    
+
     def grade_documents(self, query: str, docs: List[Document]) -> List[Document]:
         """Filtra docs irrelevantes."""
         pass
-    
+
     def grade_answer(self, query: str, answer: str, docs: List[Document]) -> Dict:
         """Verifica se resposta está suportada."""
         pass
@@ -429,18 +429,18 @@ def grade_and_refine(state: BSCState) -> BSCState:
     """Nó Self-RAG para grading de resposta."""
     if not settings.ENABLE_SELF_RAG:
         return state
-    
+
     self_rag = SelfRAG(retriever, llm)
     grading = self_rag.grade_answer(
         state["query"],
         state["final_response"],
         state["agent_responses"]
     )
-    
+
     if not grading["supported"]:
         # Re-retrieve ou re-generate
         pass
-    
+
     return state
 ```
 
@@ -495,7 +495,7 @@ def test_grade_documents_filters_irrelevant():
 
 ## Componentes
 ### 1. Retrieval Decision
-### 2. Document Grading  
+### 2. Document Grading
 ### 3. Answer Grading
 ### 4. Reflection Tokens
 
@@ -510,14 +510,14 @@ def test_grade_documents_filters_irrelevant():
 | Latência | 95s | 118s | +24% |
 
 ## Quando Usar
-✅ Alta necessidade de acurácia factual
-✅ Hallucination rate > 10%
-✅ Queries complexas multi-parte
+[OK] Alta necessidade de acurácia factual
+[OK] Hallucination rate > 10%
+[OK] Queries complexas multi-parte
 
 ## Quando NÃO Usar
-❌ Latência crítica (<10s)
-❌ Faithfulness já > 0.90
-❌ Custo muito limitado
+[ERRO] Latência crítica (<10s)
+[ERRO] Faithfulness já > 0.90
+[ERRO] Custo muito limitado
 
 ## Lições Aprendidas
 [O que funcionou, trade-offs, insights]
@@ -547,9 +547,9 @@ def test_grade_documents_filters_irrelevant():
 - [ ] Estratégia de query rewrite
 
 **Grading Thresholds:**
-- **Correct**: confidence > 0.7 → Usar docs
-- **Ambiguous**: 0.3 < confidence ≤ 0.7 → Combinar docs + web
-- **Incorrect**: confidence ≤ 0.3 → Web search only
+- **Correct**: confidence > 0.7 -> Usar docs
+- **Ambiguous**: 0.3 < confidence ≤ 0.7 -> Combinar docs + web
+- **Incorrect**: confidence ≤ 0.3 -> Web search only
 
 ---
 
@@ -559,9 +559,9 @@ def test_grade_documents_filters_irrelevant():
 
 | Opção | Custo | Latência | Qualidade | Decisão |
 |-------|-------|----------|-----------|---------|
-| Tavily API | $$ | ~2s | Alta | ✅ Preferida |
+| Tavily API | $$ | ~2s | Alta | [OK] Preferida |
 | Bing API | $ | ~1s | Média | Alternativa |
-| Brightdata MCP | Grátis | ~3s | Alta | ✅ Viável |
+| Brightdata MCP | Grátis | ~3s | Alta | [OK] Viável |
 
 **Implementação:**
 
@@ -569,10 +569,10 @@ def test_grade_documents_filters_irrelevant():
 # src/rag/web_search.py
 class WebSearchTool:
     """Fallback web search para CRAG."""
-    
+
     def __init__(self, provider="tavily"):
         self.provider = provider
-    
+
     def search(self, query: str, k: int = 5) -> List[Document]:
         """Busca web com query reformulada."""
         if self.provider == "tavily":
@@ -614,7 +614,7 @@ class RetrievalQuality(Enum):
 
 class CorrectiveRAG:
     """Corrective RAG com query reformulation e web search fallback."""
-    
+
     def __init__(self, retriever, llm, web_search):
         self.retriever = retriever
         self.llm = llm
@@ -622,38 +622,38 @@ class CorrectiveRAG:
         self.grader = RetrievalGrader(llm)
         self.rewriter = QueryRewriter(llm)
         self.refiner = KnowledgeRefiner(llm)
-    
+
     def grade_retrieval(self, query: str, docs: List[Document]) -> RetrievalQuality:
         """Avalia qualidade do retrieval."""
         score = self.grader.grade(query, docs)
-        
+
         if score > 0.7:
             return RetrievalQuality.CORRECT
         elif score > 0.3:
             return RetrievalQuality.AMBIGUOUS
         else:
             return RetrievalQuality.INCORRECT
-    
+
     def execute(self, query: str) -> Dict[str, Any]:
         """Executa CRAG completo."""
         # 1. Retrieval inicial
         docs = self.retriever.retrieve(query, k=50)
-        
+
         # 2. Grade retrieval
         quality = self.grade_retrieval(query, docs)
-        
+
         # 3. Decisão baseada em grading
         if quality == RetrievalQuality.CORRECT:
             # Refinar e usar
             refined_docs = self.refiner.refine(docs)
             return {"docs": refined_docs, "source": "internal"}
-        
+
         elif quality == RetrievalQuality.INCORRECT:
             # Rewrite + Web search
             rewritten_query = self.rewriter.rewrite(query)
             web_docs = self.web_search.search(rewritten_query)
             return {"docs": web_docs, "source": "web"}
-        
+
         else:  # AMBIGUOUS
             # Combinar internal + web
             refined_docs = self.refiner.refine(docs)
@@ -687,13 +687,13 @@ class CorrectiveRAG:
 def test_crag_detects_poor_retrieval():
     """CRAG deve detectar retrieval ruim."""
     crag = CorrectiveRAG(retriever, llm, web_search)
-    
+
     # Query ambígua com docs ruins
     quality = crag.grade_retrieval(
         "diferenças BSC manufatura serviços",
         low_quality_docs
     )
-    
+
     assert quality == RetrievalQuality.INCORRECT
 
 def test_crag_triggers_rewrite():
@@ -703,7 +703,7 @@ def test_crag_triggers_rewrite():
 
 ---
 
-## 📊 MÉTRICAS DE VALIDAÇÃO
+## [EMOJI] MÉTRICAS DE VALIDAÇÃO
 
 ### Self-RAG
 
@@ -727,7 +727,7 @@ def test_crag_triggers_rewrite():
 
 ---
 
-## 🔧 FEATURE FLAGS
+## [EMOJI] FEATURE FLAGS
 
 ```bash
 # .env - Fase 2B flags
@@ -747,17 +747,17 @@ CRAG_MAX_REWRITES=2          # Max query reformulations
 
 ---
 
-## 📅 CRONOGRAMA ESTIMADO
+## [EMOJI] CRONOGRAMA ESTIMADO
 
 ### Semana 1 - Self-RAG
 
 | Dia | Atividade | Horas | Status |
 |-----|-----------|-------|--------|
-| 1 | Research + Design | 2h | ⏸️ |
-| 2 | Implementation Part 1 | 4h | ⏸️ |
-| 3 | Implementation Part 2 | 4h | ⏸️ |
-| 4 | Testing + Ajustes | 3h | ⏸️ |
-| 5 | Documentation | 2h | ⏸️ |
+| 1 | Research + Design | 2h | ⏸ |
+| 2 | Implementation Part 1 | 4h | ⏸ |
+| 3 | Implementation Part 2 | 4h | ⏸ |
+| 4 | Testing + Ajustes | 3h | ⏸ |
+| 5 | Documentation | 2h | ⏸ |
 
 **Total:** 15h (3-4 dias)
 
@@ -767,12 +767,12 @@ CRAG_MAX_REWRITES=2          # Max query reformulations
 
 | Dia | Atividade | Horas | Status |
 |-----|-----------|-------|--------|
-| 1 | Research + Design | 3h | ⏸️ |
-| 2 | Web Search Integration | 2h | ⏸️ |
-| 3 | Implementation Part 1 | 5h | ⏸️ |
-| 4 | Implementation Part 2 | 5h | ⏸️ |
-| 5 | Testing | 3h | ⏸️ |
-| 6 | Documentation | 2h | ⏸️ |
+| 1 | Research + Design | 3h | ⏸ |
+| 2 | Web Search Integration | 2h | ⏸ |
+| 3 | Implementation Part 1 | 5h | ⏸ |
+| 4 | Implementation Part 2 | 5h | ⏸ |
+| 5 | Testing | 3h | ⏸ |
+| 6 | Documentation | 2h | ⏸ |
 
 **Total:** 20h (4-5 dias)
 
@@ -782,39 +782,39 @@ CRAG_MAX_REWRITES=2          # Max query reformulations
 
 | Dia | Atividade | Horas | Status |
 |-----|-----------|-------|--------|
-| 1 | Integração Self-RAG + CRAG | 3h | ⏸️ |
-| 2 | Testes E2E | 3h | ⏸️ |
-| 3 | Benchmark Fase 2B (50 queries) | 4h | ⏸️ |
-| 4 | Análise + Docs finais | 3h | ⏸️ |
+| 1 | Integração Self-RAG + CRAG | 3h | ⏸ |
+| 2 | Testes E2E | 3h | ⏸ |
+| 3 | Benchmark Fase 2B (50 queries) | 4h | ⏸ |
+| 4 | Análise + Docs finais | 3h | ⏸ |
 
 **Total:** 13h (2-3 dias)
 
 ---
 
-## 🎯 CRITÉRIOS DE SUCESSO FASE 2B
+## [EMOJI] CRITÉRIOS DE SUCESSO FASE 2B
 
 ### Funcional
 
-- ✅ Self-RAG reduz hallucination rate em 50%+
-- ✅ CRAG melhora precision em 20%+ quando trigado
-- ✅ Ambas técnicas têm feature flags funcionais
-- ✅ E2E tests 100% passando
+- [OK] Self-RAG reduz hallucination rate em 50%+
+- [OK] CRAG melhora precision em 20%+ quando trigado
+- [OK] Ambas técnicas têm feature flags funcionais
+- [OK] E2E tests 100% passando
 
 ### Performance
 
-- ✅ Latência Self-RAG: baseline +20-30% (aceitável)
-- ✅ Latência CRAG: baseline +30-40% (aceitável)
-- ✅ Custo: +30-50% (justificável por qualidade)
+- [OK] Latência Self-RAG: baseline +20-30% (aceitável)
+- [OK] Latência CRAG: baseline +30-40% (aceitável)
+- [OK] Custo: +30-50% (justificável por qualidade)
 
 ### Qualidade
 
-- ✅ RAGAS Faithfulness > 0.90
-- ✅ RAGAS Context Precision > 0.80
-- ✅ Judge Approval > 90%
+- [OK] RAGAS Faithfulness > 0.90
+- [OK] RAGAS Context Precision > 0.80
+- [OK] Judge Approval > 90%
 
 ---
 
-## 🔗 DEPENDÊNCIAS
+## [EMOJI] DEPENDÊNCIAS
 
 ### Bibliotecas Python
 
@@ -830,25 +830,25 @@ tavily-python>=0.3.0  # Web search (SE usar Tavily)
 
 ### APIs Externas
 
-- ✅ OpenAI (já configurada) - Para LLM grading
-- ⏸️ Tavily (opcional) - Web search fallback CRAG
-- ⏸️ Bing Search (alternativa) - Web search fallback
+- [OK] OpenAI (já configurada) - Para LLM grading
+- ⏸ Tavily (opcional) - Web search fallback CRAG
+- ⏸ Bing Search (alternativa) - Web search fallback
 
 ---
 
-## ⚠️ RISCOS & MITIGAÇÕES
+## [WARN] RISCOS & MITIGAÇÕES
 
 ### Risco 1: Latência Muito Alta
 
-**Risco:** Self-RAG + CRAG podem adicionar +50-70% latência  
-**Mitigação:** 
+**Risco:** Self-RAG + CRAG podem adicionar +50-70% latência
+**Mitigação:**
 - Feature flags para ativar seletivamente
 - Router pode decidir quando usar cada técnica
 - Cache agressivo de grading results
 
 ### Risco 2: Custo Elevado
 
-**Risco:** +3-4 LLM calls por query = +60-80% custo  
+**Risco:** +3-4 LLM calls por query = +60-80% custo
 **Mitigação:**
 - Usar GPT-4o-mini para grading (barato)
 - Batch grading quando possível
@@ -856,7 +856,7 @@ tavily-python>=0.3.0  # Web search (SE usar Tavily)
 
 ### Risco 3: Over-Engineering
 
-**Risco:** Fase 2A já pode ser suficiente  
+**Risco:** Fase 2A já pode ser suficiente
 **Mitigação:**
 - **AGUARDAR benchmark Fase 2A**
 - Implementar APENAS se métricas justificarem
@@ -864,7 +864,7 @@ tavily-python>=0.3.0  # Web search (SE usar Tavily)
 
 ---
 
-## 📖 LIÇÕES DO PLANEJAMENTO
+## [EMOJI] LIÇÕES DO PLANEJAMENTO
 
 ### 1. Pesquisa Prévia Economiza Tempo
 
@@ -886,14 +886,14 @@ tavily-python>=0.3.0  # Web search (SE usar Tavily)
 
 ---
 
-## 🚀 PRÓXIMOS PASSOS IMEDIATOS
+## [EMOJI] PRÓXIMOS PASSOS IMEDIATOS
 
 ### AGORA (Enquanto Benchmark Fase 2A Roda)
 
-1. ✅ Plano Fase 2B completo
+1. [OK] Plano Fase 2B completo
 2. ⏳ Aguardar benchmark terminar
-3. 📊 Analisar resultados Fase 2A
-4. 🎯 **DECIDIR**: Implementar Fase 2B SIM/NÃO?
+3. [EMOJI] Analisar resultados Fase 2A
+4. [EMOJI] **DECIDIR**: Implementar Fase 2B SIM/NÃO?
 
 ### SE SIM - Iniciar Fase 2B.1 (Self-RAG)
 
@@ -905,25 +905,24 @@ tavily-python>=0.3.0  # Web search (SE usar Tavily)
 
 ---
 
-## 📝 CHANGELOG
+## [EMOJI] CHANGELOG
 
 ### v1.0 - 2025-10-14 (Planejamento Inicial)
 
 **Criado:**
-- ✅ Plano completo Fase 2B (Self-RAG + CRAG)
-- ✅ Pesquisa Brightdata (implementações 2025)
-- ✅ Micro-tarefas detalhadas (31-37h total)
-- ✅ Cronograma (2-3 semanas)
-- ✅ Critérios de decisão condicional
-- ✅ Métricas de sucesso
-- ✅ Referências técnicas
+- [OK] Plano completo Fase 2B (Self-RAG + CRAG)
+- [OK] Pesquisa Brightdata (implementações 2025)
+- [OK] Micro-tarefas detalhadas (31-37h total)
+- [OK] Cronograma (2-3 semanas)
+- [OK] Critérios de decisão condicional
+- [OK] Métricas de sucesso
+- [OK] Referências técnicas
 
 **Próximo:**
 - ⏳ Aguardar benchmark Fase 2A
-- 🎯 Decidir iniciar Fase 2B baseado em métricas
+- [EMOJI] Decidir iniciar Fase 2B baseado em métricas
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Status:** ✅ PLANEJAMENTO COMPLETO - Aguardando validação Fase 2A
-
+**Última Atualização:** 2025-10-14
+**Status:** [OK] PLANEJAMENTO COMPLETO - Aguardando validação Fase 2A

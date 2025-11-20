@@ -143,67 +143,64 @@ Retorne APENAS o JSON estruturado, sem texto adicional.
 
 def build_client_context(client_profile) -> str:
     """Constroi texto com contexto do cliente para LLM classifier.
-    
+
     Args:
         client_profile: ClientProfile Pydantic model
-        
+
     Returns:
         String com contexto formatado (empresa, desafios, objetivos)
     """
     if not client_profile:
         return "Contexto do cliente nao disponivel."
-    
+
     context_parts = []
-    
+
     # Company info
-    if hasattr(client_profile, 'company') and client_profile.company:
+    if hasattr(client_profile, "company") and client_profile.company:
         company = client_profile.company
-        context_parts.append(
-            f"Empresa: {company.name} ({company.sector}, {company.size})"
-        )
-    
+        context_parts.append(f"Empresa: {company.name} ({company.sector}, {company.size})")
+
     # Current challenges
-    if hasattr(client_profile, 'context') and client_profile.context:
+    if hasattr(client_profile, "context") and client_profile.context:
         ctx = client_profile.context
         if ctx.current_challenges:
             challenges_text = ", ".join(ctx.current_challenges[:3])  # Top 3
             context_parts.append(f"Desafios: {challenges_text}")
-        
+
         if ctx.strategic_objectives:
             objectives_text = ", ".join(ctx.strategic_objectives[:2])  # Top 2
             context_parts.append(f"Objetivos: {objectives_text}")
-    
+
     return " | ".join(context_parts) if context_parts else "Contexto limitado disponivel."
 
 
 def build_diagnostic_context(diagnostic_result) -> str:
     """Constroi texto com contexto do diagnostico previo para LLM classifier.
-    
+
     Args:
         diagnostic_result: CompleteDiagnostic ou dict com resultado previo
-        
+
     Returns:
         String com sumario do diagnostico (perspectivas analisadas, gaps principais)
     """
     if not diagnostic_result:
         return "Diagnostico previo nao disponivel."
-    
+
     # Se e dict (vindo de state), acessar keys
     if isinstance(diagnostic_result, dict):
         # Formato simplificado
         return "Diagnostico previo completo (4 perspectivas BSC analisadas)."
-    
+
     # Se e Pydantic model
     summary_parts = []
-    
-    if hasattr(diagnostic_result, 'executive_summary'):
+
+    if hasattr(diagnostic_result, "executive_summary"):
         # Truncar para 100 chars
         summary = diagnostic_result.executive_summary[:100] + "..."
         summary_parts.append(f"Sumario: {summary}")
-    
-    if hasattr(diagnostic_result, 'recommendations') and diagnostic_result.recommendations:
+
+    if hasattr(diagnostic_result, "recommendations") and diagnostic_result.recommendations:
         rec_count = len(diagnostic_result.recommendations)
         summary_parts.append(f"{rec_count} recomendacoes geradas")
-    
-    return " | ".join(summary_parts) if summary_parts else "Diagnostico basico disponivel."
 
+    return " | ".join(summary_parts) if summary_parts else "Diagnostico basico disponivel."

@@ -5,8 +5,7 @@ de Key Performance Indicators (KPIs) seguindo criterios SMART para
 as 4 perspectivas do Balanced Scorecard.
 """
 
-from src.memory.schemas import CompanyInfo, StrategicContext, CompleteDiagnostic
-
+from src.memory.schemas import CompanyInfo, CompleteDiagnostic, StrategicContext
 
 # ============================================================================
 # PROMPTS PRINCIPAIS
@@ -203,54 +202,54 @@ Retorne APENAS o JSON, sem explicacoes adicionais.
 
 def build_company_context(company_info: CompanyInfo, strategic_context: StrategicContext) -> str:
     """Constroi contexto empresarial estruturado para prompts KPI.
-    
+
     Args:
         company_info: Informacoes basicas da empresa
         strategic_context: Desafios e objetivos estrategicos
-    
+
     Returns:
         str: Contexto formatado multi-linha
-    
+
     Example:
         >>> company = CompanyInfo(name="TechCorp", sector="Tecnologia", size="Media")
         >>> context = StrategicContext(current_challenges=["Baixa retencao"], strategic_objectives=["Aumentar retencao 20%"])
         >>> text = build_company_context(company, context)
     """
     context_parts = []
-    
+
     # Informacoes da empresa
     context_parts.append(f"Empresa: {company_info.name}")
     context_parts.append(f"Setor: {company_info.sector}")
     context_parts.append(f"Porte: {company_info.size}")
-    
+
     # Desafios estrategicos
     if strategic_context.current_challenges:
         context_parts.append("\nDesafios Estrategicos:")
         for i, challenge in enumerate(strategic_context.current_challenges, 1):
             context_parts.append(f"{i}. {challenge}")
-    
+
     # Objetivos estrategicos
     if strategic_context.strategic_objectives:
         context_parts.append("\nObjetivos Estrategicos:")
         for i, objective in enumerate(strategic_context.strategic_objectives, 1):
             context_parts.append(f"{i}. {objective}")
-    
+
     return "\n".join(context_parts)
 
 
 def build_diagnostic_context(diagnostic: CompleteDiagnostic, perspective: str) -> str:
     """Constroi contexto de diagnostico BSC para uma perspectiva especifica.
-    
+
     Args:
         diagnostic: Diagnostico BSC completo das 4 perspectivas
         perspective: Perspectiva especifica ("Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento")
-    
+
     Returns:
         str: Contexto formatado da perspectiva
-    
+
     Raises:
         ValueError: Se perspectiva invalida
-    
+
     Example:
         >>> diagnostic = CompleteDiagnostic(...)
         >>> text = build_diagnostic_context(diagnostic, "Financeira")
@@ -259,66 +258,64 @@ def build_diagnostic_context(diagnostic: CompleteDiagnostic, perspective: str) -
         "Financeira": diagnostic.financial,
         "Clientes": diagnostic.customer,
         "Processos Internos": diagnostic.process,
-        "Aprendizado e Crescimento": diagnostic.learning
+        "Aprendizado e Crescimento": diagnostic.learning,
     }
-    
+
     if perspective not in perspective_map:
         raise ValueError(
-            f"Perspectiva '{perspective}' invalida. "
-            f"Opcoes: {list(perspective_map.keys())}"
+            f"Perspectiva '{perspective}' invalida. " f"Opcoes: {list(perspective_map.keys())}"
         )
-    
+
     result = perspective_map[perspective]
-    
+
     context_parts = []
     context_parts.append(f"Perspectiva: {result.perspective}")
     context_parts.append(f"\nEstado Atual:\n{result.current_state}")
-    
+
     if result.gaps:
         context_parts.append("\nGaps Identificados:")
         for i, gap in enumerate(result.gaps, 1):
             context_parts.append(f"{i}. {gap}")
-    
+
     if result.opportunities:
         context_parts.append("\nOportunidades de Melhoria:")
         for i, opp in enumerate(result.opportunities, 1):
             context_parts.append(f"{i}. {opp}")
-    
+
     if result.priority:
         context_parts.append(f"\nPrioridade: {result.priority}")
-    
+
     return "\n".join(context_parts)
 
 
 def build_bsc_knowledge_context(retrieval_results: list[dict]) -> str:
     """Constroi contexto de conhecimento BSC a partir de resultados RAG.
-    
+
     Args:
         retrieval_results: Lista de dicts com resultados de RAG specialist agents
-    
+
     Returns:
         str: Contexto formatado com documentos recuperados
-    
+
     Example:
         >>> results = [{"agent_name": "Financial Agent", "context": ["doc1", "doc2"]}]
         >>> text = build_bsc_knowledge_context(results)
     """
     if not retrieval_results:
         return "Nenhum conhecimento BSC adicional recuperado via RAG."
-    
+
     context_parts = []
     context_parts.append("Conhecimento BSC relevante recuperado da literatura:")
-    
+
     for agent_result in retrieval_results:
         agent_name = agent_result.get("agent_name", "Unknown Agent")
         agent_context = agent_result.get("context", [])
-        
+
         if agent_context:
             context_parts.append(f"\n[{agent_name}]")
             for i, doc in enumerate(agent_context[:3], 1):  # Top 3 docs por agent
                 # Truncar documento se muito longo
                 doc_text = doc[:300] + "..." if len(doc) > 300 else doc
                 context_parts.append(f"{i}. {doc_text}")
-    
-    return "\n".join(context_parts)
 
+    return "\n".join(context_parts)

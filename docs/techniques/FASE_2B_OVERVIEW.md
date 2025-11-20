@@ -1,12 +1,12 @@
 # Fase 2B - Técnicas RAG Avançadas: Self-RAG vs CRAG
 
-**Data:** 2025-10-14  
-**Status:** 📋 Planejamento Completo  
+**Data:** 2025-10-14
+**Status:** [EMOJI] Planejamento Completo
 **Decisão:** Aguardando Benchmark Fase 2A
 
 ---
 
-## 📋 VISÃO GERAL
+## [EMOJI] VISÃO GERAL
 
 Fase 2B introduz duas técnicas RAG avançadas complementares:
 
@@ -15,7 +15,7 @@ Fase 2B introduz duas técnicas RAG avançadas complementares:
 
 ---
 
-## 🔍 SELF-RAG - Self-Reflective RAG
+## [EMOJI] SELF-RAG - Self-Reflective RAG
 
 ### O Que É?
 
@@ -24,14 +24,14 @@ Sistema RAG que **auto-avalia** suas próprias decisões e outputs usando LLM co
 ### Como Funciona?
 
 ```
-Query → [Precisa retrieval?] 
-        ├─ SIM → Retrieve → [Docs relevantes?]
-        │                   ├─ SIM → Keep
-        │                   └─ NÃO → Discard
-        │        → Generate → [Suportado por docs?]
-        │                     ├─ SIM → Return
-        │                     └─ NÃO → Re-generate
-        └─ NÃO → Generate direto
+Query -> [Precisa retrieval?]
+        ├─ SIM -> Retrieve -> [Docs relevantes?]
+        │                   ├─ SIM -> Keep
+        │                   └─ NÃO -> Discard
+        │        -> Generate -> [Suportado por docs?]
+        │                     ├─ SIM -> Return
+        │                     └─ NÃO -> Re-generate
+        └─ NÃO -> Generate direto
 ```
 
 ### Componentes
@@ -52,13 +52,13 @@ Tokens especiais que guiam o comportamento:
 
 ### Quando Usar?
 
-✅ **BOM para:**
+[OK] **BOM para:**
 - Alta necessidade de acurácia factual
 - Hallucination rate > 10%
 - Queries complexas com múltiplas partes
 - Domínios onde inventar informação é crítico (médico, legal, financeiro)
 
-❌ **RUIM para:**
+[ERRO] **RUIM para:**
 - Latência crítica (<10s requirement)
 - Faithfulness já > 0.90
 - Orçamento muito limitado
@@ -74,12 +74,12 @@ Tokens especiais que guiam o comportamento:
 | Latência | - | +20 a +30% |
 | Custo | - | +30 a +40% |
 
-**Complexidade:** ⭐⭐⭐⭐ Média-Alta  
+**Complexidade:** ⭐⭐⭐⭐ Média-Alta
 **Tempo Implementação:** 3-4 dias (13-16h)
 
 ---
 
-## 🔧 CRAG - Corrective RAG
+## [EMOJI] CRAG - Corrective RAG
 
 ### O Que É?
 
@@ -88,11 +88,11 @@ Sistema RAG que **auto-corrige** retrieval ruim via query reformulation e web se
 ### Como Funciona?
 
 ```
-Query → Retrieve → [Qualidade?]
-                   ├─ CORRECT (>0.7) → Usar docs internos
-                   ├─ AMBIGUOUS (0.3-0.7) → Docs + Web search
-                   └─ INCORRECT (<0.3) → Rewrite query → Web search
-                   → Generate
+Query -> Retrieve -> [Qualidade?]
+                   ├─ CORRECT (>0.7) -> Usar docs internos
+                   ├─ AMBIGUOUS (0.3-0.7) -> Docs + Web search
+                   └─ INCORRECT (<0.3) -> Rewrite query -> Web search
+                   -> Generate
 ```
 
 ### Componentes
@@ -105,19 +105,19 @@ Query → Retrieve → [Qualidade?]
 
 ### Grading Thresholds
 
-- **Correct** (confidence > 0.7): Docs altamente relevantes → Usar
-- **Ambiguous** (0.3 < conf ≤ 0.7): Incerto → Combinar docs + web
-- **Incorrect** (conf ≤ 0.3): Docs irrelevantes → Web search only
+- **Correct** (confidence > 0.7): Docs altamente relevantes -> Usar
+- **Ambiguous** (0.3 < conf ≤ 0.7): Incerto -> Combinar docs + web
+- **Incorrect** (conf ≤ 0.3): Docs irrelevantes -> Web search only
 
 ### Quando Usar?
 
-✅ **BOM para:**
+[OK] **BOM para:**
 - Retrieval frequentemente falha (<70% precision)
 - Queries ambíguas ou mal formuladas
 - Dataset incompleto para domínio
 - Necessidade de informação externa (web)
 
-❌ **RUIM para:**
+[ERRO] **RUIM para:**
 - Retrieval já excelente (>80% precision)
 - Dataset completo e bem curado
 - Latência muito crítica
@@ -128,12 +128,12 @@ Query → Retrieve → [Qualidade?]
 | Métrica | Melhoria | Trade-off |
 |---------|----------|-----------|
 | Context Precision | +15 a +25% | - |
-| Retrieval Quality | 0.65 → 0.80 | - |
+| Retrieval Quality | 0.65 -> 0.80 | - |
 | Accuracy (queries corrigidas) | +15% | - |
 | Latência | - | +30 a +40% |
 | Custo | - | +40 a +50% |
 
-**Complexidade:** ⭐⭐⭐⭐⭐ Alta  
+**Complexidade:** ⭐⭐⭐⭐⭐ Alta
 **Tempo Implementação:** 4-5 dias (18-21h)
 
 ---
@@ -156,40 +156,40 @@ Query → Retrieve → [Qualidade?]
 
 ### Quando Usar Ambas?
 
-✅ **Combinação Ideal:**
+[OK] **Combinação Ideal:**
 - Self-RAG: Post-processing de generation
 - CRAG: Pre-processing de retrieval
 
 **Workflow Combinado:**
 ```
-Query → CRAG (corrige retrieval) 
-      → Agents (com docs corrigidos)
-      → Self-RAG (valida resposta)
-      → Final Answer
+Query -> CRAG (corrige retrieval)
+      -> Agents (com docs corrigidos)
+      -> Self-RAG (valida resposta)
+      -> Final Answer
 ```
 
 **Trade-off:** Latência +50-70%, Custo +70-90%, mas qualidade máxima.
 
 ---
 
-## 📊 MATRIZ DE DECISÃO
+## [EMOJI] MATRIZ DE DECISÃO
 
 Use esta matriz para decidir qual técnica implementar:
 
 | Seu Problema | Técnica Recomendada | Prioridade |
 |--------------|---------------------|------------|
-| Hallucination rate > 15% | Self-RAG | 🔥 ALTA |
-| Context Precision < 0.60 | CRAG | 🔥 ALTA |
-| Ambos problemas | Self-RAG + CRAG | 🔥 ALTA |
+| Hallucination rate > 15% | Self-RAG | [EMOJI] ALTA |
+| Context Precision < 0.60 | CRAG | [EMOJI] ALTA |
+| Ambos problemas | Self-RAG + CRAG | [EMOJI] ALTA |
 | Hallucination 10-15% | Self-RAG | MÉDIA |
 | Precision 0.60-0.70 | CRAG | MÉDIA |
-| Hallucination < 10% | ❌ Pular Self-RAG | BAIXA |
-| Precision > 0.80 | ❌ Pular CRAG | BAIXA |
-| Ambas métricas boas | ❌ Pular Fase 2B | BAIXA |
+| Hallucination < 10% | [ERRO] Pular Self-RAG | BAIXA |
+| Precision > 0.80 | [ERRO] Pular CRAG | BAIXA |
+| Ambas métricas boas | [ERRO] Pular Fase 2B | BAIXA |
 
 ---
 
-## 🎓 LIÇÕES DE PLANEJAMENTO
+## [EMOJI] LIÇÕES DE PLANEJAMENTO
 
 ### 1. Brightdata Research
 
@@ -211,7 +211,7 @@ Use esta matriz para decidir qual técnica implementar:
 
 ---
 
-## 📚 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Self-RAG
 
@@ -241,14 +241,13 @@ Use esta matriz para decidir qual técnica implementar:
 
 ---
 
-## 🔜 PRÓXIMO PASSO
+## [EMOJI] PRÓXIMO PASSO
 
-**AGUARDAR:** Benchmark Fase 2A completar  
-**ANALISAR:** Faithfulness, Context Precision, Judge Approval  
+**AGUARDAR:** Benchmark Fase 2A completar
+**ANALISAR:** Faithfulness, Context Precision, Judge Approval
 **DECIDIR:** Implementar Fase 2B baseado em métricas objetivas
 
 ---
 
-**Última Atualização:** 2025-10-14  
-**Status:** ✅ PLANEJAMENTO COMPLETO
-
+**Última Atualização:** 2025-10-14
+**Status:** [OK] PLANEJAMENTO COMPLETO

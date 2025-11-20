@@ -1,13 +1,13 @@
 # Issue Tree Analyzer Tool - Documentacao Tecnica
 
-**Data**: 2025-10-19  
-**Versao**: 1.0.0  
-**Status**: FASE 3.3 COMPLETO  
+**Data**: 2025-10-19
+**Versao**: 1.0.0
+**Status**: FASE 3.3 COMPLETO
 **Coverage**: 76% (issue_tree.py), 15/15 testes passando
 
 ---
 
-## 📋 VISAO GERAL
+## [EMOJI] VISAO GERAL
 
 ### O Que E?
 
@@ -22,13 +22,13 @@
 
 ### Complementaridade com Outras Tools
 
-- **SWOT Analysis**: Identifica problemas (Fraquezas, Ameacas) → Issue Tree decompoe
-- **Five Whys**: Issue Tree decompoe horizontalmente → Five Whys aprofunda verticalmente (causa raiz)
+- **SWOT Analysis**: Identifica problemas (Fraquezas, Ameacas) -> Issue Tree decompoe
+- **Five Whys**: Issue Tree decompoe horizontalmente -> Five Whys aprofunda verticalmente (causa raiz)
 - **DiagnosticAgent**: Integra as 3 tools para analise completa BSC
 
 ---
 
-## 🏗️ ARQUITETURA
+## [EMOJI] ARQUITETURA
 
 ### Stack Tecnologico
 
@@ -46,27 +46,27 @@ IssueTreeTool
 ```
 1. Root Problem (nivel 0)
    │
-   ├─→ Decomposicao MECE nivel 1 (2-4 branches)
+   ├─-> Decomposicao MECE nivel 1 (2-4 branches)
    │   │
-   │   ├─→ Branch 1 → Decomposicao nivel 2 (2-4 sub-branches)
-   │   └─→ Branch 2 → Decomposicao nivel 2 (2-4 sub-branches)
+   │   ├─-> Branch 1 -> Decomposicao nivel 2 (2-4 sub-branches)
+   │   └─-> Branch 2 -> Decomposicao nivel 2 (2-4 sub-branches)
    │
-   └─→ Leaf Nodes (nivel max_depth) → Synthesis → Solution Paths
+   └─-> Leaf Nodes (nivel max_depth) -> Synthesis -> Solution Paths
 ```
 
 ### Principio MECE Explicado
 
 **Mutually Exclusive (ME)**: Sub-problemas NAO se sobrepõem
-- ✅ Exemplo correto: "Baixa lucratividade" → [Receita baixa, Custos altos]
-- ❌ Exemplo errado: "Baixa lucratividade" → [Marketing fraco, Vendas baixas] (marketing causa vendas, overlap!)
+- [OK] Exemplo correto: "Baixa lucratividade" -> [Receita baixa, Custos altos]
+- [ERRO] Exemplo errado: "Baixa lucratividade" -> [Marketing fraco, Vendas baixas] (marketing causa vendas, overlap!)
 
 **Collectively Exhaustive (CE)**: Sub-problemas cobrem TUDO
-- ✅ Exemplo correto: "Receita baixa" → [Preco baixo, Volume baixo, Mix inadequado]
-- ❌ Exemplo errado: "Receita baixa" → [Preco baixo] (falta volume e mix, nao cobre tudo!)
+- [OK] Exemplo correto: "Receita baixa" -> [Preco baixo, Volume baixo, Mix inadequado]
+- [ERRO] Exemplo errado: "Receita baixa" -> [Preco baixo] (falta volume e mix, nao cobre tudo!)
 
 ---
 
-## 📖 API REFERENCE
+## [EMOJI] API REFERENCE
 
 ### IssueTreeTool.facilitate_issue_tree()
 
@@ -121,7 +121,7 @@ print(tree.summary())
 
 ---
 
-## 🎯 CASOS DE USO BSC
+## [EMOJI] CASOS DE USO BSC
 
 ### Caso 1: Baixa Lucratividade (Perspectiva Financeira)
 
@@ -281,7 +281,7 @@ Nivel 2 (Leaf Nodes):
 
 ---
 
-## 📊 SCHEMAS PYDANTIC
+## [EMOJI] SCHEMAS PYDANTIC
 
 ### IssueNode
 
@@ -306,7 +306,7 @@ class IssueTreeAnalysis(BaseModel):
     is_mece_compliant: bool  # Validacao manual MECE
     solution_paths: List[str]  # Recomendacoes acionaveis
     context_from_rag: Optional[str]  # Conhecimento BSC (se use_rag=True)
-    
+
     # Metodos uteis
     def is_complete(self, min_branches: int = 2) -> bool
     def validate_mece() -> dict  # {"is_mece": bool, "issues": list, "confidence": float}
@@ -317,7 +317,7 @@ class IssueTreeAnalysis(BaseModel):
 
 ---
 
-## 🧪 TESTES
+## [EMOJI] TESTES
 
 ### Suite Completa
 
@@ -339,7 +339,7 @@ pytest tests/test_issue_tree.py -v --tb=long
 
 ---
 
-## 🐛 TROUBLESHOOTING
+## [EMOJI] TROUBLESHOOTING
 
 ### Problema 1: LLM retorna < 2 sub-problemas
 
@@ -392,23 +392,23 @@ pytest tests/test_issue_tree.py -v --tb=long
 **Causa**: LLM marcou `is_leaf=True` cedo ou max_depth configurado baixo
 
 **Solucao**:
-- Aumentar max_depth (default 3 → 4)
+- Aumentar max_depth (default 3 -> 4)
 - Verificar se problema raiz e realmente complexo o suficiente
 - Revisar prompts para nao incentivar premature leaf marking
 
 ---
 
-## 🎯 BEST PRACTICES
+## [EMOJI] BEST PRACTICES
 
 ### 1. Quando Usar Issue Tree?
 
-✅ **Usar quando**:
+[OK] **Usar quando**:
 - Problema estrategico complexo com multiplas causas potenciais
 - Necessidade de decomposicao estruturada (nao apenas brainstorming)
 - Priorizar solucoes por impacto vs esforco
 - Cliente precisa visualizar problema de forma hierarquica
 
-❌ **Nao usar quando**:
+[ERRO] **Nao usar quando**:
 - Problema muito simples (1-2 causas obvias)
 - Necessidade de causa raiz profunda (usar Five Whys)
 - Problema puramente operacional sem dimensao estrategica
@@ -428,7 +428,7 @@ pytest tests/test_issue_tree.py -v --tb=long
 ### 4. Validacao MECE Manual
 
 - SEMPRE revisar `tree.validate_mece()` apos geracao
-- Confidence < 0.7 → Revisar nodes manualmente
+- Confidence < 0.7 -> Revisar nodes manualmente
 - Procurar overlaps: Sub-problemas descrevem mesma causa com palavras diferentes?
 - Verificar cobertura: Sub-problemas cobrem TODAS dimensoes do problema pai?
 
@@ -468,7 +468,7 @@ Apresentar para C-level seguindo estrutura:
 
 ---
 
-## 🔗 REFERENCIAS
+## [EMOJI] REFERENCIAS
 
 ### Papers e Artigos (2024-2025)
 
@@ -498,7 +498,7 @@ Apresentar para C-level seguindo estrutura:
 
 ---
 
-## 📋 ROADMAP
+## [EMOJI] ROADMAP
 
 ### v1.1 (Planejado - FASE 3.4+)
 
@@ -518,7 +518,6 @@ Apresentar para C-level seguindo estrutura:
 
 ---
 
-**Ultima Atualizacao**: 2025-10-19 (Sessao 18 - FASE 3.3 COMPLETA)  
-**Autor**: Agente BSC RAG Consulting Team  
+**Ultima Atualizacao**: 2025-10-19 (Sessao 18 - FASE 3.3 COMPLETA)
+**Autor**: Agente BSC RAG Consulting Team
 **Contato**: Ver docs/DOCS_INDEX.md para outras documentacoes tecnicas
-

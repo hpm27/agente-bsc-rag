@@ -322,7 +322,6 @@ Ao contribuir com este projeto:
 
 ---
 
-**Ultima atualizacao**: 2025-10-10  
-**Versao**: 1.0  
+**Ultima atualizacao**: 2025-10-10
+**Versao**: 1.0
 **Status**: PRODUCAO - Sistema validado e funcional
-

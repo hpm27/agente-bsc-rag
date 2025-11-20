@@ -1,14 +1,14 @@
 # Lição Aprendida: Testing Methodology for Unknown APIs - SWOT Analysis Tool
 
-**Sessão:** 16 (2025-10-19)  
-**Fase:** 3.1 - SWOT Analysis Tool Implementation  
-**Contexto:** Implementação de tool consultiva com testes para API desconhecida  
-**Status:** ✅ Resolvido (13/13 testes passando, 0 linter errors)  
+**Sessão:** 16 (2025-10-19)
+**Fase:** 3.1 - SWOT Analysis Tool Implementation
+**Contexto:** Implementação de tool consultiva com testes para API desconhecida
+**Status:** [OK] Resolvido (13/13 testes passando, 0 linter errors)
 **ROI:** 30-40 min economizados por implementação futura
 
 ---
 
-## 📋 Sumário Executivo
+## [EMOJI] Sumário Executivo
 
 **Problema Central:** Escrevi testes ANTES de conhecer a API real da implementação, resultando em 20 testes inválidos que precisaram ser completamente reescritos.
 
@@ -16,17 +16,17 @@
 
 **Solução:** Mudei para **Implementation-First Testing** - ler implementação ANTES de escrever testes quando API é desconhecida. Resultado: 13 testes alinhados, 100% passando, zero reescrita.
 
-**Lição Principal:** 
+**Lição Principal:**
 > **TDD funciona quando você CONHECE a API. Para APIs desconhecidas, SEMPRE leia a implementação primeiro usando grep, depois escreva testes alinhados.**
 
 **Impacto:**
-- ⏱️ **Tempo gasto em debugging:** ~40 min (reescrita completa de testes)
-- 💰 **ROI se aplicar lição:** ~30-40 min economizados por implementação futura
-- 🎯 **Aplicabilidade:** 100% das implementações de tools novas (FASE 3.2+)
+- [TIMER] **Tempo gasto em debugging:** ~40 min (reescrita completa de testes)
+- [EMOJI] **ROI se aplicar lição:** ~30-40 min economizados por implementação futura
+- [EMOJI] **Aplicabilidade:** 100% das implementações de tools novas (FASE 3.2+)
 
 ---
 
-## 🎯 Contexto da Tarefa
+## [EMOJI] Contexto da Tarefa
 
 ### Objetivo
 
@@ -57,7 +57,7 @@ Implementar **SWOTAnalysisTool** - ferramenta consultiva para facilitar análise
 
 ---
 
-## 🚨 Problemas Encontrados
+## [EMOJI] Problemas Encontrados
 
 ### **Problema 1: Testes com API Errada (CRÍTICO)**
 
@@ -223,7 +223,7 @@ mock_llm.invoke.return_value = MagicMock(content="SWOT text...")
 @pytest.fixture
 def mock_llm() -> MagicMock:
     llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
+
     # Simula structured output que retorna SWOTAnalysis direto
     mock_structured_llm = MagicMock()
     mock_structured_llm.invoke.return_value = SWOTAnalysis(
@@ -232,7 +232,7 @@ def mock_llm() -> MagicMock:
         opportunities=["O1", "O2", "O3", "O4"],
         threats=["T1", "T2", "T3", "T4"]
     )
-    
+
     llm.with_structured_output.return_value = mock_structured_llm
     return llm
 ```
@@ -251,21 +251,21 @@ def mock_llm() -> MagicMock:
 
 ---
 
-## ✅ Soluções Aplicadas
+## [OK] Soluções Aplicadas
 
 ### **Solução 1: Ler Implementação ANTES de Escrever Testes**
 
 #### Pattern: Implementation-First Testing
 
 **Quando usar:**
-- ✅ API desconhecida (tool nova, agent novo)
-- ✅ Múltiplas dependências (schemas, agents, prompts)
-- ✅ Estrutura complexa (RAG, LLM, validações)
+- [OK] API desconhecida (tool nova, agent novo)
+- [OK] Múltiplas dependências (schemas, agents, prompts)
+- [OK] Estrutura complexa (RAG, LLM, validações)
 
 **Quando NÃO usar (TDD tradicional é melhor):**
-- ❌ API conhecida (mesmo padrão de outros testes)
-- ❌ Lógica simples (funções puras, math)
-- ❌ Refactoring (testes já existem)
+- [ERRO] API conhecida (mesmo padrão de outros testes)
+- [ERRO] Lógica simples (funções puras, math)
+- [ERRO] Refactoring (testes já existem)
 
 #### Workflow
 
@@ -300,14 +300,14 @@ def test_facilitate_swot_without_rag(
     strategic_context: StrategicContext
 ):
     tool = SWOTAnalysisTool(...)
-    
+
     # API REAL verificada via grep:
     result = tool.facilitate_swot(
         company_info=company_info,
         strategic_context=strategic_context,
         use_rag=False
     )
-    
+
     assert isinstance(result, SWOTAnalysis)
     assert result.is_complete()
 ```
@@ -376,13 +376,13 @@ grep "self.llm" src/tools/swot_analysis.py
 @pytest.fixture
 def mock_llm() -> MagicMock:
     llm = MagicMock(spec=["invoke", "with_structured_output"])
-    
+
     # Mock structured_llm que retorna Pydantic object direto
     mock_structured = MagicMock()
     mock_structured.invoke.return_value = SWOTAnalysis(
         # Dados válidos que passam validação Pydantic
     )
-    
+
     llm.with_structured_output.return_value = mock_structured
     return llm
 ```
@@ -397,7 +397,7 @@ def mock_llm() -> MagicMock:
 
 ### **Solução 4: Iteração Rápida com Feedback Loop**
 
-#### Pattern: Fix → Test → Fix → Test
+#### Pattern: Fix -> Test -> Fix -> Test
 
 **Workflow aplicado:**
 1. **Executar testes:** `pytest tests/test_swot_analysis.py -v --tb=long`
@@ -410,37 +410,37 @@ def mock_llm() -> MagicMock:
 **Exemplo de iteração:**
 ```
 Iteração 1: 0/20 testes passando (AttributeError: 'generate' não existe)
-    → Corrigir API para facilitate_swot()
-    
+    -> Corrigir API para facilitate_swot()
+
 Iteração 2: 0/13 testes passando (AttributeError: 'industry_context')
-    → Corrigir build_company_context() para usar campos corretos
-    
+    -> Corrigir build_company_context() para usar campos corretos
+
 Iteração 3: 11/13 testes passando (2 assertions falhando)
-    → Ajustar assertions para aceitar formato "Strengths (Forças):"
-    
-Iteração 4: 13/13 testes passando! ✅
+    -> Ajustar assertions para aceitar formato "Strengths (Forças):"
+
+Iteração 4: 13/13 testes passando! [OK]
 ```
 
 #### ROI
 
 - **Feedback imediato** (cada fix valida hipótese)
-- **Progresso visível** (0/20 → 0/13 → 11/13 → 13/13)
+- **Progresso visível** (0/20 -> 0/13 -> 11/13 -> 13/13)
 - **Confiança crescente** (cada passe confirma correção)
 
 ---
 
-## 📖 Metodologia Validada: Implementation-First Testing
+## [EMOJI] Metodologia Validada: Implementation-First Testing
 
 ### Quando Usar Este Pattern
 
 | Situação | TDD Tradicional | Implementation-First | Razão |
 |----------|-----------------|----------------------|-------|
-| API conhecida | ✅ Usar | ❌ Desnecessário | Você já sabe a assinatura |
-| API desconhecida | ❌ Arriscado | ✅ Usar | Evita assunções erradas |
-| Lógica simples (math, pure functions) | ✅ Usar | ❌ Overkill | TDD funciona perfeitamente |
-| Lógica complexa (RAG, LLM, multi-step) | ❌ Difícil | ✅ Usar | Implementação guia testes |
-| Refactoring | ✅ Usar | ❌ Testes já existem | Testes protegem refactor |
-| Feature nova com dependências | ❌ Arriscado | ✅ Usar | Dependências ditam API |
+| API conhecida | [OK] Usar | [ERRO] Desnecessário | Você já sabe a assinatura |
+| API desconhecida | [ERRO] Arriscado | [OK] Usar | Evita assunções erradas |
+| Lógica simples (math, pure functions) | [OK] Usar | [ERRO] Overkill | TDD funciona perfeitamente |
+| Lógica complexa (RAG, LLM, multi-step) | [ERRO] Difícil | [OK] Usar | Implementação guia testes |
+| Refactoring | [OK] Usar | [ERRO] Testes já existem | Testes protegem refactor |
+| Feature nova com dependências | [ERRO] Arriscado | [OK] Usar | Dependências ditam API |
 
 ### Workflow Completo
 
@@ -449,7 +449,7 @@ graph TD
     A[Tarefa: Implementar Tool Nova] --> B{API Conhecida?}
     B -->|Sim| C[TDD Tradicional]
     B -->|Não| D[Implementation-First]
-    
+
     D --> E[STEP 1: Grep métodos disponíveis]
     E --> F[STEP 2: Ler signatures completas]
     F --> G[STEP 3: Verificar schemas usados]
@@ -489,9 +489,9 @@ read_lints tests/test_file.py src/module/file.py
 
 ---
 
-## 🚫 Antipadrões a Evitar
+## [EMOJI] Antipadrões a Evitar
 
-### ❌ **Antipadrão 1: Assumir API sem Verificar**
+### [ERRO] **Antipadrão 1: Assumir API sem Verificar**
 
 **Sintoma:**
 ```python
@@ -507,14 +507,14 @@ tool.generate(client_profile=profile)  # Método não existe!
 ```bash
 # SEMPRE verificar primeiro:
 grep "def " src/tools/swot_analysis.py
-# → Descobre que método real é facilitate_swot()
+# -> Descobre que método real é facilitate_swot()
 ```
 
 **ROI evitado:** 30-40 min reescrita de testes
 
 ---
 
-### ❌ **Antipadrão 2: Fixtures com Campos Inexistentes**
+### [ERRO] **Antipadrão 2: Fixtures com Campos Inexistentes**
 
 **Sintoma:**
 ```python
@@ -529,14 +529,14 @@ strategic_context.industry_context  # AttributeError!
 ```bash
 # SEMPRE verificar schema primeiro:
 grep "class StrategicContext" src/memory/schemas.py -A 30
-# → Descobre campos reais: mission, vision, core_values, strategic_objectives, current_challenges
+# -> Descobre campos reais: mission, vision, core_values, strategic_objectives, current_challenges
 ```
 
 **ROI evitado:** 15 min debugging AttributeError
 
 ---
 
-### ❌ **Antipadrão 3: Mocks Genéricos sem Verificar Uso Real**
+### [ERRO] **Antipadrão 3: Mocks Genéricos sem Verificar Uso Real**
 
 **Sintoma:**
 ```python
@@ -552,14 +552,14 @@ mock_llm.invoke.return_value = "SWOT text..."  # Tipo errado!
 ```bash
 # SEMPRE verificar uso real:
 grep "self.llm" src/tools/swot_analysis.py
-# → Descobre: self.llm.with_structured_output(SWOTAnalysis)
+# -> Descobre: self.llm.with_structured_output(SWOTAnalysis)
 ```
 
 **ROI evitado:** 10 min debugging mock incorreto
 
 ---
 
-### ❌ **Antipadrão 4: Fixtures sem Validar Campos Obrigatórios**
+### [ERRO] **Antipadrão 4: Fixtures sem Validar Campos Obrigatórios**
 
 **Sintoma:**
 ```python
@@ -574,14 +574,14 @@ CompanyInfo(name="Test", industry="Tech")  # ValidationError: sector is required
 ```bash
 # SEMPRE verificar campos obrigatórios:
 grep "class CompanyInfo" src/memory/schemas.py -A 30 | grep "Field"
-# → Identifica: sector é obrigatório, size tem validador
+# -> Identifica: sector é obrigatório, size tem validador
 ```
 
 **ROI evitado:** 10 min debugging ValidationError
 
 ---
 
-### ❌ **Antipadrão 5: Usar Filtros em Pytest Output**
+### [ERRO] **Antipadrão 5: Usar Filtros em Pytest Output**
 
 **Sintoma:**
 ```bash
@@ -606,7 +606,7 @@ pytest tests/test_file.py -v --tb=long 2>&1
 
 ---
 
-## 📊 ROI e Métricas
+## [EMOJI] ROI e Métricas
 
 ### Tempo Gasto (Esta Sessão)
 
@@ -634,7 +634,7 @@ pytest tests/test_file.py -v --tb=long 2>&1
 
 ---
 
-## 🎯 Checklist para Próximas Implementações
+## [EMOJI] Checklist para Próximas Implementações
 
 ### Antes de Escrever Testes para API Desconhecida
 
@@ -678,7 +678,7 @@ pytest tests/test_file.py -v --tb=long 2>&1
   pytest tests/test_new_tool.py -v --tb=long 2>&1
   ```
 
-- [ ] **9. Iterar rapidamente (Fix → Test → Fix)**
+- [ ] **9. Iterar rapidamente (Fix -> Test -> Fix)**
   - 1 problema por vez
   - Traceback completo sempre
   - Progresso visível (X/Y passando)
@@ -690,7 +690,7 @@ pytest tests/test_file.py -v --tb=long 2>&1
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Documentação Interna
 
@@ -713,21 +713,21 @@ pytest tests/test_file.py -v --tb=long 2>&1
 
 ---
 
-## ✅ Conclusão
+## [OK] Conclusão
 
 ### Lição Principal Reforçada
 
 > **Para APIs desconhecidas: Implementation-First Testing > TDD**
-> 
+>
 > SEMPRE leia a implementação (grep métodos, schemas, uso) ANTES de escrever testes.
-> 
+>
 > TDD funciona quando você CONHECE a API. Para APIs novas com múltiplas dependências, ler primeiro economiza 30-40 min por implementação.
 
 ### Aplicabilidade
 
-- ✅ **100% aplicável** em FASE 3.2+ (10+ tools consultivas)
-- ✅ **Pattern validado** com resultados mensuráveis (55 min economizados)
-- ✅ **Checklist acionável** pronto para reutilização
+- [OK] **100% aplicável** em FASE 3.2+ (10+ tools consultivas)
+- [OK] **Pattern validado** com resultados mensuráveis (55 min economizados)
+- [OK] **Checklist acionável** pronto para reutilização
 
 ### Próximos Passos
 
@@ -737,8 +737,7 @@ pytest tests/test_file.py -v --tb=long 2>&1
 
 ---
 
-**Autor:** BSC RAG Team  
-**Data:** 2025-10-19  
-**Status:** ✅ Validado (13/13 testes passando, 0 linter errors)  
+**Autor:** BSC RAG Team
+**Data:** 2025-10-19
+**Status:** [OK] Validado (13/13 testes passando, 0 linter errors)
 **ROI:** 30-40 min economizados por implementação futura
-

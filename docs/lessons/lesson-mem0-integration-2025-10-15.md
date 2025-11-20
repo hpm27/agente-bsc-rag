@@ -1,13 +1,13 @@
 # Lição Aprendida: Integração Mem0 Platform - FASE 1.8
 
-**Data:** 2025-10-15  
-**Fase:** 1.8 - E2E Integration Tests  
-**Componente:** `src/memory/mem0_client.py`, `src/graph/memory_nodes.py`  
-**Status:** ✅ RESOLVIDO - 5/5 testes E2E passando  
+**Data:** 2025-10-15
+**Fase:** 1.8 - E2E Integration Tests
+**Componente:** `src/memory/mem0_client.py`, `src/graph/memory_nodes.py`
+**Status:** [OK] RESOLVIDO - 5/5 testes E2E passando
 
 ---
 
-## 📋 Resumo Executivo
+## [EMOJI] Resumo Executivo
 
 Durante implementação dos testes E2E de integração Mem0, identificamos **2 problemas críticos** que impediam persistência de `ClientProfile`:
 
@@ -21,7 +21,7 @@ Durante implementação dos testes E2E de integração Mem0, identificamos **2 p
 
 ---
 
-## 🐛 Problema 1: Múltiplas Memórias por User ID
+## [EMOJI] Problema 1: Múltiplas Memórias por User ID
 
 ### **Causa Raiz:**
 
@@ -29,9 +29,9 @@ Durante implementação dos testes E2E de integração Mem0, identificamos **2 p
 
 ```python
 # COMPORTAMENTO OBSERVADO:
-client.add(messages, user_id="123")  # → Cria memória #1
-client.add(messages, user_id="123")  # → Cria memória #2 (não atualiza #1!)
-client.get_all(user_id="123")        # → Retorna [mem1, mem2] (ambíguo!)
+client.add(messages, user_id="123")  # -> Cria memória #1
+client.add(messages, user_id="123")  # -> Cria memória #2 (não atualiza #1!)
+client.get_all(user_id="123")        # -> Retorna [mem1, mem2] (ambíguo!)
 ```
 
 **Impacto:**
@@ -48,9 +48,9 @@ if memories:
 else:
     client.add(...)
 ```
-✅ Atomicidade garantida (update é operação única)  
-❌ 2 chamadas API por save (get + update)  
-❌ Mais complexa
+[OK] Atomicidade garantida (update é operação única)
+[ERRO] 2 chamadas API por save (get + update)
+[ERRO] Mais complexa
 
 **Opção 2 - Delete + Add (implementada):**
 ```python
@@ -58,10 +58,10 @@ client.delete_all(user_id=...)  # Remove antigas
 time.sleep(1)                    # Aguardar propagação
 client.add(...)                  # Cria nova (única)
 ```
-✅ Simples de implementar  
-✅ 1 chamada API efetiva (delete_all é rápido)  
-✅ Garante sempre 1 memória por user_id  
-⚠️ Risco de perda se add falhar após delete (mitigado por try-except + retry)
+[OK] Simples de implementar
+[OK] 1 chamada API efetiva (delete_all é rápido)
+[OK] Garante sempre 1 memória por user_id
+[WARN] Risco de perda se add falhar após delete (mitigado por try-except + retry)
 
 ### **Solução Implementada:**
 
@@ -71,10 +71,10 @@ client.add(...)                  # Cria nova (única)
 try:
     # 1. Deletar memórias antigas
     self.client.delete_all(user_id=profile.client_id)
-    
-    # 2. ⏱️ CRÍTICO: Aguardar delete completar (eventual consistency)
+
+    # 2. [TIMER] CRÍTICO: Aguardar delete completar (eventual consistency)
     time.sleep(1)
-    
+
 except Exception:
     pass  # Se não há memórias antigas, continuar
 
@@ -89,7 +89,7 @@ self.client.add(messages, user_id=profile.client_id, metadata=...)
 
 ---
 
-## 🐛 Problema 2: Extraction Filter Rejeitando Memórias
+## [EMOJI] Problema 2: Extraction Filter Rejeitando Memórias
 
 ### **Causa Raiz:**
 
@@ -99,28 +99,28 @@ Mem0 usa **Extraction Filter** (LLM interno) que classifica informações como "
 ```python
 # Mensagem GENÉRICA (rejeitada):
 {"role": "user", "content": "Perfil do cliente Empresa X"}
-# → add() retorna {'results': []} = NENHUMA memória criada!
+# -> add() retorna {'results': []} = NENHUMA memória criada!
 
 # Mensagem CONTEXTUAL (aceita):
 {"role": "user", "content": "Minha empresa é X, setor Tech, desafios: ..."}
-# → add() retorna [{'id': '...', 'memory': '...', 'event': 'ADD'}]
+# -> add() retorna [{'id': '...', 'memory': '...', 'event': 'ADD'}]
 ```
 
 ### **Descoberta da Documentação (Brightdata):**
 
 Mem0 filtra automaticamente informações **não-memorable**:
-- ❌ Definições ("O que é X?")
-- ❌ Conhecimento geral ("O céu é azul")
-- ❌ Conceitos abstratos sem contexto
-- ❌ Mensagens genéricas
+- [ERRO] Definições ("O que é X?")
+- [ERRO] Conhecimento geral ("O céu é azul")
+- [ERRO] Conceitos abstratos sem contexto
+- [ERRO] Mensagens genéricas
 
 Mem0 ACEITA informações **memorable**:
-- ✅ Fatos pessoais ("Minha empresa é...", "Eu prefiro...")
-- ✅ Contexto temporal ("Na semana passada...", "Atualmente...")
-- ✅ Preferências ("Não gosto de...", "Meu objetivo é...")
-- ✅ Detalhes específicos (nomes, setores, desafios concretos)
+- [OK] Fatos pessoais ("Minha empresa é...", "Eu prefiro...")
+- [OK] Contexto temporal ("Na semana passada...", "Atualmente...")
+- [OK] Preferências ("Não gosto de...", "Meu objetivo é...")
+- [OK] Detalhes específicos (nomes, setores, desafios concretos)
 
-**Fonte:** 
+**Fonte:**
 - https://dev.to/yigit-konur/mem0-the-comprehensive-guide-to-building-ai-with-persistent-memory-fbm
 - GitHub Issue #2062: https://github.com/mem0ai/mem0/issues/2062
 
@@ -160,25 +160,25 @@ messages = [
 ```
 
 **Características "memorable":**
-- ✅ Contexto pessoal ("Minha empresa é...")
-- ✅ Detalhes específicos (nome, setor, porte)
-- ✅ Temporalidade implícita ("Estamos na fase...")
-- ✅ Objetivos e desafios concretos
-- ✅ Conversação natural user-assistant
+- [OK] Contexto pessoal ("Minha empresa é...")
+- [OK] Detalhes específicos (nome, setor, porte)
+- [OK] Temporalidade implícita ("Estamos na fase...")
+- [OK] Objetivos e desafios concretos
+- [OK] Conversação natural user-assistant
 
 ---
 
-## 📊 Métricas Validadas
+## [EMOJI] Métricas Validadas
 
 ### **Testes E2E (5/5 passando):**
 
 | Teste | Status | Tempo | Coverage |
 |-------|--------|-------|----------|
-| `test_new_client_creates_profile` | ✅ PASS | ~30s | Criação + persistência |
-| `test_existing_client_loads_profile` | ✅ PASS | ~25s | Load de profile existente |
-| `test_engagement_state_updates` | ✅ PASS | ~35s | Atualização de fase |
-| `test_profile_persistence_real_mem0` | ✅ PASS | ~41s | Persistência real API |
-| `test_workflow_complete_e2e` | ✅ PASS | ~60s | Workflow completo 3 fases |
+| `test_new_client_creates_profile` | [OK] PASS | ~30s | Criação + persistência |
+| `test_existing_client_loads_profile` | [OK] PASS | ~25s | Load de profile existente |
+| `test_engagement_state_updates` | [OK] PASS | ~35s | Atualização de fase |
+| `test_profile_persistence_real_mem0` | [OK] PASS | ~41s | Persistência real API |
+| `test_workflow_complete_e2e` | [OK] PASS | ~60s | Workflow completo 3 fases |
 
 **Total:** 166.5s (~2.8 minutos)
 
@@ -205,17 +205,17 @@ load_client_memory():
 
 ---
 
-## 🎓 Lições Aprendidas
+## [EMOJI] Lições Aprendidas
 
 ### **1. Mem0 client.add() Sempre Cria Nova Memória**
 
 **Aprendizado:** Não confundir com "update" - `add()` é sempre CREATE, não UPSERT.
 
-**Implicação:** 
+**Implicação:**
 - Para manter 1 memória por user, implementar delete-then-add pattern
 - OU usar `client.update(memory_id, ...)` mas requer get_all() primeiro
 
-**Aplicação futura:** 
+**Aplicação futura:**
 - Documentar claramente no código que add = CREATE
 - Para produção, avaliar migrar para get+update se atomicidade for crítica
 
@@ -226,17 +226,17 @@ load_client_memory():
 **Aprendizado:** Mem0 NÃO salva informações genéricas/abstratas automaticamente.
 
 **Técnicas que funcionam:**
-- ✅ Contexto pessoal ("Minha empresa...", "Eu prefiro...")
-- ✅ Detalhes específicos (nomes próprios, setores, números)
-- ✅ Marcadores temporais ("Atualmente...", "Estamos na fase...")
-- ✅ Preferências e objetivos explícitos
-- ✅ Diálogo natural user-assistant (não monólogo)
+- [OK] Contexto pessoal ("Minha empresa...", "Eu prefiro...")
+- [OK] Detalhes específicos (nomes próprios, setores, números)
+- [OK] Marcadores temporais ("Atualmente...", "Estamos na fase...")
+- [OK] Preferências e objetivos explícitos
+- [OK] Diálogo natural user-assistant (não monólogo)
 
 **Técnicas que NÃO funcionam:**
-- ❌ Mensagens curtas/genéricas ("Perfil do cliente X")
-- ❌ Definições ("BSC é um framework...")
-- ❌ Metadata puro sem contexto conversacional
-- ❌ Apenas role assistant (precisa ter user também)
+- [ERRO] Mensagens curtas/genéricas ("Perfil do cliente X")
+- [ERRO] Definições ("BSC é um framework...")
+- [ERRO] Metadata puro sem contexto conversacional
+- [ERRO] Apenas role assistant (precisa ter user também)
 
 **Aplicação futura:**
 - Sempre construir mensagens ricas com contexto
@@ -253,7 +253,7 @@ load_client_memory():
 1. **Após `delete_all()`:** 1s (garantir delete completou antes de add)
 2. **Após `add()`:** 1s (garantir memória disponível para get_all subsequente)
 
-**Sem sleeps:** 80% failure rate nos testes  
+**Sem sleeps:** 80% failure rate nos testes
 **Com sleeps:** 100% success rate
 
 **Trade-off:**
@@ -286,7 +286,7 @@ Esses logs revelaram:
 
 ---
 
-## 📝 Código Final Validado
+## [EMOJI] Código Final Validado
 
 ### **save_profile() - Pattern Delete-Then-Add:**
 
@@ -295,9 +295,9 @@ Esses logs revelaram:
 
 def save_profile(self, profile: ClientProfile) -> str:
     # 1. Construir mensagens "memorable" (contextuais, específicas)
-    challenges_text = ", ".join(profile.context.current_challenges) 
+    challenges_text = ", ".join(profile.context.current_challenges)
     objectives_text = ", ".join(profile.context.strategic_objectives)
-    
+
     messages = [
         {
             "role": "user",
@@ -320,14 +320,14 @@ def save_profile(self, profile: ClientProfile) -> str:
             )
         }
     ]
-    
+
     # 2. Delete antigas + sleep para propagação
     try:
         self.client.delete_all(user_id=profile.client_id)
         time.sleep(1)  # Eventual consistency
     except Exception:
         pass  # Sem memórias antigas, OK
-    
+
     # 3. Criar nova memória (única)
     self.client.add(
         messages=messages,
@@ -339,7 +339,7 @@ def save_profile(self, profile: ClientProfile) -> str:
             "phase": profile.engagement.current_phase
         }
     )
-    
+
     return profile.client_id
 ```
 
@@ -350,10 +350,10 @@ def save_profile(self, profile: ClientProfile) -> str:
 
 def load_profile(self, user_id: str) -> ClientProfile:
     memories = self.client.get_all(user_id=user_id)
-    
+
     if not memories:
         raise ProfileNotFoundError(user_id)
-    
+
     # Validar que há apenas 1 memória (esperado com delete-then-add)
     if len(memories) > 1:
         logger.warning(
@@ -361,11 +361,11 @@ def load_profile(self, user_id: str) -> ClientProfile:
             "Usando a primeira. Investigar.",
             user_id, len(memories)
         )
-    
+
     # Usar primeira memória (única esperada)
     memory = memories[0]
     profile_data = memory['metadata']['profile_data']
-    
+
     return ClientProfile.model_validate(profile_data)
 ```
 
@@ -376,7 +376,7 @@ def load_profile(self, user_id: str) -> ClientProfile:
 
 provider.save_profile(profile)
 
-# ⏱️ CRÍTICO: Aguardar API processar completamente
+# [TIMER] CRÍTICO: Aguardar API processar completamente
 # save_profile já tem sleep(1) interno, mas precisamos
 # de OUTRO sleep para garantir disponibilidade para load
 time.sleep(1)
@@ -385,7 +385,7 @@ logger.debug("[TIMING] Sleep 1s após save_profile (disponibilidade)")
 
 ---
 
-## 🔬 Descobertas Técnicas
+## [EMOJI] Descobertas Técnicas
 
 ### **1. Mem0 API Eventual Consistency**
 
@@ -393,9 +393,9 @@ logger.debug("[TIMING] Sleep 1s após save_profile (disponibilidade)")
 
 ```python
 client.add(...)           # Completa em ~3s
-client.get_all(...)       # Imediatamente após → Vazio!
+client.get_all(...)       # Imediatamente após -> Vazio!
 time.sleep(1)
-client.get_all(...)       # Agora → Retorna memória
+client.get_all(...)       # Agora -> Retorna memória
 ```
 
 **Timeouts validados:**
@@ -412,15 +412,15 @@ client.get_all(...)       # Agora → Retorna memória
 
 | Característica | Exemplo | Status |
 |----------------|---------|--------|
-| Contexto pessoal | "Minha empresa é..." | ✅ Aceito |
-| Detalhes específicos | "Setor Saúde, porte grande" | ✅ Aceito |
-| Objetivos/Desafios | "Aumentar EBITDA 20%" | ✅ Aceito |
-| Marcadores temporais | "Estamos na fase X" | ✅ Aceito |
-| Preferências | "Prefiro...", "Não gosto de..." | ✅ Aceito |
-| Diálogo user+assistant | Messages com ambos roles | ✅ Aceito |
-| Definições | "BSC é um framework..." | ❌ Rejeitado |
-| Mensagens curtas | "Profile do cliente" | ❌ Rejeitado |
-| Apenas assistant | Sem role user | ❌ Rejeitado |
+| Contexto pessoal | "Minha empresa é..." | [OK] Aceito |
+| Detalhes específicos | "Setor Saúde, porte grande" | [OK] Aceito |
+| Objetivos/Desafios | "Aumentar EBITDA 20%" | [OK] Aceito |
+| Marcadores temporais | "Estamos na fase X" | [OK] Aceito |
+| Preferências | "Prefiro...", "Não gosto de..." | [OK] Aceito |
+| Diálogo user+assistant | Messages com ambos roles | [OK] Aceito |
+| Definições | "BSC é um framework..." | [ERRO] Rejeitado |
+| Mensagens curtas | "Profile do cliente" | [ERRO] Rejeitado |
+| Apenas assistant | Sem role user | [ERRO] Rejeitado |
 
 **Fonte:** Issue #2062 do repo mem0ai/mem0 mostra o prompt interno do Extraction Filter.
 
@@ -448,9 +448,9 @@ client.add(
 
 ---
 
-## ⚠️ Antipadrões Identificados
+## [WARN] Antipadrões Identificados
 
-### **❌ ANTIPADRÃO 1: Usar add() sem verificar results**
+### **[ERRO] ANTIPADRÃO 1: Usar add() sem verificar results**
 
 ```python
 # ERRADO:
@@ -466,7 +466,7 @@ if not result.get('results'):
 
 ---
 
-### **❌ ANTIPADRÃO 2: Não aguardar eventual consistency**
+### **[ERRO] ANTIPADRÃO 2: Não aguardar eventual consistency**
 
 ```python
 # ERRADO:
@@ -481,7 +481,7 @@ profile = load_profile(...)  # Agora está disponível
 
 ---
 
-### **❌ ANTIPADRÃO 3: Mensagens genéricas/abstratas**
+### **[ERRO] ANTIPADRÃO 3: Mensagens genéricas/abstratas**
 
 ```python
 # ERRADO (rejeitado):
@@ -496,7 +496,7 @@ messages = [
 
 ---
 
-## 🚀 Próximos Passos
+## [EMOJI] Próximos Passos
 
 ### **Para Produção (Fase 2):**
 
@@ -518,7 +518,7 @@ messages = [
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 **Documentação Oficial:**
 - Mem0 API Reference: https://docs.mem0.ai/api-reference
@@ -538,38 +538,38 @@ messages = [
 
 ---
 
-## 💡 Insights Estratégicos
+## [EMOJI] Insights Estratégicos
 
 **Mem0 Platform é ideal PARA:**
-- ✅ Armazenar perfis de usuário (personalização)
-- ✅ Histórico conversacional com contexto rico
-- ✅ Preferências e objetivos específicos
-- ✅ Fatos pessoais temporalizados
+- [OK] Armazenar perfis de usuário (personalização)
+- [OK] Histórico conversacional com contexto rico
+- [OK] Preferências e objetivos específicos
+- [OK] Fatos pessoais temporalizados
 
 **Mem0 Platform NÃO é ideal para:**
-- ❌ Cache de dados estruturados puros
-- ❌ Informações altamente voláteis (use Redis)
-- ❌ Dados que precisam atomicidade ACID (use PostgreSQL)
-- ❌ Conhecimento geral/estático (use vector store tradicional)
+- [ERRO] Cache de dados estruturados puros
+- [ERRO] Informações altamente voláteis (use Redis)
+- [ERRO] Dados que precisam atomicidade ACID (use PostgreSQL)
+- [ERRO] Conhecimento geral/estático (use vector store tradicional)
 
 **Decisão Arquitetural Validada:**
-- Mem0 para `ClientProfile` personalizado: ✅ Adequado
+- Mem0 para `ClientProfile` personalizado: [OK] Adequado
 - Workflow state transitório: Redis/PostgreSQL (futuro)
-- Conhecimento BSC (livros): Qdrant vector store ✅ (já implementado)
+- Conhecimento BSC (livros): Qdrant vector store [OK] (já implementado)
 
 ---
 
-**Economia de Tempo:** ~8 horas de debugging evitadas em projetos futuros  
-**ROI:** Pattern delete-then-add + mensagens ricas aplicável a qualquer integração Mem0  
-**Cobertura:** 5/5 testes E2E, 100% cenários validados  
+**Economia de Tempo:** ~8 horas de debugging evitadas em projetos futuros
+**ROI:** Pattern delete-then-add + mensagens ricas aplicável a qualquer integração Mem0
+**Cobertura:** 5/5 testes E2E, 100% cenários validados
 
-**Status:** ✅ PRODUCTION READY para MVP
+**Status:** [OK] PRODUCTION READY para MVP
 
 ---
 
-## 🚨 ATUALIZAÇÃO: Mem0 API v2 Breaking Changes (Out/2025)
+## [EMOJI] ATUALIZAÇÃO: Mem0 API v2 Breaking Changes (Out/2025)
 
-**Data da Descoberta**: 2025-10-20  
+**Data da Descoberta**: 2025-10-20
 **Contexto**: Durante debugging de onboarding conversacional, erro 400 Bad Request ao carregar profile do Mem0.
 
 ### **Problema Identificado**
@@ -584,18 +584,18 @@ HTTP error: Client error '400 Bad Request' for url 'https://api.mem0.ai/v2/memor
 
 ### **Breaking Change Detalhado**
 
-**Documentação Oficial Scraped** (via Brightdata):  
+**Documentação Oficial Scraped** (via Brightdata):
 https://docs.mem0.ai/platform/features/v2-memory-filters
 
 **Formato v1 (OBSOLETO)**:
 ```python
-# ❌ NÃO FUNCIONA MAIS em v2:
+# [ERRO] NÃO FUNCIONA MAIS em v2:
 memories = client.get_all(user_id=user_id, page=1, page_size=50)
 ```
 
 **Formato v2 (OBRIGATÓRIO)**:
 ```python
-# ✅ FORMATO CORRETO v2:
+# [OK] FORMATO CORRETO v2:
 filters = {"AND": [{"user_id": user_id}]}
 memories = client.get_all(filters=filters, page=1, page_size=50)
 ```
@@ -615,7 +615,7 @@ memories = client.get_all(filters=filters, page=1, page_size=50)
 ```
 
 **3. Implicit Null Scoping**:
-- Passar apenas `{"AND": [{"user_id": "u1"}]}` → Sistema assume `agent_id=NULL, run_id=NULL, app_id=NULL`
+- Passar apenas `{"AND": [{"user_id": "u1"}]}` -> Sistema assume `agent_id=NULL, run_id=NULL, app_id=NULL`
 - Para incluir TODAS runs: adicionar `{"run_id": "*"}` explicitamente
 
 **4. Wildcards**:
@@ -683,7 +683,7 @@ Para resiliência a mudanças futuras:
 def load_from_mem0(client, user_id):
     """Load com fallback para versões antigas."""
     filters = {"AND": [{"user_id": user_id}]}
-    
+
     try:
         # Tentar v2 com paginação
         memories = client.get_all(filters=filters, page=1, page_size=50)
@@ -694,14 +694,14 @@ def load_from_mem0(client, user_id):
         except TypeError:
             # Fallback 2: v1 (caso downgrade)
             memories = client.get_all(user_id=user_id)
-    
+
     return memories
 ```
 
 **Benefícios**:
-- ✅ Compatível com v2 (atual)
-- ✅ Resiliente a versões antigas (se necessário downgrade)
-- ✅ Graceful degradation (3 níveis de fallback)
+- [OK] Compatível com v2 (atual)
+- [OK] Resiliente a versões antigas (se necessário downgrade)
+- [OK] Graceful degradation (3 níveis de fallback)
 
 ### **Exemplos Adicionais v2**
 
@@ -735,19 +735,19 @@ filters = {
 
 ### **Troubleshooting v2**
 
-**Problema**: "Filtered by user_id, but don't see items with agent_id"  
-**Causa**: Implicit null scoping  
+**Problema**: "Filtered by user_id, but don't see items with agent_id"
+**Causa**: Implicit null scoping
 **Solução**: `{"AND": [{"user_id": "u1"}, {"agent_id": "*"}]}`
 
-**Problema**: "My ne returns more than expected"  
-**Causa**: `ne` inclui NULLs  
+**Problema**: "My ne returns more than expected"
+**Causa**: `ne` inclui NULLs
 **Solução**: Combinar com wildcard: `{"AND": [{"agent_id": "*"}, {"agent_id": {"ne": "a1"}}]}`
 
 ### **Validação**
 
-**Teste Executado**: `pytest tests/memory/test_mem0_client.py::test_load_profile_success`  
-**Resultado**: ✅ PASSANDO (100%)  
-**Erro 400**: ✅ Eliminado  
+**Teste Executado**: `pytest tests/memory/test_mem0_client.py::test_load_profile_success`
+**Resultado**: [OK] PASSANDO (100%)
+**Erro 400**: [OK] Eliminado
 **Compatibilidade**: v2 filters funcionando
 
 ### **Referências**
@@ -758,15 +758,14 @@ filters = {
 
 ### **ROI**
 
-**Tempo Debugging**: ~15 min (Sequential Thinking + Brightdata + fix)  
-**Tempo Economizado**: 30-60 min (vs tentativa e erro sem docs)  
+**Tempo Debugging**: ~15 min (Sequential Thinking + Brightdata + fix)
+**Tempo Economizado**: 30-60 min (vs tentativa e erro sem docs)
 **Impacto**: Erro 400 eliminado, onboarding funcional 100%
 
-**Aplicabilidade**: Qualquer projeto usando Mem0 Platform (migration guide v1 → v2)
+**Aplicabilidade**: Qualquer projeto usando Mem0 Platform (migration guide v1 -> v2)
 
 ---
 
-**Última Atualização**: 2025-10-20 (Adicionada seção Mem0 API v2)  
-**Status Original**: ✅ PRODUCTION READY para MVP  
-**Status v2**: ✅ MIGRADO PARA v2 (breaking changes resolvidos)
-
+**Última Atualização**: 2025-10-20 (Adicionada seção Mem0 API v2)
+**Status Original**: [OK] PRODUCTION READY para MVP
+**Status v2**: [OK] MIGRADO PARA v2 (breaking changes resolvidos)

@@ -11,75 +11,77 @@ Uso:
 # Fix PyTorch-Streamlit path inspection warning
 # Ref: https://github.com/streamlit/streamlit/issues/9845
 import os
+
 os.environ["STREAMLIT_SERVER_ENABLE_FILE_WATCHER"] = "false"
 
-import streamlit as st
-from typing import Dict, Any
 import sys
 from pathlib import Path
-import asyncio
+from typing import Any
+
+import streamlit as st
 
 # Adicionar diretorio raiz ao path para imports
 root_dir = Path(__file__).parent.parent
 sys.path.insert(0, str(root_dir))
 
+from app.components.analytics import render_analytics_dashboard
+from app.components.dashboard import render_dashboard
+from app.components.results import render_results
+from app.components.sidebar import render_sidebar
 from app.utils import (
-    load_environment,
     check_required_env_vars,
-    init_workflow,
     init_session_state,
+    init_workflow,
+    load_environment,
     save_message,
 )
-from app.components.sidebar import render_sidebar, get_active_perspectives
-from app.components.results import render_results
-from app.components.dashboard import render_dashboard
-from app.components.analytics import render_analytics_dashboard
-
 
 # ============================================================================
 # Configuracao de Logging por Sessao
 # ============================================================================
 
+
 def setup_session_logging():
     """
     Configura logging por sessao Streamlit com dual output (console + arquivo).
-    
+
     Cada sessao tem arquivo separado em logs/session_TIMESTAMP_PID.log
     Console: output simplificado (INFO level)
     Arquivo: output completo (DEBUG level) com timestamps precisos e thread IDs
-    
+
     Returns:
         str: Path do arquivo de log criado
     """
-    from loguru import logger
     from datetime import datetime
-    
+
+    from loguru import logger
+
     # Gerar session_id unico (timestamp + PID para garantir unicidade)
-    if 'session_id' not in st.session_state:
+    if "session_id" not in st.session_state:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         st.session_state.session_id = f"{timestamp}_{os.getpid()}"
-    
+
     session_id = st.session_state.session_id
-    
+
     # Criar pasta logs se nao existir
     os.makedirs("logs", exist_ok=True)
-    
+
     # Path do arquivo de log
     log_file = f"logs/session_{session_id}.log"
-    
+
     # Configurar loguru (apenas se ainda nao configurado para esta sessao)
-    if 'logging_configured' not in st.session_state:
+    if "logging_configured" not in st.session_state:
         # Remover handler padrao
         logger.remove()
-        
+
         # Handler 1: Console (simplificado, apenas INFO+)
         logger.add(
             sys.stderr,
             format="<green>{time:HH:mm:ss.SSS}</green> | <level>{message}</level>",
             level="INFO",
-            colorize=True
+            colorize=True,
         )
-        
+
         # Handler 2: Arquivo (completo, DEBUG+, com thread IDs)
         logger.add(
             log_file,
@@ -88,14 +90,14 @@ def setup_session_logging():
             rotation="50 MB",  # Rotacionar se arquivo > 50MB
             retention="7 days",  # Manter logs por 7 dias
             compression="zip",  # Comprimir logs antigos
-            enqueue=False  # ⚡ DESABILITADO: enqueue=True causa delay de segundos nos logs (Issue #2 Out/2025)
+            enqueue=False,  # [FAST] DESABILITADO: enqueue=True causa delay de segundos nos logs (Issue #2 Out/2025)
         )
-        
+
         st.session_state.logging_configured = True
         st.session_state.log_file = log_file
         logger.info(f"[LOGGING] Sessao iniciada | arquivo={log_file}")
-    
-    return st.session_state.get('log_file', log_file)
+
+    return st.session_state.get("log_file", log_file)
 
 
 # ============================================================================
@@ -172,21 +174,25 @@ st.markdown(
 # Inicializacao
 # ============================================================================
 
+
 def initialize_app() -> None:
     """
     Inicializa a aplicacao: carrega env vars, verifica config, inicializa workflow.
     """
     # Configurar logging por sessao
     log_file = setup_session_logging()
-    
+
     # [VERSAO] Log de versao para confirmar codigo carregado
     from loguru import logger
-    logger.info("[APP v3.8-20251022-15:00] Streamlit - Logging fix (enqueue=False) + defensive try/except asyncio.gather")
+
+    logger.info(
+        "[APP v3.8-20251022-15:00] Streamlit - Logging fix (enqueue=False) + defensive try/except asyncio.gather"
+    )
     logger.info(f"[APP v3.8-20251022-15:00] Python executable: {sys.executable}")
     logger.info(f"[APP v3.8-20251022-15:00] Python version: {sys.version}")
     logger.info(f"[APP v3.8-20251022-15:00] Working directory: {os.getcwd()}")
     logger.info(f"[APP v3.8-20251022-15:00] Project root: {root_dir}")
-    
+
     # Carregar variaveis de ambiente
     load_environment()
 
@@ -205,7 +211,7 @@ def initialize_app() -> None:
             st.session_state.workflow_initialized = True
 
 
-def process_query(query: str) -> Dict[str, Any]:
+def process_query(query: str) -> dict[str, Any]:
     """
     Processa query do usuario usando o workflow LangGraph.
 
@@ -220,14 +226,15 @@ def process_query(query: str) -> Dict[str, Any]:
 
     # Gerar/recuperar user_id unico para o cliente (persistente na sessao)
     import uuid
+
     if "user_id" not in st.session_state:
         # Primeira interacao: gerar user_id unico
         st.session_state.user_id = f"streamlit_user_{uuid.uuid4().hex[:8]}"
-    
+
     # CRÍTICO: Gerar session_id UMA VEZ por sessão (persistente entre mensagens)
     if "session_id" not in st.session_state:
         st.session_state.session_id = f"session_{uuid.uuid4().hex[:8]}"
-    
+
     user_id = st.session_state.user_id
     session_id = st.session_state.session_id  # Reutilizar mesmo session_id
 
@@ -239,12 +246,12 @@ def process_query(query: str) -> Dict[str, Any]:
     ]
 
     try:
-        # Executar workflow consultivo (ONBOARDING → DISCOVERY → APPROVAL)
+        # Executar workflow consultivo (ONBOARDING -> DISCOVERY -> APPROVAL)
         result = workflow.run(
             query=query,
             session_id=session_id,
             user_id=user_id,  # CRÍTICO: Habilita workflow consultivo!
-            chat_history=chat_history if chat_history else None
+            chat_history=chat_history if chat_history else None,
         )
 
         # Converter BSCState para dict se necessario
@@ -319,17 +326,20 @@ def render_welcome_message() -> None:
 # Interface Principal
 # ============================================================================
 
+
 def render_chat_page() -> None:
     """Renderiza pagina de chat BSC RAG."""
     # Header principal
     st.title("Agente BSC RAG")
     st.caption("Consultor Inteligente em Balanced Scorecard")
-    
+
     # Mostrar path do log da sessao atual
-    if 'log_file' in st.session_state:
+    if "log_file" in st.session_state:
         with st.expander("[INFO] Log da Sessao", expanded=False):
-            st.info(f"📝 **Arquivo de log completo**: `{st.session_state.log_file}`")
-            st.caption("Este arquivo contem logs detalhados com timestamps precisos e thread IDs para analise de performance.")
+            st.info(f"[EMOJI] **Arquivo de log completo**: `{st.session_state.log_file}`")
+            st.caption(
+                "Este arquivo contem logs detalhados com timestamps precisos e thread IDs para analise de performance."
+            )
 
     # Mostrar mensagem de boas-vindas ou historico
     if not st.session_state.messages:
@@ -348,35 +358,34 @@ def render_chat_page() -> None:
             st.markdown(user_query)
 
         # Processar query
-        with st.chat_message("assistant"):
-            with st.spinner("Consultando especialistas BSC..."):
-                try:
-                    # Executar workflow
-                    result = process_query(user_query)
+        with st.chat_message("assistant"), st.spinner("Consultando especialistas BSC..."):
+            try:
+                # Executar workflow
+                result = process_query(user_query)
 
-                    # Extrair resposta final
-                    final_answer = result.get(
-                        "final_response", "Desculpe, nao consegui gerar uma resposta."
-                    )
+                # Extrair resposta final
+                final_answer = result.get(
+                    "final_response", "Desculpe, nao consegui gerar uma resposta."
+                )
 
-                    # Mostrar resposta
-                    st.markdown(final_answer)
+                # Mostrar resposta
+                st.markdown(final_answer)
 
-                    # Mostrar detalhes
-                    render_results(result)
+                # Mostrar detalhes
+                render_results(result)
 
-                    # Salvar resposta no historico
-                    save_message("assistant", final_answer, metadata=result)
+                # Salvar resposta no historico
+                save_message("assistant", final_answer, metadata=result)
 
-                    # Rerun para atualizar interface
-                    st.rerun()
+                # Rerun para atualizar interface
+                st.rerun()
 
-                except Exception as e:
-                    error_msg = f"Erro ao processar sua pergunta: {str(e)}"
-                    st.error(f"[ERRO] {error_msg}")
+            except Exception as e:
+                error_msg = f"Erro ao processar sua pergunta: {e!s}"
+                st.error(f"[ERRO] {error_msg}")
 
-                    # Salvar erro no historico
-                    save_message("assistant", error_msg)
+                # Salvar erro no historico
+                save_message("assistant", error_msg)
 
 
 def main() -> None:
@@ -388,7 +397,7 @@ def main() -> None:
 
     # Renderizar sidebar e capturar pagina selecionada
     selected_page = render_sidebar()
-    
+
     # Renderizar pagina baseado na selecao
     if selected_page == "Dashboard Multi-Cliente":
         render_dashboard()

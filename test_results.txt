@@ -1,0 +1,1403 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-7.4.0, pluggy-1.5.0 -- C:\Users\USER\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+rootdir: D:\Users\OneDrive - engelar.eng.br\Documentos\Hugo\ENGELAR\agente-bsc-rag
+configfile: pyproject.toml
+plugins: anyio-4.9.0, langsmith-0.4.34, logfire-3.12.0, asyncio-0.23.5, cov-4.1.0, env-1.1.3, mock-3.14.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT
+created: 8/8 workers
+8 workers [703 items]
+
+scheduling tests via LoadFileScheduling
+
+tests/test_adaptive_reranking.py::test_calculate_similarity_basic
+tests/test_memory_schemas.py::test_swot_analysis_creation
+tests/test_onboarding_conversational.py::test_extract_all_entities_complete_extraction
+tests/test_onboarding_agent.py::test_onboarding_agent_initialization
+tests/test_prioritization_matrix.py::test_prioritization_criteria_valid
+tests/test_diagnostic_agent.py::test_analyze_perspective_financial
+tests/memory/test_mem0_client.py::test_init_with_api_key
+tests/integration/test_e2e.py::TestE2EWorkflow::test_simple_factual_query
+[gw3] [  0%] PASSED tests/test_memory_schemas.py::test_swot_analysis_creation
+[gw5] [  0%] PASSED tests/test_prioritization_matrix.py::test_prioritization_criteria_valid
+tests/test_memory_schemas.py::test_swot_analysis_empty
+[gw3] [  0%] PASSED tests/test_memory_schemas.py::test_swot_analysis_empty
+[gw0] [  0%] PASSED tests/test_onboarding_agent.py::test_onboarding_agent_initialization
+tests/test_prioritization_matrix.py::test_prioritization_criteria_calculate_score
+tests/test_memory_schemas.py::test_company_info_valid_creation
+[gw7] [  0%] PASSED tests/memory/test_mem0_client.py::test_init_with_api_key
+[gw5] [  0%] PASSED tests/test_prioritization_matrix.py::test_prioritization_criteria_calculate_score
+tests/test_onboarding_agent.py::test_start_onboarding_creates_initial_state
+[gw1] [  0%] PASSED tests/test_adaptive_reranking.py::test_calculate_similarity_basic
+tests/test_prioritization_matrix.py::test_prioritization_criteria_calculate_score_custom_weights
+[gw3] [  1%] PASSED tests/test_memory_schemas.py::test_company_info_valid_creation
+tests/memory/test_mem0_client.py::test_init_with_env_var
+tests/test_memory_schemas.py::test_company_info_minimal
+tests/test_adaptive_reranking.py::test_calculate_similarity_normalized
+[gw5] [  1%] PASSED tests/test_prioritization_matrix.py::test_prioritization_criteria_calculate_score_custom_weights
+[gw0] [  1%] PASSED tests/test_onboarding_agent.py::test_start_onboarding_creates_initial_state
+[gw3] [  1%] PASSED tests/test_memory_schemas.py::test_company_info_minimal
+tests/test_prioritization_matrix.py::test_prioritization_criteria_invalid_weights_sum
+tests/test_onboarding_agent.py::test_start_onboarding_returns_welcome_message
+tests/test_memory_schemas.py::test_strategic_context_creation
+[gw7] [  1%] PASSED tests/memory/test_mem0_client.py::test_init_with_env_var
+[gw3] [  1%] PASSED tests/test_memory_schemas.py::test_strategic_context_creation
+[gw1] [  1%] PASSED tests/test_adaptive_reranking.py::test_calculate_similarity_normalized
+[gw5] [  2%] PASSED tests/test_prioritization_matrix.py::test_prioritization_criteria_invalid_weights_sum
+tests/memory/test_mem0_client.py::test_init_without_api_key_raises_error
+tests/test_adaptive_reranking.py::test_boost_by_metadata_different_sources
+tests/test_memory_schemas.py::test_strategic_context_empty
+tests/test_prioritization_matrix.py::test_prioritization_criteria_invalid_values_out_of_range
+[gw3] [  2%] PASSED tests/test_memory_schemas.py::test_strategic_context_empty
+[gw5] [  2%] PASSED tests/test_prioritization_matrix.py::test_prioritization_criteria_invalid_values_out_of_range
+tests/test_memory_schemas.py::test_diagnostic_data_creation
+[gw1] [  2%] PASSED tests/test_adaptive_reranking.py::test_boost_by_metadata_different_sources
+[gw3] [  2%] PASSED tests/test_memory_schemas.py::test_diagnostic_data_creation
+[gw0] [  2%] FAILED tests/test_onboarding_agent.py::test_start_onboarding_returns_welcome_message
+tests/test_prioritization_matrix.py::test_prioritized_item_valid
+tests/test_memory_schemas.py::test_engagement_state_creation
+[gw7] [  2%] PASSED tests/memory/test_mem0_client.py::test_init_without_api_key_raises_error
+tests/test_adaptive_reranking.py::test_boost_by_metadata_different_perspectives
+tests/test_onboarding_agent.py::test_start_onboarding_adds_to_conversation_history
+[gw3] [  3%] PASSED tests/test_memory_schemas.py::test_engagement_state_creation
+tests/memory/test_mem0_client.py::test_init_client_creation_failure
+[gw1] [  3%] PASSED tests/test_adaptive_reranking.py::test_boost_by_metadata_different_perspectives
+[gw5] [  3%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_valid
+tests/test_memory_schemas.py::test_engagement_state_defaults
+tests/test_prioritization_matrix.py::test_prioritized_item_priority_level_matches_score_high
+[gw0] [  3%] PASSED tests/test_onboarding_agent.py::test_start_onboarding_adds_to_conversation_history
+tests/test_adaptive_reranking.py::test_boost_by_metadata_no_selected
+[gw3] [  3%] PASSED tests/test_memory_schemas.py::test_engagement_state_defaults
+[gw5] [  3%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_priority_level_matches_score_high
+[gw2] [  3%] FAILED tests/test_onboarding_conversational.py::test_extract_all_entities_complete_extraction
+tests/test_onboarding_agent.py::test_process_turn_step1_complete_info
+[gw1] [  4%] PASSED tests/test_adaptive_reranking.py::test_boost_by_metadata_no_selected
+[gw7] [  4%] PASSED tests/memory/test_mem0_client.py::test_init_client_creation_failure
+tests/test_memory_schemas.py::test_client_profile_valid_creation
+tests/memory/test_mem0_client.py::test_serialize_profile_success
+[gw3] [  4%] PASSED tests/test_memory_schemas.py::test_client_profile_valid_creation
+tests/test_prioritization_matrix.py::test_prioritized_item_priority_level_mismatch_score
+tests/test_adaptive_reranking.py::test_boost_by_metadata_missing_metadata
+tests/test_memory_schemas.py::test_company_info_empty_name
+[gw5] [  4%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_priority_level_mismatch_score
+[gw1] [  4%] PASSED tests/test_adaptive_reranking.py::test_boost_by_metadata_missing_metadata
+tests/test_prioritization_matrix.py::test_prioritized_item_is_critical_method
+[gw3] [  4%] PASSED tests/test_memory_schemas.py::test_company_info_empty_name
+tests/test_adaptive_reranking.py::test_adaptive_topn_simple_query
+tests/test_memory_schemas.py::test_company_info_name_too_short
+[gw0] [  4%] FAILED tests/test_onboarding_agent.py::test_process_turn_step1_complete_info
+[gw5] [  5%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_is_critical_method
+tests/test_onboarding_agent.py::test_process_turn_step1_incomplete_triggers_followup
+[gw7] [  5%] PASSED tests/memory/test_mem0_client.py::test_serialize_profile_success
+[gw3] [  5%] PASSED tests/test_memory_schemas.py::test_company_info_name_too_short
+tests/test_prioritization_matrix.py::test_prioritized_item_is_high_or_critical_method
+tests/memory/test_mem0_client.py::test_deserialize_profile_success
+tests/test_memory_schemas.py::test_company_info_invalid_size
+[gw5] [  5%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_is_high_or_critical_method
+tests/test_onboarding_conversational.py::test_extract_all_entities_partial_extraction
+tests/test_prioritization_matrix.py::test_prioritized_item_invalid_title_too_short
+[gw0] [  5%] PASSED tests/test_onboarding_agent.py::test_process_turn_step1_incomplete_triggers_followup
+[gw1] [  5%] PASSED tests/test_adaptive_reranking.py::test_adaptive_topn_simple_query
+[gw3] [  5%] PASSED tests/test_memory_schemas.py::test_company_info_invalid_size
+tests/test_memory_schemas.py::test_company_info_invalid_founded_year
+tests/test_adaptive_reranking.py::test_adaptive_topn_moderate_query
+tests/test_onboarding_agent.py::test_process_turn_step1_max_followups_forces_continue
+[gw5] [  6%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_invalid_title_too_short
+[gw7] [  6%] PASSED tests/memory/test_mem0_client.py::test_deserialize_profile_success
+tests/test_prioritization_matrix.py::test_prioritized_item_invalid_description_too_short
+[gw3] [  6%] PASSED tests/test_memory_schemas.py::test_company_info_invalid_founded_year
+tests/memory/test_mem0_client.py::test_deserialize_profile_invalid_data_raises_error
+[gw5] [  6%] PASSED tests/test_prioritization_matrix.py::test_prioritized_item_invalid_description_too_short
+[gw1] [  6%] PASSED tests/test_adaptive_reranking.py::test_adaptive_topn_moderate_query
+tests/test_memory_schemas.py::test_engagement_state_invalid_progress_negative
+tests/test_prioritization_matrix.py::test_prioritization_matrix_valid
+tests/test_adaptive_reranking.py::test_adaptive_topn_complex_query
+[gw0] [  6%] PASSED tests/test_onboarding_agent.py::test_process_turn_step1_max_followups_forces_continue
+[gw3] [  6%] PASSED tests/test_memory_schemas.py::test_engagement_state_invalid_progress_negative
+tests/test_onboarding_agent.py::test_process_turn_step2_complete_challenges
+tests/test_memory_schemas.py::test_engagement_state_invalid_progress_over_100
+[gw7] [  7%] PASSED tests/memory/test_mem0_client.py::test_deserialize_profile_invalid_data_raises_error
+[gw5] [  7%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_valid
+tests/test_prioritization_matrix.py::test_prioritization_matrix_unique_ranks_validator
+[gw1] [  7%] PASSED tests/test_adaptive_reranking.py::test_adaptive_topn_complex_query
+tests/memory/test_mem0_client.py::test_save_profile_success
+tests/test_adaptive_reranking.py::test_adaptive_topn_multiple_questions
+[gw3] [  7%] PASSED tests/test_memory_schemas.py::test_engagement_state_invalid_progress_over_100
+tests/test_memory_schemas.py::test_engagement_state_invalid_phase
+[gw0] [  7%] PASSED tests/test_onboarding_agent.py::test_process_turn_step2_complete_challenges
+tests/test_onboarding_agent.py::test_process_turn_step2_incomplete_triggers_followup
+[gw1] [  7%] PASSED tests/test_adaptive_reranking.py::test_adaptive_topn_multiple_questions
+[gw3] [  7%] PASSED tests/test_memory_schemas.py::test_engagement_state_invalid_phase
+tests/test_adaptive_reranking.py::test_mmr_basic_functionality
+[gw5] [  8%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_unique_ranks_validator
+tests/test_memory_schemas.py::test_client_profile_to_mem0
+tests/test_prioritization_matrix.py::test_prioritization_matrix_sequential_ranks_validator
+[gw3] [  8%] PASSED tests/test_memory_schemas.py::test_client_profile_to_mem0
+[gw2] [  8%] FAILED tests/test_onboarding_conversational.py::test_extract_all_entities_partial_extraction
+[gw0] [  8%] PASSED tests/test_onboarding_agent.py::test_process_turn_step2_incomplete_triggers_followup
+tests/test_memory_schemas.py::test_client_profile_from_mem0
+tests/test_onboarding_agent.py::test_process_turn_step3_completes_onboarding
+tests/test_onboarding_conversational.py::test_extract_all_entities_empty_text
+[gw3] [  8%] PASSED tests/test_memory_schemas.py::test_client_profile_from_mem0
+[gw5] [  8%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_sequential_ranks_validator
+tests/test_prioritization_matrix.py::test_prioritization_matrix_top_n_method
+[gw1] [  8%] PASSED tests/test_adaptive_reranking.py::test_mmr_basic_functionality
+tests/test_adaptive_reranking.py::test_mmr_diversity_vs_relevance
+tests/test_memory_schemas.py::test_client_profile_round_trip_complex
+[gw0] [  9%] PASSED tests/test_onboarding_agent.py::test_process_turn_step3_completes_onboarding
+[gw3] [  9%] PASSED tests/test_memory_schemas.py::test_client_profile_round_trip_complex
+[gw5] [  9%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_top_n_method
+tests/test_onboarding_agent.py::test_process_turn_step3_incomplete_triggers_followup
+tests/test_memory_schemas.py::test_client_profile_without_diagnostics
+tests/test_prioritization_matrix.py::test_prioritization_matrix_by_priority_level_method
+[gw3] [  9%] PASSED tests/test_memory_schemas.py::test_client_profile_without_diagnostics
+[gw1] [  9%] PASSED tests/test_adaptive_reranking.py::test_mmr_diversity_vs_relevance
+tests/test_adaptive_reranking.py::test_mmr_lambda_relevance_only
+[gw5] [  9%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_by_priority_level_method
+tests/test_memory_schemas.py::test_company_name_with_whitespace
+tests/test_prioritization_matrix.py::test_prioritization_matrix_by_perspective_method
+[gw0] [  9%] PASSED tests/test_onboarding_agent.py::test_process_turn_step3_incomplete_triggers_followup
+[gw3] [ 10%] PASSED tests/test_memory_schemas.py::test_company_name_with_whitespace
+tests/test_onboarding_agent.py::test_is_onboarding_complete_returns_false_initially
+tests/test_memory_schemas.py::test_engagement_state_progress_boundaries
+[gw1] [ 10%] PASSED tests/test_adaptive_reranking.py::test_mmr_lambda_relevance_only
+[gw5] [ 10%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_by_perspective_method
+[gw3] [ 10%] PASSED tests/test_memory_schemas.py::test_engagement_state_progress_boundaries
+tests/test_prioritization_matrix.py::test_prioritization_matrix_is_balanced_method
+tests/test_adaptive_reranking.py::test_mmr_empty_documents
+tests/test_memory_schemas.py::test_client_profile_metadata_custom
+[gw0] [ 10%] PASSED tests/test_onboarding_agent.py::test_is_onboarding_complete_returns_false_initially
+tests/test_onboarding_agent.py::test_is_onboarding_complete_returns_true_when_all_steps_done
+[gw2] [ 10%] FAILED tests/test_onboarding_conversational.py::test_extract_all_entities_empty_text
+[gw5] [ 10%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_is_balanced_method
+[gw1] [ 11%] PASSED tests/test_adaptive_reranking.py::test_mmr_empty_documents
+tests/test_adaptive_reranking.py::test_mmr_embeddings_mismatch
+[gw0] [ 11%] PASSED tests/test_onboarding_agent.py::test_is_onboarding_complete_returns_true_when_all_steps_done
+[gw3] [ 11%] PASSED tests/test_memory_schemas.py::test_client_profile_metadata_custom
+tests/test_memory_schemas.py::test_client_profile_complete_workflow
+tests/test_prioritization_matrix.py::test_prioritization_matrix_summary_method
+[gw5] [ 11%] PASSED tests/test_prioritization_matrix.py::test_prioritization_matrix_summary_method
+tests/test_onboarding_agent.py::test_generate_initial_question_step1
+[gw1] [ 11%] PASSED tests/test_adaptive_reranking.py::test_mmr_embeddings_mismatch
+tests/test_prioritization_matrix.py::test_format_prioritization_matrix_for_display
+tests/test_onboarding_conversational.py::test_extract_all_entities_json_parse_error_fallback
+[gw3] [ 11%] PASSED tests/test_memory_schemas.py::test_client_profile_complete_workflow
+tests/test_adaptive_reranking.py::test_mmr_with_metadata_boost
+tests/test_query_decomposer.py::test_should_decompose_query_complexa_multipart
+[gw5] [ 11%] PASSED tests/test_prioritization_matrix.py::test_format_prioritization_matrix_for_display
+tests/test_prioritization_matrix.py::test_build_items_context
+[gw0] [ 12%] FAILED tests/test_onboarding_agent.py::test_generate_initial_question_step1
+[gw1] [ 12%] PASSED tests/test_adaptive_reranking.py::test_mmr_with_metadata_boost
+tests/test_adaptive_reranking.py::test_mmr_without_metadata_boost
+tests/test_onboarding_agent.py::test_generate_initial_question_step2
+[gw5] [ 12%] PASSED tests/test_prioritization_matrix.py::test_build_items_context
+[gw3] [ 12%] PASSED tests/test_query_decomposer.py::test_should_decompose_query_complexa_multipart
+tests/test_action_plan.py::test_action_plan_tool_initialization
+tests/test_query_decomposer.py::test_should_not_decompose_query_simples
+[gw3] [ 12%] PASSED tests/test_query_decomposer.py::test_should_not_decompose_query_simples
+[gw1] [ 12%] PASSED tests/test_adaptive_reranking.py::test_mmr_without_metadata_boost
+tests/test_query_decomposer.py::test_should_decompose_query_com_multiplas_conjuncoes
+tests/test_adaptive_reranking.py::test_mmr_adaptive_topn_integration
+[gw5] [ 12%] PASSED tests/test_action_plan.py::test_action_plan_tool_initialization
+[gw2] [ 13%] FAILED tests/test_onboarding_conversational.py::test_extract_all_entities_json_parse_error_fallback
+tests/test_action_plan.py::test_action_plan_tool_structured_llm_creation
+[gw0] [ 13%] FAILED tests/test_onboarding_agent.py::test_generate_initial_question_step2
+tests/test_onboarding_agent.py::test_generate_initial_question_step3
+[gw3] [ 13%] PASSED tests/test_query_decomposer.py::test_should_decompose_query_com_multiplas_conjuncoes
+tests/test_query_decomposer.py::test_should_decompose_query_longa
+tests/test_onboarding_conversational.py::test_extract_all_entities_markdown_json_extraction
+[gw5] [ 13%] PASSED tests/test_action_plan.py::test_action_plan_tool_structured_llm_creation
+[gw3] [ 13%] PASSED tests/test_query_decomposer.py::test_should_decompose_query_longa
+[gw1] [ 13%] PASSED tests/test_adaptive_reranking.py::test_mmr_adaptive_topn_integration
+tests/test_action_plan.py::test_facilitate_action_plan_success
+tests/test_query_decomposer.py::test_should_not_decompose_query_curta
+tests/test_adaptive_reranking.py::test_mmr_with_unnormalized_embeddings
+[gw0] [ 13%] FAILED tests/test_onboarding_agent.py::test_generate_initial_question_step3
+[gw3] [ 14%] PASSED tests/test_query_decomposer.py::test_should_not_decompose_query_curta
+tests/test_onboarding_agent.py::test_validate_extraction_company_info_complete
+tests/test_query_decomposer.py::test_should_decompose_query_com_perspectivas_multiplas
+[gw1] [ 14%] PASSED tests/test_adaptive_reranking.py::test_mmr_with_unnormalized_embeddings
+[gw3] [ 14%] PASSED tests/test_query_decomposer.py::test_should_decompose_query_com_perspectivas_multiplas
+[gw0] [ 14%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_company_info_complete
+tests/test_adaptive_reranking.py::test_mmr_single_document
+tests/test_onboarding_agent.py::test_validate_extraction_company_info_incomplete
+tests/test_query_decomposer.py::test_decompose_query_complexa_gera_subqueries
+[gw0] [ 14%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_company_info_incomplete
+[gw2] [ 14%] FAILED tests/test_onboarding_conversational.py::test_extract_all_entities_markdown_json_extraction
+[gw1] [ 14%] PASSED tests/test_adaptive_reranking.py::test_mmr_single_document
+[gw5] [ 15%] PASSED tests/test_action_plan.py::test_facilitate_action_plan_success
+tests/test_onboarding_agent.py::test_validate_extraction_challenges_complete
+tests/test_adaptive_reranking.py::test_adaptive_topn_edge_cases
+tests/test_onboarding_conversational.py::test_collect_client_info_first_turn_initialization
+[gw1] [ 15%] PASSED tests/test_adaptive_reranking.py::test_adaptive_topn_edge_cases
+tests/test_action_plan.py::test_facilitate_action_plan_without_rag
+[gw0] [ 15%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_challenges_complete
+tests/test_adaptive_reranking.py::test_detect_language_portuguese
+tests/test_onboarding_agent.py::test_validate_extraction_challenges_incomplete
+[gw3] [ 15%] PASSED tests/test_query_decomposer.py::test_decompose_query_complexa_gera_subqueries
+[gw0] [ 15%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_challenges_incomplete
+[gw1] [ 15%] PASSED tests/test_adaptive_reranking.py::test_detect_language_portuguese
+tests/test_onboarding_agent.py::test_validate_extraction_objectives_complete
+[gw5] [ 15%] PASSED tests/test_action_plan.py::test_facilitate_action_plan_without_rag
+tests/test_adaptive_reranking.py::test_detect_language_portuguese_with_accents
+tests/test_query_decomposer.py::test_decompose_retorna_2_a_4_subqueries
+[gw0] [ 16%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_objectives_complete
+tests/test_action_plan.py::test_facilitate_action_plan_without_diagnostic
+tests/test_onboarding_agent.py::test_validate_extraction_objectives_incomplete
+[gw1] [ 16%] PASSED tests/test_adaptive_reranking.py::test_detect_language_portuguese_with_accents
+tests/test_adaptive_reranking.py::test_detect_language_english
+[gw0] [ 16%] PASSED tests/test_onboarding_agent.py::test_validate_extraction_objectives_incomplete
+tests/test_onboarding_agent.py::test_build_conversation_context
+[gw3] [ 16%] PASSED tests/test_query_decomposer.py::test_decompose_retorna_2_a_4_subqueries
+[gw1] [ 16%] PASSED tests/test_adaptive_reranking.py::test_detect_language_english
+[gw5] [ 16%] PASSED tests/test_action_plan.py::test_facilitate_action_plan_without_diagnostic
+[gw0] [ 16%] PASSED tests/test_onboarding_agent.py::test_build_conversation_context
+tests/test_adaptive_reranking.py::test_detect_language_mixed
+tests/test_onboarding_agent.py::test_complete_onboarding_workflow
+tests/test_query_decomposer.py::test_decompose_preserva_contexto_original
+tests/test_action_plan.py::test_facilitate_action_plan_validation_error
+[gw1] [ 17%] PASSED tests/test_adaptive_reranking.py::test_detect_language_mixed
+tests/test_adaptive_reranking.py::test_detect_language_no_keywords
+[gw0] [ 17%] PASSED tests/test_onboarding_agent.py::test_complete_onboarding_workflow
+tests/test_onboarding_agent.py::test_extract_all_entities_smoke_todas_categorias
+[gw1] [ 17%] PASSED tests/test_adaptive_reranking.py::test_detect_language_no_keywords
+[gw3] [ 17%] PASSED tests/test_query_decomposer.py::test_decompose_preserva_contexto_original
+tests/test_adaptive_reranking.py::test_detect_language_pt_majority
+[gw5] [ 17%] PASSED tests/test_action_plan.py::test_facilitate_action_plan_validation_error
+tests/test_query_decomposer.py::test_decompose_subqueries_independentes
+[gw1] [ 17%] PASSED tests/test_adaptive_reranking.py::test_detect_language_pt_majority
+tests/test_action_plan.py::test_facilitate_action_plan_retry_logic
+tests/test_adaptive_reranking.py::test_detect_language_en_majority
+[gw1] [ 17%] PASSED tests/test_adaptive_reranking.py::test_detect_language_en_majority
+tests/test_adaptive_reranking.py::test_rerank_basic
+[gw3] [ 18%] PASSED tests/test_query_decomposer.py::test_decompose_subqueries_independentes
+[gw5] [ 18%] PASSED tests/test_action_plan.py::test_facilitate_action_plan_retry_logic
+[gw1] [ 18%] PASSED tests/test_adaptive_reranking.py::test_rerank_basic
+tests/test_query_decomposer.py::test_query_vazia_nao_decompoe
+tests/test_action_plan.py::test_synthesize_action_plan_success
+tests/test_adaptive_reranking.py::test_rerank_empty_documents
+[gw3] [ 18%] PASSED tests/test_query_decomposer.py::test_query_vazia_nao_decompoe
+tests/test_query_decomposer.py::test_query_muito_longa_trunca
+[gw1] [ 18%] PASSED tests/test_adaptive_reranking.py::test_rerank_empty_documents
+tests/test_adaptive_reranking.py::test_rerank_adaptive_multilingual
+[gw0] [ 18%] FAILED tests/test_onboarding_agent.py::test_extract_all_entities_smoke_todas_categorias
+[gw5] [ 18%] PASSED tests/test_action_plan.py::test_synthesize_action_plan_success
+[gw3] [ 19%] PASSED tests/test_query_decomposer.py::test_query_muito_longa_trunca
+[gw1] [ 19%] PASSED tests/test_adaptive_reranking.py::test_rerank_adaptive_multilingual
+tests/test_action_plan.py::test_validate_action_plan_quality
+tests/test_onboarding_agent.py::test_extract_all_entities_smoke_apenas_company_info
+tests/test_adaptive_reranking.py::test_rerank_error_handling
+tests/test_query_decomposer.py::test_parse_subqueries_malformadas
+[gw5] [ 19%] PASSED tests/test_action_plan.py::test_validate_action_plan_quality
+[gw1] [ 19%] PASSED tests/test_adaptive_reranking.py::test_rerank_error_handling
+tests/test_action_plan.py::test_validate_action_plan_none
+tests/test_adaptive_reranking.py::test_rerank_with_scores_basic
+[gw3] [ 19%] PASSED tests/test_query_decomposer.py::test_parse_subqueries_malformadas
+[gw5] [ 19%] PASSED tests/test_action_plan.py::test_validate_action_plan_none
+[gw1] [ 19%] PASSED tests/test_adaptive_reranking.py::test_rerank_with_scores_basic
+tests/test_action_plan.py::test_build_bsc_knowledge_context_success
+tests/test_adaptive_reranking.py::test_rerank_with_scores_high_threshold
+tests/test_query_decomposer.py::test_retrieve_with_decomposition_workflow_completo
+[gw0] [ 20%] FAILED tests/test_onboarding_agent.py::test_extract_all_entities_smoke_apenas_company_info
+tests/test_onboarding_agent.py::test_extract_all_entities_smoke_objectives_antes_challenges
+[gw1] [ 20%] PASSED tests/test_adaptive_reranking.py::test_rerank_with_scores_high_threshold
+[gw5] [ 20%] PASSED tests/test_action_plan.py::test_build_bsc_knowledge_context_success
+tests/test_adaptive_reranking.py::test_fusion_reranker_basic
+[gw3] [ 20%] PASSED tests/test_query_decomposer.py::test_retrieve_with_decomposition_workflow_completo
+[gw1] [ 20%] PASSED tests/test_adaptive_reranking.py::test_fusion_reranker_basic
+tests/test_action_plan.py::test_build_bsc_knowledge_context_no_agents
+tests/test_adaptive_reranking.py::test_fusion_reranker_single_list
+tests/test_query_decomposer.py::test_retrieve_fallback_quando_decomposicao_falha
+[gw1] [ 20%] PASSED tests/test_adaptive_reranking.py::test_fusion_reranker_single_list
+tests/test_adaptive_reranking.py::test_fusion_reranker_empty_lists
+[gw5] [ 20%] PASSED tests/test_action_plan.py::test_build_bsc_knowledge_context_no_agents
+[gw0] [ 21%] FAILED tests/test_onboarding_agent.py::test_extract_all_entities_smoke_objectives_antes_challenges
+[gw1] [ 21%] PASSED tests/test_adaptive_reranking.py::test_fusion_reranker_empty_lists
+[gw3] [ 21%] PASSED tests/test_query_decomposer.py::test_retrieve_fallback_quando_decomposicao_falha
+tests/test_adaptive_reranking.py::test_hybrid_reranker_basic
+tests/test_action_plan.py::test_build_bsc_knowledge_context_agent_error
+tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_frustration_detected
+tests/test_query_decomposer.py::test_decomposer_disabled_nunca_decompoe
+[gw1] [ 21%] PASSED tests/test_adaptive_reranking.py::test_hybrid_reranker_basic
+[gw3] [ 21%] PASSED tests/test_query_decomposer.py::test_decomposer_disabled_nunca_decompoe
+tests/test_consulting_orchestrator.py::test_coordinate_onboarding_start
+tests/test_query_decomposer.py::test_threshold_customizado
+[gw5] [ 21%] PASSED tests/test_action_plan.py::test_build_bsc_knowledge_context_agent_error
+[gw0] [ 21%] PASSED tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_frustration_detected
+[gw3] [ 22%] PASSED tests/test_query_decomposer.py::test_threshold_customizado
+tests/test_query_decomposer.py::test_multiple_perspectives_aumenta_score
+tests/test_action_plan.py::test_format_for_display
+tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_standard_flow
+[gw3] [ 22%] PASSED tests/test_query_decomposer.py::test_multiple_perspectives_aumenta_score
+tests/test_query_decomposer.py::test_get_stats
+[gw5] [ 22%] PASSED tests/test_action_plan.py::test_format_for_display
+[gw3] [ 22%] PASSED tests/test_query_decomposer.py::test_get_stats
+tests/test_action_plan.py::test_get_quality_metrics
+tests/test_query_decomposer.py::test_decompose_latency_acceptable
+[gw0] [ 22%] PASSED tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_standard_flow
+[gw5] [ 22%] PASSED tests/test_action_plan.py::test_get_quality_metrics
+tests/test_action_plan.py::test_e2e_action_plan_generation
+tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_information_complete
+[gw3] [ 22%] PASSED tests/test_query_decomposer.py::test_decompose_latency_acceptable
+tests/test_kpi_definer.py::test_kpi_definer_tool_initialization
+[gw5] [ 23%] PASSED tests/test_action_plan.py::test_e2e_action_plan_generation
+[gw0] [ 23%] FAILED tests/test_onboarding_agent.py::test_analyze_conversation_context_smoke_information_complete
+tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_frustration
+tests/test_action_plan.py::test_e2e_action_plan_with_diagnostic_agent
+[gw3] [ 23%] PASSED tests/test_kpi_definer.py::test_kpi_definer_tool_initialization
+tests/test_kpi_definer.py::test_kpi_definer_tool_initialization_with_all_agents
+[gw0] [ 23%] PASSED tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_frustration
+tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_confirmation
+[gw3] [ 23%] PASSED tests/test_kpi_definer.py::test_kpi_definer_tool_initialization_with_all_agents
+tests/test_kpi_definer.py::test_define_kpis_without_rag
+[gw0] [ 23%] PASSED tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_confirmation
+tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_redirect
+[gw3] [ 23%] PASSED tests/test_kpi_definer.py::test_define_kpis_without_rag
+[gw0] [ 24%] PASSED tests/test_onboarding_agent.py::test_generate_contextual_response_smoke_redirect
+tests/test_kpi_definer.py::test_define_kpis_with_rag
+tests/test_onboarding_agent.py::test_e2e_objectives_before_challenges
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_define_kpis_with_rag
+tests/test_kpi_definer.py::test_define_kpis_missing_company_info
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_define_kpis_missing_company_info
+tests/test_kpi_definer.py::test_define_kpis_missing_strategic_context
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_define_kpis_missing_strategic_context
+tests/test_kpi_definer.py::test_define_kpis_missing_diagnostic_result
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_define_kpis_missing_diagnostic_result
+tests/test_kpi_definer.py::test_kpi_definition_valid
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_kpi_definition_valid
+tests/test_kpi_definer.py::test_kpi_definition_invalid_name_too_short
+[gw3] [ 24%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_name_too_short
+tests/test_kpi_definer.py::test_kpi_definition_invalid_name_empty
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_name_empty
+tests/test_kpi_definer.py::test_kpi_definition_invalid_description_too_short
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_description_too_short
+tests/test_kpi_definer.py::test_kpi_definition_invalid_perspective
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_perspective
+tests/test_kpi_definer.py::test_kpi_definition_invalid_metric_type
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_metric_type
+tests/test_kpi_definer.py::test_kpi_definition_invalid_measurement_frequency
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_definition_invalid_measurement_frequency
+tests/test_kpi_definer.py::test_kpi_framework_valid
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_framework_valid
+tests/test_kpi_definer.py::test_kpi_framework_invalid_too_few_kpis_per_perspective
+[gw3] [ 25%] PASSED tests/test_kpi_definer.py::test_kpi_framework_invalid_too_few_kpis_per_perspective
+tests/test_kpi_definer.py::test_kpi_framework_invalid_wrong_perspective
+[gw3] [ 26%] PASSED tests/test_kpi_definer.py::test_kpi_framework_invalid_wrong_perspective
+tests/test_kpi_definer.py::test_kpi_framework_by_perspective_method
+[gw3] [ 26%] PASSED tests/test_kpi_definer.py::test_kpi_framework_by_perspective_method
+tests/test_kpi_definer.py::test_kpi_framework_summary_method
+[gw3] [ 26%] PASSED tests/test_kpi_definer.py::test_kpi_framework_summary_method
+tests/test_tool_output_persistence.py::test_e2e_save_swot_output
+[gw2] [ 26%] FAILED tests/test_onboarding_conversational.py::test_collect_client_info_first_turn_initialization
+tests/test_onboarding_conversational.py::test_collect_client_info_accumulation_multiple_turns
+[gw2] [ 26%] FAILED tests/test_onboarding_conversational.py::test_collect_client_info_accumulation_multiple_turns
+tests/test_onboarding_conversational.py::test_collect_client_info_minimum_info_completion
+[gw2] [ 26%] FAILED tests/test_onboarding_conversational.py::test_collect_client_info_minimum_info_completion
+tests/test_onboarding_conversational.py::test_collect_client_info_challenges_accumulation
+[gw2] [ 26%] FAILED tests/test_onboarding_conversational.py::test_collect_client_info_challenges_accumulation
+tests/test_onboarding_conversational.py::test_collect_client_info_llm_error_fallback_question
+[gw2] [ 27%] FAILED tests/test_onboarding_conversational.py::test_collect_client_info_llm_error_fallback_question
+tests/test_onboarding_conversational.py::test_entity_extraction_prompt_has_required_fields
+[gw2] [ 27%] PASSED tests/test_onboarding_conversational.py::test_entity_extraction_prompt_has_required_fields
+tests/test_onboarding_conversational.py::test_opportunistic_followup_prompt_has_context
+[gw2] [ 27%] PASSED tests/test_onboarding_conversational.py::test_opportunistic_followup_prompt_has_context
+tests/test_onboarding_conversational.py::test_context_aware_question_prompt_has_prioritization
+[gw2] [ 27%] PASSED tests/test_onboarding_conversational.py::test_context_aware_question_prompt_has_prioritization
+tests/test_onboarding_conversational.py::test_all_prompts_have_examples
+[gw2] [ 27%] PASSED tests/test_onboarding_conversational.py::test_all_prompts_have_examples
+tests/test_onboarding_conversational.py::test_prompts_are_anti_hallucination
+[gw2] [ 27%] PASSED tests/test_onboarding_conversational.py::test_prompts_are_anti_hallucination
+tests/test_onboarding_conversational.py::test_validate_challenge_correct
+[gw2] [ 27%] FAILED tests/test_onboarding_conversational.py::test_validate_challenge_correct
+tests/test_onboarding_conversational.py::test_validate_objective_correct
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_objective_correct
+tests/test_onboarding_conversational.py::test_validate_challenge_misclassified_as_objective
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_challenge_misclassified_as_objective
+tests/test_onboarding_conversational.py::test_validate_objective_misclassified_as_challenge
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_objective_misclassified_as_challenge
+tests/test_onboarding_conversational.py::test_validate_ambiguous_text
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_ambiguous_text
+tests/test_onboarding_conversational.py::test_validate_high_confidence
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_high_confidence
+tests/test_onboarding_conversational.py::test_validate_low_confidence
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_low_confidence
+tests/test_onboarding_conversational.py::test_validate_json_parse_error_fallback
+[gw2] [ 28%] FAILED tests/test_onboarding_conversational.py::test_validate_json_parse_error_fallback
+tests/test_onboarding_conversational.py::test_validate_markdown_json_extraction
+[gw2] [ 29%] FAILED tests/test_onboarding_conversational.py::test_validate_markdown_json_extraction
+tests/test_onboarding_conversational.py::test_validate_batch_mixed
+[gw2] [ 29%] FAILED tests/test_onboarding_conversational.py::test_validate_batch_mixed
+tests/test_onboarding_conversational.py::test_extract_with_validation_reclassify_challenge_to_objective
+[gw2] [ 29%] FAILED tests/test_onboarding_conversational.py::test_extract_with_validation_reclassify_challenge_to_objective
+tests/test_onboarding_conversational.py::test_extract_with_validation_reclassify_objective_to_challenge
+[gw2] [ 29%] FAILED tests/test_onboarding_conversational.py::test_extract_with_validation_reclassify_objective_to_challenge
+tests/test_onboarding_conversational.py::test_extract_with_validation_preserves_correct
+[gw2] [ 29%] FAILED tests/test_onboarding_conversational.py::test_extract_with_validation_preserves_correct
+tests/test_tool_selection.py::test_heuristic_five_whys_with_root_cause_keyword
+[gw2] [ 29%] PASSED tests/test_tool_selection.py::test_heuristic_five_whys_with_root_cause_keyword
+tests/test_tool_selection.py::test_heuristic_five_whys_with_why_keyword
+[gw2] [ 29%] PASSED tests/test_tool_selection.py::test_heuristic_five_whys_with_why_keyword
+tests/test_tool_selection.py::test_heuristic_swot_with_explicit_keyword
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_swot_with_explicit_keyword
+tests/test_tool_selection.py::test_heuristic_swot_with_strengths_weaknesses
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_swot_with_strengths_weaknesses
+tests/test_tool_selection.py::test_heuristic_issue_tree_with_decompose_keyword
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_issue_tree_with_decompose_keyword
+tests/test_tool_selection.py::test_heuristic_kpi_definer_with_explicit_keyword
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_kpi_definer_with_explicit_keyword
+tests/test_tool_selection.py::test_heuristic_strategic_objectives_with_goals_keyword
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_strategic_objectives_with_goals_keyword
+tests/test_tool_selection.py::test_heuristic_benchmarking_with_comparison_keyword
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_benchmarking_with_comparison_keyword
+tests/test_tool_selection.py::test_heuristic_no_match_returns_none
+[gw2] [ 30%] PASSED tests/test_tool_selection.py::test_heuristic_no_match_returns_none
+tests/test_tool_selection.py::test_heuristic_combined_query_and_diagnostic
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_heuristic_combined_query_and_diagnostic
+tests/test_tool_selection.py::test_llm_classifier_with_ambiguous_query
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_llm_classifier_with_ambiguous_query
+tests/test_tool_selection.py::test_suggest_tool_heuristic_path_success
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_suggest_tool_heuristic_path_success
+tests/test_tool_selection.py::test_suggest_tool_llm_path_fallback
+[gw2] [ 31%] FAILED tests/test_tool_selection.py::test_suggest_tool_llm_path_fallback
+tests/test_tool_selection.py::test_suggest_tool_fallback_swot_when_all_fail
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_suggest_tool_fallback_swot_when_all_fail
+tests/test_tool_selection.py::test_suggest_tool_with_diagnostic_context
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_suggest_tool_with_diagnostic_context
+tests/test_tool_selection.py::test_suggest_tool_with_none_query
+[gw2] [ 31%] PASSED tests/test_tool_selection.py::test_suggest_tool_with_none_query
+tests/test_tool_selection.py::test_heuristic_case_insensitive
+[gw2] [ 32%] PASSED tests/test_tool_selection.py::test_heuristic_case_insensitive
+tests/test_tool_selection.py::test_suggest_tool_with_none_diagnostic
+[gw2] [ 32%] PASSED tests/test_tool_selection.py::test_suggest_tool_with_none_diagnostic
+tests/test_benchmarking_tool.py::test_benchmark_comparison_valid_data
+[gw2] [ 32%] PASSED tests/test_benchmarking_tool.py::test_benchmark_comparison_valid_data
+tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_validator_extreme_positive
+[gw2] [ 32%] PASSED tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_validator_extreme_positive
+tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_validator_extreme_negative
+[gw2] [ 32%] PASSED tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_validator_extreme_negative
+tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_type_misalignment
+[gw2] [ 32%] PASSED tests/test_benchmarking_tool.py::test_benchmark_comparison_gap_type_misalignment
+tests/test_benchmarking_tool.py::test_benchmark_comparison_source_too_generic
+[gw2] [ 32%] PASSED tests/test_benchmarking_tool.py::test_benchmark_comparison_source_too_generic
+tests/test_benchmarking_tool.py::test_benchmark_report_valid_8_comparisons
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_benchmark_report_valid_8_comparisons
+tests/test_benchmarking_tool.py::test_benchmark_report_unbalanced_perspectives
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_benchmark_report_unbalanced_perspectives
+tests/test_benchmarking_tool.py::test_build_company_context
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_build_company_context
+tests/test_benchmarking_tool.py::test_build_diagnostic_context
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_build_diagnostic_context
+tests/test_benchmarking_tool.py::test_build_kpi_context_with_kpis
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_build_kpi_context_with_kpis
+tests/test_benchmarking_tool.py::test_build_kpi_context_without_kpis
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_build_kpi_context_without_kpis
+tests/test_benchmarking_tool.py::test_generate_benchmarks_without_rag
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_generate_benchmarks_without_rag
+tests/test_benchmarking_tool.py::test_generate_benchmarks_with_rag
+[gw2] [ 33%] PASSED tests/test_benchmarking_tool.py::test_generate_benchmarks_with_rag
+tests/test_benchmarking_tool.py::test_generate_benchmarks_with_kpi_framework
+[gw2] [ 34%] PASSED tests/test_benchmarking_tool.py::test_generate_benchmarks_with_kpi_framework
+tests/test_benchmarking_tool.py::test_generate_benchmarks_missing_company_info
+[gw2] [ 34%] PASSED tests/test_benchmarking_tool.py::test_generate_benchmarks_missing_company_info
+tests/test_benchmarking_tool.py::test_generate_benchmarks_incomplete_diagnostic
+[gw2] [ 34%] PASSED tests/test_benchmarking_tool.py::test_generate_benchmarks_incomplete_diagnostic
+tests/test_client_profile_agent.py::test_client_profile_agent_initialization
+[gw2] [ 34%] PASSED tests/test_client_profile_agent.py::test_client_profile_agent_initialization
+tests/test_client_profile_agent.py::test_client_profile_agent_with_custom_llm
+[gw2] [ 34%] PASSED tests/test_client_profile_agent.py::test_client_profile_agent_with_custom_llm
+tests/test_client_profile_agent.py::test_extract_company_info_success
+[gw2] [ 34%] PASSED tests/test_client_profile_agent.py::test_extract_company_info_success
+tests/test_client_profile_agent.py::test_extract_company_info_empty_conversation_raises_error
+[gw3] [ 34%] PASSED tests/test_tool_output_persistence.py::test_e2e_save_swot_output
+tests/test_tool_output_persistence.py::test_e2e_save_and_get_swot_output
+[gw1] [ 35%] FAILED tests/test_consulting_orchestrator.py::test_coordinate_onboarding_start
+tests/test_consulting_orchestrator.py::test_coordinate_onboarding_multi_turn
+[gw1] [ 35%] FAILED tests/test_consulting_orchestrator.py::test_coordinate_onboarding_multi_turn
+tests/test_consulting_orchestrator.py::test_coordinate_onboarding_complete
+[gw1] [ 35%] FAILED tests/test_consulting_orchestrator.py::test_coordinate_onboarding_complete
+tests/test_consulting_orchestrator.py::test_coordinate_onboarding_error_handling
+[gw1] [ 35%] FAILED tests/test_consulting_orchestrator.py::test_coordinate_onboarding_error_handling
+tests/test_consulting_orchestrator.py::test_coordinate_discovery_success
+[gw7] [ 35%] FAILED tests/memory/test_mem0_client.py::test_save_profile_success
+tests/memory/test_mem0_client.py::test_save_profile_validation_error
+[gw7] [ 35%] PASSED tests/memory/test_mem0_client.py::test_save_profile_validation_error
+tests/memory/test_mem0_client.py::test_load_profile_success
+[gw7] [ 35%] PASSED tests/memory/test_mem0_client.py::test_load_profile_success
+tests/memory/test_mem0_client.py::test_load_profile_not_found_raises_error
+[gw7] [ 36%] PASSED tests/memory/test_mem0_client.py::test_load_profile_not_found_raises_error
+tests/memory/test_mem0_client.py::test_load_profile_dict_format
+[gw7] [ 36%] PASSED tests/memory/test_mem0_client.py::test_load_profile_dict_format
+tests/memory/test_mem0_client.py::test_update_profile_success
+[gw2] [ 36%] PASSED tests/test_client_profile_agent.py::test_extract_company_info_empty_conversation_raises_error
+tests/test_client_profile_agent.py::test_extract_company_info_invalid_extraction_raises_error
+[gw3] [ 36%] FAILED tests/test_tool_output_persistence.py::test_e2e_save_and_get_swot_output
+tests/test_tool_output_persistence.py::test_save_five_whys_output
+[gw3] [ 36%] ERROR tests/test_tool_output_persistence.py::test_save_five_whys_output
+tests/test_tool_output_persistence.py::test_save_issue_tree_output
+[gw3] [ 36%] ERROR tests/test_tool_output_persistence.py::test_save_issue_tree_output
+tests/test_tool_output_persistence.py::test_save_kpi_framework_output
+[gw3] [ 36%] ERROR tests/test_tool_output_persistence.py::test_save_kpi_framework_output
+tests/test_tool_output_persistence.py::test_save_strategic_objectives_output
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_save_strategic_objectives_output
+tests/test_tool_output_persistence.py::test_save_benchmarking_output
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_save_benchmarking_output
+tests/test_tool_output_persistence.py::test_get_tool_output_existing
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_get_tool_output_existing
+tests/test_tool_output_persistence.py::test_get_tool_output_not_found
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_get_tool_output_not_found
+tests/test_tool_output_persistence.py::test_get_tool_output_wrong_tool_name
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_get_tool_output_wrong_tool_name
+tests/test_tool_output_persistence.py::test_get_tool_output_multiple_outputs_same_client
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_get_tool_output_multiple_outputs_same_client
+tests/test_tool_output_persistence.py::test_save_deletes_old_output_same_tool
+[gw3] [ 37%] ERROR tests/test_tool_output_persistence.py::test_save_deletes_old_output_same_tool
+tests/test_tool_output_persistence.py::test_save_not_delete_different_tool
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_not_delete_different_tool
+tests/test_tool_output_persistence.py::test_save_tool_output_invalid_tool_output
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_tool_output_invalid_tool_output
+tests/test_tool_output_persistence.py::test_save_tool_output_empty_client_context
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_tool_output_empty_client_context
+tests/test_tool_output_persistence.py::test_save_tool_output_with_connection_error
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_tool_output_with_connection_error
+tests/test_tool_output_persistence.py::test_get_tool_output_with_timeout_error
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_get_tool_output_with_timeout_error
+tests/test_tool_output_persistence.py::test_save_and_get_swot_output
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_and_get_swot_output
+tests/test_tool_output_persistence.py::test_save_and_get_five_whys_output
+[gw3] [ 38%] ERROR tests/test_tool_output_persistence.py::test_save_and_get_five_whys_output
+tests/test_multi_client_dashboard.py::test_list_all_profiles_success_search_method
+[gw3] [ 39%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_success_search_method
+tests/test_multi_client_dashboard.py::test_list_all_profiles_fallback_get_all
+[gw3] [ 39%] PASSED tests/test_multi_client_dashboard.py::test_list_all_profiles_fallback_get_all
+tests/test_multi_client_dashboard.py::test_list_all_profiles_empty_results
+[gw3] [ 39%] PASSED tests/test_multi_client_dashboard.py::test_list_all_profiles_empty_results
+tests/test_multi_client_dashboard.py::test_list_all_profiles_filters_archived
+[gw3] [ 39%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_filters_archived
+tests/test_multi_client_dashboard.py::test_list_all_profiles_includes_archived_when_requested
+[gw3] [ 39%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_includes_archived_when_requested
+tests/test_multi_client_dashboard.py::test_list_all_profiles_sorted_by_updated_at_desc
+[gw3] [ 39%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_sorted_by_updated_at_desc
+tests/test_multi_client_dashboard.py::test_list_all_profiles_handles_corrupted_profile
+[gw3] [ 39%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_handles_corrupted_profile
+tests/test_multi_client_dashboard.py::test_list_all_profiles_respects_limit_parameter
+[gw3] [ 40%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_respects_limit_parameter
+tests/test_multi_client_dashboard.py::test_list_all_profiles_raises_error_on_connection_failure
+[gw3] [ 40%] FAILED tests/test_multi_client_dashboard.py::test_list_all_profiles_raises_error_on_connection_failure
+tests/test_multi_client_dashboard.py::test_get_client_summary_success
+[gw3] [ 40%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_success
+tests/test_multi_client_dashboard.py::test_get_client_summary_with_diagnostic
+[gw3] [ 40%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_with_diagnostic
+tests/test_multi_client_dashboard.py::test_get_client_summary_with_approval_status
+[gw3] [ 40%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_with_approval_status
+tests/test_multi_client_dashboard.py::test_get_client_summary_counts_all_tools
+[gw3] [ 40%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_counts_all_tools
+tests/test_multi_client_dashboard.py::test_get_client_summary_raises_profile_not_found
+[gw3] [ 40%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_raises_profile_not_found
+tests/test_multi_client_dashboard.py::test_get_client_summary_handles_error_gracefully
+[gw3] [ 41%] PASSED tests/test_multi_client_dashboard.py::test_get_client_summary_handles_error_gracefully
+tests/test_multi_client_dashboard.py::test_integration_list_and_summarize
+[gw3] [ 41%] PASSED tests/test_multi_client_dashboard.py::test_integration_list_and_summarize
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_initialization
+[gw7] [ 41%] PASSED tests/memory/test_mem0_client.py::test_update_profile_success
+tests/memory/test_mem0_client.py::test_update_profile_not_found
+[gw7] [ 41%] PASSED tests/memory/test_mem0_client.py::test_update_profile_not_found
+tests/memory/test_mem0_client.py::test_deep_update_nested_dict
+[gw7] [ 41%] PASSED tests/memory/test_mem0_client.py::test_deep_update_nested_dict
+tests/memory/test_mem0_client.py::test_search_profiles_success
+[gw7] [ 41%] PASSED tests/memory/test_mem0_client.py::test_search_profiles_success
+tests/memory/test_mem0_client.py::test_search_profiles_empty_results
+[gw7] [ 41%] PASSED tests/memory/test_mem0_client.py::test_search_profiles_empty_results
+tests/memory/test_mem0_client.py::test_search_profiles_with_corrupted_data
+[gw7] [ 42%] PASSED tests/memory/test_mem0_client.py::test_search_profiles_with_corrupted_data
+tests/memory/test_mem0_client.py::test_save_profile_retry_on_connection_error
+[gw2] [ 42%] PASSED tests/test_client_profile_agent.py::test_extract_company_info_invalid_extraction_raises_error
+tests/test_client_profile_agent.py::test_identify_challenges_success
+[gw2] [ 42%] PASSED tests/test_client_profile_agent.py::test_identify_challenges_success
+tests/test_client_profile_agent.py::test_identify_challenges_empty_conversation_raises_error
+[gw2] [ 42%] FAILED tests/test_client_profile_agent.py::test_identify_challenges_empty_conversation_raises_error
+tests/test_client_profile_agent.py::test_define_objectives_success
+[gw2] [ 42%] PASSED tests/test_client_profile_agent.py::test_define_objectives_success
+tests/test_client_profile_agent.py::test_define_objectives_empty_conversation_raises_error
+[gw2] [ 42%] FAILED tests/test_client_profile_agent.py::test_define_objectives_empty_conversation_raises_error
+tests/test_client_profile_agent.py::test_validate_extraction_valid_company_info
+[gw2] [ 42%] PASSED tests/test_client_profile_agent.py::test_validate_extraction_valid_company_info
+tests/test_client_profile_agent.py::test_validate_extraction_invalid_generic_name
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_validate_extraction_invalid_generic_name
+tests/test_client_profile_agent.py::test_validate_extraction_invalid_empty_sector
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_validate_extraction_invalid_empty_sector
+tests/test_client_profile_agent.py::test_validate_extraction_invalid_short_sector
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_validate_extraction_invalid_short_sector
+tests/test_client_profile_agent.py::test_client_profile_agent_has_correct_methods
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_client_profile_agent_has_correct_methods
+tests/test_client_profile_agent.py::test_challenges_list_schema_validation
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_challenges_list_schema_validation
+tests/test_client_profile_agent.py::test_objectives_list_schema_validation
+[gw2] [ 43%] PASSED tests/test_client_profile_agent.py::test_objectives_list_schema_validation
+tests/test_dashboard_streamlit.py::test_stats_summary_calculates_metrics_correctly
+[gw2] [ 43%] PASSED tests/test_dashboard_streamlit.py::test_stats_summary_calculates_metrics_correctly
+tests/test_dashboard_streamlit.py::test_stats_summary_counts_phases_correctly
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_stats_summary_counts_phases_correctly
+tests/test_dashboard_streamlit.py::test_render_filters_returns_all_when_no_filters
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_render_filters_returns_all_when_no_filters
+tests/test_dashboard_streamlit.py::test_filter_by_sector_works
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_filter_by_sector_works
+tests/test_dashboard_streamlit.py::test_filter_by_phase_works
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_filter_by_phase_works
+tests/test_dashboard_streamlit.py::test_filter_by_search_query_works
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_filter_by_search_query_works
+tests/test_dashboard_streamlit.py::test_filter_combined_works
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_filter_combined_works
+tests/test_dashboard_streamlit.py::test_client_card_has_all_required_fields
+[gw2] [ 44%] PASSED tests/test_dashboard_streamlit.py::test_client_card_has_all_required_fields
+tests/test_dashboard_streamlit.py::test_client_card_handles_optional_approval_status
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_client_card_handles_optional_approval_status
+tests/test_dashboard_streamlit.py::test_render_dashboard_handles_missing_mem0_client
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_render_dashboard_handles_missing_mem0_client
+tests/test_dashboard_streamlit.py::test_render_dashboard_integration_with_valid_session_state
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_render_dashboard_integration_with_valid_session_state
+tests/test_dashboard_streamlit.py::test_summary_dict_structure_is_valid
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_summary_dict_structure_is_valid
+tests/test_dashboard_streamlit.py::test_filter_handles_empty_summaries_list
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_filter_handles_empty_summaries_list
+tests/test_dashboard_streamlit.py::test_stats_summary_handles_zero_clients
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_stats_summary_handles_zero_clients
+tests/test_dashboard_streamlit.py::test_stats_summary_handles_clients_without_diagnostic
+[gw2] [ 45%] PASSED tests/test_dashboard_streamlit.py::test_stats_summary_handles_clients_without_diagnostic
+tests/test_five_whys.py::test_five_whys_tool_creation_with_all_agents
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_five_whys_tool_creation_with_all_agents
+tests/test_five_whys.py::test_five_whys_tool_creation_without_rag_agents
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_five_whys_tool_creation_without_rag_agents
+tests/test_five_whys.py::test_facilitate_five_whys_without_rag
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_facilitate_five_whys_without_rag
+tests/test_five_whys.py::test_facilitate_five_whys_with_rag
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_facilitate_five_whys_with_rag
+tests/test_five_whys.py::test_facilitate_five_whys_stops_early_if_root_cause_reached
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_facilitate_five_whys_stops_early_if_root_cause_reached
+tests/test_five_whys.py::test_facilitate_five_whys_raises_error_if_problem_too_short
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_facilitate_five_whys_raises_error_if_problem_too_short
+tests/test_five_whys.py::test_facilitate_five_whys_raises_error_if_less_than_3_iterations
+[gw2] [ 46%] PASSED tests/test_five_whys.py::test_facilitate_five_whys_raises_error_if_less_than_3_iterations
+tests/test_five_whys.py::test_five_whys_analysis_is_complete_true
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_is_complete_true
+tests/test_five_whys.py::test_five_whys_analysis_is_complete_false_insufficient_iterations
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_is_complete_false_insufficient_iterations
+tests/test_five_whys.py::test_five_whys_analysis_depth_reached
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_depth_reached
+tests/test_five_whys.py::test_five_whys_analysis_root_cause_confidence
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_root_cause_confidence
+tests/test_five_whys.py::test_five_whys_analysis_average_confidence
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_average_confidence
+tests/test_five_whys.py::test_five_whys_analysis_summary_format
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_summary_format
+tests/test_five_whys.py::test_five_whys_analysis_validates_iteration_sequence
+[gw2] [ 47%] PASSED tests/test_five_whys.py::test_five_whys_analysis_validates_iteration_sequence
+tests/test_five_whys.py::test_five_whys_analysis_validates_actions_not_empty
+[gw2] [ 48%] PASSED tests/test_five_whys.py::test_five_whys_analysis_validates_actions_not_empty
+tests/test_issue_tree.py::test_issue_tree_tool_creation_with_rag_agents
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_issue_tree_tool_creation_with_rag_agents
+tests/test_issue_tree.py::test_issue_tree_tool_creation_without_rag
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_issue_tree_tool_creation_without_rag
+tests/test_issue_tree.py::test_facilitate_issue_tree_basic_workflow
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_facilitate_issue_tree_basic_workflow
+tests/test_issue_tree.py::test_facilitate_issue_tree_max_depth_3
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_facilitate_issue_tree_max_depth_3
+tests/test_issue_tree.py::test_facilitate_issue_tree_raises_error_invalid_root_problem
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_facilitate_issue_tree_raises_error_invalid_root_problem
+tests/test_issue_tree.py::test_facilitate_issue_tree_raises_error_invalid_max_depth
+[gw2] [ 48%] PASSED tests/test_issue_tree.py::test_facilitate_issue_tree_raises_error_invalid_max_depth
+tests/test_issue_tree.py::test_facilitate_issue_tree_with_rag_enabled
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_facilitate_issue_tree_with_rag_enabled
+tests/test_issue_tree.py::test_issue_node_creation_valid
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_node_creation_valid
+tests/test_issue_tree.py::test_issue_node_validator_text_not_empty
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_node_validator_text_not_empty
+tests/test_issue_tree.py::test_issue_tree_analysis_creation_valid
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_creation_valid
+tests/test_issue_tree.py::test_issue_tree_analysis_validator_root_node_missing
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_validator_root_node_missing
+tests/test_issue_tree.py::test_issue_tree_analysis_is_complete
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_is_complete
+tests/test_issue_tree.py::test_issue_tree_analysis_validate_mece
+[gw2] [ 49%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_validate_mece
+tests/test_issue_tree.py::test_issue_tree_analysis_get_leaf_nodes
+[gw2] [ 50%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_get_leaf_nodes
+tests/test_issue_tree.py::test_issue_tree_analysis_summary
+[gw2] [ 50%] PASSED tests/test_issue_tree.py::test_issue_tree_analysis_summary
+tests/test_query_router.py::test_classify_simple_factual_query
+[gw2] [ 50%] PASSED tests/test_query_router.py::test_classify_simple_factual_query
+tests/test_query_router.py::test_classify_complex_multi_part_query
+[gw2] [ 50%] PASSED tests/test_query_router.py::test_classify_complex_multi_part_query
+tests/test_query_router.py::test_classify_relational_query
+[gw2] [ 50%] PASSED tests/test_query_router.py::test_classify_relational_query
+tests/test_query_router.py::test_classify_conceptual_broad_query
+[gw2] [ 50%] PASSED tests/test_query_router.py::test_classify_conceptual_broad_query
+tests/test_query_router.py::test_classifier_confidence_high_for_clear_patterns
+[gw2] [ 50%] PASSED tests/test_query_router.py::test_classifier_confidence_high_for_clear_patterns
+tests/test_query_router.py::test_classifier_uses_llm_fallback
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_classifier_uses_llm_fallback
+tests/test_query_router.py::test_router_route_returns_strategy
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_route_returns_strategy
+tests/test_query_router.py::test_router_logs_decision
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_logs_decision
+tests/test_query_router.py::test_router_disabled_feature_flag
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_disabled_feature_flag
+tests/test_query_router.py::test_router_with_portuguese_query
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_with_portuguese_query
+tests/test_query_router.py::test_router_with_english_query
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_with_english_query
+tests/test_query_router.py::test_router_with_very_long_query
+[gw2] [ 51%] PASSED tests/test_query_router.py::test_router_with_very_long_query
+tests/test_query_router.py::test_router_with_four_perspectives_pattern
+[gw2] [ 52%] PASSED tests/test_query_router.py::test_router_with_four_perspectives_pattern
+tests/test_query_router.py::test_router_edge_case_empty_query
+[gw2] [ 52%] PASSED tests/test_query_router.py::test_router_edge_case_empty_query
+tests/test_query_router.py::test_classifier_calculate_complexity_score
+[gw2] [ 52%] PASSED tests/test_query_router.py::test_classifier_calculate_complexity_score
+tests/test_consulting_workflow.py::test_onboarding_workflow_start_cliente_novo
+[gw5] [ 52%] XFAIL tests/test_action_plan.py::test_e2e_action_plan_with_diagnostic_agent
+tests/test_action_plan.py::test_action_plan_schema_compatibility
+[gw5] [ 52%] PASSED tests/test_action_plan.py::test_action_plan_schema_compatibility
+tests/test_action_plan.py::test_action_plan_serialization
+[gw5] [ 52%] PASSED tests/test_action_plan.py::test_action_plan_serialization
+tests/test_memory_nodes.py::test_load_client_memory_success
+[gw5] [ 52%] PASSED tests/test_memory_nodes.py::test_load_client_memory_success
+tests/test_memory_nodes.py::test_load_client_memory_not_found
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_load_client_memory_not_found
+tests/test_memory_nodes.py::test_load_client_memory_no_user_id
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_load_client_memory_no_user_id
+tests/test_memory_nodes.py::test_load_client_memory_api_error
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_load_client_memory_api_error
+tests/test_memory_nodes.py::test_load_client_memory_factory_init_error
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_load_client_memory_factory_init_error
+tests/test_memory_nodes.py::test_save_client_memory_success
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_save_client_memory_success
+tests/test_memory_nodes.py::test_save_client_memory_no_profile
+[gw5] [ 53%] PASSED tests/test_memory_nodes.py::test_save_client_memory_no_profile
+tests/test_memory_nodes.py::test_save_client_memory_generates_user_id
+[gw4] [ 53%] FAILED tests/test_diagnostic_agent.py::test_analyze_perspective_financial
+tests/test_diagnostic_agent.py::test_analyze_perspective_customer
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_save_client_memory_generates_user_id
+tests/test_memory_nodes.py::test_save_client_memory_updates_timestamps
+[gw7] [ 54%] PASSED tests/memory/test_mem0_client.py::test_save_profile_retry_on_connection_error
+tests/memory/test_mem0_client.py::test_load_profile_retry_on_timeout_error
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_save_client_memory_updates_timestamps
+tests/test_memory_nodes.py::test_save_client_memory_api_error
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_save_client_memory_api_error
+tests/test_memory_nodes.py::test_save_client_memory_factory_init_error
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_save_client_memory_factory_init_error
+tests/test_memory_nodes.py::test_create_placeholder_profile
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_create_placeholder_profile
+tests/test_memory_nodes.py::test_create_placeholder_profile_default_name
+[gw5] [ 54%] PASSED tests/test_memory_nodes.py::test_create_placeholder_profile_default_name
+tests/test_memory_nodes.py::test_load_save_integration
+[gw5] [ 55%] PASSED tests/test_memory_nodes.py::test_load_save_integration
+tests/test_exports/test_template_manager.py::test_template_manager_loads_templates
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_template_manager_loads_templates
+tests/test_exports/test_template_manager.py::test_template_manager_invalid_directory_raises_error
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_template_manager_invalid_directory_raises_error
+tests/test_exports/test_template_manager.py::test_render_full_diagnostic_returns_html
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_render_full_diagnostic_returns_html
+tests/test_exports/test_template_manager.py::test_rendered_html_contains_company_name
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_rendered_html_contains_company_name
+tests/test_exports/test_template_manager.py::test_rendered_html_contains_executive_summary
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_rendered_html_contains_executive_summary
+tests/test_exports/test_template_manager.py::test_render_perspective_financial
+[gw5] [ 55%] PASSED tests/test_exports/test_template_manager.py::test_render_perspective_financial
+tests/test_exports/test_template_manager.py::test_render_perspective_invalid_raises_error
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_render_perspective_invalid_raises_error
+tests/test_exports/test_template_manager.py::test_format_date_filter_brazilian_format
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_format_date_filter_brazilian_format
+tests/test_exports/test_template_manager.py::test_format_datetime_filter_brazilian_format
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_format_datetime_filter_brazilian_format
+tests/test_exports/test_template_manager.py::test_format_number_filter_brazilian_format
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_format_number_filter_brazilian_format
+tests/test_exports/test_template_manager.py::test_priority_badge_class_mapping
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_priority_badge_class_mapping
+tests/test_exports/test_template_manager.py::test_template_not_found_raises_error
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_template_not_found_raises_error
+tests/test_exports/test_template_manager.py::test_html_length_reasonable
+[gw5] [ 56%] PASSED tests/test_exports/test_template_manager.py::test_html_length_reasonable
+tests/test_reranker.py::TestCohereReranker::test_init
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestCohereReranker::test_init
+tests/test_reranker.py::TestCohereReranker::test_rerank_success
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestCohereReranker::test_rerank_success
+tests/test_reranker.py::TestCohereReranker::test_rerank_empty_documents
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestCohereReranker::test_rerank_empty_documents
+tests/test_reranker.py::TestCohereReranker::test_rerank_with_error
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestCohereReranker::test_rerank_with_error
+tests/test_reranker.py::TestCohereReranker::test_rerank_with_scores
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestCohereReranker::test_rerank_with_scores
+tests/test_reranker.py::TestFusionReranker::test_init
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestFusionReranker::test_init
+tests/test_reranker.py::TestFusionReranker::test_fuse_single_list
+[gw5] [ 57%] PASSED tests/test_reranker.py::TestFusionReranker::test_fuse_single_list
+tests/test_reranker.py::TestFusionReranker::test_fuse_multiple_lists
+[gw5] [ 58%] PASSED tests/test_reranker.py::TestFusionReranker::test_fuse_multiple_lists
+tests/test_reranker.py::TestFusionReranker::test_fuse_respects_top_n
+[gw5] [ 58%] PASSED tests/test_reranker.py::TestFusionReranker::test_fuse_respects_top_n
+tests/test_reranker.py::TestFusionReranker::test_rrf_score_calculation
+[gw5] [ 58%] PASSED tests/test_reranker.py::TestFusionReranker::test_rrf_score_calculation
+tests/test_reranker.py::TestHybridReranker::test_init
+[gw5] [ 58%] PASSED tests/test_reranker.py::TestHybridReranker::test_init
+tests/test_reranker.py::TestHybridReranker::test_rerank_combines_methods
+[gw5] [ 58%] PASSED tests/test_reranker.py::TestHybridReranker::test_rerank_combines_methods
+tests/test_strategic_objectives.py::test_create_tool_without_rag
+[gw5] [ 58%] PASSED tests/test_strategic_objectives.py::test_create_tool_without_rag
+tests/test_strategic_objectives.py::test_create_tool_with_rag_but_no_agents
+[gw5] [ 58%] PASSED tests/test_strategic_objectives.py::test_create_tool_with_rag_but_no_agents
+tests/test_strategic_objectives.py::test_create_tool_with_rag_and_agents
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_create_tool_with_rag_and_agents
+tests/test_strategic_objectives.py::test_define_objectives_without_rag
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_define_objectives_without_rag
+tests/test_strategic_objectives.py::test_define_objectives_with_rag
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_define_objectives_with_rag
+tests/test_strategic_objectives.py::test_define_objectives_with_existing_kpis_linkage
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_define_objectives_with_existing_kpis_linkage
+tests/test_strategic_objectives.py::test_validates_company_info_required
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_validates_company_info_required
+tests/test_strategic_objectives.py::test_validates_strategic_context_required
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_validates_strategic_context_required
+tests/test_strategic_objectives.py::test_validates_diagnostic_result_required
+[gw5] [ 59%] PASSED tests/test_strategic_objectives.py::test_validates_diagnostic_result_required
+tests/test_strategic_objectives.py::test_strategic_objective_validators
+[gw5] [ 60%] PASSED tests/test_strategic_objectives.py::test_strategic_objective_validators
+tests/test_strategic_objectives.py::test_strategic_objectives_framework_cross_perspective_validation
+[gw5] [ 60%] PASSED tests/test_strategic_objectives.py::test_strategic_objectives_framework_cross_perspective_validation
+tests/test_strategic_objectives.py::test_strategic_objectives_framework_methods
+[gw5] [ 60%] PASSED tests/test_strategic_objectives.py::test_strategic_objectives_framework_methods
+tests/config/test_settings.py::TestMem0Settings::test_valid_mem0_api_key
+[gw5] [ 60%] PASSED tests/config/test_settings.py::TestMem0Settings::test_valid_mem0_api_key
+tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_empty_raises_error
+[gw5] [ 60%] PASSED tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_empty_raises_error
+tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_missing_raises_error
+[gw5] [ 60%] FAILED tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_missing_raises_error
+tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_invalid_prefix_raises_error
+[gw5] [ 60%] PASSED tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_invalid_prefix_raises_error
+tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_too_short_raises_error
+[gw5] [ 61%] PASSED tests/config/test_settings.py::TestMem0Settings::test_mem0_api_key_too_short_raises_error
+tests/config/test_settings.py::TestMem0Settings::test_memory_provider_default_is_mem0
+[gw7] [ 61%] PASSED tests/memory/test_mem0_client.py::test_load_profile_retry_on_timeout_error
+tests/memory/test_mem0_client.py::test_save_profile_max_retries_exceeded
+[gw5] [ 61%] PASSED tests/config/test_settings.py::TestMem0Settings::test_memory_provider_default_is_mem0
+tests/config/test_settings.py::TestMem0Settings::test_memory_provider_custom_valid
+[gw5] [ 61%] PASSED tests/config/test_settings.py::TestMem0Settings::test_memory_provider_custom_valid
+tests/config/test_settings.py::TestMem0Settings::test_memory_provider_invalid_raises_error
+[gw5] [ 61%] PASSED tests/config/test_settings.py::TestMem0Settings::test_memory_provider_invalid_raises_error
+tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_success_mem0
+[gw5] [ 61%] PASSED tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_success_mem0
+tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_provider_not_registered
+[gw5] [ 61%] FAILED tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_provider_not_registered
+tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_integration_real_factory
+[gw5] [ 62%] PASSED tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_integration_real_factory
+tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_import_error
+[gw5] [ 62%] PASSED tests/config/test_settings.py::TestValidateMemoryConfig::test_validate_memory_config_import_error
+tests/test_api/test_feedback_service.py::test_collect_feedback_stores_in_mem0
+[gw5] [ 62%] PASSED tests/test_api/test_feedback_service.py::test_collect_feedback_stores_in_mem0
+tests/test_api/test_feedback_service.py::test_collect_feedback_without_comment
+[gw3] [ 62%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_workflow_initialization
+tests/test_workflow.py::TestBSCWorkflow::test_get_workflow_singleton
+[gw5] [ 62%] PASSED tests/test_api/test_feedback_service.py::test_collect_feedback_without_comment
+tests/test_api/test_feedback_service.py::test_get_feedback_returns_feedback
+[gw5] [ 62%] PASSED tests/test_api/test_feedback_service.py::test_get_feedback_returns_feedback
+tests/test_api/test_feedback_service.py::test_get_feedback_returns_none_when_not_found
+[gw5] [ 62%] PASSED tests/test_api/test_feedback_service.py::test_get_feedback_returns_none_when_not_found
+tests/test_api/test_feedback_service.py::test_list_feedback_filters_by_diagnostic_id
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_list_feedback_filters_by_diagnostic_id
+tests/test_api/test_feedback_service.py::test_list_feedback_filters_by_rating
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_list_feedback_filters_by_rating
+tests/test_api/test_feedback_service.py::test_get_feedback_stats_calculates_average
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_get_feedback_stats_calculates_average
+tests/test_api/test_feedback_service.py::test_get_feedback_stats_handles_empty_list
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_get_feedback_stats_handles_empty_list
+tests/test_api/test_feedback_service.py::test_memory_to_feedback_converts_correctly
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_memory_to_feedback_converts_correctly
+tests/test_api/test_feedback_service.py::test_memory_to_feedback_handles_rating_only_message
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_memory_to_feedback_handles_rating_only_message
+tests/test_api/test_feedback_service.py::test_sanitize_metadata_truncates_large_metadata
+[gw5] [ 63%] PASSED tests/test_api/test_feedback_service.py::test_sanitize_metadata_truncates_large_metadata
+tests/test_api/test_feedback_service.py::test_list_feedback_handles_mem0_dict_response
+[gw5] [ 64%] PASSED tests/test_api/test_feedback_service.py::test_list_feedback_handles_mem0_dict_response
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_success
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_success
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_with_fallback
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_with_fallback
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_without_query
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_without_query
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_with_custom_bsc_knowledge
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_with_custom_bsc_knowledge
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_company_context_for_cot
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_company_context_for_cot
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_company_context_for_cot_none_profile
+[gw5] [ 64%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_company_context_for_cot_none_profile
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_bsc_knowledge_context
+[gw5] [ 65%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_bsc_knowledge_context
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_client_query_context
+[gw5] [ 65%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_build_client_query_context
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_structure_validation
+[gw5] [ 65%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_structure_validation
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_logging
+[gw5] [ 65%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_logging
+tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_error_logging
+[gw5] [ 65%] PASSED tests/test_facilitator_cot.py::TestFacilitatorChainOfThought::test_facilitate_cot_consulting_error_logging
+tests/memory/test_mem0_provider.py::test_mem0_provider_implements_memory_provider
+[gw5] [ 65%] PASSED tests/memory/test_mem0_provider.py::test_mem0_provider_implements_memory_provider
+tests/memory/test_mem0_provider.py::test_mem0_provider_has_required_methods
+[gw5] [ 65%] PASSED tests/memory/test_mem0_provider.py::test_mem0_provider_has_required_methods
+tests/memory/test_mem0_provider.py::test_mem0_provider_init_with_api_key
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_mem0_provider_init_with_api_key
+tests/memory/test_mem0_provider.py::test_mem0_provider_init_without_api_key_raises_error
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_mem0_provider_init_without_api_key_raises_error
+tests/memory/test_mem0_provider.py::test_save_profile_delegates_to_client
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_save_profile_delegates_to_client
+tests/memory/test_mem0_provider.py::test_save_profile_propagates_errors
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_save_profile_propagates_errors
+tests/memory/test_mem0_provider.py::test_load_profile_delegates_to_client
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_load_profile_delegates_to_client
+tests/memory/test_mem0_provider.py::test_load_profile_propagates_not_found_error
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_load_profile_propagates_not_found_error
+tests/memory/test_mem0_provider.py::test_update_profile_delegates_to_client
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_update_profile_delegates_to_client
+tests/memory/test_mem0_provider.py::test_search_profiles_delegates_to_client
+[gw5] [ 66%] PASSED tests/memory/test_mem0_provider.py::test_search_profiles_delegates_to_client
+tests/memory/test_mem0_provider.py::test_search_profiles_with_default_limit
+[gw5] [ 67%] PASSED tests/memory/test_mem0_provider.py::test_search_profiles_with_default_limit
+tests/test_api/test_notification_service.py::test_create_notification_returns_notification_id
+[gw2] [ 67%] FAILED tests/test_consulting_workflow.py::test_onboarding_workflow_start_cliente_novo
+tests/test_consulting_workflow.py::test_onboarding_workflow_multi_turn_completo
+[gw5] [ 67%] PASSED tests/test_api/test_notification_service.py::test_create_notification_returns_notification_id
+tests/test_api/test_notification_service.py::test_create_notification_validates_user_id_too_short
+[gw5] [ 67%] PASSED tests/test_api/test_notification_service.py::test_create_notification_validates_user_id_too_short
+tests/test_api/test_notification_service.py::test_create_notification_validates_title_too_short
+[gw5] [ 67%] PASSED tests/test_api/test_notification_service.py::test_create_notification_validates_title_too_short
+tests/test_api/test_notification_service.py::test_create_notification_validates_message_too_short
+[gw5] [ 67%] PASSED tests/test_api/test_notification_service.py::test_create_notification_validates_message_too_short
+tests/test_api/test_notification_service.py::test_mark_as_read_returns_true_when_found
+[gw5] [ 67%] PASSED tests/test_api/test_notification_service.py::test_mark_as_read_returns_true_when_found
+tests/test_api/test_notification_service.py::test_mark_as_read_returns_false_when_not_found
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_mark_as_read_returns_false_when_not_found
+tests/test_api/test_notification_service.py::test_get_notification_returns_notification_when_found
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_get_notification_returns_notification_when_found
+tests/test_api/test_notification_service.py::test_get_notification_returns_none_when_not_found
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_get_notification_returns_none_when_not_found
+tests/test_api/test_notification_service.py::test_list_notifications_returns_list
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_list_notifications_returns_list
+tests/test_api/test_notification_service.py::test_list_notifications_filters_by_user_id
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_list_notifications_filters_by_user_id
+tests/test_api/test_notification_service.py::test_list_notifications_filters_by_status
+[gw5] [ 68%] PASSED tests/test_api/test_notification_service.py::test_list_notifications_filters_by_status
+tests/test_judge_context_aware.py::test_diagnostic_context_accepts_no_sources
+[gw4] [ 68%] FAILED tests/test_diagnostic_agent.py::test_analyze_perspective_customer
+tests/test_diagnostic_agent.py::test_analyze_perspective_invalid_perspective
+[gw7] [ 69%] PASSED tests/memory/test_mem0_client.py::test_save_profile_max_retries_exceeded
+tests/test_swot_analysis.py::test_swot_tool_creation
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_swot_tool_creation
+tests/test_swot_analysis.py::test_facilitate_swot_without_rag
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_facilitate_swot_without_rag
+tests/test_swot_analysis.py::test_facilitate_swot_quality_score
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_facilitate_swot_quality_score
+tests/test_swot_analysis.py::test_facilitate_swot_summary
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_facilitate_swot_summary
+tests/test_swot_analysis.py::test_facilitate_swot_with_rag
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_facilitate_swot_with_rag
+tests/test_swot_analysis.py::test_facilitate_swot_llm_failure_raises_error
+[gw7] [ 69%] PASSED tests/test_swot_analysis.py::test_facilitate_swot_llm_failure_raises_error
+tests/test_swot_analysis.py::test_swot_is_complete_true
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_is_complete_true
+tests/test_swot_analysis.py::test_swot_is_complete_false_missing_items
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_is_complete_false_missing_items
+tests/test_swot_analysis.py::test_swot_quality_score_perfect
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_quality_score_perfect
+tests/test_swot_analysis.py::test_swot_quality_score_empty
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_quality_score_empty
+tests/test_swot_analysis.py::test_swot_quality_score_partial
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_quality_score_partial
+tests/test_swot_analysis.py::test_swot_summary_format
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_summary_format
+tests/test_swot_analysis.py::test_swot_tool_complete_workflow
+[gw7] [ 70%] PASSED tests/test_swot_analysis.py::test_swot_tool_complete_workflow
+tests/test_strategies.py::test_retrieval_strategy_abstract_raises_error
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_retrieval_strategy_abstract_raises_error
+tests/test_strategies.py::test_direct_answer_strategy_simple_query
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_direct_answer_strategy_simple_query
+tests/test_strategies.py::test_direct_answer_strategy_uses_cache
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_direct_answer_strategy_uses_cache
+tests/test_strategies.py::test_direct_answer_is_trivial_query
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_direct_answer_is_trivial_query
+tests/test_strategies.py::test_decomposition_strategy_complex_query
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_decomposition_strategy_complex_query
+tests/test_strategies.py::test_decomposition_strategy_returns_documents
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_decomposition_strategy_returns_documents
+tests/test_strategies.py::test_hybrid_search_strategy_conceptual_query
+[gw7] [ 71%] PASSED tests/test_strategies.py::test_hybrid_search_strategy_conceptual_query
+tests/test_strategies.py::test_hybrid_search_strategy_multilingual
+[gw7] [ 72%] PASSED tests/test_strategies.py::test_hybrid_search_strategy_multilingual
+tests/test_strategies.py::test_multihop_strategy_fallback_to_hybrid
+[gw7] [ 72%] PASSED tests/test_strategies.py::test_multihop_strategy_fallback_to_hybrid
+tests/test_strategies.py::test_strategy_repr
+[gw7] [ 72%] PASSED tests/test_strategies.py::test_strategy_repr
+tests/test_api/test_performance_service.py::test_performance_service_initialization
+[gw7] [ 72%] PASSED tests/test_api/test_performance_service.py::test_performance_service_initialization
+tests/test_api/test_performance_service.py::test_create_metric_returns_metric_id
+[gw7] [ 72%] PASSED tests/test_api/test_performance_service.py::test_create_metric_returns_metric_id
+tests/test_api/test_performance_service.py::test_create_metric_validates_endpoint
+[gw7] [ 72%] PASSED tests/test_api/test_performance_service.py::test_create_metric_validates_endpoint
+tests/test_api/test_performance_service.py::test_create_metric_validates_duration
+[gw7] [ 72%] PASSED tests/test_api/test_performance_service.py::test_create_metric_validates_duration
+tests/test_api/test_performance_service.py::test_create_metric_validates_status_code
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_create_metric_validates_status_code
+tests/test_api/test_performance_service.py::test_get_metrics_returns_filtered_list
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_get_metrics_returns_filtered_list
+tests/test_api/test_performance_service.py::test_get_metrics_validates_limit_range
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_get_metrics_validates_limit_range
+tests/test_api/test_performance_service.py::test_aggregate_stats_returns_statistics
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_aggregate_stats_returns_statistics
+tests/test_api/test_performance_service.py::test_aggregate_stats_calculates_cost_correctly
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_aggregate_stats_calculates_cost_correctly
+tests/test_api/test_performance_service.py::test_aggregate_stats_handles_empty_metrics
+[gw7] [ 73%] PASSED tests/test_api/test_performance_service.py::test_aggregate_stats_handles_empty_metrics
+tests/test_approval_workflow.py::test_approval_handler_approved
+[gw0] [ 73%] PASSED tests/test_onboarding_agent.py::test_e2e_objectives_before_challenges
+tests/test_onboarding_agent.py::test_e2e_all_info_first_turn
+[gw1] [ 74%] FAILED tests/test_consulting_orchestrator.py::test_coordinate_discovery_success
+tests/test_consulting_orchestrator.py::test_coordinate_discovery_missing_profile
+[gw1] [ 74%] PASSED tests/test_consulting_orchestrator.py::test_coordinate_discovery_missing_profile
+tests/test_consulting_orchestrator.py::test_coordinate_discovery_error_handling
+[gw3] [ 74%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_get_workflow_singleton
+tests/test_workflow.py::TestBSCWorkflow::test_analyze_query_node
+[gw2] [ 74%] FAILED tests/test_consulting_workflow.py::test_onboarding_workflow_multi_turn_completo
+tests/test_consulting_workflow.py::test_rag_workflow_cliente_existente_nao_quebrado
+[gw4] [ 74%] FAILED tests/test_diagnostic_agent.py::test_analyze_perspective_invalid_perspective
+tests/test_diagnostic_agent.py::test_run_parallel_analysis_success
+[gw5] [ 74%] FAILED tests/test_judge_context_aware.py::test_diagnostic_context_accepts_no_sources
+tests/test_judge_context_aware.py::test_diagnostic_context_focuses_on_analysis_quality
+[gw7] [ 74%] PASSED tests/test_approval_workflow.py::test_approval_handler_approved
+tests/test_approval_workflow.py::test_approval_handler_rejected
+[gw4] [ 75%] PASSED tests/test_diagnostic_agent.py::test_run_parallel_analysis_success
+tests/test_diagnostic_agent.py::test_consolidate_diagnostic_success
+[gw3] [ 75%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_analyze_query_node
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_simple_query
+[gw5] [ 75%] PASSED tests/test_judge_context_aware.py::test_diagnostic_context_focuses_on_analysis_quality
+tests/test_judge_context_aware.py::test_rag_context_requires_sources
+[gw7] [ 75%] PASSED tests/test_approval_workflow.py::test_approval_handler_rejected
+tests/test_approval_workflow.py::test_approval_handler_diagnostic_ausente
+[gw1] [ 75%] PASSED tests/test_consulting_orchestrator.py::test_coordinate_discovery_error_handling
+tests/test_consulting_orchestrator.py::test_validate_transition_onboarding_to_discovery_valid
+[gw1] [ 75%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_onboarding_to_discovery_valid
+tests/test_consulting_orchestrator.py::test_validate_transition_onboarding_to_discovery_invalid
+[gw1] [ 75%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_onboarding_to_discovery_invalid
+tests/test_consulting_orchestrator.py::test_validate_transition_discovery_to_approval_valid
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_discovery_to_approval_valid
+tests/test_consulting_orchestrator.py::test_validate_transition_discovery_to_approval_invalid
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_discovery_to_approval_invalid
+tests/test_consulting_orchestrator.py::test_validate_transition_approval_to_end_valid
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_approval_to_end_valid
+tests/test_consulting_orchestrator.py::test_validate_transition_approval_to_end_invalid
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_validate_transition_approval_to_end_invalid
+tests/test_consulting_orchestrator.py::test_handle_error_generic
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_handle_error_generic
+tests/test_consulting_orchestrator.py::test_handle_error_unknown_phase
+[gw1] [ 76%] PASSED tests/test_consulting_orchestrator.py::test_handle_error_unknown_phase
+tests/test_consulting_orchestrator.py::test_orchestrator_nao_quebra_workflow_existente
+[gw6] [ 76%] FAILED tests/integration/test_e2e.py::TestE2EWorkflow::test_simple_factual_query
+tests/integration/test_e2e.py::TestE2EWorkflow::test_conceptual_query
+[gw2] [ 77%] PASSED tests/test_consulting_workflow.py::test_rag_workflow_cliente_existente_nao_quebrado
+tests/test_consulting_workflow.py::test_onboarding_transicao_automatica_para_discovery
+[gw4] [ 77%] FAILED tests/test_diagnostic_agent.py::test_consolidate_diagnostic_success
+tests/test_diagnostic_agent.py::test_consolidate_diagnostic_invalid_json
+[gw5] [ 77%] PASSED tests/test_judge_context_aware.py::test_rag_context_requires_sources
+tests/test_judge_context_aware.py::test_rag_context_approves_sources
+[gw7] [ 77%] PASSED tests/test_approval_workflow.py::test_approval_handler_diagnostic_ausente
+tests/test_approval_workflow.py::test_route_by_approval_approved
+[gw1] [ 77%] PASSED tests/test_consulting_orchestrator.py::test_orchestrator_nao_quebra_workflow_existente
+tests/test_consulting_orchestrator.py::test_lazy_loading_client_profile_agent
+[gw1] [ 77%] PASSED tests/test_consulting_orchestrator.py::test_lazy_loading_client_profile_agent
+tests/test_consulting_orchestrator.py::test_lazy_loading_onboarding_agent
+[gw1] [ 77%] PASSED tests/test_consulting_orchestrator.py::test_lazy_loading_onboarding_agent
+tests/test_consulting_orchestrator.py::test_lazy_loading_diagnostic_agent
+[gw2] [ 78%] FAILED tests/test_consulting_workflow.py::test_onboarding_transicao_automatica_para_discovery
+tests/test_consulting_workflow.py::test_onboarding_persistencia_mem0
+[gw4] [ 78%] FAILED tests/test_diagnostic_agent.py::test_consolidate_diagnostic_invalid_json
+tests/test_diagnostic_agent.py::test_consolidate_diagnostic_missing_field
+[gw5] [ 78%] FAILED tests/test_judge_context_aware.py::test_rag_context_approves_sources
+tests/test_judge_context_aware.py::test_same_response_different_contexts
+[gw7] [ 78%] PASSED tests/test_approval_workflow.py::test_route_by_approval_approved
+tests/test_approval_workflow.py::test_route_by_approval_rejected
+[gw1] [ 78%] PASSED tests/test_consulting_orchestrator.py::test_lazy_loading_diagnostic_agent
+tests/test_embeddings.py::TestEmbeddingManager::test_init_openai
+[gw1] [ 78%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_init_openai
+tests/test_embeddings.py::TestEmbeddingManager::test_init_finetuned
+[gw1] [ 78%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_init_finetuned
+tests/test_embeddings.py::TestEmbeddingManager::test_embed_text_openai
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_embed_text_openai
+tests/test_embeddings.py::TestEmbeddingManager::test_embed_batch_openai
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_embed_batch_openai
+tests/test_embeddings.py::TestEmbeddingManager::test_similarity
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_similarity
+tests/test_embeddings.py::TestEmbeddingManager::test_prepare_training_data
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestEmbeddingManager::test_prepare_training_data
+tests/test_embeddings.py::TestFineTuner::test_init
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestFineTuner::test_init
+tests/test_embeddings.py::TestFineTuner::test_train
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestFineTuner::test_train
+tests/test_embeddings.py::TestFineTuner::test_evaluate
+[gw1] [ 79%] PASSED tests/test_embeddings.py::TestFineTuner::test_evaluate
+tests/test_retriever.py::TestBSCRetriever::test_init
+[gw1] [ 80%] PASSED tests/test_retriever.py::TestBSCRetriever::test_init
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_hybrid_with_rerank
+[gw1] [ 80%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_hybrid_with_rerank
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_vector_only
+[gw1] [ 80%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_vector_only
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_with_filters
+[gw0] [ 80%] FAILED tests/test_onboarding_agent.py::test_e2e_all_info_first_turn
+tests/test_onboarding_agent.py::test_e2e_incremental_completion
+[gw1] [ 80%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_with_filters
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_with_context
+[gw2] [ 80%] FAILED tests/test_consulting_workflow.py::test_onboarding_persistencia_mem0
+tests/test_consulting_workflow.py::test_discovery_workflow_start_cliente_existente
+[gw1] [ 80%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_with_context
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_multi_query
+[gw1] [ 81%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_multi_query
+tests/test_retriever.py::TestBSCRetriever::test_retrieve_by_perspective
+[gw1] [ 81%] PASSED tests/test_retriever.py::TestBSCRetriever::test_retrieve_by_perspective
+tests/test_retriever.py::TestBSCRetriever::test_format_context
+[gw1] [ 81%] PASSED tests/test_retriever.py::TestBSCRetriever::test_format_context
+tests/test_retriever.py::TestBSCRetriever::test_format_context_respects_max_tokens
+[gw1] [ 81%] PASSED tests/test_retriever.py::TestBSCRetriever::test_format_context_respects_max_tokens
+tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_success
+[gw1] [ 81%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_success
+tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_generates_pdf_file
+[gw1] [ 81%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_generates_pdf_file
+tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_uses_custom_output_path
+[gw1] [ 81%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_full_diagnostic_uses_custom_output_path
+tests/test_exports/test_pdf_exporter.py::test_pdf_file_size_reasonable
+[gw1] [ 82%] ERROR tests/test_exports/test_pdf_exporter.py::test_pdf_file_size_reasonable
+tests/test_exports/test_pdf_exporter.py::test_export_perspective_financial
+[gw1] [ 82%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_perspective_financial
+tests/test_exports/test_pdf_exporter.py::test_export_perspective_customer
+[gw1] [ 82%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_perspective_customer
+tests/test_exports/test_pdf_exporter.py::test_export_invalid_perspective_raises_error
+[gw1] [ 82%] ERROR tests/test_exports/test_pdf_exporter.py::test_export_invalid_perspective_raises_error
+tests/test_exports/test_pdf_exporter.py::test_export_incomplete_diagnostic_raises_error
+[gw1] [ 82%] FAILED tests/test_exports/test_pdf_exporter.py::test_export_incomplete_diagnostic_raises_error
+tests/test_exports/test_pdf_exporter.py::test_slugify_converts_to_valid_filename
+[gw1] [ 82%] PASSED tests/test_exports/test_pdf_exporter.py::test_slugify_converts_to_valid_filename
+tests/test_config_settings.py::TestMem0SettingsLoaded::test_mem0_api_key_loaded
+[gw1] [ 82%] PASSED tests/test_config_settings.py::TestMem0SettingsLoaded::test_mem0_api_key_loaded
+tests/test_config_settings.py::TestMem0SettingsLoaded::test_memory_provider_default
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestMem0SettingsLoaded::test_memory_provider_default
+tests/test_config_settings.py::TestMem0SettingsLoaded::test_mem0_org_info_loaded
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestMem0SettingsLoaded::test_mem0_org_info_loaded
+tests/test_config_settings.py::TestMem0SettingsLoaded::test_all_required_keys_present
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestMem0SettingsLoaded::test_all_required_keys_present
+tests/test_config_settings.py::TestValidateMemoryConfig::test_validate_memory_config_success
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestValidateMemoryConfig::test_validate_memory_config_success
+tests/test_config_settings.py::TestValidateMemoryConfig::test_memory_factory_has_mem0_registered
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestValidateMemoryConfig::test_memory_factory_has_mem0_registered
+tests/test_config_settings.py::TestValidateMemoryConfig::test_validate_memory_config_uses_correct_provider
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestValidateMemoryConfig::test_validate_memory_config_uses_correct_provider
+tests/test_config_settings.py::TestValidateMemoryConfig::test_mem0_api_key_format
+[gw1] [ 83%] PASSED tests/test_config_settings.py::TestValidateMemoryConfig::test_mem0_api_key_format
+tests/memory/test_factory.py::test_list_providers_default
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_list_providers_default
+tests/memory/test_factory.py::test_register_new_provider
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_register_new_provider
+tests/memory/test_factory.py::test_get_provider_mem0_default
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_get_provider_mem0_default
+tests/memory/test_factory.py::test_get_provider_mem0_explicit
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_get_provider_mem0_explicit
+tests/memory/test_factory.py::test_get_provider_with_api_key
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_get_provider_with_api_key
+tests/memory/test_factory.py::test_get_provider_nonexistent_raises_error
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_get_provider_nonexistent_raises_error
+tests/memory/test_factory.py::test_get_provider_initialization_error
+[gw1] [ 84%] PASSED tests/memory/test_factory.py::test_get_provider_initialization_error
+tests/memory/test_factory.py::test_register_and_use_custom_provider
+[gw1] [ 85%] PASSED tests/memory/test_factory.py::test_register_and_use_custom_provider
+tests/test_exports/test_csv_exporter.py::test_export_clients_list_success
+[gw1] [ 85%] PASSED tests/test_exports/test_csv_exporter.py::test_export_clients_list_success
+tests/test_exports/test_csv_exporter.py::test_export_clients_list_has_correct_columns
+[gw1] [ 85%] PASSED tests/test_exports/test_csv_exporter.py::test_export_clients_list_has_correct_columns
+tests/test_exports/test_csv_exporter.py::test_export_clients_list_row_count
+[gw1] [ 85%] PASSED tests/test_exports/test_csv_exporter.py::test_export_clients_list_row_count
+tests/test_exports/test_csv_exporter.py::test_export_clients_list_encoding_utf8
+[gw1] [ 85%] PASSED tests/test_exports/test_csv_exporter.py::test_export_clients_list_encoding_utf8
+tests/test_exports/test_csv_exporter.py::test_empty_profiles_list_raises_error
+[gw1] [ 85%] PASSED tests/test_exports/test_csv_exporter.py::test_empty_profiles_list_raises_error
+tests/test_exports/test_csv_exporter.py::test_export_recommendations_success
+[gw1] [ 85%] ERROR tests/test_exports/test_csv_exporter.py::test_export_recommendations_success
+tests/test_exports/test_csv_exporter.py::test_export_recommendations_priority_high_first
+[gw1] [ 86%] ERROR tests/test_exports/test_csv_exporter.py::test_export_recommendations_priority_high_first
+tests/test_exports/test_csv_exporter.py::test_csv_parseable_by_pandas
+[gw1] [ 86%] PASSED tests/test_exports/test_csv_exporter.py::test_csv_parseable_by_pandas
+tests/integration/test_memory_integration.py::test_new_client_creates_profile
+[gw4] [ 86%] FAILED tests/test_diagnostic_agent.py::test_consolidate_diagnostic_missing_field
+tests/test_diagnostic_agent.py::test_generate_recommendations_success
+[gw7] [ 86%] PASSED tests/test_approval_workflow.py::test_route_by_approval_rejected
+tests/test_approval_workflow.py::test_route_by_approval_modified
+[gw4] [ 86%] FAILED tests/test_diagnostic_agent.py::test_generate_recommendations_success
+tests/test_diagnostic_agent.py::test_generate_recommendations_invalid_list
+[gw3] [ 86%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_simple_query
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_specific_perspective
+[gw1] [ 86%] FAILED tests/integration/test_memory_integration.py::test_new_client_creates_profile
+[gw7] [ 87%] PASSED tests/test_approval_workflow.py::test_route_by_approval_modified
+tests/test_approval_workflow.py::test_route_by_approval_timeout
+tests/integration/test_memory_integration.py::test_existing_client_loads_profile
+[gw4] [ 87%] FAILED tests/test_diagnostic_agent.py::test_generate_recommendations_invalid_list
+tests/test_diagnostic_agent.py::test_run_diagnostic_success
+[gw5] [ 87%] FAILED tests/test_judge_context_aware.py::test_same_response_different_contexts
+tests/test_judge_context_aware.py::test_default_context_is_rag
+[gw1] [ 87%] FAILED tests/integration/test_memory_integration.py::test_existing_client_loads_profile
+tests/integration/test_memory_integration.py::test_engagement_state_updates
+[gw7] [ 87%] PASSED tests/test_approval_workflow.py::test_route_by_approval_timeout
+tests/test_approval_workflow.py::test_route_by_approval_pending_fallback
+[gw4] [ 87%] PASSED tests/test_diagnostic_agent.py::test_run_diagnostic_success
+tests/test_diagnostic_agent.py::test_run_diagnostic_missing_client_profile
+[gw1] [ 87%] FAILED tests/integration/test_memory_integration.py::test_engagement_state_updates
+tests/integration/test_memory_integration.py::test_profile_persistence_real_mem0
+[gw5] [ 88%] PASSED tests/test_judge_context_aware.py::test_default_context_is_rag
+tests/test_judge_context_aware.py::test_evaluate_multiple_accepts_context
+[gw7] [ 88%] PASSED tests/test_approval_workflow.py::test_route_by_approval_pending_fallback
+tests/test_approval_workflow.py::test_approval_persistencia_mem0
+[gw4] [ 88%] PASSED tests/test_diagnostic_agent.py::test_run_diagnostic_missing_client_profile
+tests/test_diagnostic_agent.py::test_diagnostic_result_validation
+[gw4] [ 88%] PASSED tests/test_diagnostic_agent.py::test_diagnostic_result_validation
+tests/test_diagnostic_agent.py::test_recommendation_validation
+[gw4] [ 88%] PASSED tests/test_diagnostic_agent.py::test_recommendation_validation
+tests/test_diagnostic_agent.py::test_analyze_perspective_retry_on_validation_error
+[gw7] [ 88%] PASSED tests/test_approval_workflow.py::test_approval_persistencia_mem0
+tests/test_agents_refactor_smoke.py::test_financial_agent_smoke
+[gw1] [ 88%] FAILED tests/integration/test_memory_integration.py::test_profile_persistence_real_mem0
+[gw5] [ 89%] PASSED tests/test_judge_context_aware.py::test_evaluate_multiple_accepts_context
+tests/test_judge_context_aware.py::test_smoke_all_contexts[RAG]
+tests/integration/test_memory_integration.py::test_workflow_complete_e2e
+[gw7] [ 89%] PASSED tests/test_agents_refactor_smoke.py::test_financial_agent_smoke
+tests/test_agents_refactor_smoke.py::test_customer_agent_smoke
+[gw7] [ 89%] PASSED tests/test_agents_refactor_smoke.py::test_customer_agent_smoke
+tests/test_agents_refactor_smoke.py::test_process_agent_smoke
+[gw4] [ 89%] FAILED tests/test_diagnostic_agent.py::test_analyze_perspective_retry_on_validation_error
+tests/test_diagnostic_agent.py::test_consolidate_diagnostic_retry_on_value_error
+[gw7] [ 89%] PASSED tests/test_agents_refactor_smoke.py::test_process_agent_smoke
+tests/test_agents_refactor_smoke.py::test_learning_agent_smoke
+[gw5] [ 89%] PASSED tests/test_judge_context_aware.py::test_smoke_all_contexts[RAG]
+tests/test_judge_context_aware.py::test_smoke_all_contexts[DIAGNOSTIC]
+[gw7] [ 89%] PASSED tests/test_agents_refactor_smoke.py::test_learning_agent_smoke
+tests/test_embedding_cache.py::test_embed_text_performance
+[gw7] [ 90%] PASSED tests/test_embedding_cache.py::test_embed_text_performance
+tests/test_embedding_cache.py::test_embed_batch_performance
+[gw4] [ 90%] FAILED tests/test_diagnostic_agent.py::test_consolidate_diagnostic_retry_on_value_error
+tests/test_diagnostic_agent.py::test_generate_recommendations_retry_behavior
+[gw1] [ 90%] FAILED tests/integration/test_memory_integration.py::test_workflow_complete_e2e
+tests/test_api/test_performance_integration.py::test_performance_middleware_exists
+[gw1] [ 90%] PASSED tests/test_api/test_performance_integration.py::test_performance_middleware_exists
+tests/test_api/test_performance_integration.py::test_llm_tokens_captured_in_context_vars
+[gw1] [ 90%] PASSED tests/test_api/test_performance_integration.py::test_llm_tokens_captured_in_context_vars
+tests/test_api/test_performance_integration.py::test_performance_system_end_to_end_smoke
+[gw1] [ 90%] PASSED tests/test_api/test_performance_integration.py::test_performance_system_end_to_end_smoke
+tests/test_parallel_comparison.py::test_threadpool_executor
+[gw1] [ 90%] SKIPPED tests/test_parallel_comparison.py::test_threadpool_executor
+tests/test_parallel_comparison.py::test_asyncio
+[gw1] [ 91%] SKIPPED tests/test_parallel_comparison.py::test_asyncio
+tests/test_judge_simple.py::test_judge_context_aware_basic
+[gw7] [ 91%] PASSED tests/test_embedding_cache.py::test_embed_batch_performance
+tests/test_judge_workflow_unit.py::test_format_diagnostic_for_judge
+[gw7] [ 91%] PASSED tests/test_judge_workflow_unit.py::test_format_diagnostic_for_judge
+tests/test_judge_workflow_unit.py::test_format_diagnostic_empty_recommendations
+[gw7] [ 91%] PASSED tests/test_judge_workflow_unit.py::test_format_diagnostic_empty_recommendations
+[gw5] [ 91%] PASSED tests/test_judge_context_aware.py::test_smoke_all_contexts[DIAGNOSTIC]
+tests/test_judge_context_aware.py::test_smoke_all_contexts[TOOLS]
+[gw4] [ 91%] FAILED tests/test_diagnostic_agent.py::test_generate_recommendations_retry_behavior
+tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_feedback_empty
+[gw3] [ 91%] FAILED tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_specific_perspective
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_multiple_perspectives
+[gw4] [ 92%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_feedback_empty
+tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_diagnostic_none
+[gw5] [ 92%] PASSED tests/test_judge_context_aware.py::test_smoke_all_contexts[TOOLS]
+tests/test_judge_integration_smoke.py::test_judge_integration_smoke
+[gw5] [ 92%] FAILED tests/test_judge_integration_smoke.py::test_judge_integration_smoke
+tests/test_judge_integration_smoke.py::test_judge_integration_low_score_warning
+[gw5] [ 92%] FAILED tests/test_judge_integration_smoke.py::test_judge_integration_low_score_warning
+[gw0] [ 92%] FAILED tests/test_onboarding_agent.py::test_e2e_incremental_completion
+tests/test_onboarding_agent.py::test_e2e_no_regression_standard_flow
+[gw4] [ 92%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_diagnostic_none
+tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_client_profile
+[gw1] [ 92%] PASSED tests/test_judge_simple.py::test_judge_context_aware_basic
+[gw4] [ 93%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_validates_client_profile
+tests/test_diagnostic_agent.py::test_refine_diagnostic_returns_refined_diagnostic
+[gw4] [ 93%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_returns_refined_diagnostic
+tests/test_diagnostic_agent.py::test_refine_diagnostic_fallback_on_timeout
+[gw6] [ 93%] FAILED tests/integration/test_e2e.py::TestE2EWorkflow::test_conceptual_query
+tests/integration/test_e2e.py::TestE2EWorkflow::test_comparative_query
+[gw3] [ 93%] FAILED tests/test_workflow.py::TestBSCWorkflow::test_workflow_run_multiple_perspectives
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_with_chat_history
+[gw6] [ 93%] FAILED tests/integration/test_e2e.py::TestE2EWorkflow::test_comparative_query
+tests/integration/test_e2e.py::TestE2EWorkflow::test_complex_query
+[gw0] [ 93%] FAILED tests/test_onboarding_agent.py::test_e2e_no_regression_standard_flow
+tests/test_onboarding_agent.py::test_e2e_frustration_recovery
+[gw3] [ 93%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_workflow_with_chat_history
+tests/test_workflow.py::TestBSCWorkflow::test_workflow_graph_visualization
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_workflow_graph_visualization
+tests/test_workflow.py::TestBSCWorkflow::test_execute_agents_node
+[gw2] [ 94%] FAILED tests/test_consulting_workflow.py::test_discovery_workflow_start_cliente_existente
+tests/test_consulting_workflow.py::test_discovery_workflow_diagnostic_completo
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_execute_agents_node
+tests/test_workflow.py::TestBSCWorkflow::test_synthesize_response_node
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_synthesize_response_node
+tests/test_workflow.py::TestBSCWorkflow::test_judge_evaluation_node
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_judge_evaluation_node
+tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_approved
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_approved
+tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_needs_refinement
+[gw3] [ 94%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_needs_refinement
+tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_max_iterations
+[gw0] [ 95%] FAILED tests/test_onboarding_agent.py::test_e2e_frustration_recovery
+tests/test_onboarding_agent.py::test_e2e_integration_complete
+[gw3] [ 95%] FAILED tests/test_workflow.py::TestBSCWorkflow::test_decide_next_step_max_iterations
+tests/test_workflow.py::TestBSCWorkflow::test_finalize_node
+[gw3] [ 95%] PASSED tests/test_workflow.py::TestBSCWorkflow::test_finalize_node
+tests/test_workflow.py::TestBSCWorkflowIntegration::test_full_workflow_real_query
+[gw6] [ 95%] FAILED tests/integration/test_e2e.py::TestE2EWorkflow::test_complex_query
+tests/integration/test_e2e.py::TestE2EWorkflow::test_workflow_latency
+[gw0] [ 95%] PASSED tests/test_onboarding_agent.py::test_e2e_integration_complete
+[gw3] [ 95%] FAILED tests/test_workflow.py::TestBSCWorkflowIntegration::test_full_workflow_real_query
+[gw6] [ 95%] PASSED tests/integration/test_e2e.py::TestE2EWorkflow::test_workflow_latency
+tests/integration/test_e2e.py::TestE2EWorkflow::test_refinement_process
+[gw2] [ 96%] PASSED tests/test_consulting_workflow.py::test_discovery_workflow_diagnostic_completo
+tests/test_consulting_workflow.py::test_discovery_transicao_automatica_para_approval
+[gw6] [ 96%] PASSED tests/integration/test_e2e.py::TestE2EWorkflow::test_refinement_process
+tests/integration/test_e2e.py::TestE2EWorkflow::test_multiple_perspectives
+[gw4] [ 96%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_fallback_on_timeout
+tests/test_diagnostic_agent.py::test_refine_diagnostic_fallback_on_error
+[gw4] [ 96%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_fallback_on_error
+tests/test_diagnostic_agent.py::test_refine_diagnostic_preserves_valid_insights
+[gw4] [ 96%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_preserves_valid_insights
+tests/test_diagnostic_agent.py::test_refine_diagnostic_handles_llm_none_response
+[gw6] [ 96%] FAILED tests/integration/test_e2e.py::TestE2EWorkflow::test_multiple_perspectives
+tests/integration/test_e2e.py::TestQueryScenarios::test_financial_perspective_query
+[gw4] [ 96%] PASSED tests/test_diagnostic_agent.py::test_refine_diagnostic_handles_llm_none_response
+[gw2] [ 97%] PASSED tests/test_consulting_workflow.py::test_discovery_transicao_automatica_para_approval
+tests/test_consulting_workflow.py::test_discovery_persistencia_mem0
+[gw6] [ 97%] FAILED tests/integration/test_e2e.py::TestQueryScenarios::test_financial_perspective_query
+tests/integration/test_e2e.py::TestQueryScenarios::test_customer_perspective_query
+[gw6] [ 97%] FAILED tests/integration/test_e2e.py::TestQueryScenarios::test_customer_perspective_query
+tests/integration/test_e2e.py::TestQueryScenarios::test_process_perspective_query
+[gw2] [ 97%] FAILED tests/test_consulting_workflow.py::test_discovery_persistencia_mem0
+tests/test_consulting_workflow.py::test_onboarding_rag_nao_quebrados_com_discovery
+[gw6] [ 97%] FAILED tests/integration/test_e2e.py::TestQueryScenarios::test_process_perspective_query
+tests/integration/test_e2e.py::TestQueryScenarios::test_learning_perspective_query
+[gw6] [ 97%] FAILED tests/integration/test_e2e.py::TestQueryScenarios::test_learning_perspective_query
+tests/integration/test_e2e.py::TestPerformanceOptimizations::test_embedding_cache_functionality
+[gw6] [ 97%] PASSED tests/integration/test_e2e.py::TestPerformanceOptimizations::test_embedding_cache_functionality
+tests/integration/test_e2e.py::TestPerformanceOptimizations::test_embedding_cache_speedup
+[gw6] [ 98%] PASSED tests/integration/test_e2e.py::TestPerformanceOptimizations::test_embedding_cache_speedup
+tests/integration/test_e2e.py::TestPerformanceOptimizations::test_multilingual_search_pt_br_query
+[gw2] [ 98%] FAILED tests/test_consulting_workflow.py::test_onboarding_rag_nao_quebrados_com_discovery
+tests/test_consulting_workflow.py::test_workflow_refinement_rejected
+[gw2] [ 98%] PASSED tests/test_consulting_workflow.py::test_workflow_refinement_rejected
+tests/test_consulting_workflow.py::test_workflow_refinement_modified
+[gw2] [ 98%] PASSED tests/test_consulting_workflow.py::test_workflow_refinement_modified
+tests/test_consulting_workflow.py::test_workflow_discovery_normal_when_no_refinement_needed
+[gw6] [ 98%] FAILED tests/integration/test_e2e.py::TestPerformanceOptimizations::test_multilingual_search_pt_br_query
+tests/integration/test_e2e.py::TestPerformanceOptimizations::test_parallel_agent_execution
+[gw6] [ 98%] PASSED tests/integration/test_e2e.py::TestPerformanceOptimizations::test_parallel_agent_execution
+tests/integration/test_e2e.py::TestJudgeValidation::test_judge_approval_good_response
+[gw6] [ 98%] FAILED tests/integration/test_e2e.py::TestJudgeValidation::test_judge_approval_good_response

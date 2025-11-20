@@ -14,7 +14,7 @@
 repos:
   # Hooks basicos de limpeza
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         name: Remove espacos em branco no final de linhas
@@ -39,7 +39,7 @@ repos:
 
   # Black - Formatacao de codigo Python
   - repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 25.11.0
     hooks:
       - id: black
         name: Black - Formatacao de codigo Python
@@ -48,7 +48,7 @@ repos:
 
   # Ruff - Linter moderno Python (substituto de flake8)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.13
+    rev: v0.14.5
     hooks:
       - id: ruff
         name: Ruff - Linter Python (rapido)
@@ -56,12 +56,23 @@ repos:
 
   # MyPy - Verificacao de tipos Python
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.7.1
+    rev: v1.18.2
     hooks:
       - id: mypy
         name: MyPy - Verificacao de tipos Python
-        additional_dependencies: [types-all]
-        args: ["--ignore-missing-imports", "--no-strict-optional"]
+        args: ["--ignore-missing-imports", "--no-strict-optional", "--check-untyped-defs"]
+
+  # Pylint - Deep code analysis (complementa Ruff com analise profunda)
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.3.4
+    hooks:
+      - id: pylint
+        name: Pylint - Deep code analysis
+        args:
+          - "--max-line-length=100"
+          - "--disable=C0114,C0115,C0116,E0401,E0611,W0611"  # Docstrings + imports (CI/CD validara)
+          - "--fail-under=7.0"  # Score minimo (tolerante para pre-commit)
+        files: ^src/
 
   # Hook customizado anti-emoji (CRITICO)
   - repo: local
@@ -72,5 +83,5 @@ repos:
         language: system
         types: [python]
         pass_filenames: true
-        stages: [commit]
+        stages: [pre-commit]
         verbose: true

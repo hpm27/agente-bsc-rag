@@ -6,8 +6,9 @@ e gerenciamento de configuracoes.
 """
 
 import os
-from typing import Dict, Any, Optional
 from pathlib import Path
+from typing import Any
+
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -82,7 +83,7 @@ def init_workflow():
         st.stop()
 
 
-def get_default_config() -> Dict[str, Any]:
+def get_default_config() -> dict[str, Any]:
     """
     Retorna configuracao padrao da aplicacao.
 
@@ -166,10 +167,10 @@ def format_confidence_score(score: float) -> str:
     return f"{status} {percentage:.1f}%"
 
 
-def format_document_source(doc: Dict[str, Any]) -> str:
+def format_document_source(doc: dict[str, Any]) -> str:
     """
     Formata informacao de fonte do documento.
-    
+
     Usa document_title (titulo legivel) quando disponivel,
     com fallback para source (filename).
 
@@ -178,23 +179,23 @@ def format_document_source(doc: Dict[str, Any]) -> str:
 
     Returns:
         str: Fonte formatada com titulo legivel
-        
+
     Example:
         >>> # Com document_title:
         >>> format_document_source({"metadata": {"document_title": "The Balanced Scorecard", "page": 5}})
         "The Balanced Scorecard (pag. 5)"
-        
+
         >>> # Sem document_title (fallback):
         >>> format_document_source({"metadata": {"source": "doc.pdf", "page": 3}})
         "doc.pdf (pag. 3)"
     """
     metadata = doc.get("metadata", {})
-    
+
     # Tentar usar document_title primeiro (mais legivel)
     title = metadata.get("document_title", "")
     source = metadata.get("source", "Desconhecido")
     page = metadata.get("page", None)
-    
+
     # Usar titulo se disponivel, senao filename
     display_name = title if title else source
 
@@ -231,10 +232,11 @@ def init_session_state() -> None:
 
     if "workflow_initialized" not in st.session_state:
         st.session_state.workflow_initialized = False
-    
+
     # Inicializar Mem0ClientWrapper para Dashboard Multi-Cliente
     if "mem0_client" not in st.session_state:
         from src.memory.mem0_client import Mem0ClientWrapper
+
         st.session_state.mem0_client = Mem0ClientWrapper()
 
 
@@ -246,7 +248,7 @@ def clear_chat_history() -> None:
     st.success("[OK] Historico de conversacao limpo!")
 
 
-def save_message(role: str, content: str, metadata: Optional[Dict[str, Any]] = None) -> None:
+def save_message(role: str, content: str, metadata: dict[str, Any] | None = None) -> None:
     """
     Salva mensagem no historico de chat.
 

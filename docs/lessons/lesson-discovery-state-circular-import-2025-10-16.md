@@ -1,14 +1,14 @@
 # Lição Aprendida: FASE 2.7 - DISCOVERY State Integration + Resolução Circular Imports
 
-**Data**: 2025-10-16  
-**Fase**: FASE 2.7 - DISCOVERY State Integration  
-**Duração**: 90 minutos  
-**Status**: ✅ SUCESSO (10/10 testes passando)  
-**Complexidade**: 🔴 Alta (circular imports, workflow stateless, testes E2E)
+**Data**: 2025-10-16
+**Fase**: FASE 2.7 - DISCOVERY State Integration
+**Duração**: 90 minutos
+**Status**: [OK] SUCESSO (10/10 testes passando)
+**Complexidade**: [EMOJI] Alta (circular imports, workflow stateless, testes E2E)
 
 ---
 
-## 📋 CONTEXTO
+## [EMOJI] CONTEXTO
 
 ### Objetivo da Fase
 Integrar `DiagnosticAgent` no workflow LangGraph, criando handler que executa diagnóstico BSC completo quando cliente está em `phase=DISCOVERY`.
@@ -16,17 +16,17 @@ Integrar `DiagnosticAgent` no workflow LangGraph, criando handler que executa di
 ### Escopo Implementado
 1. **Schemas**: Novos campos `diagnostic` (BSCState) e `complete_diagnostic` (ClientProfile)
 2. **Workflow**: Handler `discovery_handler()`, property `diagnostic_agent`, routing atualizado
-3. **Memory**: Persistência `state.diagnostic → profile.complete_diagnostic` via Mem0
+3. **Memory**: Persistência `state.diagnostic -> profile.complete_diagnostic` via Mem0
 4. **Testes**: 5 testes E2E + 1 teste regressão crítica
 
 ### Desafio Principal
-**Circular Import**: `client_profile_agent.py` ↔ `onboarding_agent.py` ↔ `workflow.py`
+**Circular Import**: `client_profile_agent.py` <-> `onboarding_agent.py` <-> `workflow.py`
 
 ---
 
-## 🎓 TOP 7 LIÇÕES APRENDIDAS
+## [EMOJI] TOP 7 LIÇÕES APRENDIDAS
 
-### **Lição 1: Pattern Oficial Python para Circular Imports** 🔥 CRÍTICA
+### **Lição 1: Pattern Oficial Python para Circular Imports** [EMOJI] CRÍTICA
 
 **Descoberta**: PEP 484 (TYPE_CHECKING) + PEP 563 (postponed annotations) resolvem circular imports mantendo type hints.
 
@@ -69,7 +69,7 @@ class BSCWorkflow:
             # Lazy import em runtime
             from src.agents.onboarding_agent import OnboardingAgent
             from src.agents.client_profile_agent import ClientProfileAgent
-            
+
             self._onboarding_agent = OnboardingAgent(...)
         return self._onboarding_agent
 ```
@@ -93,10 +93,10 @@ class OnboardingAgent:
 ```
 
 **ROI Validado**:
-- ✅ Zero circular imports em runtime
-- ✅ Type hints completos (IDE autocomplete funciona)
-- ✅ Mypy/Pyright validam tipos corretamente
-- ⏱️ **40-60 min economizados** vs tentativas manuais
+- [OK] Zero circular imports em runtime
+- [OK] Type hints completos (IDE autocomplete funciona)
+- [OK] Mypy/Pyright validam tipos corretamente
+- [TIMER] **40-60 min economizados** vs tentativas manuais
 
 **Referências**:
 - [PEP 484 - Type Hints](https://www.python.org/dev/peps/pep-0484/)
@@ -106,7 +106,7 @@ class OnboardingAgent:
 
 ---
 
-### **Lição 2: Brightdata Search = Ferramenta ESSENCIAL para Problemas Complexos** 🔥 CRÍTICA
+### **Lição 2: Brightdata Search = Ferramenta ESSENCIAL para Problemas Complexos** [EMOJI] CRÍTICA
 
 **Contexto**: Tentamos resolver circular import com `TYPE_CHECKING` mas mypy/pyright continuavam dando erros de tipo incompatível.
 
@@ -117,18 +117,18 @@ Engine: Google (Brightdata)
 ```
 
 **Resultado**:
-- ✅ Stack Overflow thread (587 upvotes) - Pattern exato com `from __future__ import annotations`
-- ✅ DataCamp tutorial (Jun 2025) - Validação recente do pattern
-- ✅ Medium article (3 meses atrás) - Exemplos práticos
+- [OK] Stack Overflow thread (587 upvotes) - Pattern exato com `from __future__ import annotations`
+- [OK] DataCamp tutorial (Jun 2025) - Validação recente do pattern
+- [OK] Medium article (3 meses atrás) - Exemplos práticos
 
 **Descoberta-Chave**: `from __future__ import annotations` estava ausente, causando erros de tipo em runtime.
 
 **ROI Validado**:
-- ⏱️ **30-60 min economizados** vs tentativa e erro
-- 📚 Solução validada por comunidade (não gambiarra)
-- 🎯 Pattern reutilizável em qualquer projeto Python
+- [TIMER] **30-60 min economizados** vs tentativa e erro
+- [EMOJI] Solução validada por comunidade (não gambiarra)
+- [EMOJI] Pattern reutilizável em qualquer projeto Python
 
-**Insight**: 
+**Insight**:
 > **"Quando stuck >10 min em problema técnico, SEMPRE pesquisar comunidade ANTES de continuar tentando sozinho."**
 
 **Aplicação Futura**:
@@ -138,7 +138,7 @@ Engine: Google (Brightdata)
 
 ---
 
-### **Lição 3: ANTIPADRÃO - Remover Código Sem Verificar Dependências** ⚠️
+### **Lição 3: ANTIPADRÃO - Remover Código Sem Verificar Dependências** [WARN]
 
 **Problema Enfrentado**:
 Função `create_placeholder_profile()` foi removida de `memory_nodes.py` mas 2 arquivos de teste ainda importavam:
@@ -151,7 +151,7 @@ ImportError: cannot import name 'create_placeholder_profile' from 'src.graph.mem
 ```
 
 **Custo**:
-- ⏱️ 15 minutos debugging + recriação da função
+- [TIMER] 15 minutos debugging + recriação da função
 - 3 erros de test collection (travou suite completa)
 
 **Solução Aplicada**:
@@ -168,10 +168,10 @@ def create_placeholder_profile(
 ) -> ClientProfile:
     """
     Cria ClientProfile placeholder com valores padrão.
-    
+
     Função utilitária para testes rapidamente criarem profiles sem
     precisar preencher todos os campos manualmente.
-    
+
     [...]
     """
     return ClientProfile(
@@ -205,7 +205,7 @@ grep -r "function_name" src/
 
 ---
 
-### **Lição 4: Micro-Etapas + Validação Incremental = Debugging Eficiente** ✅
+### **Lição 4: Micro-Etapas + Validação Incremental = Debugging Eficiente** [OK]
 
 **Metodologia Aplicada**:
 ```
@@ -227,8 +227,8 @@ FASE 2.7 dividida em 5 micro-etapas:
 **Contraste com "Big Bang"**:
 | Abordagem | Detecção Erro | Debugging | Total |
 |---|---|---|---|
-| **Big Bang** (todas etapas → pytest) | 5 min | 40-60 min | **45-65 min** |
-| **Micro-Etapas** (etapa → lint → pytest) | 1 min × 5 | 8-12 min × 1 | **20-30 min** |
+| **Big Bang** (todas etapas -> pytest) | 5 min | 40-60 min | **45-65 min** |
+| **Micro-Etapas** (etapa -> lint -> pytest) | 1 min × 5 | 8-12 min × 1 | **20-30 min** |
 
 **ROI**: 50% redução tempo debugging (25-35 min economizados)
 
@@ -242,7 +242,7 @@ FASE 2.7 dividida em 5 micro-etapas:
 
 ---
 
-### **Lição 5: Teste Regressão Crítico (Checklist Ponto 12) Salvou Breaking Change** 🛡️
+### **Lição 5: Teste Regressão Crítico (Checklist Ponto 12) Salvou Breaking Change** [EMOJI]
 
 **Contexto**: Checklist [[memory:9969868]] ponto 12:
 > "SEMPRE incluir 1 teste validando que funcionalidade existente NÃO quebrou com nova feature."
@@ -252,7 +252,7 @@ FASE 2.7 dividida em 5 micro-etapas:
 def test_rag_workflow_cliente_existente_nao_quebrado():
     """
     CRÍTICO: Validar que RAG tradicional não quebrou com DISCOVERY handler.
-    
+
     Cliente COMPLETED usando RAG tradicional deve manter comportamento.
     """
     # Setup: Cliente com phase=COMPLETED (RAG tradicional)
@@ -265,14 +265,14 @@ def test_rag_workflow_cliente_existente_nao_quebrado():
             last_interaction=datetime.now(timezone.utc)
         )
     )
-    
+
     # Action: Workflow RAG tradicional
     result = workflow.run(BSCState(
         query="O que é BSC?",
         user_id="test_regression_rag",
         client_profile=profile_rag
     ))
-    
+
     # Assert: Comportamento mantido
     assert result["current_phase"] == ConsultingPhase.IDLE
     assert not mock_discovery_handler.called  # Discovery NÃO interferiu
@@ -285,26 +285,26 @@ Teste original assumia `phase=DISCOVERY` para cliente existente, mas agora essa 
 Mudamos teste para `phase=COMPLETED` (cliente finalizado, usando RAG).
 
 **SEM ESTE TESTE**:
-Breaking change passaria despercebido até produção → clientes `COMPLETED` seriam roteados incorretamente → **rollback urgente necessário**.
+Breaking change passaria despercebido até produção -> clientes `COMPLETED` seriam roteados incorretamente -> **rollback urgente necessário**.
 
 **ROI**:
-- 🛡️ Breaking change detectado em dev (0 impacto produção)
-- ⏱️ **Horas economizadas** vs rollback + hotfix
-- 🎯 Confiança deployment (100% backward compatibility)
+- [EMOJI] Breaking change detectado em dev (0 impacto produção)
+- [TIMER] **Horas economizadas** vs rollback + hotfix
+- [EMOJI] Confiança deployment (100% backward compatibility)
 
 **Template Reutilizável**:
 ```python
 def test_existing_functionality_not_broken_with_NEW_FEATURE():
     """CRÍTICO: Validar que funcionalidade X não quebrou com feature Y.
-    
+
     Este teste previne REGRESSÃO!
     """
     # Setup: Estado/cliente existente (não novo)
     mock_existing_state()
-    
+
     # Action: Executar workflow tradicional
     result = workflow.run_traditional_flow(...)
-    
+
     # Assert: Comportamento mantido
     assert traditional_method.called
     assert not new_feature_method.called  # Nova feature NÃO interferiu
@@ -313,10 +313,10 @@ def test_existing_functionality_not_broken_with_NEW_FEATURE():
 
 ---
 
-### **Lição 6: Sequential Thinking para Debugging Complexo** 🧠
+### **Lição 6: Sequential Thinking para Debugging Complexo** [EMOJI]
 
 **Cenário**: pytest collection falhou com 3 erros simultâneos:
-1. Circular import `client_profile_agent` ↔ `workflow`
+1. Circular import `client_profile_agent` <-> `workflow`
 2. Missing function `create_placeholder_profile`
 3. Cliente `DISCOVERY` roteado incorretamente
 
@@ -325,53 +325,53 @@ def test_existing_functionality_not_broken_with_NEW_FEATURE():
 Tentativa 1: Fix circular import (parcial)
 Tentativa 2: Fix missing function
 Tentativa 3: Fix routing
-→ Conflito entre fixes → reverter tudo → recomeçar
+-> Conflito entre fixes -> reverter tudo -> recomeçar
 Tempo: 60-90 min
 ```
 
 **Com Sequential Thinking**:
 ```
 Thought 1: Identificar qual erro bloqueia todos os outros
-  → Circular import impede collection → PRIORIDADE 1
+  -> Circular import impede collection -> PRIORIDADE 1
 
 Thought 2: Pesquisar solução (Brightdata)
-  → Pattern TYPE_CHECKING + __future__ annotations
+  -> Pattern TYPE_CHECKING + __future__ annotations
 
 Thought 3: Implementar pattern em 3 arquivos
-  → workflow.py, onboarding_agent.py (imports corrigidos)
+  -> workflow.py, onboarding_agent.py (imports corrigidos)
 
 Thought 4: Executar pytest novamente
-  → Erro 1 resolvido ✅, Erro 2 aparece (missing function)
+  -> Erro 1 resolvido [OK], Erro 2 aparece (missing function)
 
 Thought 5: Recriar create_placeholder_profile()
-  → Helper function ao final de memory_nodes.py
+  -> Helper function ao final de memory_nodes.py
 
 Thought 6: Executar pytest novamente
-  → Erro 2 resolvido ✅, Erro 3 aparece (routing)
+  -> Erro 2 resolvido [OK], Erro 3 aparece (routing)
 
 Thought 7: Ajustar teste regressão
-  → phase=COMPLETED ao invés de DISCOVERY
+  -> phase=COMPLETED ao invés de DISCOVERY
 
 Thought 8: Validação final
-  → 10/10 testes passando ✅
+  -> 10/10 testes passando [OK]
 ```
 
 **Tempo**: 40 min (50% mais rápido)
 
-**ROI**: 
-- ⏱️ **40-60% redução tempo** debugging vs abordagem caótica
-- 🎯 Zero conflitos entre correções (sequencial = sem overlap)
-- 📊 Rastreabilidade completa (cada thought documentado)
+**ROI**:
+- [TIMER] **40-60% redução tempo** debugging vs abordagem caótica
+- [EMOJI] Zero conflitos entre correções (sequencial = sem overlap)
+- [EMOJI] Rastreabilidade completa (cada thought documentado)
 
 **Quando Usar**:
-- ✅ Múltiplos erros simultâneos (>2)
-- ✅ Problema complexo sem causa óbvia
-- ✅ Debugging que já levou >15 min
-- ❌ Erro simples com causa clara (overhead desnecessário)
+- [OK] Múltiplos erros simultâneos (>2)
+- [OK] Problema complexo sem causa óbvia
+- [OK] Debugging que já levou >15 min
+- [ERRO] Erro simples com causa clara (overhead desnecessário)
 
 ---
 
-### **Lição 7: grep ANTES de Assumir (Checklist Ponto 1)** 🔍
+### **Lição 7: grep ANTES de Assumir (Checklist Ponto 1)** [EMOJI]
 
 **Contexto**: Checklist [[memory:9969868]] ponto 1:
 > "LER ASSINATURA COMPLETA: Usar `grep "def method_name" src/file.py -A 10` NUNCA assumir."
@@ -401,14 +401,14 @@ def test_discovery_workflow_diagnostic_completo():
 ```python
 # Teste ERRADO (assumiu objeto, não dict):
 assert isinstance(result["diagnostic"], CompleteDiagnostic)
-# → AssertionError: expected CompleteDiagnostic, got dict
-# → 10-15 min debugging
+# -> AssertionError: expected CompleteDiagnostic, got dict
+# -> 10-15 min debugging
 ```
 
 **ROI**:
-- ⏱️ **8-12 min economizados** por teste (assumir errado → debugging)
-- 🎯 Testes escritos corretamente na 1ª tentativa
-- 📊 ROI 5:1 (2 min grep vs 10-15 min debugging)
+- [TIMER] **8-12 min economizados** por teste (assumir errado -> debugging)
+- [EMOJI] Testes escritos corretamente na 1ª tentativa
+- [EMOJI] ROI 5:1 (2 min grep vs 10-15 min debugging)
 
 **Checklist Expandido**:
 ```bash
@@ -427,7 +427,7 @@ grep "@" src/file.py | grep -B1 "def method_name"
 
 ---
 
-## 🚫 TOP 3 ANTIPADRÕES EVITADOS
+## [EMOJI] TOP 3 ANTIPADRÕES EVITADOS
 
 ### **Antipadrão 1: TYPE_CHECKING Sem `from __future__ import annotations`**
 
@@ -439,24 +439,24 @@ if TYPE_CHECKING:
     from outro_modulo import OutraClasse
 
 class MinhaClasse:
-    def metodo(self, param: OutraClasse):  # ❌ NameError em runtime!
+    def metodo(self, param: OutraClasse):  # [ERRO] NameError em runtime!
         ...
 ```
 
 **Correção**:
 ```python
-from __future__ import annotations  # ← CRÍTICO!
+from __future__ import annotations  # <- CRÍTICO!
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from outro_modulo import OutraClasse
 
 class MinhaClasse:
-    def metodo(self, param: OutraClasse):  # ✅ Funciona!
+    def metodo(self, param: OutraClasse):  # [OK] Funciona!
         ...
 ```
 
-**Por Quê?**: Sem `__future__ annotations`, Python tenta avaliar `OutraClasse` em runtime → erro porque import está dentro de `if TYPE_CHECKING` (False em runtime).
+**Por Quê?**: Sem `__future__ annotations`, Python tenta avaliar `OutraClasse` em runtime -> erro porque import está dentro de `if TYPE_CHECKING` (False em runtime).
 
 **Custo se Não Evitado**: 30-40 min debugging (erro só aparece em runtime, não em type checking)
 
@@ -470,23 +470,23 @@ if TYPE_CHECKING:
     from outro_modulo import OutraClasse
 
 class MinhaClasse:
-    def metodo(self, param: "OutraClasse"):  # ❌ String manual
+    def metodo(self, param: "OutraClasse"):  # [ERRO] String manual
         ...
 ```
 
 **Melhor**:
 ```python
-from __future__ import annotations  # ← Automatiza strings!
+from __future__ import annotations  # <- Automatiza strings!
 
 if TYPE_CHECKING:
     from outro_modulo import OutraClasse
 
 class MinhaClasse:
-    def metodo(self, param: OutraClasse):  # ✅ Limpo, type hint completo
+    def metodo(self, param: OutraClasse):  # [OK] Limpo, type hint completo
         ...
 ```
 
-**Benefício**: 
+**Benefício**:
 - Código mais limpo (sem quotes)
 - IDE autocomplete funciona melhor
 - Refatoração mais fácil (rename symbol)
@@ -499,7 +499,7 @@ class MinhaClasse:
 ```python
 class MinhaClasse:
     def metodo(self):
-        from outro_modulo import funcao_cara  # ❌ Import em TODA chamada!
+        from outro_modulo import funcao_cara  # [ERRO] Import em TODA chamada!
         funcao_cara()
 ```
 
@@ -508,23 +508,23 @@ class MinhaClasse:
 class MinhaClasse:
     def __init__(self):
         self._cached_agent = None
-    
+
     @property
-    def agent(self):  # ✅ Import UMA VEZ, cache para sempre
+    def agent(self):  # [OK] Import UMA VEZ, cache para sempre
         if self._cached_agent is None:
             from outro_modulo import Agent
             self._cached_agent = Agent()
         return self._cached_agent
 ```
 
-**ROI**: 
-- ⚡ Performance (import só 1x vs toda chamada)
-- 🎯 Padrão singleton natural
-- 🧪 Testável (pode mockar `_cached_agent`)
+**ROI**:
+- [FAST] Performance (import só 1x vs toda chamada)
+- [EMOJI] Padrão singleton natural
+- [EMOJI] Testável (pode mockar `_cached_agent`)
 
 ---
 
-## 📊 ROI TOTAL DA SESSÃO
+## [EMOJI] ROI TOTAL DA SESSÃO
 
 | Item | Tempo Investido | Tempo Economizado | ROI |
 |---|---|---|---|
@@ -539,7 +539,7 @@ class MinhaClasse:
 
 ---
 
-## 🔗 REFERÊNCIAS
+## [EMOJI] REFERÊNCIAS
 
 ### Documentação Oficial Python
 - [PEP 484 - Type Hints](https://www.python.org/dev/peps/pep-0484/)
@@ -558,11 +558,11 @@ class MinhaClasse:
 
 ---
 
-## ✅ CHECKLIST APLICAÇÃO FUTURA
+## [OK] CHECKLIST APLICAÇÃO FUTURA
 
 Quando encontrar circular import em Python:
 
-- [ ] 1. **Identificar ciclo**: `module A → module B → module A`
+- [ ] 1. **Identificar ciclo**: `module A -> module B -> module A`
 - [ ] 2. **Adicionar `from __future__ import annotations`** em AMBOS arquivos
 - [ ] 3. **Adicionar `if TYPE_CHECKING:` imports** em AMBOS
 - [ ] 4. **Validar type hints** funcionam (mypy/pyright)
@@ -575,8 +575,7 @@ Quando encontrar circular import em Python:
 
 ---
 
-**Última Atualização**: 2025-10-16  
-**Autor**: BSC Consulting Agent v2.0  
-**Status**: ✅ VALIDADO (10 testes E2E passando)  
+**Última Atualização**: 2025-10-16
+**Autor**: BSC Consulting Agent v2.0
+**Status**: [OK] VALIDADO (10 testes E2E passando)
 **ROI**: 2.5-4x (80-160 min economizados por implementação)
-

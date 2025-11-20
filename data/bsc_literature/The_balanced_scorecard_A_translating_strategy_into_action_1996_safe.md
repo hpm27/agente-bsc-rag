@@ -1,4 +1,4 @@
-# The  
+# The
 
 # BALANCED SCORECARD
 
@@ -8,17 +8,17 @@
 
 ## Página 2
 
-# TRANSLATING STRATEGY INTO ACTION  
+# TRANSLATING STRATEGY INTO ACTION
 
 ## The BALANCED SCORECARD
 
-Robert S. Kaplan  
+Robert S. Kaplan
 David P. Norton
 
-HARVARD BUSINESS SCHOOL PRESS  
+HARVARD BUSINESS SCHOOL PRESS
 BOSTON, MASSACHUSETTS
 
-[Figura 1: Capa/título da obra]  
+[Figura 1: Capa/título da obra]
 Descrição: Página de rosto com tipografia em destaque. O título “TRANSLATING STRATEGY INTO ACTION The BALANCED SCORECARD” aparece centralizado em letras grandes e negritadas, com linhas horizontais finas acima e abaixo da palavra “The” e abaixo de “SCORECARD”. Abaixo, os nomes dos autores “Robert S. Kaplan” e “David P. Norton” são apresentados em fonte alta e estreita, ocupando grande parte da largura. No rodapé, aparece a afiliação/editor: “HARVARD BUSINESS SCHOOL PRESS BOSTON, MASSACHUSETTS”. Não há gráficos, fórmulas ou tabelas nesta página.
 
 ---
@@ -37,16 +37,16 @@ Printed in the United States of America
 
 ## Library of Congress Cataloging-in-Publication Data
 
-Kaplan, Robert S.  
-The balanced scorecard: translating strategy into action / Robert S. Kaplan, David P. Norton.  
-p. cm.  
-Includes index.  
-ISBN 0-87584-651-3 (alk. paper)  
+Kaplan, Robert S.
+The balanced scorecard: translating strategy into action / Robert S. Kaplan, David P. Norton.
+p. cm.
+Includes index.
+ISBN 0-87584-651-3 (alk. paper)
 
-1. Industrial productivity—Measurement. 2. Strategic planning.  
-3. Organizational effectiveness—Evaluation. I. Norton, David P.  
-II. Title.  
-HD56.K35 1996  96-10216  
+1. Industrial productivity—Measurement. 2. Strategic planning.
+3. Organizational effectiveness—Evaluation. I. Norton, David P.
+II. Title.
+HD56.K35 1996  96-10216
 658.4'012—dc20  CIP
 
 The paper used in this publication meets the requirements of the American National Standard for Permanence of Paper for Printed Library Materials Z39.49-1984.
@@ -153,7 +153,7 @@ tic endorsement and editorial assistance throughout the project. Hollis Heimbouc
 
 Natalie Greenberg applied her usual painstaking and thorough copy-editing skills that, among many other benefits, eliminated our tendency toward repetition. Barbara Roth kept us on schedule by managing effectively the production process and gave excellent advice in art production and editing. Rose Fitzpatrick of Renaissance Solutions supported us by translating crude hand-written notes and roughly scrawled figures and tables into a polished final manuscript. Her patience through many iterations and refinements was a source of strength. To all these people we say thank you.
 
-Robert S. Kaplan and David P. Norton  
+Robert S. Kaplan and David P. Norton
 Boston and Lincoln, Mass., February 1996
 
 ## NOTES
@@ -542,10 +542,10 @@ The Balanced Scorecard fills the void that exists in most management systems—t
 
 ## NOTES
 
-1. A. D. Chandler, Jr., Scale and Scope: The Dynamics of Industrial Capitalism (Cambridge, Mass.: Harvard University Press, 1990).  
-2. See A. D. Chandler, Jr., The Visible Hand: The Managerial Revolution in American Business (Cambridge, Mass.: Harvard University Press, 1977) and T. H. Johnson and R. S. Kaplan, Relevance Lost: The Rise and Fall of Management Accounting (Boston: Harvard Business School Press, 1987).  
-3. H. Itami, Mobilizing Invisible Assets (Cambridge, Mass.: Harvard University Press, 1987).  
-4. J. Champy and M. Hammer, Reengineering the Corporation: A Manifesto for Business Revolution (New York: HarperBusiness, 1993).  
+1. A. D. Chandler, Jr., Scale and Scope: The Dynamics of Industrial Capitalism (Cambridge, Mass.: Harvard University Press, 1990).
+2. See A. D. Chandler, Jr., The Visible Hand: The Managerial Revolution in American Business (Cambridge, Mass.: Harvard University Press, 1977) and T. H. Johnson and R. S. Kaplan, Relevance Lost: The Rise and Fall of Management Accounting (Boston: Harvard Business School Press, 1987).
+3. H. Itami, Mobilizing Invisible Assets (Cambridge, Mass.: Harvard University Press, 1987).
+4. J. Champy and M. Hammer, Reengineering the Corporation: A Manifesto for Business Revolution (New York: HarperBusiness, 1993).
 5. Industrial age companies used traditional production and service delivery processes to supply different models and options to diverse consumers. This high-cost approach was not made visible until the development of activity-
 
 ---
@@ -556,10 +556,10 @@ The Balanced Scorecard fills the void that exists in most management systems—t
 
 based cost systems in the mid-1980s; see R. Cooper and R. S. Kaplan, “Measure Costs Right: Make the Right Decisions,” Harvard Business Review (September–October 1988): 96–103. Now companies recognize they must either achieve greater focus in the customer segments they choose to serve or deploy technology-based product and service delivery processes that enable high-variety outputs to be supplied at low resource costs.
 
-6. J. L. Bower and C. M. Christensen, “Disruptive Technologies: Catching the Wave,” Harvard Business Review (January–February 1995): 43–53.  
-7. R. S. Kaplan and A. Sweeney, “Romeo Engine Plant,” 9-194-032 (Boston: Harvard Business School, 1994).  
-8. R. K. Elliott, “The Third Wave Breaks on the Shores of Accounting,” Accounting Horizons (June 1992): 61–85.  
-9. R. Simons, Levers of Control: How Managers Use Innovative Control Systems to Drive Strategic Renewal (Boston: Harvard Business School Press, 1995), 20.  
+6. J. L. Bower and C. M. Christensen, “Disruptive Technologies: Catching the Wave,” Harvard Business Review (January–February 1995): 43–53.
+7. R. S. Kaplan and A. Sweeney, “Romeo Engine Plant,” 9-194-032 (Boston: Harvard Business School, 1994).
+8. R. K. Elliott, “The Third Wave Breaks on the Shores of Accounting,” Accounting Horizons (June 1992): 61–85.
+9. R. Simons, Levers of Control: How Managers Use Innovative Control Systems to Drive Strategic Renewal (Boston: Harvard Business School Press, 1995), 20.
 10. For an extensive discussion of single- and double-loop learning in management processes, see Chris Argyris and Donald A. Schön, Organizational Learning II: Theory, Method, and Practice (Reading Mass.: Addison-Wesley, 1996); and “Teaching Smart People How to Learn,” Harvard Business Review (May–June 1991): 99–109.
 
 ---
@@ -1382,19 +1382,19 @@ squeeze on operating profits and margins, and changes in technology and competit
 
 As another example of market segmentation, Pioneer Petroleum, a major U.S. refiner and retail marketer of gasoline and automobile lubricants, began the development of its customer strategy with a market research program. The findings identified five customer segments.
 
-1. Road Warriors: 16% of buyers  
+1. Road Warriors: 16% of buyers
 Higher-income middle-aged men who drive 25,000–50,000 miles a year . . . buy premium gasoline with a credit card . . . purchase sandwiches and drinks from the convenience store . . . will sometimes wash their cars at the carwash.
 
-2. True Blues: 16% of buyers  
+2. True Blues: 16% of buyers
 Usually men and women with moderate to high incomes who are loyal to a brand and sometimes to a particular station . . . frequently buy premium gasoline and pay in cash.
 
-3. Generation F3: 27% of buyers  
+3. Generation F3: 27% of buyers
 Fuel, Food, and Fast: Upwardly mobile men and women—half under 25 years of age—who are constantly on the go . . . drive a lot and snack heavily from the convenience store.
 
-4. Homebodies: 21% of buyers  
+4. Homebodies: 21% of buyers
 Usually housewives who shuttle their children around during the day and use whatever gasoline station is based in town or along their route of travel.
 
-5. Price Shoppers: 20% of buyers  
+5. Price Shoppers: 20% of buyers
 Generally aren’t loyal to either a brand or a particular station, and rarely buy the premium line . . . frequently on tight budgets.
 
 Pioneer concluded that oil companies had been fighting over the Price Shoppers for years. Pioneer’s executives now realized that these customers
@@ -1533,8 +1533,8 @@ Customer value propositions represent the attributes that supplying companies pr
 
 While value propositions vary across industries, and across different market segments within industries, we have observed a common set of attributes that organizes the value propositions in all of the industries where we have constructed scorecards. These attributes can be organized into three categories (see Figure 4-3).
 
-- Product/service attributes  
-- Customer relationship  
+- Product/service attributes
+- Customer relationship
 - Image and reputation
 
 ### PRODUCT AND SERVICE ATTRIBUTES
@@ -1790,26 +1790,26 @@ Descrição da figura:
 
 ### Product Attributes — Functionality
 
-- Safety  
+- Safety
 - Engineering Service
 
 ### Product Attributes — Quality
 
-- Minimum Revision of Submitted Procedures  
-- Quality and Awareness of Performance  
-- Standard of Equipment Provided  
-- Quality of Personnel  
+- Minimum Revision of Submitted Procedures
+- Quality and Awareness of Performance
+- Standard of Equipment Provided
+- Quality of Personnel
 - Production Quality
 
 ### Product Attributes — Price
 
-- Hours Worked  
-- Value for Money  
+- Hours Worked
+- Value for Money
 - Innovativeness to Reduce Cost
 
 ### Product Attributes — Timeliness
 
-- Meeting Schedule  
+- Meeting Schedule
 - Timely Submission of Procedures
 
 ### Image — Professional Management
@@ -1818,9 +1818,9 @@ Descrição da figura:
 
 ### Relationship — Relationship
 
-- Honesty and Openness of Contractor  
-- Flexibility  
-- Contractual Responsiveness  
+- Honesty and Openness of Contractor
+- Flexibility
+- Contractual Responsiveness
 - Team Rapport/Spirit
 
 Legenda observada:
@@ -2045,10 +2045,10 @@ deliver to its customers than a demonstration that it is the most profitable sup
 
 ## NOTES
 
-1. See discussion of boundary systems in R. Simons, Levers of Control: How Managers Use Innovative Control Systems to Drive Strategic Renewal (Boston: Harvard Business School Press, 1995), 47–55, 156.  
-2. J. Heskett, T. Jones, G. Loveman, E. Sasser, and L. Schlesinger, “Putting the Service Profit Chain to Work,” Harvard Business Review (March–April 1994): 164–174.  
-3. T. O. Jones and W. E. Sasser, “Why Satisfied Customers Defect,” Harvard Business Review (November–December 1995): 88–99.  
-4. R. Cooper and R. S. Kaplan, “Profit Priorities from Activity-Based Costing,” Harvard Business Review (May–June 1991): 130–135.  
+1. See discussion of boundary systems in R. Simons, Levers of Control: How Managers Use Innovative Control Systems to Drive Strategic Renewal (Boston: Harvard Business School Press, 1995), 47–55, 156.
+2. J. Heskett, T. Jones, G. Loveman, E. Sasser, and L. Schlesinger, “Putting the Service Profit Chain to Work,” Harvard Business Review (March–April 1994): 164–174.
+3. T. O. Jones and W. E. Sasser, “Why Satisfied Customers Defect,” Harvard Business Review (November–December 1995): 88–99.
+4. R. Cooper and R. S. Kaplan, “Profit Priorities from Activity-Based Costing,” Harvard Business Review (May–June 1991): 130–135.
 5. C. Hart, “The Power of Unconditional Service Guarantees,” Harvard Business Review (July–August 1988): 54–62; and J. Heskett, E. Sasser, and C. Hart, Service Breakthroughs: Changing the Rules of the Game (New York: Free Press, 1990).
 
 ---
@@ -2240,7 +2240,7 @@ Of course, the relationship between inputs expended (on salaries, equipment, and
 
 Advanced Micro Devices, a leading semiconductor manufacturer, competes in an industry with extremely rapid technological change. AMD focused many measures of its Balanced Scorecard on the innovation process. Among the measures it used were:
 
-1. Percentage of sales from new products  
+1. Percentage of sales from new products
 2. Percentage of sales from proprietary products9
 
 ---
@@ -2441,10 +2441,10 @@ Kenyon had established specific customer objectives and measures (see Chapter 4)
 
 # MEASURING BUSINESS STRATEGY
 
-1. Brand management  
-2. Fashion leadership  
-3. Sourcing leadership  
-4. Merchandise availability  
+1. Brand management
+2. Fashion leadership
+3. Sourcing leadership
+4. Merchandise availability
 5. Memorable shopping experience
 
 The first two of these, brand management and fashion leadership, can be considered part of Kenyon’s innovation process—identifying and influencing customer needs, and developing the fashion merchandise to fulfill those needs. The last three processes relate to the operations process—getting the correct merchandise to the point of sale and providing the customer with “a perfect shopping experience.”
@@ -2453,15 +2453,15 @@ The first two of these, brand management and fashion leadership, can be consider
 
 Within the brand management process, Kenyon identified four subobjectives:
 
-1. Brand Concept Definition: Build Kenyon into a dominant national brand with an increased share of wardrobe for the target customer.  
-2. Category Dominance: Continue the growth of casual pants and jeans as the dominant category within Kenyon’s product mix.  
-3. Positioning Strategy: Expand the Kenyon image from successful private label to mature brand that is clearly defined by the customer.  
+1. Brand Concept Definition: Build Kenyon into a dominant national brand with an increased share of wardrobe for the target customer.
+2. Category Dominance: Continue the growth of casual pants and jeans as the dominant category within Kenyon’s product mix.
+3. Positioning Strategy: Expand the Kenyon image from successful private label to mature brand that is clearly defined by the customer.
 4. Store Concept Definition: Develop successful merchandise assortment and marketing program.
 
 These subobjectives were directed at building a concept and loyalty among targeted customers. The measures selected for these subobjectives were:
 
-1. Market share in selected categories (e.g., casual pants and jeans)  
-2. Brand recognition (from market research)  
+1. Market share in selected categories (e.g., casual pants and jeans)
+2. Brand recognition (from market research)
 3. New accounts opened per year
 
 These measures were intended to reflect Kenyon’s success in implementing its brand management strategy.
@@ -2564,7 +2564,7 @@ Descrição detalhada do conteúdo visual:
 
 ### Financial (camada superior)
 
-- Increase Penetration → Profitable Growth ← Productivity
+- Increase Penetration -> Profitable Growth <- Productivity
 
 Legenda e numeração:
 
@@ -2588,7 +2588,7 @@ Our third example illustrates the internal-business-process perspective for Pion
 
 ### Value Chain
 
-- Innovation Process → Operations Process → Operations Process → Postsale Service Process
+- Innovation Process -> Operations Process -> Operations Process -> Postsale Service Process
 
 [Figura/Diagrama]
 Descrição detalhada do conteúdo visual:
@@ -2735,10 +2735,10 @@ For its end-use consumers, Pioneer, in addition to the objective of developing n
 
 experience to targeted consumers, Pioneer employed a mystery shopping rating, in which an independent third party shopped at each station monthly (and local competitors quarterly). The mystery shopper made a gasoline and snack purchase and then calculated a dealer quality score that could be compared to the station’s previous performance and to competitive stations. The score was particularly weighted toward five key areas:
 
-1. Facility exterior  
-2. Service islands  
-3. Sales area  
-4. Personnel  
+1. Facility exterior
+2. Service islands
+3. Sales area
+4. Personnel
 5. Restrooms
 
 The mystery shopper rating provided information and incentives for franchised dealers to offer the value proposition that would attract consumers in Pioneer’s three targeted segments.
@@ -3032,7 +3032,7 @@ Descrição detalhada:
   - Caixa inferior central: “Employee Satisfaction”.
   - Caixa à esquerda: “Employee Retention”.
 - As setas indicam um ciclo bidirecional de influência:
-  - “Results” → “Employee Productivity” → “Employee Satisfaction” → “Employee Retention” → de volta a “Employee Satisfaction” e “Results” (as setas curvas conectam as caixas de forma circular, enfatizando retroalimentação entre satisfação, retenção e produtividade).
+  - “Results” -> “Employee Productivity” -> “Employee Satisfaction” -> “Employee Retention” -> de volta a “Employee Satisfaction” e “Results” (as setas curvas conectam as caixas de forma circular, enfatizando retroalimentação entre satisfação, retenção e produtividade).
 - No nível inferior (“Enablers”), três caixas alimentam “Employee Satisfaction” por meio de setas que sobem:
   - “Staff Competencies”
   - “Technology Infrastructure”
@@ -3379,9 +3379,9 @@ an implementation plan for cascading the scorecard approach downward within thei
 
 ## Measurement Approach — Measure Evolves through Implementation
 
-1. Percent of top managers exposed to BSC  
-2. Percent of staff exposed to BSC  
-3. Percent of top managers with personal goals aligned to BSC  
+1. Percent of top managers exposed to BSC
+2. Percent of staff exposed to BSC
+3. Percent of top managers with personal goals aligned to BSC
 4. Percent of staff with personal goals aligned to BSC and percent of employees who achieved personal goals
 
 ---
@@ -3419,13 +3419,13 @@ One organization, a consumer goods company that used extensive market research t
 
 ## Awareness Level vs. Typical Response
 
-- II. Customer  
+- II. Customer
   "I have started to do things differently based on what I learned from the Balanced Scorecard."
 
-- III. Brand Preference  
+- III. Brand Preference
   "The new things I am trying are working. I can see them helping me, our customers, and the company."
 
-- IV. Brand Loyalty  
+- IV. Brand Loyalty
   "I'm a believer. I'm convinced that the new strategy is the right way to go. I'm an active missionary, trying to get others on the bandwagon."
 
 This survey (see Figure 6-7) helped managers measure progress in gaining awareness and commitment to the objectives and measures for the Balanced Scorecard, and identify areas that needed additional effort and attention.
@@ -3577,8 +3577,8 @@ How can we build a Balanced Scorecard that translates a strategy into measuremen
 
 # LINKING BALANCED SCORECARD MEASURES
 
-1. Cause-and-effect relationships  
-2. Performance drivers  
+1. Cause-and-effect relationships
+2. Performance drivers
 3. Linkage to financials
 
 We discuss each of these principles in turn.
@@ -4173,24 +4173,24 @@ markets. The CEO of Kenyon developed a strategic agenda of 10 items that would b
 
 ## Financial
 
-1. Aggressive growth  
+1. Aggressive growth
 2. Maintain overall margins
 
 ## Customer
 
-3. Customer loyalty  
+3. Customer loyalty
 4. Complete product-line offering
 
 ## Internal Business Process
 
-5. Build the brand  
-6. Fashion leader  
-7. Quality product  
+5. Build the brand
+6. Fashion leader
+7. Quality product
 8. Superior shopping experience
 
 ## Learning and Growth
 
-9. Strategic skills  
+9. Strategic skills
 10. Personal growth
 
 For each item on the corporate strategic agenda, the corporate executive team defined an associated guiding principle and a corporate-level measurement. For example, the aggressive growth item’s guiding principle was stated as:
@@ -4811,24 +4811,24 @@ In particular, we have identified four specific barriers (see Figure II-1) to ef
 
 ## Descrição da figura
 
-- A figura apresenta um diagrama centralizado destacando um retângulo no meio com a palavra “Budget”.  
-- Quatro blocos retangulares escuros estão conectados ao centro, formando uma cruz (cima, baixo, esquerda, direita).  
-- Setas bidirecionais apontam de e para o retângulo central “Budget”, indicando ligação com os quatro blocos.  
-- Duas setas curvas adicionais partem do bloco inferior em direção aos blocos laterais, sugerindo influência/realimentação.  
+- A figura apresenta um diagrama centralizado destacando um retângulo no meio com a palavra “Budget”.
+- Quatro blocos retangulares escuros estão conectados ao centro, formando uma cruz (cima, baixo, esquerda, direita).
+- Setas bidirecionais apontam de e para o retângulo central “Budget”, indicando ligação com os quatro blocos.
+- Duas setas curvas adicionais partem do bloco inferior em direção aos blocos laterais, sugerindo influência/realimentação.
 - Linhas tracejadas diagonais vão dos cantos do quadro externo até o centro, enquadrando o conjunto.
 
 ## Rótulos e legendas na figura
 
-1. Vision and Strategy Not Actionable  
+1. Vision and Strategy Not Actionable
    - Localização: parte superior, acima do bloco superior.
 
-2. Strategy Not Linked to Departmental Team and Individual Goals  
+2. Strategy Not Linked to Departmental Team and Individual Goals
    - Localização: lado esquerdo, alinhado ao bloco esquerdo.
 
-3. Strategy Not Linked to Resource Allocation  
+3. Strategy Not Linked to Resource Allocation
    - Localização: parte inferior, abaixo do bloco inferior.
 
-4. Feedback That Is Tactical, Not Strategic  
+4. Feedback That Is Tactical, Not Strategic
    - Localização: lado direito, alinhado ao bloco direito.
 
 - Centro do diagrama: “Budget” (com setas para cima, baixo, esquerda e direita).
@@ -4839,9 +4839,9 @@ In particular, we have identified four specific barriers (see Figure II-1) to ef
 
 # MANAGING BUSINESS STRATEGY
 
-1. Visions and strategies that are not actionable  
-2. Strategies that are not linked to departmental, team, and individual goals  
-3. Strategies that are not linked to long- and short-term resource allocation  
+1. Visions and strategies that are not actionable
+2. Strategies that are not linked to departmental, team, and individual goals
+3. Strategies that are not linked to long- and short-term resource allocation
 4. Feedback that is tactical, not strategic
 
 Each barrier can be overcome by integrating the Balanced Scorecard into a new strategic management system. Let us pause here and be more specific about the defects of current management systems, driven mainly by a traditional, historical-cost financial model, that lead to a disconnect between strategy formulation and strategy implementation.
@@ -5508,7 +5508,7 @@ Elementos e conexões (listados na ordem de fluxo):
 
 - Percentage of people qualified for key positions
 
-[ ] SBU scorecard  
+[ ] SBU scorecard
 [ ] Team scorecard
 
 ##### Optimize People Resources
@@ -5525,13 +5525,13 @@ Elementos e conexões (listados na ordem de fluxo):
 
 ## Figuras e Diagramas
 
-- Figura 9-6 é um diagrama em formato de matriz com quatro perspectivas do Balanced Scorecard (Financial, Customer, Internal, Learning and Growth).  
+- Figura 9-6 é um diagrama em formato de matriz com quatro perspectivas do Balanced Scorecard (Financial, Customer, Internal, Learning and Growth).
 - Cada perspectiva contém:
   - Um bloco “Strategic Objective”
   - Um bloco “Measure”
   - Um bloco “Team/Area Objective” (p.ex., Control Store Costs, Customer Partnerships, Construction Excellence, Optimize People Resources)
   - Um bloco “Team Measures”
-- Setas verticais indicam o encadeamento: Strategic Objective → Team Objective → Team Measures.  
+- Setas verticais indicam o encadeamento: Strategic Objective -> Team Objective -> Team Measures.
 - Na lateral inferior esquerda há dois checkboxes rotulados “SBU scorecard” e “Team scorecard”, ambos desmarcados.
 
 ---
@@ -5878,8 +5878,8 @@ can be focused on achieving the organizational objectives, measures, and targets
 
 While the formulation and mobilization of initiatives to achieve stretch performance targets is largely a creative process, there are three ways in which a planning process, based on the Balanced Scorecard, can improve and channel this creativity:
 
-1. The “missing measurement” program  
-2. Continuous improvement programs linked to rate-of-change metrics  
+1. The “missing measurement” program
+2. Continuous improvement programs linked to rate-of-change metrics
 3. Strategic initiatives, such as reengineering and transformation programs, linked to radical improvement in key performance drivers
 
 ## The “Missing Measurement” Program
@@ -5989,20 +5989,20 @@ Figura diagramática descrevendo relações causais entre elementos do processo 
 
 Descrição dos fluxos e conexões (setas):
 
-- Hazards and Exposures Learning → Effective Guidelines.
-- Hazards and Exposures Learning → Exposure Management Learning. (Base de aprendizado alimenta ambas as capacidades de conhecimento.)
-- Effective Guidelines → Account Selection.
-- Effective Guidelines → Accurate Pricing.
-- Exposure Management Learning → Reduced Claims.
-- Exposure Management Learning → Accurate Pricing. (Setas apontam para suporte a precificação e redução de sinistros.)
-- Response Time → Increased Sales/Quote Ratio.
-- Account Selection → Increased Sales/Quote Ratio. (Contribui para melhor taxa de conversão de cotações.)
-- Accurate Pricing → Reduced Loss Ratio.
-- Reduced Claims → Reduced Loss Ratio.
-- Increased Sales/Quote Ratio → Effective Producer Relations.
-- Reduced Loss Ratio → Effective Underwriting.
-- Effective Underwriting → Reduced Customer Costs and Exposure.
-- Customer Communication → Reduced Customer Costs and Exposure.
+- Hazards and Exposures Learning -> Effective Guidelines.
+- Hazards and Exposures Learning -> Exposure Management Learning. (Base de aprendizado alimenta ambas as capacidades de conhecimento.)
+- Effective Guidelines -> Account Selection.
+- Effective Guidelines -> Accurate Pricing.
+- Exposure Management Learning -> Reduced Claims.
+- Exposure Management Learning -> Accurate Pricing. (Setas apontam para suporte a precificação e redução de sinistros.)
+- Response Time -> Increased Sales/Quote Ratio.
+- Account Selection -> Increased Sales/Quote Ratio. (Contribui para melhor taxa de conversão de cotações.)
+- Accurate Pricing -> Reduced Loss Ratio.
+- Reduced Claims -> Reduced Loss Ratio.
+- Increased Sales/Quote Ratio -> Effective Producer Relations.
+- Reduced Loss Ratio -> Effective Underwriting.
+- Effective Underwriting -> Reduced Customer Costs and Exposure.
+- Customer Communication -> Reduced Customer Costs and Exposure.
 
 Observações visuais:
 
@@ -6166,42 +6166,42 @@ Notas:
 ## Figure description
 
 - Layout: A large circular flow with four rectangular boxes placed around it, each connected by curved arrows indicating a cyclical relationship. The top box is “Financial Objectives.” Moving clockwise, the next box is “Customer Objectives,” then “Business Process (Operations Cycle),” then “Learning and Growth Objectives,” and finally “Business Process (Innovation Cycle)” which feeds back toward Financial Objectives, completing the loop.
-- Arrows: Thick curved arrows show progression from Financial Objectives → Customer Objectives → Business Process (Operations Cycle) → Learning and Growth Objectives → Business Process (Innovation Cycle) → back to Financial Objectives.
+- Arrows: Thick curved arrows show progression from Financial Objectives -> Customer Objectives -> Business Process (Operations Cycle) -> Learning and Growth Objectives -> Business Process (Innovation Cycle) -> back to Financial Objectives.
 - Visual style: Each box contains bullet points describing objectives.
 
 ## Financial Objectives
 
-- Achieve positive levels of EVA  
-- Create synergy with other units  
-- Improve predictability of performance  
-- Achieve growth of 6–8% for the next 3 years  
+- Achieve positive levels of EVA
+- Create synergy with other units
+- Improve predictability of performance
+- Achieve growth of 6–8% for the next 3 years
 - Reduce costs to world-class levels
 
 ## Customer Objectives
 
-- Create value-added partnerships with 70–80% of our customers  
-- Improve quality and service to achieve 100% customer satisfaction with “value for money”  
+- Create value-added partnerships with 70–80% of our customers
+- Improve quality and service to achieve 100% customer satisfaction with “value for money”
 - Build relationships at multiple levels
 
 ## Business Process (Operations Cycle)
 
-- Improve order and billing process  
-- Empower the account teams  
-- Achieve flawless implementation and operations  
+- Improve order and billing process
+- Empower the account teams
+- Achieve flawless implementation and operations
 - Leverage service to rebuild image
 
 ## Learning and Growth Objectives
 
-- Reskill our work force  
-- Create a climate for action  
-- Link rewards and performance  
+- Reskill our work force
+- Create a climate for action
+- Link rewards and performance
 - Develop information assets
 
 ## Business Process (Innovation Cycle)
 
-- Improve understanding of our markets  
-- Build expertise in technologies of the future  
-- Develop value-added solutions (new markets)  
+- Improve understanding of our markets
+- Build expertise in technologies of the future
+- Develop value-added solutions (new markets)
 - Improve our customer image (maximize retention)
 
 ---
@@ -6212,26 +6212,26 @@ Notas:
 
 ## Strategic Initiatives
 
-1. Development Cycle  
+1. Development Cycle
 Improve the business development cycle in order to achieve 75% of our revenues from value-added partnerships and drive annual revenue growth of 15% by 1998.
 
-2. Account Management/Selling  
+2. Account Management/Selling
 Dramatically improve the sales and marketing process in order to achieve sales growth that exceeds market growth by 2% and adds 5 points of margin by 1998.
 
-3. Order and Billing Management  
+3. Order and Billing Management
 Develop a reliable order tracking and billing process that will reduce lost revenue to 1%, reduce the error rate to 1%, reduce the cost per order by 50%, and dramatically improve customer satisfaction.
 
-4. Staff Skills  
+4. Staff Skills
 Develop the skills of our staff such that 100% of 1998 strategic requirements are in place.
 
-5. Information Assets  
+5. Information Assets
 Develop the customer and performance databases necessary to support the strategy.
 
 ### Figura/diagrama: descrição
 
-- Layout com título “Strategic Initiatives” no topo.  
-- Cinco caixas retangulares empilhadas verticalmente, numeradas de 1 a 5, cada uma contendo um título em negrito e uma descrição objetiva.  
-- Uma linha de ligação vertical à esquerda conecta visualmente as cinco caixas, indicando que todas compõem o conjunto de iniciativas estratégicas.  
+- Layout com título “Strategic Initiatives” no topo.
+- Cinco caixas retangulares empilhadas verticalmente, numeradas de 1 a 5, cada uma contendo um título em negrito e uma descrição objetiva.
+- Uma linha de ligação vertical à esquerda conecta visualmente as cinco caixas, indicando que todas compõem o conjunto de iniciativas estratégicas.
 - Não há eixos, escalas ou dados numéricos em gráfico; é um diagrama de lista estruturada.
 
 ---
@@ -6592,8 +6592,8 @@ Elementos e relações:
 
 Resumo do fluxo causal completo:
 
-- Employees’ Morale (+) → Employees’ Suggestions (–) → Rework → Operating Expenses (–) → Return on Capital Employed.
-- Employees’ Morale (+) → Customer Satisfaction (–) → Accounts Receivable (+) → Return on Capital Employed.
+- Employees’ Morale (+) -> Employees’ Suggestions (–) -> Rework -> Operating Expenses (–) -> Return on Capital Employed.
+- Employees’ Morale (+) -> Customer Satisfaction (–) -> Accounts Receivable (+) -> Return on Capital Employed.
 
 Legenda de sinais:
 
@@ -6615,9 +6615,9 @@ But, cynics contend, correlating employee morale with customer satisfaction just
 
 That is where the scorecard requirement that all measures eventually link up to financial performance plays a critical and decisive role. Echo Engineering discovered a further correlation, an inverse correlation between customer satisfaction and the length of the accounts receivable cycle. The most satisfied customers paid their bills within 15 days, while dissatisfied customers often took up to 120 days to pay. The organization had discovered an entire sequence of linkages (as illustrated in Figure 11-2):
 
-- Improved employee morale → Increased customer satisfaction  
-  → Lower accounts receivable  
-  → Higher return-on-capital-employed.
+- Improved employee morale -> Increased customer satisfaction
+  -> Lower accounts receivable
+  -> Higher return-on-capital-employed.
 
 Thus, employee morale did not have to be justified as a noble and paternalistic corporate goal. It was a necessary ingredient for achieving superior financial returns in the future. The linkages in the scorecard demonstrated a “hard” benefit (higher return-on-capital-employed) from improvements in “soft” measures (employee morale and customer satisfaction). Analyses like these clearly focus thinking on the necessary performance drivers for the strategy to deliver higher financial returns.
 
@@ -7098,13 +7098,13 @@ Descrição detalhada da figura:
 
 - A figura apresenta um diagrama de fluxo vertical dentro de uma moldura retangular principal, conectando uma série de caixas de texto alinhadas verticalmente. À esquerda da moldura existe uma caixa isolada com o texto “Build a Balanced Scorecard”. À direita, aproximadamente na altura central, há uma caixa isolada com o texto “Build a New Management System”. Setas horizontais, vindas de cada caixa interna, apontam para a direita (em direção à caixa “Build a New Management System”) e também para a esquerda (em direção à borda esquerda da moldura), indicando fluxo bidirecional e influência recíproca. Dentro da moldura principal, as caixas estão listadas de cima para baixo na seguinte ordem:
 
-1) Obtain Clarity and Consensus about Strategy  
-2) Achieve Focus  
-3) Leadership Development  
-4) Strategic Intervention  
-5) Educate the Organization  
-6) Set Strategic Targets  
-7) Align Programs and Investments  
+1) Obtain Clarity and Consensus about Strategy
+2) Achieve Focus
+3) Leadership Development
+4) Strategic Intervention
+5) Educate the Organization
+6) Set Strategic Targets
+7) Align Programs and Investments
 8) Build a Feedback System
 
 Legenda textual das caixas externas:
@@ -7446,8 +7446,8 @@ virtually any change program. Two types of change agents are required for effect
 
 We have identified three critical roles that must be played in building and embedding the Balanced Scorecard as a strategic management system:
 
-1. Architect  
-2. Change agent  
+1. Architect
+2. Change agent
 3. Communicator
 
 The architect is responsible for the process that builds the initial Balanced Scorecard, and that introduces the scorecard into the management system. Since the scorecard represents a radical change in the philosophy of management, the architect must completely understand and be internally motivated by the new focus on long-term strategic objectives. This person must be capable of educating the executive team and guiding the translation of strategy into specific objectives and measures in ways that are nonthreatening and do not trigger defensive reactions.2
@@ -7478,9 +7478,9 @@ Once the 24–36 month process of embedding the Balanced Scorecard into an organ
 
 ## Figure description
 
-- The figure is a cross-shaped diagram centered on a small square labeled “Balanced Scorecard.”  
-- Four rectangular blocks extend from the center toward the top, right, bottom, and left, each associated with a different executive role and responsibility area.  
-- Curved arrows circulate clockwise around the central square, indicating cyclical interaction among the four roles/processes.  
+- The figure is a cross-shaped diagram centered on a small square labeled “Balanced Scorecard.”
+- Four rectangular blocks extend from the center toward the top, right, bottom, and left, each associated with a different executive role and responsibility area.
+- Curved arrows circulate clockwise around the central square, indicating cyclical interaction among the four roles/processes.
 - Diagonal dashed guide lines run from each corner of the page toward the center, framing the cross.
 
 ## Central element
@@ -7938,7 +7938,7 @@ Descrição da figura:
 
 I. Measurement Program Architecture
 
-1. Select Organization Unit  
+1. Select Organization Unit
 2. Identify SBU/Corporate Linkages
 
 - Marcadores visuais:
@@ -7946,8 +7946,8 @@ I. Measurement Program Architecture
   - Um evento “Project Plan” ocorre aproximadamente entre as semanas 2 e 4.
 
 II. Define Strategic Objectives
-3. First-Round Interviews  
-4. Synthesis Session  
+3. First-Round Interviews
+4. Synthesis Session
 5. Executive Workshop: First Round
 
 - Marcadores visuais:
@@ -7955,7 +7955,7 @@ II. Define Strategic Objectives
   - “Workshop # 1” ocorre aproximadamente na semana 6–7.
 
 III. Select Strategic Measures
-6. Subgroup Meetings  
+6. Subgroup Meetings
 7. Executive Workshop: Second Round
 
 - Marcadores visuais:
@@ -7963,8 +7963,8 @@ III. Select Strategic Measures
   - “Workshop # 2” ocorre cerca da semana 12.
 
 IV. Build Implementation Plan
-8. Develop Implementation Plan  
-9. Executive Workshop: Third Round  
+8. Develop Implementation Plan
+9. Executive Workshop: Third Round
 10. Finalize Implementation Plan
 
 - Marcadores visuais:
@@ -8147,11 +8147,11 @@ Cooper, R., 20n, 91n, 124n, 125n
 
 Corporate investment. See Capital management
 
-Corporate scorecard, 36, 37  
+Corporate scorecard, 36, 37
 
-- alliances and, 173–175  
-- cross-business initiatives and, 244–247  
-- resources shared by SBUs and, 175–179  
+- alliances and, 173–175
+- cross-business initiatives and, 244–247
+- resources shared by SBUs and, 175–179
 - strategy clarification and, 169–173, 298–299
 
 Correlation analysis, 254–258
@@ -8170,13 +8170,13 @@ Cross-functions, 4, 262
 
 Customer acquisition, 68, 70
 
-Customer perspective, 8  
+Customer perspective, 8
 
-- business units and, 63–91  
-- core measures and, 67–73  
-- need for, 26  
-- strategic objectives and, 10, 63–91  
-- target setting and, 13–14  
+- business units and, 63–91
+- core measures and, 67–73
+- need for, 26
+- strategic objectives and, 10, 63–91
+- target setting and, 13–14
 - value propositions and, 73–84
 
 Customer profitability, 68, 71–73
@@ -8185,16 +8185,16 @@ Customer relationship, 4, 74–75, 78–79
 
 Customer retention, 68, 69
 
-Customer satisfaction, 68, 70–71  
+Customer satisfaction, 68, 70–71
 
-- employee morale and, 255–256  
-- internal perspective and, 110, 111  
+- employee morale and, 255–256
+- internal perspective and, 110, 111
 - performance drivers for, 85–91
 
-Customers. See also Market development  
+Customers. See also Market development
 
-- anticipation of needs of, 95–96  
-- information age environment and, 4  
+- anticipation of needs of, 95–96
+- information age environment and, 4
 - revenue growth and, 53
 
 Cycle time, 32
@@ -8203,9 +8203,9 @@ Decentralization, 297–298
 
 Demonson, A., 146n
 
-Direct sales  
+Direct sales
 
-- to individual customers, 80–81  
+- to individual customers, 80–81
 - mass market, 77–80
 
 Dixon, R., 124n
@@ -8236,28 +8236,28 @@ Electronic data interchange (EDI), 56
 
 Elliott, R. K., 20n
 
-Employees. See also Human resources  
+Employees. See also Human resources
 
-- communication of scorecard program with, 202–208  
-- job satisfaction and, 129, 130  
-- motivation of, 136–144  
-- productivity of, 129, 131  
-- reskilling of, 128–129, 132–134  
-- retention of, 129, 131  
+- communication of scorecard program with, 202–208
+- job satisfaction and, 129, 130
+- motivation of, 136–144
+- productivity of, 129, 131
+- reskilling of, 128–129, 132–134
+- retention of, 129, 131
 - types of, in information versus industrial age, 5–6, 127
 
 Exit stage business units, 62n
 
-Feedback  
+Feedback
 
-- barriers to strategy implementation and, 193, 196, 198  
-- correlation analysis and, 254–258  
-- initiative review and, 260–261  
-- management gaming and, 258  
-- peer review and, 261–262  
-- scenario analysis and, 258  
-- scorecard implementation and, 284  
-- single-loop versus double loop, 16–18  
+- barriers to strategy implementation and, 193, 196, 198
+- correlation analysis and, 254–258
+- initiative review and, 260–261
+- management gaming and, 258
+- peer review and, 261–262
+- scenario analysis and, 258
+- scorecard implementation and, 284
+- single-loop versus double loop, 16–18
 - strategic learning and, 17–18, 254–262, 284
 
 ---
@@ -8266,31 +8266,31 @@ Feedback
 
 # INDEX (page 322)
 
-Financial measures. See also Return-on-capital-employed  
+Financial measures. See also Return-on-capital-employed
 
-- appropriateness of, 47–48  
-- design of, in scorecard development process, 306  
-- drawbacks of exclusive use of, 21–24, 38–40, 126  
-- linkage of improvement programs with, 150–151  
-- relevance of, 32–34  
+- appropriateness of, 47–48
+- design of, in scorecard development process, 306
+- drawbacks of exclusive use of, 21–24, 38–40, 126
+- linkage of improvement programs with, 150–151
+- relevance of, 32–34
 - traditional accounting model and, 6–7
 
-Financial perspective, 8  
+Financial perspective, 8
 
-- business units and, 47–62  
-- need for, 25–26  
-- strategic objectives and, 11, 47–62  
-- strategic themes for, 51–60  
-- stretch targets and, 226–230  
+- business units and, 47–62
+- need for, 25–26
+- strategic objectives and, 11, 47–62
+- strategic themes for, 51–60
+- stretch targets and, 226–230
 - target setting and, 13–15
 
 First-pass yields, 120–122
 
-FMC Corporation, 46  
+FMC Corporation, 46
 
-- cross-business initiatives at, 246  
-- organizational units at, 168, 175–176  
-- role of financial measures at, 22  
+- cross-business initiatives at, 246
+- organizational units at, 168, 175–176
+- role of financial measures at, 22
 - strategic learning and, 264–265
 
 Ford, 70
@@ -8353,10 +8353,10 @@ House, Charles H., 125n
 
 Howell, R., 124n
 
-Human resources. See also Employees  
+Human resources. See also Employees
 
-- core outcome measures in, 129–132  
-- learning and growth perspective and, 127–134  
+- core outcome measures in, 129–132
+- learning and growth perspective and, 127–134
 - text markers in, 145–146
 
 Image, 75–77, 79–80, 108
@@ -8369,12 +8369,12 @@ Indirect sales, 81–84
 
 Industrial age competition, 2–6
 
-Information age competition  
+Information age competition
 
-- versus industrial age, 2–6  
-- operating assumptions in, 4–6  
-- scorecard framework and, 7–18  
-- strategic feedback and, 16–18  
+- versus industrial age, 2–6
+- operating assumptions in, 4–6
+- scorecard framework and, 7–18
+- strategic feedback and, 16–18
 - traditional accounting model and, 6–7
 
 Information systems, 134–136
@@ -8395,15 +8395,15 @@ Intangible assets, 3, 7
 
 # Index
 
-Internal-business-process perspective, 4, 8.  
-See also Innovation process; Operations process; Postsale service process  
+Internal-business-process perspective, 4, 8.
+See also Innovation process; Operations process; Postsale service process
 
-- business units and, 92–125  
-- consensus building and, 295–296  
-- need for, 26–28  
-- strategic objectives and, 11, 107–115  
-- target setting and, 13–14  
-- team performance and, 142–144  
+- business units and, 92–125
+- consensus building and, 295–296
+- need for, 26–28
+- strategic objectives and, 11, 107–115
+- target setting and, 13–14
+- team performance and, 142–144
 - value chain in, 96–107
 
 Intuit, 75
@@ -8432,13 +8432,13 @@ Juran, Joseph M., 40n
 
 Katzenbach, Jon R., 271n
 
-“Kenyon Stores” case, 46  
+“Kenyon Stores” case, 46
 
-- communication program and, 207–208  
-- corporate scorecard and, 169–172, 244–246, 298–299  
-- customer perspective and, 76–80  
-- internal perspective and, 107–110, 111  
-- scorecard implementation and, 281–284  
+- communication program and, 207–208
+- corporate scorecard and, 169–172, 244–246, 298–299
+- customer perspective and, 76–80
+- internal perspective and, 107–110, 111
+- scorecard implementation and, 281–284
 - strategic learning and, 262–264
 
 Kerr, Steve, 226
@@ -8451,16 +8451,16 @@ Lead indicators. See Performance drivers
 
 Lead time, 87. See also Time-to-market
 
-Learning and growth perspective, 8. See also Strategic learning  
+Learning and growth perspective, 8. See also Strategic learning
 
-- business units and, 126–146  
-- company-specific measures and, 144–146  
-- employee capabilities and, 127–134  
-- information systems and, 134–136  
-- need for, 28–29  
-- outcome measures in, 129–132  
-- situation-specific enablers and, 129, 132–134  
-- strategic objectives and, 12  
+- business units and, 126–146
+- company-specific measures and, 144–146
+- employee capabilities and, 127–134
+- information systems and, 134–136
+- need for, 28–29
+- outcome measures in, 129–132
+- situation-specific enablers and, 129, 132–134
+- strategic objectives and, 12
 - target setting and, 13–14
 
 Lebas, M., 40n
@@ -8471,14 +8471,14 @@ Lincoln, Peter C., 38
 
 Lines-of-business (LOBs), 295–299
 
-Linkages  
+Linkages
 
-- cross-business initiatives and, 244–247  
-- to customers and suppliers, 4  
-- between objectives and measures, 12–13, 29–32, 61–62, 147–165  
-- within organizational divisions, 302  
-- between scorecard and reward system, 283  
-- between scorecard and unit goals, 211–217  
+- cross-business initiatives and, 244–247
+- to customers and suppliers, 4
+- between objectives and measures, 12–13, 29–32, 61–62, 147–165
+- within organizational divisions, 302
+- between scorecard and reward system, 283
+- between scorecard and unit goals, 211–217
 - strategy and investment decisions, 238–244
 
 LOBs. See Lines-of-business
@@ -8509,108 +8509,108 @@ Management systems, 5–6, 8–18, 192
 
 # INDEX (p. 324)
 
-management of ongoing management processes and, 288–291  
-management of scorecard-based system and, 286–291  
-planning and, 224–248  
-scorecard implementation and, 272–292  
-strategic alignment and, 199–222  
-strategic learning and, 250–270  
+management of ongoing management processes and, 288–291
+management of scorecard-based system and, 286–291
+planning and, 224–248
+scorecard implementation and, 272–292
+strategic alignment and, 199–222
+strategic learning and, 250–270
 
-Manufacturing cycle effectiveness (MCE) ratio, 118–119  
+Manufacturing cycle effectiveness (MCE) ratio, 118–119
 
-Manufacturing organizations, 3  
+Manufacturing organizations, 3
 
-Maplehurst, 90  
+Maplehurst, 90
 
-Market development, 53, 97–98. See also Customers  
+Market development, 53, 97–98. See also Customers
 
-Market segmentation, 64–77  
+Market segmentation, 64–77
 
-Market share, 68–69  
+Market share, 68–69
 
-Massachusetts Special Olympics (SO), 185–187  
+Massachusetts Special Olympics (SO), 185–187
 
-Mass market sales, 77–84  
+Mass market sales, 77–84
 
-MBO programs. See Management-by-objectives programs  
+MBO programs. See Management-by-objectives programs
 
-MCE. See Manufacturing cycle effectiveness ratio  
+MCE. See Manufacturing cycle effectiveness ratio
 
-“Metro Bank” case, 45  
+“Metro Bank” case, 45
 
-- communication with employees and, 206  
-- customer perspective and, 65–66, 69, 73, 76  
-- financial perspective and, 55  
-- internal perspective and, 110–112, 120  
-- learning and growth perspective and, 128–129, 132–133  
-- linkage of measures with objectives and, 151–156  
-- objectives for scorecard program at, 296–297  
-- strategic initiatives and, 231–232, 238  
-- strategic learning at, 259  
+- communication with employees and, 206
+- customer perspective and, 65–66, 69, 73, 76
+- financial perspective and, 55
+- internal perspective and, 110–112, 120
+- learning and growth perspective and, 128–129, 132–133
+- linkage of measures with objectives and, 151–156
+- objectives for scorecard program at, 296–297
+- strategic initiatives and, 231–232, 238
+- strategic learning at, 259
 
-Miller, J., 124n  
+Miller, J., 124n
 
-“Mindshare Campaign,” 141–142  
+“Mindshare Campaign,” 141–142
 
-Mintz, S. L., 62n  
+Mintz, S. L., 62n
 
-Mintzberg, H., 251, 270n, 277  
+Mintzberg, H., 251, 270n, 277
 
-Missing measures, 144–146, 231–232  
+Missing measures, 144–146, 231–232
 
-Mission statement, 24–25, 36, 63, 64, 193–194. See also Vision, clarification of  
+Mission statement, 24–25, 36, 63, 64, 193–194. See also Vision, clarification of
 
-MMU. See Maintained mark-up  
+MMU. See Maintained mark-up
 
-Moingon, B., 146n  
+Moingon, B., 146n
 
-Montgomery, C. A., 41n, 123n, 188n  
+Montgomery, C. A., 41n, 123n, 188n
 
-Morrissey, E., 125n  
+Morrissey, E., 125n
 
-Mosconi, W., 125n  
+Mosconi, W., 125n
 
-Motivation, 136–144, 147–148. See also Reward system  
+Motivation, 136–144, 147–148. See also Reward system
 
-Motorola, 87–88  
+Motorola, 87–88
 
-Multiple measures  
+Multiple measures
 
-- external reporting and, 38–40  
-- in scorecard framework, 8–18, 29–32  
-- standard uses of, 8, 29, 92–93  
+- external reporting and, 38–40
+- in scorecard framework, 8–18, 29–32
+- standard uses of, 8, 29, 92–93
 
-Nanni, A., 124n  
+Nanni, A., 124n
 
-National Electric, 121–122  
+National Electric, 121–122
 
-“National Insurance” case, 46, 143, 259  
+“National Insurance” case, 46, 143, 259
 
-- linkage of scorecard and strategy and, 156–162  
-- scorecard implementation and, 276–280  
-- strategic initiatives and, 231–232, 234, 235–237  
+- linkage of scorecard and strategy and, 156–162
+- scorecard implementation and, 276–280
+- strategic initiatives and, 231–232, 234, 235–237
 
-National Performance Review (NPR), 180–181  
+National Performance Review (NPR), 180–181
 
-Newsletters, 203, 206  
+Newsletters, 203, 206
 
-Nonfinancial measures. See Balanced Scorecard; Multiple measures  
+Nonfinancial measures. See Balanced Scorecard; Multiple measures
 
-Nordstrom, 75  
+Nordstrom, 75
 
-Norris, T., 125n  
+Norris, T., 125n
 
-Not-for-profit enterprises, 179–180, 185–188  
+Not-for-profit enterprises, 179–180, 185–188
 
-Oehm, R., 125n  
+Oehm, R., 125n
 
-Oiltech case, 173  
+Oiltech case, 173
 
-On-time delivery (OTD), 13, 30–31, 86–87, 88, 164  
+On-time delivery (OTD), 13, 30–31, 86–87, 88, 164
 
-Operating companies. See Strategic business units  
+Operating companies. See Strategic business units
 
-Operating cycle, 58–59  
+Operating cycle, 58–59
 
 Operations process
 
@@ -8620,21 +8620,21 @@ Operations process
 
 # INDEX
 
-internal perspective and, 96–97, 104–105, 115–116, 116–123  
+internal perspective and, 96–97, 104–105, 115–116, 116–123
 strategic review process and, 262–267
 
-Organizational alignment, 139–142, 199–222, 296–297  
-barriers to strategy implementation and, 194–195  
-board of directors and, 200, 208–211  
-communication programs and, 200, 202–208  
-education programs and, 200, 202–208  
-goal-setting programs and, 200, 211–217  
-linkage between scorecard and unit goals and, 211–217  
-reward systems and, 200, 217–222  
+Organizational alignment, 139–142, 199–222, 296–297
+barriers to strategy implementation and, 194–195
+board of directors and, 200, 208–211
+communication programs and, 200, 202–208
+education programs and, 200, 202–208
+goal-setting programs and, 200, 211–217
+linkage between scorecard and unit goals and, 211–217
+reward systems and, 200, 217–222
 shareholders and, 200, 208–211
 
-Organizational change  
-target setting and, 226–230  
+Organizational change
+target setting and, 226–230
 use of scorecard framework for, 276–280, 295–298
 
 Organizational learning. See Double-loop learning; Learning and growth perspective; Strategic learning
@@ -8645,13 +8645,13 @@ Osborne, D., 189n
 
 OTD. See On-time delivery (OTD)
 
-Outcome measures. See also Financial measures; Value-chain model; specific measures  
-in customer perspective, 67–73, 306  
-design of, in scorecard development process, 284–285, 305–307  
-government agencies and, 180–181  
-in learning and growth perspective, 129–132, 306  
-linkage of improvement programs with, 150–151  
-performance drivers and, 31–32, 149–150  
+Outcome measures. See also Financial measures; Value-chain model; specific measures
+in customer perspective, 67–73, 306
+design of, in scorecard development process, 284–285, 305–307
+government agencies and, 180–181
+in learning and growth perspective, 129–132, 306
+linkage of improvement programs with, 150–151
+performance drivers and, 31–32, 149–150
 strategic versus diagnostic, 162–165
 
 “Parenting advantage,” 175
@@ -8662,36 +8662,36 @@ Patterson, Marvin L., 125n
 
 Peer review, 261–262
 
-Performance drivers. See also Value-chain model  
-for customer perspective, 73–84, 85–91  
-financial objectives and, 57–60, 150–151  
-for learning and growth, 132–146  
-linkage between scorecard and unit goals and, 211–217  
-outcome measures and, 31–32, 149–150  
-product development and, 102  
-strategic initiatives directed toward, 233–244  
+Performance drivers. See also Value-chain model
+for customer perspective, 73–84, 85–91
+financial objectives and, 57–60, 150–151
+for learning and growth, 132–146
+linkage between scorecard and unit goals and, 211–217
+outcome measures and, 31–32, 149–150
+product development and, 102
+strategic initiatives directed toward, 233–244
 strategic reviews and, 17–18
 
-Performance measurement. See also Balanced Scorecard; Financial measures; Multiple measures  
-linkage between objectives and, 12–13, 29–32, 61–62, 147–165  
-R&D processes and, 100–101  
+Performance measurement. See also Balanced Scorecard; Financial measures; Multiple measures
+linkage between objectives and, 12–13, 29–32, 61–62, 147–165
+R&D processes and, 100–101
 traditional versus scorecard approaches to, 27–28, 92–94
 
 Performance measurement action team (PMAT), 181, 182
 
-“Pioneer Petroleum” case, 45  
-cross-business initiatives at, 246  
-customer perspective and, 66–67, 76  
-internal perspective and, 112–115  
-missing measures and, 231–232  
-objectives for scorecard program at, 297–298  
+“Pioneer Petroleum” case, 45
+cross-business initiatives at, 246
+customer perspective and, 66–67, 76
+internal perspective and, 112–115
+missing measures and, 231–232
+objectives for scorecard program at, 297–298
 strategic alignment and, 203, 218, 219, 221
 
-Planning. See also Strategic learning; Target setting  
-budgeting process and, 14–15, 224–248  
-missing measurements and, 231–232  
-scorecard implementation and, 283–284  
-scorecard process and, 13–15, 246  
+Planning. See also Strategic learning; Target setting
+budgeting process and, 14–15, 224–248
+missing measurements and, 231–232
+scorecard implementation and, 283–284
+scorecard process and, 13–15, 246
 strategic learning and, 15–16
 
 PMAT. See Performance measurement action team
@@ -8704,72 +8704,72 @@ Porter, Michael E., 37, 41n
 
 # Index (Page 320)
 
-Postsale service process, 97, 105–107, 116  
-Prahalad, C. K., 41n, 98, 124n, 169, 188n, 189n  
-Price, Raymond L., 125n  
-Pricing  
+Postsale service process, 97, 105–107, 116
+Prahalad, C. K., 41n, 98, 124n, 169, 188n, 189n
+Price, Raymond L., 125n
+Pricing
 
-- customer perspective and, 88–91  
-- financial perspective and, 55  
-- internal perspective and, 106  
-- low price versus low cost and, 89–90  
-Process cost measurement, 122–123  
-Process time measures, 116–119  
-Product and service mix, 54–55, 73–74  
-Product development  
-- customer objectives and, 78  
-- internal perspective and, 99–100  
-- measures for, 101–104  
-- revenue growth and, 52  
-Productivity, 55–57  
-Productivity per employee measure, 131–132  
-Profitability. See Customer profitability; Financial measures; Pricing  
-Quality  
-- customer perspective and, 87–88  
-- internal perspective and, 105, 106, 119–122  
-- rate-of-change metrics and, 232–233  
-Rate-of-change metrics, 232–233  
-R&D processes. See Research and development  
-Reengineering programs, 233–244  
-Reputation, 75–77, 79–80, 108  
-Research and development (R&D), 98–101, 122–123  
-Reskilling, 128–129, 132–134  
-Resource allocation. See also Asset utilization; Budgeting process; Capital management  
-- barriers to strategy implementation and, 193, 195  
-- linkage between strategy and, 247–248  
-- scorecard implementation and, 284  
-Resource-based view (RBV), 123n  
-Return-on-capital-employed (ROCE), 3, 22, 30–31, 94, 168  
-Revenue growth, 51–55  
-Revenue mix, 51–55  
-Revenue per employee, 131–132  
-Revenue productivity, 55  
-Reward system  
-- barriers to strategy implementation and, 194–195  
-- organizational alignment and, 200, 217–222  
-- scorecard implementation and, 283  
-Risk management, 50–51, 60–61  
-ROCE. See Return-on-capital-employed  
-Rockwater, 45  
-- customer perspective and, 64–65, 68–69, 70, 73, 76, 80–81  
-- financial perspective and, 54, 59, 60  
-- internal perspective and, 94–96, 99  
-- learning and growth perspective and, 130, 137  
-- mission statement at, 24–25  
-- strategic learning at, 259  
-Sasser, W. Earl, Jr., 40n, 91n, 270n  
-SBUs. See Strategic business units  
-Scenario analysis, 228, 258  
-Schendel, D. E., 62n  
-Schlesinger, Leonard A., 40n, 91n, 270n  
-Schneiderman, Art, 137, 146n, 166n  
-Schön, Donald A., 20n, 293n  
-Scorecard construction  
-- architect of scorecard, 287–288, 299–300  
-- implementation plan, 308–310  
-- management objectives in, 294–299  
-- process of, 300–308  
-Scorecard implementation, 272–292  
+- customer perspective and, 88–91
+- financial perspective and, 55
+- internal perspective and, 106
+- low price versus low cost and, 89–90
+Process cost measurement, 122–123
+Process time measures, 116–119
+Product and service mix, 54–55, 73–74
+Product development
+- customer objectives and, 78
+- internal perspective and, 99–100
+- measures for, 101–104
+- revenue growth and, 52
+Productivity, 55–57
+Productivity per employee measure, 131–132
+Profitability. See Customer profitability; Financial measures; Pricing
+Quality
+- customer perspective and, 87–88
+- internal perspective and, 105, 106, 119–122
+- rate-of-change metrics and, 232–233
+Rate-of-change metrics, 232–233
+R&D processes. See Research and development
+Reengineering programs, 233–244
+Reputation, 75–77, 79–80, 108
+Research and development (R&D), 98–101, 122–123
+Reskilling, 128–129, 132–134
+Resource allocation. See also Asset utilization; Budgeting process; Capital management
+- barriers to strategy implementation and, 193, 195
+- linkage between strategy and, 247–248
+- scorecard implementation and, 284
+Resource-based view (RBV), 123n
+Return-on-capital-employed (ROCE), 3, 22, 30–31, 94, 168
+Revenue growth, 51–55
+Revenue mix, 51–55
+Revenue per employee, 131–132
+Revenue productivity, 55
+Reward system
+- barriers to strategy implementation and, 194–195
+- organizational alignment and, 200, 217–222
+- scorecard implementation and, 283
+Risk management, 50–51, 60–61
+ROCE. See Return-on-capital-employed
+Rockwater, 45
+- customer perspective and, 64–65, 68–69, 70, 73, 76, 80–81
+- financial perspective and, 54, 59, 60
+- internal perspective and, 94–96, 99
+- learning and growth perspective and, 130, 137
+- mission statement at, 24–25
+- strategic learning at, 259
+Sasser, W. Earl, Jr., 40n, 91n, 270n
+SBUs. See Strategic business units
+Scenario analysis, 228, 258
+Schendel, D. E., 62n
+Schlesinger, Leonard A., 40n, 91n, 270n
+Schneiderman, Art, 137, 146n, 166n
+Schön, Donald A., 20n, 293n
+Scorecard construction
+- architect of scorecard, 287–288, 299–300
+- implementation plan, 308–310
+- management objectives in, 294–299
+- process of, 300–308
+Scorecard implementation, 272–292
 - difficulties with, 284–286
 
 ---
@@ -8778,31 +8778,31 @@ Scorecard implementation, 272–292
 
 # Index (p. 327)
 
-integration of management system and, 280–284  
-organizational mobilization and, 275–280  
+integration of management system and, 280–284
+organizational mobilization and, 275–280
 reasons for use of framework, 273–275
 
 Seed, A., 124n
 
 Senge, Peter, 40n, 194
 
-Senior management. See also Management systems  
+Senior management. See also Management systems
 
-- building consensus among, 295–299, 302–303  
-- continuous learning and, 267–269  
-- management of strategic management system and, 288–291  
-- peer review and, 260–261  
-- in scorecard development process, 302–303, 304–305, 307–308  
-- strategic reviews and, 262–267  
-- strategy formulation and strategic issue update and, 281–283  
-- success of scorecard initiative and, 294–295, 299–300  
+- building consensus among, 295–299, 302–303
+- continuous learning and, 267–269
+- management of strategic management system and, 288–291
+- peer review and, 260–261
+- in scorecard development process, 302–303, 304–305, 307–308
+- strategic reviews and, 262–267
+- strategy formulation and strategic issue update and, 281–283
+- success of scorecard initiative and, 294–295, 299–300
 - transitional management roles and, 287–288, 299–300
 
-Service organizations. See also Government agencies  
+Service organizations. See also Government agencies
 
-- employee satisfaction in, 129  
-- information age environment and, 3  
-- process time measures in, 118–119  
+- employee satisfaction in, 129
+- information age environment and, 3
+- process time measures in, 118–119
 - quality measures and, 88, 120
 
 Service profit chain, 257, 258
@@ -8829,43 +8829,43 @@ Stewart, G. Bennett, 62n
 
 Strategic alignment. See Organizational alignment
 
-Strategic business units (SBUs)  
+Strategic business units (SBUs)
 
-- cooperative relationships across, 53–54, 175–179  
-- cross-business initiatives and, 244–247  
-- customer perspective and, 63–91  
-- definition of, in scorecard construction, 300–302  
-- financial perspective and, 47–62  
-- learning and growth perspective and, 126–146  
-- risk management and, 50–51, 60–61  
-- in scorecard framework, 36–38  
-- strategic stages for, 48–50, 62n  
+- cooperative relationships across, 53–54, 175–179
+- cross-business initiatives and, 244–247
+- customer perspective and, 63–91
+- definition of, in scorecard construction, 300–302
+- financial perspective and, 47–62
+- learning and growth perspective and, 126–146
+- risk management and, 50–51, 60–61
+- in scorecard framework, 36–38
+- strategic stages for, 48–50, 62n
 - strategic themes for, 51–60
 
 Strategic information coverage ratio, 136
 
-Strategic initiatives  
+Strategic initiatives
 
-- cross-business initiatives and, 244–247  
-- improvement of performance drivers and, 233–244  
-- strategic learning process and, 259–260  
+- cross-business initiatives and, 244–247
+- improvement of performance drivers and, 233–244
+- strategic learning process and, 259–260
 - stretch targets and, 230–244
 
 Strategic job coverage ratio, 133, 135
 
-Strategic learning, 15. See also Learning and growth perspective  
+Strategic learning, 15. See also Learning and growth perspective
 
-- continual double-loop learning and, 267–269  
-- feedback and, 254–261  
-- shared framework and, 252–254  
-- single-loop versus double-loop learning and, 17–18, 250–252  
+- continual double-loop learning and, 267–269
+- feedback and, 254–261
+- shared framework and, 252–254
+- single-loop versus double-loop learning and, 17–18, 250–252
 - team problem-solving and, 261–269
 
-Strategic objectives. See also Organizational alignment; Strategic business units  
+Strategic objectives. See also Organizational alignment; Strategic business units
 
-- approaches to strategy formulation and, 37–38  
-- barriers to implementation and, 191–198  
-- business unit versus corporate strategy and, 167–169  
+- approaches to strategy formulation and, 37–38
+- barriers to implementation and, 191–198
+- business unit versus corporate strategy and, 167–169
 - cause-and-effect relationships and, 30–31, 149, 160–161
 
 ---
@@ -8874,91 +8874,91 @@ Strategic objectives. See also Organizational alignment; Strategic business unit
 
 # Index
 
-communication of, 12–13, 147–148  
-confidentiality and, 208  
-consensus on, 12, 41n, 295–296, 302–303  
-corporate-level strategy and, 167–173  
-financial measurement and, 32–34, 48–61, 147–165  
-internal perspective and, 107–115  
-learning and growth perspective and, 15–18  
-linkage between investment decisions and, 238–244  
-planning and, 13–14  
-scorecard framework and, 8–18, 167–169  
-strategy formulation and, 37–38, 161–162, 280, 281–283  
+communication of, 12–13, 147–148
+confidentiality and, 208
+consensus on, 12, 41n, 295–296, 302–303
+corporate-level strategy and, 167–173
+financial measurement and, 32–34, 48–61, 147–165
+internal perspective and, 107–115
+learning and growth perspective and, 15–18
+linkage between investment decisions and, 238–244
+planning and, 13–14
+scorecard framework and, 8–18, 167–169
+strategy formulation and, 37–38, 161–162, 280, 281–283
 
-Strategic review process  
+Strategic review process
 
-- continuous learning and, 267–269  
-- periodic meetings and, 262–267  
+- continuous learning and, 267–269
+- periodic meetings and, 262–267
 
-Strategy formulation and strategic issue update, 281–283  
+Strategy formulation and strategic issue update, 281–283
 
-Stratton, A., 125n  
+Stratton, A., 125n
 
-Suggestions per employee, 136–137  
+Suggestions per employee, 136–137
 
-Sunnyvale, California, 181, 183  
+Sunnyvale, California, 181, 183
 
-Supplier linkages, 4, 109  
+Supplier linkages, 4, 109
 
-Sustain stage business units, 49–50, 51, 56  
+Sustain stage business units, 49–50, 51, 56
 
-Sweeney, A., 20n  
+Sweeney, A., 20n
 
-Tableau de Bord (France), 29  
+Tableau de Bord (France), 29
 
-Target setting, 226–230. See also Planning  
+Target setting, 226–230. See also Planning
 
-Teams, 142–144, 211–217  
+Teams, 142–144, 211–217
 
-- cross-functional, 262  
-- strategic learning and, 261–269  
+- cross-functional, 262
+- strategic learning and, 261–269
 
-Telco, 176–179  
+Telco, 176–179
 
-Time. See also Time-to-market  
+Time. See also Time-to-market
 
-- customer perspective and, 86–87  
-- cycle time measures and, 116–119  
-- internal perspective and, 101–104, 105, 106, 116–119  
+- customer perspective and, 86–87
+- cycle time measures and, 116–119
+- internal perspective and, 101–104, 105, 106, 116–119
 
-Time-to-market, 87, 101–104, 164–165  
+Time-to-market, 87, 101–104, 164–165
 
-Total quality management (TQM) programs, 136  
+Total quality management (TQM) programs, 136
 
-- financial perspective and, 150  
-- rate-of-change metrics and, 232–233  
+- financial perspective and, 150
+- rate-of-change metrics and, 232–233
 
-Toyota, 86  
+Toyota, 86
 
-TQM programs. See Total quality management programs  
+TQM programs. See Total quality management programs
 
-“Trailway to Trolls” index, 111, 120  
+“Trailway to Trolls” index, 111, 120
 
-Underwriting Performance Model, 234, 235–237  
+Underwriting Performance Model, 234, 235–237
 
-Unit costs, 56  
+Unit costs, 56
 
-U.S. Department of Transportation, 88  
+U.S. Department of Transportation, 88
 
-U.S. Government Procurement Executive Association, 181, 188  
+U.S. Government Procurement Executive Association, 181, 188
 
-Value-added per employee, 132  
+Value-added per employee, 132
 
-Value-chain model, 96–107, 262, 263  
+Value-chain model, 96–107, 262, 263
 
-Value creation, short versus long wave of, 27–28, 98  
+Value creation, short versus long wave of, 27–28, 98
 
-Value propositions  
+Value propositions
 
-- attributes in, 73–77, 78  
-- development of, 77–84  
-- postsale service and, 105–106  
+- attributes in, 73–77, 78
+- development of, 77–84
+- postsale service and, 105–106
 
-Vision, clarification of, 10–12, 15, 252–254.  
-See also Mission statement; Strategic objectives  
+Vision, clarification of, 10–12, 15, 252–254.
+See also Mission statement; Strategic objectives
 
-Vollmann, T., 124n  
+Vollmann, T., 124n
 
 Xerox, strategic use of financial measures at, 23–24
 

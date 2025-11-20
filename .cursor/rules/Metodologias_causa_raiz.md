@@ -57,21 +57,21 @@
   - Grafos causais/AI quando há boa observabilidade e volume de sinais.
 
 ### Fluxo recomendado (prático e rápido)
-1) Coletar fatos e timeline (logs, métricas, traces, diffs, mudanças recentes).  
-2) ddmin (Delta Debugging) se houver input/state grande ou mudança extensa.  
-3) Rodar SFL com cobertura de testes (Ochiai/Tarantula) para priorizar arquivos/linhas.  
-4) 5 Whys com evidências; use Ishikawa se multifatorial.  
-5) Se sistêmico, modelar via FTA; se organizacional/recorrente, 8D/KT.  
-6) Registrar postmortem blameless e ações preventivas (template SRE).  
+1) Coletar fatos e timeline (logs, métricas, traces, diffs, mudanças recentes).
+2) ddmin (Delta Debugging) se houver input/state grande ou mudança extensa.
+3) Rodar SFL com cobertura de testes (Ochiai/Tarantula) para priorizar arquivos/linhas.
+4) 5 Whys com evidências; use Ishikawa se multifatorial.
+5) Se sistêmico, modelar via FTA; se organizacional/recorrente, 8D/KT.
+6) Registrar postmortem blameless e ações preventivas (template SRE).
 
 ### Links-chave (comunidade)
-- 5 Whys e Postmortem: [Atlassian](https://www.atlassian.com/incident-management/postmortem/5-whys), [Google SRE](https://sre.google/sre-book/postmortem-culture/)  
-- Ishikawa: [ASQ](https://asq.org/quality-resources/fishbone)  
-- FTA: [Reliability.com](https://reliability.com/resources/articles/fault-tree-analysis-fta-guide/)  
-- KT: [Kepner‑Tregoe](https://kepner-tregoe.com/training/root-cause-analysis/)  
-- 8D: [ASQ](https://asq.org/quality-resources/eight-disciplines-8d)  
-- Delta Debugging: [Zeller PDF](https://www.cs.purdue.edu/homes/xyzhang/fall07/Papers/delta-debugging.pdf)  
-- SFL: [Survey arXiv](https://arxiv.org/pdf/1607.04347)  
+- 5 Whys e Postmortem: [Atlassian](https://www.atlassian.com/incident-management/postmortem/5-whys), [Google SRE](https://sre.google/sre-book/postmortem-culture/)
+- Ishikawa: [ASQ](https://asq.org/quality-resources/fishbone)
+- FTA: [Reliability.com](https://reliability.com/resources/articles/fault-tree-analysis-fta-guide/)
+- KT: [Kepner‑Tregoe](https://kepner-tregoe.com/training/root-cause-analysis/)
+- 8D: [ASQ](https://asq.org/quality-resources/eight-disciplines-8d)
+- Delta Debugging: [Zeller PDF](https://www.cs.purdue.edu/homes/xyzhang/fall07/Papers/delta-debugging.pdf)
+- SFL: [Survey arXiv](https://arxiv.org/pdf/1607.04347)
 - Templates: [Google Workbook](https://sre.google/workbook/postmortem-culture/), [Templates GitHub](https://github.com/dastergon/postmortem-templates)
 
 ### Case Study: 5 Whys Meta-Análise - Debugging Testes (Sessão 19 - 2025-10-19)
@@ -126,5 +126,5 @@ mock.side_effect = mock_side_effect
 **Lição Detalhada**: `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+ linhas com checklist completo, código exemplos, antipadrões evitados)
 
 Resumo
-- Para programação, combine ddmin + SFL para redução/localização técnica, 5 Whys/Ishikawa para causalidade humana e FTA/KT/8D quando o problema é sistêmico/recorrente.  
+- Para programação, combine ddmin + SFL para redução/localização técnica, 5 Whys/Ishikawa para causalidade humana e FTA/KT/8D quando o problema é sistêmico/recorrente.
 - Feche sempre com postmortem blameless e plano de ações.

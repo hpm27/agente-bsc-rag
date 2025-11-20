@@ -39,7 +39,7 @@ ITERAÇÃO ATUAL: {current_iteration} de {max_iterations}
 
 INSTRUÇÕES PARA ESTA ITERAÇÃO:
 
-1. ANALISE O CONTEXTO: 
+1. ANALISE O CONTEXTO:
    - Problema inicial: {problem_statement}
 {previous_iterations_text}
 
@@ -62,16 +62,16 @@ INSTRUÇÕES PARA ESTA ITERAÇÃO:
 
 HEURÍSTICAS DE CAUSA RAIZ:
 Uma causa raiz verdadeira geralmente:
-✓ Menciona recursos limitados (budget, tempo, pessoas)
-✓ Refere decisões estratégicas passadas
-✓ Identifica gaps de competência ou conhecimento
-✓ Aponta estrutura organizacional ou processos
-✓ É acionável (pode-se criar plano para resolver)
+[OK] Menciona recursos limitados (budget, tempo, pessoas)
+[OK] Refere decisões estratégicas passadas
+[OK] Identifica gaps de competência ou conhecimento
+[OK] Aponta estrutura organizacional ou processos
+[OK] É acionável (pode-se criar plano para resolver)
 
 NÃO é causa raiz se:
-✗ Ainda usa verbos de ação/gerúndio ("vendendo mal", "falhando")
-✗ É consequência óbvia ("vendas baixas porque não vendemos")
-✗ É muito vaga ("problemas na empresa")
+[X] Ainda usa verbos de ação/gerúndio ("vendendo mal", "falhando")
+[X] É consequência óbvia ("vendas baixas porque não vendemos")
+[X] É muito vaga ("problemas na empresa")
 
 FORMATO DE SAÍDA (JSON):
 {{
@@ -114,7 +114,7 @@ ANÁLISE CRÍTICA:
 2. FORMULAR CAUSA RAIZ:
    - Deve ser específica e verificável
    - Formato: "[Constraint/Gap] leva a [problema original]"
-   - Exemplo: "Falta de budget para treinamento digital → Equipe sem competências → Marketing fraco → Poucos leads → Vendas baixas"
+   - Exemplo: "Falta de budget para treinamento digital -> Equipe sem competências -> Marketing fraco -> Poucos leads -> Vendas baixas"
 
 3. AVALIAR CONFIANÇA:
    - Baseada na qualidade das iterações
@@ -150,65 +150,66 @@ VALIDAÇÃO CRÍTICA:
 # HELPER: Construir contexto da empresa para prompts
 # ============================================================================
 
+
 def build_company_context(company_info, strategic_context) -> str:
     """Constrói texto descritivo do contexto empresarial.
-    
+
     Args:
         company_info: CompanyInfo Pydantic model
         strategic_context: StrategicContext Pydantic model
-        
+
     Returns:
         String formatada com contexto completo
-    
+
     Example:
         >>> context = build_company_context(company_info, strategic_context)
         >>> "EMPRESA: TechCorp" in context
         True
     """
     context_parts = []
-    
+
     # Informações básicas
     context_parts.append(f"EMPRESA: {company_info.name}")
     context_parts.append(f"SETOR: {company_info.sector}")
     context_parts.append(f"PORTE: {company_info.size}")
-    
+
     if company_info.industry:
         context_parts.append(f"INDÚSTRIA: {company_info.industry}")
-    
+
     # Missão e Visão
     if strategic_context.mission:
         context_parts.append(f"\nMISSÃO:\n{strategic_context.mission}")
-    
+
     if strategic_context.vision:
         context_parts.append(f"\nVISÃO:\n{strategic_context.vision}")
-    
+
     # Valores
     if strategic_context.core_values:
         values_text = ", ".join(strategic_context.core_values)
         context_parts.append(f"\nVALORES: {values_text}")
-    
+
     # Desafios atuais
     if strategic_context.current_challenges:
         challenges_text = "\n- ".join(strategic_context.current_challenges)
         context_parts.append(f"\nDESAFIOS ATUAIS:\n- {challenges_text}")
-    
+
     # Objetivos estratégicos
     if strategic_context.strategic_objectives:
         objectives_text = "\n- ".join(strategic_context.strategic_objectives)
         context_parts.append(f"\nOBJETIVOS ESTRATÉGICOS:\n- {objectives_text}")
-    
+
     return "\n\n".join(context_parts)
 
 
 def build_bsc_knowledge_context(rag_results: list[str]) -> str:
     """Formata resultados RAG como conhecimento BSC.
-    
+
     Args:
         rag_results: Lista de chunks de literatura BSC recuperados via RAG
-        
+
     Returns:
         String formatada com conhecimento estruturado
-    
+
     Example:
         >>> context = build_bsc_knowledge_context(["Chunk 1", "Chunk 2"])
         >>> "[REFERÊNCIA 1]" in context
@@ -216,26 +217,26 @@ def build_bsc_knowledge_context(rag_results: list[str]) -> str:
     """
     if not rag_results:
         return "Nenhum conhecimento BSC adicional recuperado."
-    
+
     # Limitar a 5 chunks mais relevantes para não exceder context window
     top_chunks = rag_results[:5]
-    
+
     knowledge_parts = []
     for idx, chunk in enumerate(top_chunks, 1):
         knowledge_parts.append(f"[REFERÊNCIA {idx}]\n{chunk}")
-    
+
     return "\n\n".join(knowledge_parts)
 
 
 def build_iterations_context(iterations: list) -> str:
     """Formata iterações anteriores para contexto do prompt.
-    
+
     Args:
         iterations: Lista de WhyIteration Pydantic models
-        
+
     Returns:
         String formatada com histórico de iterações
-    
+
     Example:
         >>> context = build_iterations_context([iteration1, iteration2])
         >>> "Iteração 1:" in context
@@ -243,7 +244,7 @@ def build_iterations_context(iterations: list) -> str:
     """
     if not iterations:
         return "Nenhuma iteração anterior."
-    
+
     iterations_parts = []
     for iteration in iterations:
         iterations_parts.append(
@@ -251,19 +252,19 @@ def build_iterations_context(iterations: list) -> str:
             f"Resposta: {iteration.answer}\n"
             f"Confiança: {iteration.confidence:.2f}"
         )
-    
+
     return "\n\n".join(iterations_parts)
 
 
 def build_previous_iterations_text(iterations: list) -> str:
     """Constrói texto de iterações anteriores para prompt de iteração atual.
-    
+
     Args:
         iterations: Lista de WhyIteration Pydantic models
-        
+
     Returns:
         String formatada para inserção no prompt
-    
+
     Example:
         >>> text = build_previous_iterations_text([iteration1])
         >>> "   - Iteração 1:" in text or text == ""
@@ -271,13 +272,12 @@ def build_previous_iterations_text(iterations: list) -> str:
     """
     if not iterations:
         return ""
-    
+
     lines = []
     for iteration in iterations:
         lines.append(
             f"   - Iteração {iteration.iteration_number}: "
-            f"{iteration.question} → {iteration.answer}"
+            f"{iteration.question} -> {iteration.answer}"
         )
-    
-    return "\n".join(lines)
 
+    return "\n".join(lines)

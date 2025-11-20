@@ -1,12 +1,12 @@
 # FASE 4.4 - Advanced Analytics Dashboard: Design Técnico
 
-**Data Início:** 2025-11-19  
-**Versão:** 1.0  
-**Status:** 📐 DESIGN APROVADO - Pronto para implementação
+**Data Início:** 2025-11-19
+**Versão:** 1.0
+**Status:** [EMOJI] DESIGN APROVADO - Pronto para implementação
 
 ---
 
-## 🎯 Objetivos
+## [EMOJI] Objetivos
 
 Implementar dashboard de analytics enterprise-ready para monitoramento da API REST (FASE 4.3):
 
@@ -16,37 +16,37 @@ Implementar dashboard de analytics enterprise-ready para monitoramento da API RE
 4. **API de Métricas** - Endpoints REST para acesso programático aos dados
 5. **Alertas e Notificações** - Thresholds configuráveis para métricas críticas
 
-**Estimativa:** 4-5h (1 sessão)  
-**Dependências:** FASE 4.3 completa (Integration APIs) ✅
+**Estimativa:** 4-5h (1 sessão)
+**Dependências:** FASE 4.3 completa (Integration APIs) [OK]
 
 ---
 
-## 📊 Stack Tecnológico (Decisões Fundamentadas - Brightdata Nov 2025)
+## [EMOJI] Stack Tecnológico (Decisões Fundamentadas - Brightdata Nov 2025)
 
 ### **1. Redis Time-Series para Métricas**
 
-**Escolha:** Redis Hash Sets com timestamps como keys  
+**Escolha:** Redis Hash Sets com timestamps como keys
 **Alternativas consideradas:** Prometheus, InfluxDB, TimescaleDB
 
 **Razões:**
-- ✅ **Já temos Redis:** Reutilizar infraestrutura existente (rate limiting FASE 4.3)
-- ✅ **Performance:** Redis é extremamente rápido para writes/reads (<1ms latência)
-- ✅ **Simplicidade:** Sem dependências externas adicionais
-- ✅ **Suficiente para MVP:** <1M métricas/dia (Redis suporta milhões)
+- [OK] **Já temos Redis:** Reutilizar infraestrutura existente (rate limiting FASE 4.3)
+- [OK] **Performance:** Redis é extremamente rápido para writes/reads (<1ms latência)
+- [OK] **Simplicidade:** Sem dependências externas adicionais
+- [OK] **Suficiente para MVP:** <1M métricas/dia (Redis suporta milhões)
 
 **Estrutura Redis proposta:**
 ```
 # Requests por endpoint (minuto)
-metrics:requests:/api/v1/clients:2025-11-19:10:00 → {"count": 45, "errors": 2}
+metrics:requests:/api/v1/clients:2025-11-19:10:00 -> {"count": 45, "errors": 2}
 
 # Latência por endpoint (minuto)
-metrics:latency:/api/v1/clients:2025-11-19:10:00 → {"p50": 120, "p95": 250, "p99": 500}
+metrics:latency:/api/v1/clients:2025-11-19:10:00 -> {"p50": 120, "p95": 250, "p99": 500}
 
 # Uso por API key (hora)
-metrics:consumer:bsc_test_engelar:2025-11-19:10 → {"requests": 150, "endpoints": 5}
+metrics:consumer:bsc_test_engelar:2025-11-19:10 -> {"requests": 150, "endpoints": 5}
 
 # Rate limit hits (dia)
-metrics:ratelimit:2025-11-19 → {"hits": 12, "endpoints": ["/api/v1/clients"]}
+metrics:ratelimit:2025-11-19 -> {"hits": 12, "endpoints": ["/api/v1/clients"]}
 ```
 
 **Fontes:**
@@ -57,14 +57,14 @@ metrics:ratelimit:2025-11-19 → {"hits": 12, "endpoints": ["/api/v1/clients"]}
 
 ### **2. Middleware FastAPI para Coleta**
 
-**Escolha:** Custom ASGI middleware  
+**Escolha:** Custom ASGI middleware
 **Alternativas consideradas:** Prometheus client, OpenTelemetry
 
 **Razões:**
-- ✅ **Controle total:** Coletar exatamente as métricas que precisamos
-- ✅ **Performance:** Middleware async nativo (zero overhead)
-- ✅ **Integração perfeita:** Acesso a request/response objects completos
-- ✅ **Customização:** Fácil adicionar novas métricas no futuro
+- [OK] **Controle total:** Coletar exatamente as métricas que precisamos
+- [OK] **Performance:** Middleware async nativo (zero overhead)
+- [OK] **Integração perfeita:** Acesso a request/response objects completos
+- [OK] **Customização:** Fácil adicionar novas métricas no futuro
 
 **Implementação proposta:**
 ```python
@@ -75,13 +75,13 @@ import time
 class AnalyticsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start_time = time.time()
-        
+
         # Executar request
         response = await call_next(request)
-        
+
         # Calcular latência
         latency_ms = (time.time() - start_time) * 1000
-        
+
         # Coletar métricas
         await self._record_metrics(
             endpoint=request.url.path,
@@ -90,7 +90,7 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
             latency_ms=latency_ms,
             api_key=self._extract_api_key(request)
         )
-        
+
         return response
 ```
 
@@ -102,14 +102,14 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
 
 ### **3. Dashboard Streamlit**
 
-**Escolha:** Streamlit (já usado no projeto)  
+**Escolha:** Streamlit (já usado no projeto)
 **Alternativas consideradas:** Grafana, Plotly Dash, React
 
 **Razões:**
-- ✅ **Já integrado:** Projeto já usa Streamlit (app/main.py)
-- ✅ **Rápido desenvolvimento:** Dashboard em 1-2h vs 8-12h React
-- ✅ **Python nativo:** Mesma stack do projeto (sem JavaScript)
-- ✅ **Gráficos nativos:** st.line_chart, st.bar_chart, st.metric
+- [OK] **Já integrado:** Projeto já usa Streamlit (app/main.py)
+- [OK] **Rápido desenvolvimento:** Dashboard em 1-2h vs 8-12h React
+- [OK] **Python nativo:** Mesma stack do projeto (sem JavaScript)
+- [OK] **Gráficos nativos:** st.line_chart, st.bar_chart, st.metric
 
 **Componentes do Dashboard:**
 1. **Overview KPIs** - Total requests, taxa de erros, latência média
@@ -125,7 +125,7 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
 
 ---
 
-## 🏗️ Arquitetura Completa
+## [EMOJI] Arquitetura Completa
 
 ### **Fluxo de Dados**
 
@@ -197,7 +197,7 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
 
 ---
 
-## 📈 Métricas a Coletar
+## [EMOJI] Métricas a Coletar
 
 ### **1. Requests (Volume)**
 
@@ -209,9 +209,9 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
 
 **Estrutura Redis:**
 ```
-metrics:requests:{endpoint}:{timestamp} → {"count": 45, "errors": 2}
-metrics:requests:total:{timestamp} → {"count": 1200}
-metrics:requests:consumer:{api_key}:{timestamp} → {"count": 150}
+metrics:requests:{endpoint}:{timestamp} -> {"count": 45, "errors": 2}
+metrics:requests:total:{timestamp} -> {"count": 1200}
+metrics:requests:consumer:{api_key}:{timestamp} -> {"count": 150}
 ```
 
 **Uso:** Gráfico de tráfego ao longo do tempo, identificar picos, tendências
@@ -227,7 +227,7 @@ metrics:requests:consumer:{api_key}:{timestamp} → {"count": 150}
 
 **Estrutura Redis:**
 ```
-metrics:latency:{endpoint}:{timestamp} → {
+metrics:latency:{endpoint}:{timestamp} -> {
   "p50": 120,
   "p95": 250,
   "p99": 500,
@@ -254,7 +254,7 @@ metrics:latency:{endpoint}:{timestamp} → {
 
 **Estrutura Redis:**
 ```
-metrics:errors:{endpoint}:{timestamp} → {
+metrics:errors:{endpoint}:{timestamp} -> {
   "4xx": 2,
   "5xx": 0,
   "total": 2,
@@ -275,7 +275,7 @@ metrics:errors:{endpoint}:{timestamp} → {
 
 **Estrutura Redis:**
 ```
-metrics:consumer:{api_key}:{timestamp} → {
+metrics:consumer:{api_key}:{timestamp} -> {
   "requests": 150,
   "endpoints": ["/api/v1/clients", "/api/v1/tools/swot"],
   "unique_endpoints": 5
@@ -295,7 +295,7 @@ metrics:consumer:{api_key}:{timestamp} → {
 
 **Estrutura Redis:**
 ```
-metrics:ratelimit:{date} → {
+metrics:ratelimit:{date} -> {
   "hits": 12,
   "endpoints": ["/api/v1/clients"],
   "consumers": ["bsc_test_user1"]
@@ -315,7 +315,7 @@ metrics:ratelimit:{date} → {
 
 **Estrutura Redis:**
 ```
-metrics:webhooks:{date} → {
+metrics:webhooks:{date} -> {
   "total": 50,
   "success": 48,
   "failed": 2,
@@ -328,7 +328,7 @@ metrics:webhooks:{date} → {
 
 ---
 
-## 🔧 Estrutura Redis Detalhada
+## [EMOJI] Estrutura Redis Detalhada
 
 ### **Keys Pattern**
 
@@ -406,7 +406,7 @@ await redis.setex(
 
 ---
 
-## 📱 Dashboard Streamlit - Layout Detalhado
+## [EMOJI] Dashboard Streamlit - Layout Detalhado
 
 ### **Seção 1: Overview KPIs**
 
@@ -534,7 +534,7 @@ st.dataframe(endpoints)
 
 ---
 
-## 🚀 Plano de Implementação (5 Etapas)
+## [EMOJI] Plano de Implementação (5 Etapas)
 
 ### **Etapa 1: Middleware de Analytics** (1h)
 
@@ -647,7 +647,7 @@ st.dataframe(endpoints)
 
 ---
 
-## 📖 Referências (Brightdata Nov 2025)
+## [EMOJI] Referências (Brightdata Nov 2025)
 
 ### **FastAPI Middleware:**
 1. **FastAPI Docs (2025):** "Custom Middleware"
@@ -675,7 +675,7 @@ st.dataframe(endpoints)
 
 ---
 
-## 🎯 Próximas Etapas (Pós-FASE 4.4)
+## [EMOJI] Próximas Etapas (Pós-FASE 4.4)
 
 **Após FASE 4.4 completa, considerar:**
 1. **Alertas Automáticos:** Email/Slack quando métricas excedem thresholds
@@ -686,7 +686,6 @@ st.dataframe(endpoints)
 
 ---
 
-**Última Atualização:** 2025-11-19  
-**Status:** 📐 DESIGN APROVADO - Pronto para implementação  
+**Última Atualização:** 2025-11-19
+**Status:** [EMOJI] DESIGN APROVADO - Pronto para implementação
 **Próximo:** Etapa 1 - Middleware de Analytics
-

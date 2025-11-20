@@ -1,27 +1,27 @@
 # Lição Aprendida: LangChain v1.0 Migration + Judge Integration
 
-**Data:** 2025-11-19 (Sessão 35)  
-**Duração:** ~3h  
-**Contexto:** Judge Context-Aware Integration + Migração 4 Agentes BSC para LangChain v1.0  
-**Status:** ✅ COMPLETO | 1.500+ linhas código + 1.500+ linhas docs
+**Data:** 2025-11-19 (Sessão 35)
+**Duração:** ~3h
+**Contexto:** Judge Context-Aware Integration + Migração 4 Agentes BSC para LangChain v1.0
+**Status:** [OK] COMPLETO | 1.500+ linhas código + 1.500+ linhas docs
 
 ---
 
-## 📋 Sumário Executivo
+## [EMOJI] Sumário Executivo
 
 **Problema Principal:** Erro `ImportError: AgentExecutor` ao executar testes após implementar Judge Context-Aware, revelando deprecated APIs LangChain v1.0 (Out 2025).
 
-**Solução Aplicada:** Pesquisa Brightdata (15 min) → Docs oficiais LangChain v1.0 → Refactor 4 agentes usando pattern moderno `LLM.bind_tools()`.
+**Solução Aplicada:** Pesquisa Brightdata (15 min) -> Docs oficiais LangChain v1.0 -> Refactor 4 agentes usando pattern moderno `LLM.bind_tools()`.
 
 **ROI Validado:**
-- ✅ **Compatibilidade 100%** LangChain v1.0 (zero deprecated APIs)
-- ✅ **Código -30% mais simples** por agente (sem boilerplate AgentExecutor)
-- ✅ **Brightdata economizou 60-90 min** vs tentativa e erro
-- ✅ **Test smoke validou estrutura** em 10 seg ($0.00 vs $0.15-0.30 E2E)
+- [OK] **Compatibilidade 100%** LangChain v1.0 (zero deprecated APIs)
+- [OK] **Código -30% mais simples** por agente (sem boilerplate AgentExecutor)
+- [OK] **Brightdata economizou 60-90 min** vs tentativa e erro
+- [OK] **Test smoke validou estrutura** em 10 seg ($0.00 vs $0.15-0.30 E2E)
 
 ---
 
-## 🚨 Problemas Encontrados (4 Críticos)
+## [EMOJI] Problemas Encontrados (4 Críticos)
 
 ### Problema 1: ImportError AgentExecutor (LangChain v1.0 Deprecated)
 
@@ -30,16 +30,16 @@
 ImportError: cannot import name 'AgentExecutor' from 'langchain.agents'
 ```
 
-**Root Cause:**  
+**Root Cause:**
 LangChain v1.0 (Out 2025) deprecou `AgentExecutor` e moveu para `langchain-classic` (legacy package).
 
-**Contexto:**  
-Tentei executar `test_judge_integration_smoke.py` → Import `FinancialAgent` → Import transitivo `AgentExecutor` → ERRO.
+**Contexto:**
+Tentei executar `test_judge_integration_smoke.py` -> Import `FinancialAgent` -> Import transitivo `AgentExecutor` -> ERRO.
 
-**Como detectado:**  
+**Como detectado:**
 Execução de teste Python (runtime error, não static analysis).
 
-**Tempo perdido:**  
+**Tempo perdido:**
 ~10 min tentativa e erro ANTES de Brightdata research.
 
 ---
@@ -52,16 +52,16 @@ ImportError: cannot import name 'Tool' from 'langchain.tools'
 Did you mean: 'tool'?
 ```
 
-**Root Cause:**  
+**Root Cause:**
 `langchain.tools.Tool` foi removido em v1.0. Alternativas: `@tool` decorator OU `langchain_core.tools.StructuredTool`.
 
-**Contexto:**  
+**Contexto:**
 Import órfão em `financial_agent.py` (linha 13: `from langchain.tools import Tool`) que não era usado, mas quebrou import do arquivo.
 
-**Como detectado:**  
-Execução de teste Python → Import transitivo falhou.
+**Como detectado:**
+Execução de teste Python -> Import transitivo falhou.
 
-**Tempo perdido:**  
+**Tempo perdido:**
 ~5 min (detectado rapidamente após resolver Problema 1).
 
 ---
@@ -73,58 +73,58 @@ Execução de teste Python → Import transitivo falhou.
 NameError: name 'StructuredTool' is not defined
 ```
 
-**Root Cause:**  
+**Root Cause:**
 Removi `from langchain.tools import Tool, StructuredTool` em `rag_tools.py`, mas `StructuredTool` ERA usado nas funções (linha 187, 195, 206, 219, 246).
 
-**Contexto:**  
-Erro CASCATA - 1 import errado removido → 5 locais downstream quebram.
+**Contexto:**
+Erro CASCATA - 1 import errado removido -> 5 locais downstream quebram.
 
-**Como detectado:**  
-Execução de teste Python → NameError ao tentar usar `StructuredTool`.
+**Como detectado:**
+Execução de teste Python -> NameError ao tentar usar `StructuredTool`.
 
-**Tempo perdido:**  
+**Tempo perdido:**
 ~3 min (fix simples: adicionar `from langchain_core.tools import StructuredTool`).
 
 ---
 
-### Problema 4: Imports Cascata (1 Erro → 4 Agentes Quebram)
+### Problema 4: Imports Cascata (1 Erro -> 4 Agentes Quebram)
 
-**Erro:**  
-Import error em `financial_agent.py` → `customer_agent.py`, `process_agent.py`, `learning_agent.py` TAMBÉM quebram.
+**Erro:**
+Import error em `financial_agent.py` -> `customer_agent.py`, `process_agent.py`, `learning_agent.py` TAMBÉM quebram.
 
-**Root Cause:**  
-Todos 4 agentes importam `get_tools_for_agent()` de `src/tools/rag_tools.py` → 1 erro propagou para 4 arquivos.
+**Root Cause:**
+Todos 4 agentes importam `get_tools_for_agent()` de `src/tools/rag_tools.py` -> 1 erro propagou para 4 arquivos.
 
-**Contexto:**  
-Estrutura de dependências: `4 agentes → rag_tools → langchain.tools (deprecated)`.
+**Contexto:**
+Estrutura de dependências: `4 agentes -> rag_tools -> langchain.tools (deprecated)`.
 
-**Como detectado:**  
+**Como detectado:**
 Tentativa de importar qualquer agente resultava no MESMO erro ImportError Tool.
 
-**Tempo perdido:**  
+**Tempo perdido:**
 ~15 min (confusão inicial sobre ONDE estava o erro real).
 
 **Lição:** Imports transitivos multiplicam impacto de 1 erro.
 
 ---
 
-## ✅ Metodologias que Funcionaram (Top 5)
+## [OK] Metodologias que Funcionaram (Top 5)
 
 ### Metodologia 1: Sequential Thinking ANTES de Implementar
 
-**O que foi:**  
+**O que foi:**
 Usar ferramenta Sequential Thinking (10 thoughts totais) para PLANEJAR solução antes de codificar.
 
 **Como aplicado:**
 1. Thought 1-2: Mapear problema (AgentExecutor deprecated, 4 agentes afetados)
-2. Thought 3-4: Pesquisar Brightdata (15 min → docs oficiais)
+2. Thought 3-4: Pesquisar Brightdata (15 min -> docs oficiais)
 3. Thought 5-7: Planejar refactor (8 etapas sequenciais)
 4. Thought 8-10: Validar com testes (smoke tests estruturais)
 
 **ROI:**
-- ✅ Decisão arquitetural correta PRIMEIRA tentativa (pattern `LLM.bind_tools()` recomendado oficial)
-- ✅ Evitou gambiarras (ex: instalar `langchain-classic` seria workaround ruim)
-- ✅ Planejamento 30 min economizou 2-3h debugging
+- [OK] Decisão arquitetural correta PRIMEIRA tentativa (pattern `LLM.bind_tools()` recomendado oficial)
+- [OK] Evitou gambiarras (ex: instalar `langchain-classic` seria workaround ruim)
+- [OK] Planejamento 30 min economizou 2-3h debugging
 
 **Exemplo Validado:**
 ```python
@@ -139,21 +139,21 @@ self.llm_with_tools = self.llm.bind_tools(self.tools)  # 1 linha!
 
 ---
 
-### Metodologia 2: Brightdata Research First (15 min → Solução Oficial)
+### Metodologia 2: Brightdata Research First (15 min -> Solução Oficial)
 
-**O que foi:**  
+**O que foi:**
 Pesquisar Brightdata/Web ANTES de tentar soluções aleatórias.
 
 **Como aplicado:**
 1. Query: "LangChain v1.0 AgentExecutor deprecated migration 2024 2025"
-2. Resultado 1: Stack Overflow Q79796733 (Out 2024) → AgentExecutor deprecated
-3. Resultado 2: LangChain Docs Oficiais → Migration Guide v1.0 (Out 2025)
+2. Resultado 1: Stack Overflow Q79796733 (Out 2024) -> AgentExecutor deprecated
+3. Resultado 2: LangChain Docs Oficiais -> Migration Guide v1.0 (Out 2025)
 4. Scrape: Docs completos com pattern `LLM.bind_tools()` recomendado
 
 **ROI:**
-- ✅ 15 min pesquisa economizou 60-90 min tentativa e erro
-- ✅ Solução oficial (não gambiarra da comunidade)
-- ✅ Documentação completa (não apenas "funciona mas não sei por quê")
+- [OK] 15 min pesquisa economizou 60-90 min tentativa e erro
+- [OK] Solução oficial (não gambiarra da comunidade)
+- [OK] Documentação completa (não apenas "funciona mas não sei por quê")
 
 **Comparação Custo:**
 | Abordagem | Tempo | Qualidade Solução |
@@ -165,7 +165,7 @@ Pesquisar Brightdata/Web ANTES de tentar soluções aleatórias.
 
 ### Metodologia 3: Test Smoke Estrutural (10 seg, $0.00)
 
-**O que foi:**  
+**O que foi:**
 Criar teste que valida ESTRUTURA do código (atributos, métodos) sem executar lógica LLM.
 
 **Como aplicado:**
@@ -173,7 +173,7 @@ Criar teste que valida ESTRUTURA do código (atributos, métodos) sem executar l
 def test_financial_agent_smoke():
     """Teste smoke: Financial Agent funciona pos-refactor."""
     agent = FinancialAgent()
-    
+
     # Validar estrutura (não behavior)
     assert hasattr(agent, 'llm_with_tools'), "Deve ter llm_with_tools (pattern v1.0)"
     assert not hasattr(agent, 'executor'), "NAO deve ter executor (deprecated)"
@@ -182,10 +182,10 @@ def test_financial_agent_smoke():
 ```
 
 **ROI:**
-- ✅ Feedback imediato (10 seg vs 2-3 min E2E)
-- ✅ Custo zero ($0.00 vs $0.15-0.30 E2E com LLM real)
-- ✅ Valida refactor sem API calls
-- ✅ 100% determinístico (não depende LLM não-determinístico)
+- [OK] Feedback imediato (10 seg vs 2-3 min E2E)
+- [OK] Custo zero ($0.00 vs $0.15-0.30 E2E com LLM real)
+- [OK] Valida refactor sem API calls
+- [OK] 100% determinístico (não depende LLM não-determinístico)
 
 **Quando usar:**
 - Validar refactors estruturais (imports, atributos, métodos)
@@ -201,7 +201,7 @@ def test_financial_agent_smoke():
 
 ### Metodologia 4: Grep para Detectar Imports Órfãos
 
-**O que foi:**  
+**O que foi:**
 Usar grep para buscar TODOS os locais onde um import é usado ANTES de removê-lo.
 
 **Como aplicado:**
@@ -220,15 +220,15 @@ grep "StructuredTool\\.|: StructuredTool" src/tools/rag_tools.py
 ```
 
 **ROI:**
-- ✅ Previne NameError (import usado mas removido)
-- ✅ Identifica imports órfãos seguros de remover
-- ✅ 5 min grep economiza 30 min debugging NameError
+- [OK] Previne NameError (import usado mas removido)
+- [OK] Identifica imports órfãos seguros de remover
+- [OK] 5 min grep economiza 30 min debugging NameError
 
 ---
 
 ### Metodologia 5: TODOs para Rastrear Progresso Complexo
 
-**O que foi:**  
+**O que foi:**
 Criar TODOs explícitos para tarefas multi-etapa (8 etapas refactor).
 
 **Como aplicado:**
@@ -246,23 +246,23 @@ todos = [
 ```
 
 **ROI:**
-- ✅ Rastreamento visual de progresso (8/8 completos)
-- ✅ Previne esquecer etapas (checklist explícito)
-- ✅ Ajuda contexto entre mensagens (usuário vê progresso)
+- [OK] Rastreamento visual de progresso (8/8 completos)
+- [OK] Previne esquecer etapas (checklist explícito)
+- [OK] Ajuda contexto entre mensagens (usuário vê progresso)
 
 ---
 
-## ❌ Antipadrões Identificados (Top 5 Evitar)
+## [ERRO] Antipadrões Identificados (Top 5 Evitar)
 
 ### Antipadrão 1: Não Pesquisar Docs Oficiais ANTES de Tentar Fix
 
-**Erro Comum:**  
-Ver erro import → Tentar soluções aleatórias (reinstalar package, usar import alternativo) → 1h perdida.
+**Erro Comum:**
+Ver erro import -> Tentar soluções aleatórias (reinstalar package, usar import alternativo) -> 1h perdida.
 
-**Por que acontece:**  
+**Por que acontece:**
 Urgência de "fazer funcionar rápido" leva a pular pesquisa estruturada.
 
-**Solução Correta:**  
+**Solução Correta:**
 SEMPRE pesquisar Brightdata/Docs Oficiais PRIMEIRO (15 min investidos economizam 60-90 min).
 
 **Checklist PRÉ-FIX:**
@@ -277,13 +277,13 @@ SEMPRE pesquisar Brightdata/Docs Oficiais PRIMEIRO (15 min investidos economizam
 
 ### Antipadrão 2: Remover Import sem Grep Uso Downstream
 
-**Erro Comum:**  
-Ver import não usado NO ARQUIVO → Remover → Erro NameError em 5 locais downstream.
+**Erro Comum:**
+Ver import não usado NO ARQUIVO -> Remover -> Erro NameError em 5 locais downstream.
 
-**Por que acontece:**  
+**Por que acontece:**
 Import pode ser re-exportado ou usado transitivamente (ex: `from module import X` em `__init__.py`).
 
-**Solução Correta:**  
+**Solução Correta:**
 SEMPRE grep uso ANTES de remover:
 ```bash
 grep "SymbolName" path/to/file.py  # Buscar no arquivo
@@ -292,11 +292,11 @@ grep "SymbolName" path/to/directory/  # Buscar recursivamente
 
 **Exemplo Sessão 35:**
 ```python
-# ❌ ERRADO (causou NameError):
+# [ERRO] ERRADO (causou NameError):
 # Removi "from langchain.tools import StructuredTool" sem grep
-# → 5 locais usavam StructuredTool → NameError
+# -> 5 locais usavam StructuredTool -> NameError
 
-# ✅ CORRETO:
+# [OK] CORRETO:
 grep "StructuredTool" src/tools/rag_tools.py
 # Output: 5 matches
 # DECISÃO: Atualizar import path, não remover
@@ -308,13 +308,13 @@ grep "StructuredTool" src/tools/rag_tools.py
 
 ### Antipadrão 3: Testar E2E Completo ANTES de Smoke Test
 
-**Erro Comum:**  
-Refatorar código → Executar suite E2E (2-3 min, $0.15-0.30) → Erro básico estrutural → Corrigir → Re-executar E2E.
+**Erro Comum:**
+Refatorar código -> Executar suite E2E (2-3 min, $0.15-0.30) -> Erro básico estrutural -> Corrigir -> Re-executar E2E.
 
-**Por que acontece:**  
+**Por que acontece:**
 Mindset "testar tudo de uma vez" ao invés de "testar progressivamente".
 
-**Solução Correta:**  
+**Solução Correta:**
 Hierarquia de testes:
 1. **Smoke tests** (10 seg, $0.00) - Valida estrutura
 2. **Unitários** (30 seg, $0.00) - Valida lógica isolada
@@ -322,13 +322,13 @@ Hierarquia de testes:
 
 **Exemplo Sessão 35:**
 ```python
-# ✅ CORRETO (validado progressivamente):
-# 1. Smoke test: hasattr(agent, 'llm_with_tools') → 10 seg
-# 2. Unitários: mock llm_with_tools.invoke() → 30 seg
-# 3. E2E: agent.invoke("query") com LLM real → 2-3 min
+# [OK] CORRETO (validado progressivamente):
+# 1. Smoke test: hasattr(agent, 'llm_with_tools') -> 10 seg
+# 2. Unitários: mock llm_with_tools.invoke() -> 30 seg
+# 3. E2E: agent.invoke("query") com LLM real -> 2-3 min
 
-# ❌ ERRADO (direto para E2E):
-# agent.invoke("query") → AttributeError 'executor' → $0.15 desperdiçados
+# [ERRO] ERRADO (direto para E2E):
+# agent.invoke("query") -> AttributeError 'executor' -> $0.15 desperdiçados
 ```
 
 **ROI:** Smoke tests economizam $0.15-0.30 por iteração debugging.
@@ -337,13 +337,13 @@ Hierarquia de testes:
 
 ### Antipadrão 4: Importar Símbolos Não Usados (Imports Órfãos)
 
-**Erro Comum:**  
-Copy-paste código com imports → Alguns imports não são usados → Quebram quando biblioteca depreca API.
+**Erro Comum:**
+Copy-paste código com imports -> Alguns imports não são usados -> Quebram quando biblioteca depreca API.
 
-**Por que acontece:**  
+**Por que acontece:**
 Copy-paste sem revisar imports necessários.
 
-**Solução Correta:**  
+**Solução Correta:**
 SEMPRE revisar imports após refactor:
 ```bash
 # Detectar imports órfãos com Flake8:
@@ -355,10 +355,10 @@ flake8 --select=F401 src/
 
 **Exemplo Sessão 35:**
 ```python
-# ❌ IMPORT ÓRFÃO (causou erro quando Tool deprecated):
+# [ERRO] IMPORT ÓRFÃO (causou erro quando Tool deprecated):
 from langchain.tools import Tool  # NÃO usado no código
 
-# ✅ CORRETO (apenas imports usados):
+# [OK] CORRETO (apenas imports usados):
 from langchain_core.tools import StructuredTool  # USADO nas funções
 ```
 
@@ -368,13 +368,13 @@ from langchain_core.tools import StructuredTool  # USADO nas funções
 
 ### Antipadrão 5: Não Validar Documentação Após Refactor Grande
 
-**Erro Comum:**  
-Refatorar 4 agentes → Esquecer atualizar docs → Docs desatualizados confundem time.
+**Erro Comum:**
+Refatorar 4 agentes -> Esquecer atualizar docs -> Docs desatualizados confundem time.
 
-**Por que acontece:**  
+**Por que acontece:**
 Foco em "fazer funcionar" ao invés de "deixar documentado".
 
-**Solução Correta:**  
+**Solução Correta:**
 Checklist PÓS-REFACTOR obrigatório:
 - [ ] Migration guide criado? (ex: `docs/LANGCHAIN_V1_MIGRATION.md`)
 - [ ] Lição aprendida documentada? (ex: `docs/lessons/lesson-X.md`)
@@ -386,17 +386,17 @@ Checklist PÓS-REFACTOR obrigatório:
 
 ---
 
-## 🛡️ Ferramentas Prevenção (Brightdata 2025)
+## [EMOJI] Ferramentas Prevenção (Brightdata 2025)
 
 ### Ferramenta 1: Pylint (Linter Robusto)
 
-**O que faz:**  
+**O que faz:**
 Detecta errors, coding standards, code smells, complexity.
 
 **Como previne problemas Sessão 35:**
-- ✅ Detecta imports órfãos (`import-error`)
-- ✅ Detecta variáveis não usadas (`unused-variable`)
-- ✅ Detecta imports não usados (`unused-import`)
+- [OK] Detecta imports órfãos (`import-error`)
+- [OK] Detecta variáveis não usadas (`unused-variable`)
+- [OK] Detecta imports não usados (`unused-import`)
 
 **Como usar:**
 ```bash
@@ -428,13 +428,13 @@ disable = [
 
 ### Ferramenta 2: Flake8 (Lightweight Style + Errors)
 
-**O que faz:**  
+**O que faz:**
 Combina pyflakes + pycodestyle + McCabe para detectar style + simple errors.
 
 **Como previne problemas Sessão 35:**
-- ✅ Detecta imports não usados (`F401`)
-- ✅ Detecta imports duplicados
-- ✅ Rápido (ideal para pre-commit hooks)
+- [OK] Detecta imports não usados (`F401`)
+- [OK] Detecta imports duplicados
+- [OK] Rápido (ideal para pre-commit hooks)
 
 **Como usar:**
 ```bash
@@ -461,12 +461,12 @@ repos:
 
 ### Ferramenta 3: Bandit (Security Vulnerabilities)
 
-**O que faz:**  
+**O que faz:**
 Detecta security issues (hardcoded creds, injection risks, insecure functions).
 
 **Como previne problemas Sessão 35:**
-- ❌ Não detecta imports deprecated (foco em security)
-- ✅ Mas detecta uso de funções inseguras (ex: `eval()`, `exec()`)
+- [ERRO] Não detecta imports deprecated (foco em security)
+- [OK] Mas detecta uso de funções inseguras (ex: `eval()`, `exec()`)
 
 **Como usar:**
 ```bash
@@ -488,12 +488,12 @@ bandit -r src/ -ll  # Apenas LOW e MEDIUM severity
 
 ### Ferramenta 4: MyPy/Pyright (Type Checking)
 
-**O que faz:**  
+**O que faz:**
 Valida type hints Python (detecta type mismatches).
 
 **Como previne problemas Sessão 35:**
-- ❌ Não detecta imports deprecated diretamente
-- ✅ Mas detecta uso incorreto de tipos (ex: `Optional[X]` sem check `None`)
+- [ERRO] Não detecta imports deprecated diretamente
+- [OK] Mas detecta uso incorreto de tipos (ex: `Optional[X]` sem check `None`)
 
 **Como usar:**
 ```bash
@@ -518,13 +518,13 @@ pyright src/
 
 ### Ferramenta 5: Jit / SonarQube (Platforms Agregadores)
 
-**O que faz:**  
+**O que faz:**
 Agrega MÚLTIPLAS ferramentas (Pylint + Bandit + Flake8 + Semgrep) em 1 dashboard.
 
 **Como previne problemas Sessão 35:**
-- ✅ Roda 5-10 ferramentas simultaneamente
-- ✅ Centraliza resultados (1 dashboard)
-- ✅ Prioriza issues críticos (reduz noise)
+- [OK] Roda 5-10 ferramentas simultaneamente
+- [OK] Centraliza resultados (1 dashboard)
+- [OK] Prioriza issues críticos (reduz noise)
 
 **Como usar:**
 ```yaml
@@ -550,7 +550,7 @@ jobs:
 
 ---
 
-## ✅ Checklist Prevenção Imports Deprecated
+## [OK] Checklist Prevenção Imports Deprecated
 
 **Aplicar ANTES de cada refactor grande:**
 
@@ -575,13 +575,13 @@ jobs:
 
 ---
 
-## 💾 Memória para o Agente
+## [EMOJI] Memória para o Agente
 
 **Título:** LangChain v1.0 Migration Pattern + Deprecated API Prevention
 
 **Conhecimento a Armazenar:**
 
-**CONTEXT (Nov 2025):** LangChain v1.0 deprecou AgentExecutor, Tool, create_tool_calling_agent → Movidos para langchain-classic (legacy).
+**CONTEXT (Nov 2025):** LangChain v1.0 deprecou AgentExecutor, Tool, create_tool_calling_agent -> Movidos para langchain-classic (legacy).
 
 **PATTERN MODERNO VALIDADO:**
 ```python
@@ -594,7 +594,7 @@ class Agent:
         self.llm = get_llm()
         self.tools = get_tools()
         self.llm_with_tools = self.llm.bind_tools(self.tools)  # 1 linha!
-    
+
     def invoke(self, query):
         messages = [
             SystemMessage(content=prompt),
@@ -606,8 +606,8 @@ class Agent:
 
 **DEPRECATED (v0.x - NÃO USAR):**
 ```python
-from langchain.agents import AgentExecutor, create_tool_calling_agent  # ❌
-from langchain.tools import Tool  # ❌
+from langchain.agents import AgentExecutor, create_tool_calling_agent  # [ERRO]
+from langchain.tools import Tool  # [ERRO]
 ```
 
 **METODOLOGIA PREVENÇÃO IMPORTS DEPRECATED:**
@@ -624,19 +624,19 @@ from langchain.tools import Tool  # ❌
 - Jit/SonarQube (platforms agregadores)
 
 **ROI VALIDADO SESSÃO 35:**
-- Brightdata research: 15 min → economizou 60-90 min
-- Smoke tests: 10 seg → economizou $0.15-0.30 por iteração
+- Brightdata research: 15 min -> economizou 60-90 min
+- Smoke tests: 10 seg -> economizou $0.15-0.30 por iteração
 - Código -30% mais simples (sem AgentExecutor boilerplate)
 
 **QUANDO APLICAR:**
 - Refactors grandes (4+ arquivos)
-- Migrações de biblioteca (v0 → v1)
+- Migrações de biblioteca (v0 -> v1)
 - Import errors recorrentes
 - Before commit (pre-commit hooks)
 
 ---
 
-## 📊 ROI Consolidado Sessão 35
+## [EMOJI] ROI Consolidado Sessão 35
 
 ### Tempo Economizado
 
@@ -666,7 +666,7 @@ from langchain.tools import Tool  # ❌
 
 ---
 
-## 📚 Referências
+## [EMOJI] Referências
 
 ### Brightdata Research (Nov 19, 2025)
 1. **Stack Overflow Q79796733** (Out 2024)
@@ -691,12 +691,12 @@ from langchain.tools import Tool  # ❌
 
 ---
 
-## 🎯 Ações Futuras Recomendadas
+## [EMOJI] Ações Futuras Recomendadas
 
 ### Curto Prazo (Próxima Sessão)
-1. ✅ **Executar suite E2E completa** (22 testes) para validar behavior
-2. ✅ **Configurar Flake8 em pre-commit** hooks
-3. ✅ **Configurar Pylint em CI/CD** GitHub Actions
+1. [OK] **Executar suite E2E completa** (22 testes) para validar behavior
+2. [OK] **Configurar Flake8 em pre-commit** hooks
+3. [OK] **Configurar Pylint em CI/CD** GitHub Actions
 
 ### Médio Prazo (Próximas 2-3 Sessões)
 4. ⏳ **Adicionar type hints completos** (preparar para MyPy)
@@ -704,13 +704,12 @@ from langchain.tools import Tool  # ❌
 6. ⏳ **Criar dashboard agregador** (GitHub Actions matrix: Pylint + Flake8 + Bandit)
 
 ### Longo Prazo (1-2 Meses)
-7. 🔜 **Migrar para Jit/SonarQube** platform agregador
-8. 🔜 **Criar regression suite automática** (executar semanal)
-9. 🔜 **Documentar patterns LangChain v1.0** em onboarding docs
+7. [EMOJI] **Migrar para Jit/SonarQube** platform agregador
+8. [EMOJI] **Criar regression suite automática** (executar semanal)
+9. [EMOJI] **Documentar patterns LangChain v1.0** em onboarding docs
 
 ---
 
-**Última Atualização:** 2025-11-19  
-**Status:** ✅ COMPLETO | Lição validada com 5 metodologias + 5 antipadrões + 5 ferramentas  
+**Última Atualização:** 2025-11-19
+**Status:** [OK] COMPLETO | Lição validada com 5 metodologias + 5 antipadrões + 5 ferramentas
 **Próxima Revisão:** Após adicionar Flake8 pre-commit hooks (Sessão 36)
-

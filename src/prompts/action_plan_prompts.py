@@ -43,8 +43,8 @@ INSTRUÇÕES - 7 BEST PRACTICES PARA ACTION PLANNING:
    - LOW: Desejável mas não crítico (implementar por último)
 
 3. SEJA ESPECÍFICO AO INVÉS DE GENÉRICO:
-   - ❌ ERRADO: "Melhorar processos"
-   - ✅ CORRETO: "Implementar sistema de coleta de feedback de clientes com plataforma CRM até 15/12/2025"
+   - [ERRO] ERRADO: "Melhorar processos"
+   - [OK] CORRETO: "Implementar sistema de coleta de feedback de clientes com plataforma CRM até 15/12/2025"
 
 4. DEFINA PRAZOS E RESPONSÁVEIS:
    - Cada ação deve ter data de início e data limite específicas
@@ -87,16 +87,16 @@ PERSPECTIVA APRENDIZADO E CRESCIMENTO:
 
 REQUISITOS DE QUALIDADE:
 
-✅ AÇÕES ESPECÍFICAS: Título claro e acionável (10-200 caracteres)
-✅ DESCRIÇÃO DETALHADA: Explicação completa da ação (20-1000 caracteres)
-✅ PERSPECTIVA CORRETA: Uma das 4 perspectivas BSC
-✅ PRIORIDADE JUSTIFICADA: HIGH/MEDIUM/LOW baseado em importância/urgência
-✅ ESFORÇO REALISTA: HIGH/MEDIUM/LOW baseado em complexidade/recursos
-✅ RESPONSÁVEL CLARO: Pessoa ou equipe específica (3-100 caracteres)
-✅ DATAS REALISTAS: Início e fim em formato YYYY-MM-DD
-✅ RECURSOS IDENTIFICADOS: Lista específica de recursos necessários
-✅ CRITÉRIOS MENSURÁVEIS: Como medir sucesso da ação (10-500 caracteres)
-✅ DEPENDÊNCIAS MAPEADAS: Ações que devem preceder esta
+[OK] AÇÕES ESPECÍFICAS: Título claro e acionável (10-200 caracteres)
+[OK] DESCRIÇÃO DETALHADA: Explicação completa da ação (20-1000 caracteres)
+[OK] PERSPECTIVA CORRETA: Uma das 4 perspectivas BSC
+[OK] PRIORIDADE JUSTIFICADA: HIGH/MEDIUM/LOW baseado em importância/urgência
+[OK] ESFORÇO REALISTA: HIGH/MEDIUM/LOW baseado em complexidade/recursos
+[OK] RESPONSÁVEL CLARO: Pessoa ou equipe específica (3-100 caracteres)
+[OK] DATAS REALISTAS: Início e fim em formato YYYY-MM-DD
+[OK] RECURSOS IDENTIFICADOS: Lista específica de recursos necessários
+[OK] CRITÉRIOS MENSURÁVEIS: Como medir sucesso da ação (10-500 caracteres)
+[OK] DEPENDÊNCIAS MAPEADAS: Ações que devem preceder esta
 
 BALANCEAMENTO:
 - Mínimo 1 ação por perspectiva BSC
@@ -159,12 +159,12 @@ INSTRUÇÕES DE CONSOLIDAÇÃO:
 
 REQUISITOS FINAIS:
 
-✅ TOTAL DE AÇÕES: 8-15 ações específicas
-✅ BALANCEAMENTO: Mínimo 1 ação por perspectiva BSC
-✅ PRIORIDADES: 20-60% ações HIGH priority
-✅ CRONOGRAMA: 3-6 meses para implementação completa
-✅ RESUMO: Visão executiva clara e inspiradora
-✅ TIMELINE: Sequência lógica e realista
+[OK] TOTAL DE AÇÕES: 8-15 ações específicas
+[OK] BALANCEAMENTO: Mínimo 1 ação por perspectiva BSC
+[OK] PRIORIDADES: 20-60% ações HIGH priority
+[OK] CRONOGRAMA: 3-6 meses para implementação completa
+[OK] RESUMO: Visão executiva clara e inspiradora
+[OK] TIMELINE: Sequência lógica e realista
 
 OUTPUT ESPERADO:
 Consolide as ações em um ActionPlan estruturado com summary executivo, timeline_summary e contadores (total_actions, high_priority_count, by_perspective).
@@ -175,83 +175,84 @@ IMPORTANTE: Mantenha todas as ações originais, apenas organize e consolide em 
 # HELPER FUNCTIONS
 # ============================================================================
 
+
 def build_company_context(client_profile) -> str:
     """Constrói contexto da empresa para prompts de Action Plan.
-    
+
     Args:
         client_profile: ClientProfile com informações da empresa
-        
+
     Returns:
         String formatada com contexto empresarial
     """
     if not client_profile or not client_profile.company:
         return "Contexto da empresa não disponível."
-    
+
     company = client_profile.company
     context = company.name
-    
+
     if company.sector:
         context += f" - Setor: {company.sector}"
-    
+
     if company.size:
         context += f" - Porte: {company.size}"
-    
+
     if company.industry:
         context += f" - Indústria: {company.industry}"
-    
-    if hasattr(company, 'description') and company.description:
+
+    if hasattr(company, "description") and company.description:
         context += f"\n\nDescrição: {company.description}"
-    
+
     if client_profile.context and client_profile.context.current_challenges:
         challenges = ", ".join(client_profile.context.current_challenges[:3])
         context += f"\n\nPrincipais desafios atuais: {challenges}"
-    
+
     return context
 
 
 def build_diagnostic_context(diagnostic_results) -> str:
     """Constrói contexto do diagnóstico BSC para prompts de Action Plan.
-    
+
     Args:
         diagnostic_results: CompleteDiagnostic ou dict com resultados
-        
+
     Returns:
         String formatada com contexto do diagnóstico
     """
     if not diagnostic_results:
         return "Diagnóstico BSC não disponível."
-    
+
     # Se for CompleteDiagnostic, extrair informações relevantes
-    if hasattr(diagnostic_results, 'consolidated_analysis'):
+    if hasattr(diagnostic_results, "consolidated_analysis"):
         analysis = diagnostic_results.consolidated_analysis
         context = f"Análise consolidada: {analysis.summary[:500]}..."
-        
-        if hasattr(analysis, 'key_gaps') and analysis.key_gaps:
+
+        if hasattr(analysis, "key_gaps") and analysis.key_gaps:
             gaps = ", ".join(analysis.key_gaps[:3])
             context += f"\n\nPrincipais gaps identificados: {gaps}"
-        
-        if hasattr(analysis, 'synergies') and analysis.synergies:
+
+        if hasattr(analysis, "synergies") and analysis.synergies:
             synergies = ", ".join(analysis.synergies[:3])
             context += f"\n\nPrincipais sinergias: {synergies}"
-    
+
     # Se for dict, usar informações disponíveis
     elif isinstance(diagnostic_results, dict):
         context = "Resultados do diagnóstico BSC:\n"
-        
-        if 'summary' in diagnostic_results:
+
+        if "summary" in diagnostic_results:
             context += f"Resumo: {diagnostic_results['summary'][:300]}...\n"
-        
-        if 'gaps' in diagnostic_results:
-            gaps = ", ".join(diagnostic_results['gaps'][:3])
+
+        if "gaps" in diagnostic_results:
+            gaps = ", ".join(diagnostic_results["gaps"][:3])
             context += f"Gaps: {gaps}\n"
-        
-        if 'recommendations' in diagnostic_results:
-            recs = ", ".join(diagnostic_results['recommendations'][:3])
+
+        if "recommendations" in diagnostic_results:
+            recs = ", ".join(diagnostic_results["recommendations"][:3])
             context += f"Recomendações: {recs}"
-    
+
     else:
         context = "Diagnóstico BSC realizado - detalhes não estruturados disponíveis."
-    
+
     return context
 
 
@@ -259,96 +260,104 @@ def build_bsc_knowledge_context(
     financial_knowledge: str = "",
     customer_knowledge: str = "",
     process_knowledge: str = "",
-    learning_knowledge: str = ""
+    learning_knowledge: str = "",
 ) -> str:
     """Constrói contexto de conhecimento BSC para prompts de Action Plan.
-    
+
     Args:
         financial_knowledge: Conhecimento da perspectiva financeira
         customer_knowledge: Conhecimento da perspectiva clientes
         process_knowledge: Conhecimento da perspectiva processos
         learning_knowledge: Conhecimento da perspectiva aprendizado
-        
+
     Returns:
         String formatada com conhecimento BSC relevante
     """
     knowledge_parts = []
-    
+
     if financial_knowledge:
         knowledge_parts.append(f"PERSPECTIVA FINANCEIRA:\n{financial_knowledge[:500]}...")
-    
+
     if customer_knowledge:
         knowledge_parts.append(f"PERSPECTIVA CLIENTES:\n{customer_knowledge[:500]}...")
-    
+
     if process_knowledge:
         knowledge_parts.append(f"PERSPECTIVA PROCESSOS:\n{process_knowledge[:500]}...")
-    
+
     if learning_knowledge:
         knowledge_parts.append(f"PERSPECTIVA APRENDIZADO:\n{learning_knowledge[:500]}...")
-    
+
     if not knowledge_parts:
         return "Conhecimento BSC da literatura não disponível."
-    
+
     return "\n\n".join(knowledge_parts)
 
 
 def format_action_plan_for_display(action_plan) -> str:
     """Formata ActionPlan para exibição amigável.
-    
+
     Args:
         action_plan: ActionPlan object
-        
+
     Returns:
         String formatada para exibição
     """
     if not action_plan:
         return "Plano de ação não disponível."
-    
-    output = f"📋 PLANO DE AÇÃO BSC\n"
+
+    output = "[EMOJI] PLANO DE AÇÃO BSC\n"
     output += f"{'='*50}\n\n"
-    
+
     # Resumo executivo
-    output += f"📊 RESUMO EXECUTIVO:\n"
+    output += "[EMOJI] RESUMO EXECUTIVO:\n"
     output += f"{action_plan.summary}\n\n"
-    
+
     # Estatísticas
-    output += f"📈 ESTATÍSTICAS:\n"
+    output += "[EMOJI] ESTATÍSTICAS:\n"
     output += f"• Total de ações: {action_plan.total_actions}\n"
     output += f"• Ações de alta prioridade: {action_plan.high_priority_count}\n"
-    output += f"• Balanceamento: {'✅ Balanceado' if action_plan.is_balanced() else '⚠️ Desbalanceado'}\n"
+    output += f"• Balanceamento: {'[OK] Balanceado' if action_plan.is_balanced() else '[WARN] Desbalanceado'}\n"
     output += f"• Score de qualidade: {action_plan.quality_score():.1%}\n\n"
-    
+
     # Por perspectiva
-    output += f"🎯 AÇÕES POR PERSPECTIVA:\n"
+    output += "[EMOJI] AÇÕES POR PERSPECTIVA:\n"
     for perspective, count in action_plan.by_perspective.items():
         output += f"• {perspective}: {count} ações\n"
     output += "\n"
-    
+
     # Cronograma
-    output += f"📅 CRONOGRAMA:\n"
+    output += "[EMOJI] CRONOGRAMA:\n"
     output += f"{action_plan.timeline_summary}\n\n"
-    
+
     # Ações detalhadas
-    output += f"📝 AÇÕES DETALHADAS:\n"
+    output += "[EMOJI] AÇÕES DETALHADAS:\n"
     output += f"{'='*50}\n"
-    
+
     for i, action in enumerate(action_plan.action_items, 1):
-        priority_icon = "🔴" if action.priority == "HIGH" else "🟡" if action.priority == "MEDIUM" else "🟢"
-        effort_icon = "⚡" if action.effort == "HIGH" else "🔧" if action.effort == "MEDIUM" else "🪶"
-        
+        priority_icon = (
+            "[EMOJI]"
+            if action.priority == "HIGH"
+            else "[EMOJI]" if action.priority == "MEDIUM" else "[EMOJI]"
+        )
+        effort_icon = (
+            "[FAST]"
+            if action.effort == "HIGH"
+            else "[EMOJI]" if action.effort == "MEDIUM" else "🪶"
+        )
+
         output += f"\n{i}. {priority_icon} {effort_icon} {action.action_title}\n"
         output += f"   Perspectiva: {action.perspective}\n"
         output += f"   Responsável: {action.responsible}\n"
-        output += f"   Período: {action.start_date} → {action.due_date}\n"
+        output += f"   Período: {action.start_date} -> {action.due_date}\n"
         output += f"   Descrição: {action.description}\n"
-        
+
         if action.resources_needed:
             output += f"   Recursos: {', '.join(action.resources_needed)}\n"
-        
+
         if action.success_criteria:
             output += f"   Sucesso: {action.success_criteria}\n"
-        
+
         if action.dependencies:
             output += f"   Dependências: {', '.join(action.dependencies)}\n"
-    
+
     return output

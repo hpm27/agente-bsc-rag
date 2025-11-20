@@ -35,10 +35,10 @@ Você pode criar um arquivo `index.json` em `bsc_literature/` para adicionar met
 
 ### Benefícios:
 
-- ✅ **Ground truth validável** - Métricas Recall@10 e Precision@5 funcionam corretamente
-- ✅ **Filtros avançados** - Buscar por autor, ano, tipo de documento, perspectiva BSC
-- ✅ **UX melhorada** - Interface mostra títulos legíveis ao invés de filenames
-- ✅ **Busca mais precisa** - Metadados melhoram relevância do retrieval
+- [OK] **Ground truth validável** - Métricas Recall@10 e Precision@5 funcionam corretamente
+- [OK] **Filtros avançados** - Buscar por autor, ano, tipo de documento, perspectiva BSC
+- [OK] **UX melhorada** - Interface mostra títulos legíveis ao invés de filenames
+- [OK] **Busca mais precisa** - Metadados melhoram relevância do retrieval
 
 ### Como Usar:
 
@@ -84,7 +84,7 @@ Você pode criar um arquivo `index.json` em `bsc_literature/` para adicionar met
 
 | Campo | Tipo | Obrigatório | Descrição | Exemplo |
 |-------|------|-------------|-----------|---------|
-| `filename` | string | ✅ Sim | Nome exato do arquivo | `"doc.pdf"` |
+| `filename` | string | [OK] Sim | Nome exato do arquivo | `"doc.pdf"` |
 | `title` | string | Não | Título do documento | `"The Balanced Scorecard"` |
 | `authors` | array | Não | Lista de autores | `["Kaplan", "Norton"]` |
 | `year` | number | Não | Ano de publicação | `1996` |
@@ -109,16 +109,16 @@ Você pode criar um arquivo `index.json` em `bsc_literature/` para adicionar met
 3. **Teste de busca com filtros:**
    ```python
    from src.rag import create_vector_store
-   
+
    vector_store = create_vector_store()
-   
+
    # Buscar só livros
    results = vector_store.vector_search(
        query_embedding=embedding,
        k=10,
        filter_dict={"doc_type": "book"}
    )
-   
+
    # Buscar documentos de 2000+
    results = vector_store.vector_search(
        query_embedding=embedding,
@@ -127,7 +127,7 @@ Você pode criar um arquivo `index.json` em `bsc_literature/` para adicionar met
    )
    ```
 
-### ⚠️ Notas Importantes:
+### [WARN] Notas Importantes:
 
 - **index.json é OPCIONAL** - Sistema funciona sem ele (backward compatibility)
 - **filename deve ser exato** - Case-sensitive, incluir extensão (.pdf, .md)
@@ -141,7 +141,7 @@ Veja `data/bsc_literature/index.json` para exemplo completo com os 5 livros de K
 
 ---
 
-## ⚡ Auto-Geração de Metadados ⭐ **NOVO**
+## [FAST] Auto-Geração de Metadados ⭐ **NOVO**
 
 ### O Que É?
 
@@ -154,12 +154,12 @@ Veja `data/bsc_literature/index.json` para exemplo completo com os 5 livros de K
 3. **Sistema detecta** que documento não está no `index.json`
 4. **GPT-4o-mini analisa** as primeiras 3000 palavras do documento
 5. **Extrai automaticamente:**
-   - ✅ Título completo
-   - ✅ Lista de autores
-   - ✅ Ano de publicação
-   - ✅ Tipo (book/paper/case_study/article)
-   - ✅ Perspectivas BSC mencionadas
-   - ✅ Idioma (en/pt-BR)
+   - [OK] Título completo
+   - [OK] Lista de autores
+   - [OK] Ano de publicação
+   - [OK] Tipo (book/paper/case_study/article)
+   - [OK] Perspectivas BSC mencionadas
+   - [OK] Idioma (en/pt-BR)
 6. **Salva no `index.json`** para cache (não gera novamente na próxima indexação)
 
 ### Configuração (.env):
@@ -247,10 +247,10 @@ ENABLE_AUTO_METADATA_GENERATION=False
 
 ### Notas Importantes:
 
-- ⚡ **Documentos existentes no index.json NÃO são re-gerados** - Metadados manuais são preservados
-- ⚡ **Fallback graceful** - Se auto-geração falha, sistema continua normalmente (usa filename como document_title)
-- ⚡ **Cache inteligente** - Metadados gerados são salvos no index.json, não gera novamente
-- ⚡ **Timeout de 30s** - Se LLM demorar muito, usa fallback
+- [FAST] **Documentos existentes no index.json NÃO são re-gerados** - Metadados manuais são preservados
+- [FAST] **Fallback graceful** - Se auto-geração falha, sistema continua normalmente (usa filename como document_title)
+- [FAST] **Cache inteligente** - Metadados gerados são salvos no index.json, não gera novamente
+- [FAST] **Timeout de 30s** - Se LLM demorar muito, usa fallback
 
 ---
 
@@ -322,4 +322,3 @@ docker-compose restart qdrant
 ---
 
 **Última atualização**: 2025-10-09
-

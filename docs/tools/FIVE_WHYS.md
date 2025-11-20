@@ -4,7 +4,7 @@
 
 ---
 
-## 📋 Índice Navegável
+## [EMOJI] Índice Navegável
 
 1. [Visão Geral](#visão-geral)
 2. [Arquitetura e Design](#arquitetura-e-design)
@@ -21,7 +21,7 @@
 
 ---
 
-## 📖 Visão Geral
+## [EMOJI] Visão Geral
 
 ### O que é 5 Whys?
 
@@ -35,11 +35,11 @@ No diagnóstico BSC consultivo, clientes frequentemente apresentam **sintomas** 
 ```
 Problema inicial: "Vendas baixas no último trimestre"
 
-Por quê? → Perdemos clientes-chave
-Por quê? → Clientes migraram para concorrentes
-Por quê? → Concorrentes ofereceram melhor suporte pós-venda
-Por quê? → Não temos equipe dedicada a customer success
-Por quê? → Orçamento não contemplou customer success no planejamento
+Por quê? -> Perdemos clientes-chave
+Por quê? -> Clientes migraram para concorrentes
+Por quê? -> Concorrentes ofereceram melhor suporte pós-venda
+Por quê? -> Não temos equipe dedicada a customer success
+Por quê? -> Orçamento não contemplou customer success no planejamento
 
 CAUSA RAIZ: Falha no planejamento estratégico de alocação de recursos
 AÇÃO RECOMENDADA: Implementar Customer Success na revisão BSC Q3
@@ -47,15 +47,15 @@ AÇÃO RECOMENDADA: Implementar Customer Success na revisão BSC Q3
 
 ### Diferencial desta Tool
 
-- ✅ **AI-facilitated conversational** (LLM GPT-5 mini guia iterações)
-- ✅ **Integração RAG** (busca casos BSC similares via specialist agents)
-- ✅ **Iterações flexíveis** (3-7 "why", não fixo em 5)
-- ✅ **Validação automática** (detecta quando root cause real foi atingida)
-- ✅ **Structured output** (FiveWhysAnalysis Pydantic validado)
+- [OK] **AI-facilitated conversational** (LLM GPT-5 mini guia iterações)
+- [OK] **Integração RAG** (busca casos BSC similares via specialist agents)
+- [OK] **Iterações flexíveis** (3-7 "why", não fixo em 5)
+- [OK] **Validação automática** (detecta quando root cause real foi atingida)
+- [OK] **Structured output** (FiveWhysAnalysis Pydantic validado)
 
 ---
 
-## 🏗️ Arquitetura e Design
+## [EMOJI] Arquitetura e Design
 
 ### High-Level Architecture
 
@@ -74,7 +74,7 @@ AÇÃO RECOMENDADA: Implementar Customer Success na revisão BSC Q3
 │  STEP 2: (Optional) RAG retrieval (BSC knowledge)          │
 │  STEP 3: Iterative loop (3-7 iterations):                  │
 │     - Prompt LLM with context + previous iterations        │
-│     - LLM generates next "Why?" → Answer                   │
+│     - LLM generates next "Why?" -> Answer                   │
 │     - Validate if root cause reached (confidence)          │
 │     - Stop if: root_cause=True OR i>=3 AND conf>=0.85      │
 │  STEP 4: Synthesize root cause + recommended actions       │
@@ -115,14 +115,14 @@ AÇÃO RECOMENDADA: Implementar Customer Success na revisão BSC Q3
 
 ---
 
-## 📚 API Reference
+## [EMOJI] API Reference
 
 ### FiveWhysTool Class
 
 ```python
 class FiveWhysTool:
     """Ferramenta de analise de causa raiz usando metodo 5 Whys.
-    
+
     Attributes:
         llm: LLM para geracao de iteracoes (GPT-5 mini recomendado)
         financial_agent: (Optional) Agente financeiro para RAG
@@ -146,7 +146,7 @@ def facilitate_five_whys(
     use_rag: bool = True,
 ) -> FiveWhysAnalysis:
     """Facilita analise 5 Whys (causa raiz) para problema especifico.
-    
+
     Workflow iterativo:
     1. Constroi contexto empresa + problema
     2. (Opcional) Recupera conhecimento BSC via RAG
@@ -157,20 +157,20 @@ def facilitate_five_whys(
        d. Se sim: sai do loop. Se nao: continua
     4. Sintese final da causa raiz + acoes recomendadas
     5. Retorna FiveWhysAnalysis estruturado validado
-    
+
     Args:
         company_info: Informacoes basicas da empresa (nome, setor, tamanho)
         strategic_context: Desafios e objetivos estrategicos atuais
         problem_statement: Problema especifico a analisar (min 10 chars)
         use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
-    
+
     Returns:
         FiveWhysAnalysis: Objeto Pydantic validado com iteracoes + root cause
-    
+
     Raises:
         ValidationError: Se LLM retorna dados invalidos
         ValueError: Se contexto empresa insuficiente (<100 chars) ou problema vazio
-    
+
     Example:
         >>> company = CompanyInfo(
         ...     name="TechCorp",
@@ -200,7 +200,7 @@ def facilitate_five_whys(
 ```python
 def _rag_available(self) -> bool:
     """Verifica se pelo menos 1 specialist agent esta disponivel para RAG."""
-    
+
 def _retrieve_bsc_knowledge(
     self,
     company_info: CompanyInfo,
@@ -208,10 +208,10 @@ def _retrieve_bsc_knowledge(
     problem_statement: str,
 ) -> str:
     """Recupera conhecimento BSC de 4 perspectivas via specialist agents.
-    
+
     Retorna string formatada com referências numeradas [REFERENCIA 1], etc.
     """
-    
+
 def _synthesize_root_cause(
     self,
     problem_statement: str,
@@ -222,7 +222,7 @@ def _synthesize_root_cause(
 
 ---
 
-## 🎯 Casos de Uso BSC
+## [EMOJI] Casos de Uso BSC
 
 ### Caso 1: Perspectiva Financeira - Vendas Baixas
 
@@ -250,8 +250,8 @@ Iteração 5:
 Q: Por que não temos programa de Customer Success?
 A: Orçamento anual não contemplou essa área no planejamento estratégico
 
-ROOT CAUSE: Falha no mapeamento estratégico BSC - área de Customer Success 
-não foi considerada crítica para retenção, resultando em ausência de 
+ROOT CAUSE: Falha no mapeamento estratégico BSC - área de Customer Success
+não foi considerada crítica para retenção, resultando em ausência de
 investimento e perda de clientes enterprise.
 
 AÇÕES RECOMENDADAS:
@@ -286,14 +286,14 @@ Iteração 4:
 Q: Por que a equipe não acompanhou o crescimento da base?
 A: Budget de contratação congelado por 12 meses devido a restrição financeira
 
-ROOT CAUSE: Crescimento agressivo de base de clientes sem planejamento 
-proporcional de infraestrutura de suporte, causado por desalinhamento 
+ROOT CAUSE: Crescimento agressivo de base de clientes sem planejamento
+proporcional de infraestrutura de suporte, causado por desalinhamento
 entre perspectivas Clientes e Aprendizado/Crescimento no BSC.
 
 AÇÕES RECOMENDADAS:
 1. Contratar 3 analistas de suporte imediatamente (break even em 4 meses)
 2. Implementar chatbot IA para resolver 40% tickets tier-1
-3. Estabelecer linkage BSC explícito: Crescimento Base → Budget Suporte Proporcional
+3. Estabelecer linkage BSC explícito: Crescimento Base -> Budget Suporte Proporcional
 ```
 
 **RAG Integration**: Busca literatura BSC sobre customer satisfaction drivers, support scalability, NPS recovery strategies
@@ -318,8 +318,8 @@ Iteração 3:
 Q: Por que não existe processo estruturado?
 A: Processo foi descontinuado após saída do Product Manager há 8 meses
 
-ROOT CAUSE: Dependência de conhecimento tácito em pessoa-chave sem 
-documentação ou transferência adequada, resultando em colapso de processo 
+ROOT CAUSE: Dependência de conhecimento tácito em pessoa-chave sem
+documentação ou transferência adequada, resultando em colapso de processo
 crítico após saída. Falha na perspectiva Aprendizado/Crescimento do BSC.
 
 AÇÕES RECOMENDADAS:
@@ -352,8 +352,8 @@ Iteração 4:
 Q: Por que o orçamento de treinamento foi priorizado para corte?
 A: Liderança vê treinamento como "nice to have" e não como investimento estratégico
 
-ROOT CAUSE: Cultura organizacional não reconhece treinamento como ativo 
-estratégico, resultando em priorização inadequada no BSC. Perspectiva 
+ROOT CAUSE: Cultura organizacional não reconhece treinamento como ativo
+estratégico, resultando em priorização inadequada no BSC. Perspectiva
 Aprendizado/Crescimento desconectada das demais perspectivas.
 
 AÇÕES RECOMENDADAS:
@@ -365,7 +365,7 @@ AÇÕES RECOMENDADAS:
 
 ---
 
-## 🔧 Implementação Detalhada
+## [EMOJI] Implementação Detalhada
 
 ### Arquivo: `src/tools/five_whys.py` (540 linhas)
 
@@ -376,17 +376,17 @@ company_context = build_company_context(company_info, strategic_context)
 
 # Helper function (linhas 136-191)
 def build_company_context(
-    company_info: CompanyInfo, 
+    company_info: CompanyInfo,
     strategic_context: StrategicContext
 ) -> str:
     """Constroi contexto narrativo da empresa para LLM.
-    
+
     Inclui:
     - Nome, setor, tamanho, indústria
     - Missão, visão (se disponível)
     - Desafios atuais (current_challenges)
     - Objetivos estratégicos (strategic_goals)
-    
+
     Returns:
         String formatada 200-500 chars (típico)
     """
@@ -410,23 +410,23 @@ if use_rag and self._rag_available():
 ```python
 def _retrieve_bsc_knowledge(self, ...) -> str:
     """RAG paralelo em 4 perspectivas BSC.
-    
+
     Workflow:
     1. Chama invoke() dos 4 specialist agents
     2. Extrai "context_used" de cada resposta
     3. Numera referências [REFERÊNCIA 1], [REFERÊNCIA 2], etc
     4. Retorna string concatenada (máx ~2000 chars)
-    
+
     Tratamento de erros:
     - Se agent falha: logger.warning, continua com outros
     - Se TODOS falham: retorna string vazia
     """
 ```
 
-**RAG Query Format**: 
+**RAG Query Format**:
 ```
 Query enviada aos specialist agents:
-"[CONTEXTO] {company_info.name} ({sector}) enfrenta: {problem_statement}. 
+"[CONTEXTO] {company_info.name} ({sector}) enfrenta: {problem_statement}.
 [BUSCA] Casos BSC similares, best practices, armadilhas comuns sobre {problem_statement}"
 ```
 
@@ -438,11 +438,11 @@ Query enviada aos specialist agents:
 ```python
 for i in range(1, self.max_iterations + 1):
     iteration_output = self.llm_iteration.invoke(prompt)
-    
+
     # Parada 1: Root cause explícito
     if iteration_output.is_root_cause:
         break
-    
+
     # Parada 2: Confidence alto após mínimo 3 iterações
     if i >= 3 and iteration.confidence >= 0.85:
         break
@@ -522,26 +522,26 @@ return analysis
 
 ---
 
-## 📦 Schemas Pydantic
+## [EMOJI] Schemas Pydantic
 
 ### WhyIteration (src/memory/schemas.py linhas 182-235)
 
 ```python
 class WhyIteration(BaseModel):
     """Uma iteracao individual do metodo 5 Whys.
-    
+
     Attributes:
         iteration_number: Numero da iteracao (1-7)
         question: Pergunta "Por que?" formulada
         answer: Resposta que leva a proxima iteracao
         confidence: Confianca de que esta resposta e relevante (0.0-1.0)
     """
-    
+
     iteration_number: int = Field(ge=1, le=7, description="Numero da iteracao")
     question: str = Field(min_length=10, description="Pergunta 'Por que?' formulada")
     answer: str = Field(min_length=20, description="Resposta que leva a proxima iteracao")
     confidence: float = Field(ge=0.0, le=1.0, description="Confianca (0.0-1.0)")
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -561,7 +561,7 @@ class WhyIteration(BaseModel):
 ```python
 class FiveWhysAnalysis(BaseModel):
     """Resultado completo da analise 5 Whys.
-    
+
     Attributes:
         problem_statement: Problema inicial analisado
         iterations: Lista de iteracoes "Por que?" (min 3, max 7)
@@ -570,14 +570,14 @@ class FiveWhysAnalysis(BaseModel):
         recommended_actions: 2-4 acoes recomendadas especificas
         context_from_rag: (Optional) Conhecimento BSC recuperado
     """
-    
+
     problem_statement: str = Field(min_length=10)
     iterations: list[WhyIteration] = Field(min_length=3, max_length=7)
     root_cause: str = Field(min_length=50)
     confidence_score: float = Field(ge=0, le=100)
     recommended_actions: list[str] = Field(min_length=2)
     context_from_rag: list[str] = Field(default_factory=list)
-    
+
     # Métodos úteis
     def is_complete(self) -> bool:
         """Retorna True se todas iteracoes preenchidas + root_cause definido."""
@@ -586,21 +586,21 @@ class FiveWhysAnalysis(BaseModel):
             and len(self.root_cause) >= 50
             and self.confidence_score > 0
         )
-    
+
     def depth_reached(self) -> int:
         """Retorna numero de iteracoes realizadas."""
         return len(self.iterations)
-    
+
     def root_cause_confidence(self) -> float:
         """Retorna confidence score (0-100%)."""
         return self.confidence_score
-    
+
     def average_confidence(self) -> float:
         """Retorna media de confidence das iteracoes (0.0-1.0)."""
         if not self.iterations:
             return 0.0
         return sum(iter.confidence for iter in self.iterations) / len(self.iterations)
-    
+
     def summary(self) -> str:
         """Retorna resumo executivo formatado (1 paragrafo)."""
         return (
@@ -609,7 +609,7 @@ class FiveWhysAnalysis(BaseModel):
             f"(Confianca: {self.confidence_score:.0f}%). "
             f"{len(self.recommended_actions)} acoes recomendadas."
         )
-    
+
     @model_validator(mode="after")
     def validate_iteration_sequence(self):
         """Valida que iteration_numbers sao sequenciais (1, 2, 3...)."""
@@ -620,7 +620,7 @@ class FiveWhysAnalysis(BaseModel):
                 f"Iteration numbers nao sequenciais. Esperado: {expected}, Atual: {actual}"
             )
         return self
-    
+
     @model_validator(mode="after")
     def validate_actions_not_empty(self):
         """Valida que acoes recomendadas nao sao strings vazias."""
@@ -635,7 +635,7 @@ class FiveWhysAnalysis(BaseModel):
 
 ---
 
-## 🎨 Prompts LLM
+## [EMOJI] Prompts LLM
 
 ### FACILITATE_FIVE_WHYS_PROMPT (src/prompts/five_whys_prompts.py linhas 18-101)
 
@@ -695,12 +695,12 @@ def build_strategic_context(strategic_context) -> str:
 
 def build_previous_iterations_text(iterations) -> str:
     """Formata iteracoes anteriores para prompt.
-    
+
     Format:
     Iteracao 1:
     Q: Por que vendas baixas?
     A: Poucos leads qualificados (confidence: 0.8)
-    
+
     Iteracao 2:
     Q: Por que poucos leads?
     A: Marketing digital fraco (confidence: 0.82)
@@ -729,12 +729,12 @@ CRITÉRIOS CAUSA RAIZ:
 - Resolver a causa raiz previne o problema de se repetir
 
 EXEMPLO DE BOA CAUSA RAIZ:
-"Falta de programa estruturado de customer success e relacionamento pós-venda 
-resultou em baixo engajamento e posterior churn de clientes-chave. Orçamento 
+"Falta de programa estruturado de customer success e relacionamento pós-venda
+resultou em baixo engajamento e posterior churn de clientes-chave. Orçamento
 anual não contemplou esta área no planejamento estratégico BSC."
 
 EXEMPLO DE MÁ CAUSA RAIZ (muito superficial):
-"Clientes insatisfeitos" ← SINTOMA, não causa estrutural
+"Clientes insatisfeitos" <- SINTOMA, não causa estrutural
 
 AÇÕES RECOMENDADAS:
 - Devem ser ESPECÍFICAS (não "melhorar processos" genérico)
@@ -756,7 +756,7 @@ RETORNE:
 
 ---
 
-## 🔗 Integração DiagnosticAgent
+## [EMOJI] Integração DiagnosticAgent
 
 ### Método: `generate_five_whys_analysis()` (src/agents/diagnostic_agent.py linhas 618-735)
 
@@ -768,26 +768,26 @@ def generate_five_whys_analysis(
     use_rag: bool = True,
 ):
     """Gera analise 5 Whys (causa raiz) para problema especifico da empresa.
-    
+
     Utiliza FiveWhysTool para facilitar analise de causa raiz iterativa (3-7 niveis)
     contextualizada com conhecimento BSC (via RAG).
-    
+
     Workflow:
     1. Extrai company_info e strategic_context do ClientProfile
     2. Chama FiveWhysTool.facilitate_five_whys() para analise iterativa
     3. Retorna FiveWhysAnalysis com iteracoes + root cause + acoes
-    
+
     Args:
         client_profile: ClientProfile com contexto da empresa
         problem_statement: Problema especifico a analisar (ex: "Vendas baixas no Q3")
         use_rag: Se True, busca conhecimento BSC via specialist agents (default: True)
-    
+
     Returns:
         FiveWhysAnalysis: Objeto Pydantic validado
-    
+
     Raises:
         ValueError: Se problem_statement vazio ou ClientProfile incompleto
-    
+
     Example:
         >>> profile = ClientProfile(
         ...     client_id="client_42",
@@ -807,16 +807,16 @@ def generate_five_whys_analysis(
         f"[DiagnosticAgent] Gerando analise 5 Whys para "
         f"'{problem_statement}' (use_rag={use_rag})"
     )
-    
+
     # Validacoes
     if not problem_statement or len(problem_statement) < 10:
         raise ValueError(
             f"problem_statement deve ter >= 10 chars (recebido: '{problem_statement}')"
         )
-    
+
     if not client_profile.company:
         raise ValueError("ClientProfile.company obrigatorio para 5 Whys")
-    
+
     if not client_profile.strategic_context:
         logger.warning(
             "[DiagnosticAgent] strategic_context ausente, "
@@ -827,7 +827,7 @@ def generate_five_whys_analysis(
             current_challenges=[problem_statement],
             strategic_goals=[],
         )
-    
+
     # Tool FiveWhys (lazy initialization se necessario)
     if not hasattr(self, '_five_whys_tool'):
         from src.tools.five_whys import FiveWhysTool
@@ -839,7 +839,7 @@ def generate_five_whys_analysis(
             learning_agent=self.learning_agent,
             max_iterations=7,
         )
-    
+
     # Facilitar 5 Whys
     five_whys = self._five_whys_tool.facilitate_five_whys(
         company_info=client_profile.company,
@@ -847,12 +847,12 @@ def generate_five_whys_analysis(
         problem_statement=problem_statement,
         use_rag=use_rag,
     )
-    
+
     logger.info(
         f"[DiagnosticAgent] 5 Whys completo: {five_whys.depth_reached()} iteracoes, "
         f"confidence {five_whys.confidence_score:.0f}%"
     )
-    
+
     return five_whys
 ```
 
@@ -881,7 +881,7 @@ for i, action in enumerate(five_whys_analysis.recommended_actions, 1):
 
 ---
 
-## ✅ Testes e Validação
+## [OK] Testes e Validação
 
 ### Suite de Testes: `tests/test_five_whys.py` (656 linhas, 15 testes, 100% passando, 85% coverage)
 
@@ -931,7 +931,7 @@ Missing: 241, 320-324, 327-335, 339-342, 348, 421, 429-431, 506-511
 
 ---
 
-## 🐛 Troubleshooting
+## [EMOJI] Troubleshooting
 
 ### Problema 1: LLM retorna is_root_cause=False em todas iterações
 
@@ -972,7 +972,7 @@ tool = FiveWhysTool(
 )
 
 # 2. Verificar logs
-logger.info("[Five Whys Tool] RAG desabilitado ou indisponivel")  # ← Se aparece, agents=None
+logger.info("[Five Whys Tool] RAG desabilitado ou indisponivel")  # <- Se aparece, agents=None
 
 # 3. Testar agents individualmente
 response = financial_agent.invoke("teste BSC query")
@@ -995,8 +995,8 @@ print(response.get("context_used"))  # Deve retornar string não-vazia
 **Debug**:
 ```python
 # Verificar logs detalhados
-logger.error(f"[Five Whys Tool] LLM retornou iteracao invalida: {e}")  # ← Se aparece, ValidationError
-logger.error(f"[Five Whys Tool] Erro inesperado na iteracao {i}: {e}")  # ← Se aparece, Exception genérico
+logger.error(f"[Five Whys Tool] LLM retornou iteracao invalida: {e}")  # <- Se aparece, ValidationError
+logger.error(f"[Five Whys Tool] Erro inesperado na iteracao {i}: {e}")  # <- Se aparece, Exception genérico
 
 # Testar LLM structured output diretamente
 from src.tools.five_whys import IterationOutput
@@ -1043,7 +1043,7 @@ Avalie confiança de 0-100%:
 llm_synthesis = ChatOpenAI(model="gpt-4o", temperature=0.1)  # Maior precisão
 
 # 3. Adicionar more context via RAG (use_rag=True)
-analysis = tool.facilitate_five_whys(..., use_rag=True)  # Mais evidências → maior confidence
+analysis = tool.facilitate_five_whys(..., use_rag=True)  # Mais evidências -> maior confidence
 ```
 
 ---
@@ -1086,20 +1086,20 @@ analysis = tool.facilitate_five_whys(..., use_rag=True)
 
 ---
 
-## 🎯 Best Practices
+## [EMOJI] Best Practices
 
 ### 1. Quando Usar 5 Whys vs Outras Tools
 
 **USE 5 Whys quando**:
-- ✅ Problema específico identificado (não exploração ampla)
-- ✅ Cliente sabe o sintoma mas não a causa
-- ✅ Causa raiz provavelmente é estrutural/organizacional (não técnica)
-- ✅ Deseja investigar profundidade (camadas causais)
+- [OK] Problema específico identificado (não exploração ampla)
+- [OK] Cliente sabe o sintoma mas não a causa
+- [OK] Causa raiz provavelmente é estrutural/organizacional (não técnica)
+- [OK] Deseja investigar profundidade (camadas causais)
 
 **NÃO use 5 Whys quando**:
-- ❌ Cliente ainda está explorando desafios (use SWOT Analysis primeiro)
-- ❌ Problema é multi-causal complexo (use Fishbone/Ishikawa)
-- ❌ Causa é óbvia e já conhecida (pule para planejamento de ação)
+- [ERRO] Cliente ainda está explorando desafios (use SWOT Analysis primeiro)
+- [ERRO] Problema é multi-causal complexo (use Fishbone/Ishikawa)
+- [ERRO] Causa é óbvia e já conhecida (pule para planejamento de ação)
 
 ---
 
@@ -1122,14 +1122,14 @@ analysis = tool.facilitate_five_whys(..., use_rag=True)
 ### 3. RAG Integration: Quando Habilitar?
 
 **use_rag=True (recomendado default)**:
-- ✅ Cliente novo sem histórico BSC
-- ✅ Problema comum na literatura BSC (ex: customer retention, NPS, balanced perspective)
-- ✅ Quer enriquecer análise com best practices validados
+- [OK] Cliente novo sem histórico BSC
+- [OK] Problema comum na literatura BSC (ex: customer retention, NPS, balanced perspective)
+- [OK] Quer enriquecer análise com best practices validados
 
 **use_rag=False**:
-- ❌ Problema muito específico da empresa (improvável ter casos similares)
-- ❌ Priorizar velocidade (RAG adiciona ~2-3s latência)
-- ❌ Vector store vazio ou sem documentos BSC relevantes
+- [ERRO] Problema muito específico da empresa (improvável ter casos similares)
+- [ERRO] Priorizar velocidade (RAG adiciona ~2-3s latência)
+- [ERRO] Vector store vazio ou sem documentos BSC relevantes
 
 ---
 
@@ -1137,18 +1137,18 @@ analysis = tool.facilitate_five_whys(..., use_rag=True)
 
 **Bons Problem Statements** (específicos, mensuráveis, contextualizados):
 ```
-✅ "Receita Q3 abaixo da meta em 25% devido a perda de 3 clientes enterprise"
-✅ "NPS caiu de 42 para 28 em 6 meses, principalmente detratores aumentaram"
-✅ "Turnover de 40% anual (2x média do setor) com 70% citando falta crescimento"
-✅ "35% das entregas exigem retrabalho significativo, impactando prazos em 20%"
+[OK] "Receita Q3 abaixo da meta em 25% devido a perda de 3 clientes enterprise"
+[OK] "NPS caiu de 42 para 28 em 6 meses, principalmente detratores aumentaram"
+[OK] "Turnover de 40% anual (2x média do setor) com 70% citando falta crescimento"
+[OK] "35% das entregas exigem retrabalho significativo, impactando prazos em 20%"
 ```
 
 **Maus Problem Statements** (vagos, genéricos, sem métrica):
 ```
-❌ "Problemas financeiros"  ← Muito genérico
-❌ "Clientes insatisfeitos"  ← Sintoma sem contexto
-❌ "Processos ruins"  ← Não é problema específico
-❌ "Precisamos melhorar"  ← Sem problema identificado
+[ERRO] "Problemas financeiros"  <- Muito genérico
+[ERRO] "Clientes insatisfeitos"  <- Sintoma sem contexto
+[ERRO] "Processos ruins"  <- Não é problema específico
+[ERRO] "Precisamos melhorar"  <- Sem problema identificado
 ```
 
 **Template Recomendado**:
@@ -1166,16 +1166,16 @@ Exemplo:
 **Escala de Interpretação**:
 ```
 90-100%: Causa raiz estrutural clara, múltiplas evidências convergem
-         → IMPLEMENTAR ações imediatamente
+         -> IMPLEMENTAR ações imediatamente
 
 70-89%:  Causa raiz provável, evidências parciais mas consistentes
-         → Validar com stakeholders antes de implementar
+         -> Validar com stakeholders antes de implementar
 
 50-69%:  Causa raiz possível, especulação informada
-         → Coletar mais dados/evidências antes de agir
+         -> Coletar mais dados/evidências antes de agir
 
 <50%:    Incerteza alta, dados insuficientes
-         → Repetir análise com mais contexto OU usar outra tool
+         -> Repetir análise com mais contexto OU usar outra tool
 ```
 
 **Ação por Faixa**:
@@ -1198,16 +1198,16 @@ Antes de apresentar ao cliente, validar que root cause identificado atende:
 
 **Exemplo Validado**:
 ```
-Root Cause: "Falta de programa estruturado de customer success resultou em 
-             baixo engajamento e churn de clientes-chave. Orçamento anual 
+Root Cause: "Falta de programa estruturado de customer success resultou em
+             baixo engajamento e churn de clientes-chave. Orçamento anual
              não contemplou esta área no planejamento estratégico BSC."
 
-✅ NÃO é sintoma (não é "clientes insatisfeitos")
-✅ É estrutural (gap organizacional: ausência de área CS)
-✅ É acionável (criar área CS, incluir no planejamento BSC)
-✅ É BSC-relevant (Perspectiva Clientes + Aprendizado/Crescimento)
-✅ Previne recorrência (CS reduz churn estruturalmente)
-✅ Tem evidências (5 iterações convergindo para ausência CS)
+[OK] NÃO é sintoma (não é "clientes insatisfeitos")
+[OK] É estrutural (gap organizacional: ausência de área CS)
+[OK] É acionável (criar área CS, incluir no planejamento BSC)
+[OK] É BSC-relevant (Perspectiva Clientes + Aprendizado/Crescimento)
+[OK] Previne recorrência (CS reduz churn estruturalmente)
+[OK] Tem evidências (5 iterações convergindo para ausência CS)
 ```
 
 ---
@@ -1230,11 +1230,11 @@ Primeiro, identificamos que perderam 3 clientes enterprise.
 Depois, vimos que esses clientes migraram para concorrentes.
 Investigando mais, descobrimos que concorrentes ofereciam SLA premium + CSM dedicado.
 Aprofundando, notamos que vocês não têm programa de Customer Success estruturado.
-Finalmente, chegamos à causa raiz: o planejamento estratégico BSC não contemplou 
+Finalmente, chegamos à causa raiz: o planejamento estratégico BSC não contemplou
 esta área como crítica para retenção enterprise.
 
 [ROOT CAUSE - Confidence: 85%]
-Falha no mapeamento estratégico BSC - área de Customer Success não foi considerada 
+Falha no mapeamento estratégico BSC - área de Customer Success não foi considerada
 crítica para retenção, resultando em ausência de investimento e perda de clientes.
 
 [AÇÕES RECOMENDADAS]
@@ -1247,7 +1247,7 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 ---
 
-## 🚀 Roadmap
+## [EMOJI] Roadmap
 
 ### Melhorias Futuras (TIER 4 - Post-FASE 3)
 
@@ -1290,13 +1290,13 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 #### 5. **Root Cause Knowledge Base (Memory)**
 - Armazenar todas root causes identificadas (embeddings)
 - RAG retrieval de root causes similares em futuros clientes
-- Pattern detection: "80% problemas financeiros → causa raiz X"
+- Pattern detection: "80% problemas financeiros -> causa raiz X"
 
 **ROI**: Acelera análise 2x para problemas recorrentes, insights agregados
 
 ---
 
-## 📊 Métricas de Sucesso (KPIs)
+## [EMOJI] Métricas de Sucesso (KPIs)
 
 ### Métricas de Qualidade
 
@@ -1315,7 +1315,7 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 4. **Average Iterations**: Número médio de iterações até root cause
    - Baseline: 4.2 iterations (esperado 3-5)
-   - Monitor: Se > 6.0 consistentemente → revisar prompts
+   - Monitor: Se > 6.0 consistentemente -> revisar prompts
 
 5. **Analysis Latency**: Tempo total desde invoke até FiveWhysAnalysis retornado
    - Target: < 30s sem RAG, < 45s com RAG
@@ -1337,23 +1337,23 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 ---
 
-## 📚 Referências e Leituras
+## [EMOJI] Referências e Leituras
 
 ### Papers e Artigos (2024-2025)
 
-1. **LinkedIn - Dr. T. Justin W.** (Feb 2025): "AI-assisted 5 Whys Root Cause Analysis"  
+1. **LinkedIn - Dr. T. Justin W.** (Feb 2025): "AI-assisted 5 Whys Root Cause Analysis"
    https://www.linkedin.com/
 
-2. **Reliability Center Inc.** (May 2025): "5 Whys Root Cause Analysis Best Practices"  
+2. **Reliability Center Inc.** (May 2025): "5 Whys Root Cause Analysis Best Practices"
    Insight: Perguntar "por quê" PELO MENOS 5 vezes, não sempre exatamente 5
 
-3. **skan.ai** (Aug 2025): "Root-Cause Analysis with AI: Real-time observability vs traditional methods"  
+3. **skan.ai** (Aug 2025): "Root-Cause Analysis with AI: Real-time observability vs traditional methods"
    https://www.skan.ai/
 
-4. **Botable.ai** (2024): "AI Root Cause Analysis: Revolutionizing Problem-Solving"  
+4. **Botable.ai** (2024): "AI Root Cause Analysis: Revolutionizing Problem-Solving"
    https://botable.ai/
 
-5. **CMS.gov** (2024): "Quality Improvement Tools - Root Cause Analysis"  
+5. **CMS.gov** (2024): "Quality Improvement Tools - Root Cause Analysis"
    Guideline: Continuar até root cause identificada (não parar em sintomas)
 
 ---
@@ -1368,17 +1368,17 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 ---
 
-## 📝 Changelog
+## [EMOJI] Changelog
 
 ### v1.0.0 - 2025-10-19 (FASE 3.2 - Sessão 17)
 
 **Criado**:
-- ✅ Schema WhyIteration + FiveWhysAnalysis (243 linhas, métodos úteis)
-- ✅ Prompts five_whys_prompts.py (303 linhas, conversational tone)
-- ✅ Tool five_whys.py (540 linhas, 118 statements, 85% coverage)
-- ✅ Integração DiagnosticAgent.generate_five_whys_analysis() (112 linhas)
-- ✅ Testes test_five_whys.py (656 linhas, 15 testes, 100% passando)
-- ✅ Documentação FIVE_WHYS.md (este arquivo, 800+ linhas)
+- [OK] Schema WhyIteration + FiveWhysAnalysis (243 linhas, métodos úteis)
+- [OK] Prompts five_whys_prompts.py (303 linhas, conversational tone)
+- [OK] Tool five_whys.py (540 linhas, 118 statements, 85% coverage)
+- [OK] Integração DiagnosticAgent.generate_five_whys_analysis() (112 linhas)
+- [OK] Testes test_five_whys.py (656 linhas, 15 testes, 100% passando)
+- [OK] Documentação FIVE_WHYS.md (este arquivo, 800+ linhas)
 
 **Características Validadas**:
 - Iterações flexíveis (3-7 "why", não fixo em 5)
@@ -1395,7 +1395,6 @@ Isso ressoa com sua experiência? Há algum contexto adicional que devemos consi
 
 ---
 
-**Última Atualização**: 2025-10-19 (Sessão 17)  
-**Status**: ✅ PRODUÇÃO-READY (FASE 3.2 COMPLETA)  
+**Última Atualização**: 2025-10-19 (Sessão 17)
+**Status**: [OK] PRODUÇÃO-READY (FASE 3.2 COMPLETA)
 **Próximo**: FASE 3.3 - Próxima tool consultiva
-

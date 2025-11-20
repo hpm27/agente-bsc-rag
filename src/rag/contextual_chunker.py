@@ -9,34 +9,37 @@ Agora com suporte BILÍNGUE: gera contextos em PT-BR e EN automaticamente.
 Referência: https://www.anthropic.com/news/contextual-retrieval
 """
 
-from typing import List, Dict, Any, Optional
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path
-import time
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from loguru import logger
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
 from anthropic import Anthropic, RateLimitError
-from openai import OpenAI, RateLimitError as OpenAIRateLimitError
+from config.settings import settings
 from deep_translator import GoogleTranslator
+from loguru import logger
+from openai import OpenAI
+from openai import RateLimitError as OpenAIRateLimitError
 
 from .chunker import SemanticChunker, TableAwareChunker
-from config.settings import settings
 
 
 @dataclass
 class ContextualChunk:
     """Chunk com contexto explicativo adicionado (bilíngue)."""
+
     original_content: str
     contextual_content: str  # Content com contexto PT-BR prepended
     context_pt: str  # Contexto em PT-BR
     context_en: str  # Contexto em EN (tradução automática)
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
     chunk_index: int
     total_chunks: int
-    
+
     @property
     def context(self) -> str:
         """Retorna context_pt para compatibilidade com código legado."""
@@ -46,32 +49,32 @@ class ContextualChunk:
 class ContextualChunker:
     """
     Chunker que adiciona contexto explicativo usando LLM.
-    
+
     Processo:
     1. Chunking semântico normal
     2. Para cada chunk, gera contexto usando LLM
     3. Prefixa contexto ao chunk
     4. Embeda o chunk contextualizado
-    
+
     Benefícios:
     - Chunks isolados têm mais informação
     - Melhora retrieval de chunks que perderam contexto
     - Reduz alucinações por contexto insuficiente
     """
-    
+
     def __init__(
         self,
-        base_chunker: Optional[SemanticChunker] = None,
+        base_chunker: SemanticChunker | None = None,
         use_table_aware: bool = True,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
-        cache_dir: Optional[str] = None,
+        api_key: str | None = None,
+        model: str | None = None,
+        cache_dir: str | None = None,
         enable_caching: bool = True,
-        provider: Optional[str] = None
+        provider: str | None = None,
     ):
         """
         Inicializa Contextual Chunker.
-        
+
         Args:
             base_chunker: Chunker base (se None, cria um novo)
             use_table_aware: Se True, usa TableAwareChunker
@@ -86,10 +89,10 @@ class ContextualChunker:
             self.base_chunker = TableAwareChunker() if use_table_aware else SemanticChunker()
         else:
             self.base_chunker = base_chunker
-        
+
         # Provider e configuração
         self.provider = provider or settings.contextual_provider
-        
+
         # Inicializa cliente baseado no provider
         if self.provider == "openai":
             # Cliente OpenAI para GPT-5
@@ -97,69 +100,73 @@ class ContextualChunker:
             self.model = model or settings.gpt5_model
             self.max_completion_tokens = settings.gpt5_max_completion_tokens
             self.reasoning_effort = settings.gpt5_reasoning_effort
-            logger.info(f"ContextualChunker inicializado com GPT-5 ({self.model}, reasoning_effort={self.reasoning_effort})")
+            logger.info(
+                f"ContextualChunker inicializado com GPT-5 ({self.model}, reasoning_effort={self.reasoning_effort})"
+            )
         else:
             # Cliente Anthropic para Claude
-            self.client = Anthropic(api_key=api_key or getattr(settings, 'anthropic_api_key', None))
+            self.client = Anthropic(api_key=api_key or getattr(settings, "anthropic_api_key", None))
             self.model = model or settings.contextual_model
             logger.info(f"ContextualChunker inicializado com Claude ({self.model})")
-        
+
         # Cache
         self.enable_caching = enable_caching
         self.cache_dir = Path(cache_dir or "./data/contextual_cache")
         if self.enable_caching:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Tradutor para contextos bilíngues
-        self.translator = GoogleTranslator(source='pt', target='en')
+        self.translator = GoogleTranslator(source="pt", target="en")
         logger.info("[BILINGUAL] Tradutor PT->EN inicializado para contextos")
-    
+
     def _translate_context(self, context_pt: str) -> str:
         """
         Traduz contexto de PT-BR para EN usando Google Translate.
-        
+
         Args:
             context_pt: Contexto em português
-            
+
         Returns:
             Contexto traduzido para inglês
         """
         if not context_pt or len(context_pt.strip()) == 0:
             return ""
-        
+
         try:
             # Google Translate tem limite de 5000 chars por request
             if len(context_pt) > 4500:
                 # Truncar contexto muito longo
                 context_pt_truncated = context_pt[:4500] + "..."
-                logger.warning(f"[TRANSLATE] Contexto truncado de {len(context_pt)} para 4500 chars")
+                logger.warning(
+                    f"[TRANSLATE] Contexto truncado de {len(context_pt)} para 4500 chars"
+                )
                 context_pt = context_pt_truncated
-            
+
             context_en = self.translator.translate(context_pt)
             logger.debug(f"[TRANSLATE] '{context_pt[:50]}...' -> '{context_en[:50]}...'")
             return context_en
-            
+
         except Exception as e:
             logger.error(f"[TRANSLATE ERROR] Falha ao traduzir contexto: {e}")
             # Fallback: retornar contexto original
             return context_pt
-    
+
     def _generate_context_with_retry(
         self,
         chunk_content: str,
         document_summary: str,
-        document: Dict[str, Any],
-        max_retries: int = 3
+        document: dict[str, Any],
+        max_retries: int = 3,
     ) -> str:
         """
         Gera contexto com retry automático para rate limits.
-        
+
         Args:
             chunk_content: Conteúdo do chunk
             document_summary: Resumo do documento
             document: Documento completo
             max_retries: Número máximo de tentativas
-            
+
         Returns:
             Contexto gerado
         """
@@ -168,12 +175,14 @@ class ContextualChunker:
                 return self._generate_context(
                     chunk_content=chunk_content,
                     document_summary=document_summary,
-                    document=document
+                    document=document,
                 )
-            except (RateLimitError, OpenAIRateLimitError) as e:
+            except (RateLimitError, OpenAIRateLimitError):
                 if attempt < max_retries - 1:
-                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
-                    logger.warning(f"[RATE_LIMIT] Tentativa {attempt+1}/{max_retries} falhou. Aguardando {wait_time}s...")
+                    wait_time = 2**attempt  # Exponential backoff: 1s, 2s, 4s
+                    logger.warning(
+                        f"[RATE_LIMIT] Tentativa {attempt+1}/{max_retries} falhou. Aguardando {wait_time}s..."
+                    )
                     time.sleep(wait_time)
                 else:
                     logger.error(f"[RATE_LIMIT] Todas as {max_retries} tentativas falharam")
@@ -181,55 +190,56 @@ class ContextualChunker:
             except Exception as e:
                 logger.error(f"[ERROR] Erro ao gerar contexto: {e}")
                 raise
-        
+
         return ""  # Fallback (nunca deve chegar aqui)
-    
+
     def chunk_document(
         self,
-        document: Dict[str, Any],
-        document_summary: Optional[str] = None,
+        document: dict[str, Any],
+        document_summary: str | None = None,
         use_cache: bool = True,
-        max_workers: int = 10
-    ) -> List[ContextualChunk]:
+        max_workers: int = 10,
+    ) -> list[ContextualChunk]:
         """
         Divide documento em chunks contextualizados com processamento paralelo.
-        
+
         Args:
             document: Documento com 'content' e metadados
             document_summary: Resumo do documento (gerado se None)
             use_cache: Se True, usa cache de contextos
             max_workers: Número de workers paralelos (padrão: 10, ~20% do limite Tier 4 de 50 RPM)
-            
+
         Returns:
             Lista de ContextualChunk
         """
         # 1. Chunking básico
         base_chunks = self.base_chunker.chunk_document(document)
-        
+
         # 2. Gera resumo do documento se não fornecido
         if document_summary is None:
             document_summary = self._generate_document_summary(
-                document.get('content', ''),
-                document
+                document.get("content", ""), document
             )
-        
+
         # 3. Gera contexto para cada chunk (PARALELO)
         total_chunks = len(base_chunks)
-        logger.info(f"[CONTEXT] Processando {total_chunks} chunks com Contextual Retrieval (paralelo, {max_workers} workers)...")
-        
+        logger.info(
+            f"[CONTEXT] Processando {total_chunks} chunks com Contextual Retrieval (paralelo, {max_workers} workers)..."
+        )
+
         # Thread-safe para contadores e resultados
         progress_lock = threading.Lock()
         processed_count = [0]  # Lista mutável para counter thread-safe
         last_log_time = [time.time()]
-        
+
         def process_chunk(idx_chunk_tuple):
             """Processa um único chunk (usado no ThreadPoolExecutor)."""
             idx, chunk_data = idx_chunk_tuple
-            
+
             # Verifica cache
-            cache_key = self._get_cache_key(chunk_data['content'], document_summary)
+            cache_key = self._get_cache_key(chunk_data["content"], document_summary)
             cached_context = self._get_from_cache(cache_key) if use_cache else None
-            
+
             if cached_context:
                 context = cached_context
                 with progress_lock:
@@ -237,52 +247,58 @@ class ContextualChunker:
             else:
                 # Gera contexto usando LLM com retry
                 context = self._generate_context_with_retry(
-                    chunk_content=chunk_data['content'],
+                    chunk_content=chunk_data["content"],
                     document_summary=document_summary,
-                    document=document
+                    document=document,
                 )
-                
+
                 # Salva no cache
                 if use_cache:
                     self._save_to_cache(cache_key, context)
-            
+
             # Traduzir contexto PT-BR -> EN (tradução automática gratuita)
             context_en = self._translate_context(context)
-            
+
             # Cria chunk contextualizado (com ambos contextos armazenados)
             contextual_content = f"{context}\n\n{chunk_data['content']}"
-            
+
             contextual_chunk = ContextualChunk(
-                original_content=chunk_data['content'],
+                original_content=chunk_data["content"],
                 contextual_content=contextual_content,
                 context_pt=context,
                 context_en=context_en,
-                metadata={k: v for k, v in chunk_data.items() if k != 'content'},
-                chunk_index=chunk_data.get('chunk_index', 0),
-                total_chunks=chunk_data.get('total_chunks', len(base_chunks))
+                metadata={k: v for k, v in chunk_data.items() if k != "content"},
+                chunk_index=chunk_data.get("chunk_index", 0),
+                total_chunks=chunk_data.get("total_chunks", len(base_chunks)),
             )
-            
+
             # Log de progresso thread-safe (a cada 10 chunks OU 5 segundos)
             with progress_lock:
                 processed_count[0] += 1
                 current_time = time.time()
-                if processed_count[0] % 10 == 0 or processed_count[0] == total_chunks or (current_time - last_log_time[0]) >= 5:
-                    logger.info(f"[PROGRESS] Chunk {processed_count[0]}/{total_chunks} ({int(processed_count[0]/total_chunks*100)}%)")
+                if (
+                    processed_count[0] % 10 == 0
+                    or processed_count[0] == total_chunks
+                    or (current_time - last_log_time[0]) >= 5
+                ):
+                    logger.info(
+                        f"[PROGRESS] Chunk {processed_count[0]}/{total_chunks} ({int(processed_count[0]/total_chunks*100)}%)"
+                    )
                     last_log_time[0] = current_time
-            
+
             return contextual_chunk
-        
+
         # Processamento paralelo com ThreadPoolExecutor
         contextual_chunks = []
         start_time = time.time()
-        
+
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # Submete todas as tarefas
             futures = {
-                executor.submit(process_chunk, (idx, chunk)): idx 
+                executor.submit(process_chunk, (idx, chunk)): idx
                 for idx, chunk in enumerate(base_chunks, 1)
             }
-            
+
             # Processa resultados conforme ficam prontos
             for future in as_completed(futures):
                 try:
@@ -292,58 +308,53 @@ class ContextualChunker:
                     idx = futures[future]
                     logger.error(f"[ERROR] Falha ao processar chunk {idx}: {e}")
                     raise
-        
+
         elapsed_time = time.time() - start_time
-        logger.info(f"[DONE] {len(contextual_chunks)} chunks contextualizados em {elapsed_time:.1f}s (média: {elapsed_time/len(contextual_chunks):.2f}s/chunk)")
-        
+        logger.info(
+            f"[DONE] {len(contextual_chunks)} chunks contextualizados em {elapsed_time:.1f}s (média: {elapsed_time/len(contextual_chunks):.2f}s/chunk)"
+        )
+
         logger.info(f"Documento dividido em {len(contextual_chunks)} chunks contextualizados")
         return contextual_chunks
-    
+
     def chunk_text(
-        self,
-        text: str,
-        metadata: Dict[str, Any] = None,
-        text_summary: Optional[str] = None
-    ) -> List[ContextualChunk]:
+        self, text: str, metadata: dict[str, Any] = None, text_summary: str | None = None
+    ) -> list[ContextualChunk]:
         """
         Divide texto em chunks contextualizados.
-        
+
         Args:
             text: Texto para dividir
             metadata: Metadados
             text_summary: Resumo do texto
-            
+
         Returns:
             Lista de ContextualChunk
         """
-        document = {'content': text}
+        document = {"content": text}
         if metadata:
             document.update(metadata)
-        
+
         return self.chunk_document(document, text_summary)
-    
-    def _generate_document_summary(
-        self,
-        content: str,
-        document: Dict[str, Any]
-    ) -> str:
+
+    def _generate_document_summary(self, content: str, document: dict[str, Any]) -> str:
         """
         Gera resumo do documento inteiro.
-        
+
         Args:
             content: Conteúdo do documento
             document: Documento completo com metadados
-            
+
         Returns:
             Resumo do documento
         """
         # Trunca conteúdo se muito longo (max 10k caracteres para resumo)
         truncated_content = content[:10000] if len(content) > 10000 else content
-        
+
         # Metadados relevantes
-        source = document.get('source', 'documento desconhecido')
-        title = document.get('title', '')
-        
+        source = document.get("source", "documento desconhecido")
+        title = document.get("title", "")
+
         prompt = f"""Analise o documento abaixo e crie um resumo conciso (2-3 sentenças) descrevendo:
 1. Do que se trata o documento
 2. Principais temas abordados
@@ -364,7 +375,7 @@ Resumo (2-3 sentenças):"""
                     model=self.model,
                     max_completion_tokens=200,
                     reasoning_effort=self.reasoning_effort,
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
                 )
                 summary = response.choices[0].message.content.strip()
             else:
@@ -373,31 +384,28 @@ Resumo (2-3 sentenças):"""
                     model=self.model,
                     max_tokens=200,
                     temperature=0.0,
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
                 )
                 summary = response.content[0].text.strip()
-            
+
             logger.debug(f"Resumo do documento gerado: {summary[:100]}...")
             return summary
-            
+
         except Exception as e:
             logger.error(f"Erro ao gerar resumo do documento: {e}")
             return f"Documento sobre {source}"
-    
+
     def _generate_context(
-        self,
-        chunk_content: str,
-        document_summary: str,
-        document: Dict[str, Any]
+        self, chunk_content: str, document_summary: str, document: dict[str, Any]
     ) -> str:
         """
         Gera contexto explicativo para um chunk.
-        
+
         Args:
             chunk_content: Conteúdo do chunk
             document_summary: Resumo do documento
             document: Documento completo
-            
+
         Returns:
             Contexto explicativo
         """
@@ -428,14 +436,14 @@ Contexto (1-2 sentenças):"""
                 # System message como primeira mensagem do usuário (GPT-5 não tem system separado)
                 system_context = "Você é um especialista em contextualização de documentos para sistemas de busca semântica."
                 full_prompt = f"{system_context}\n\n{prompt}"
-                
+
                 response = self.client.chat.completions.create(
                     model=self.model,
                     max_completion_tokens=150,
                     reasoning_effort=self.reasoning_effort,
-                    messages=[{"role": "user", "content": full_prompt}]
+                    messages=[{"role": "user", "content": full_prompt}],
                 )
-                
+
                 context = response.choices[0].message.content.strip()
             else:
                 # Claude - usa API Anthropic com Prompt Caching
@@ -448,91 +456,91 @@ Contexto (1-2 sentenças):"""
                         {
                             "type": "text",
                             "text": "Você é um especialista em contextualização de documentos para sistemas de busca semântica.",
-                            "cache_control": {"type": "ephemeral"}
+                            "cache_control": {"type": "ephemeral"},
                         }
                     ],
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
                 )
-                
+
                 context = response.content[0].text.strip()
-            
+
             # Remove aspas se houver
-            context = context.strip('"\'')
-            
+            context = context.strip("\"'")
+
             return context
-            
+
         except Exception as e:
             logger.error(f"Erro ao gerar contexto: {e}")
             # Fallback: usa resumo do documento como contexto
             return f"Contexto: {document_summary}"
-    
+
     def _get_cache_key(self, content: str, summary: str) -> str:
         """
         Gera chave de cache para chunk.
-        
+
         Args:
             content: Conteúdo do chunk
             summary: Resumo do documento
-            
+
         Returns:
             Hash MD5 como chave
         """
         combined = f"{summary}||{content}"
         return hashlib.md5(combined.encode()).hexdigest()
-    
-    def _get_from_cache(self, cache_key: str) -> Optional[str]:
+
+    def _get_from_cache(self, cache_key: str) -> str | None:
         """
         Recupera contexto do cache.
-        
+
         Args:
             cache_key: Chave do cache
-            
+
         Returns:
             Contexto ou None se não encontrado
         """
         if not self.enable_caching:
             return None
-        
+
         cache_file = self.cache_dir / f"{cache_key}.json"
-        
+
         if cache_file.exists():
             try:
-                with open(cache_file, 'r', encoding='utf-8') as f:
+                with open(cache_file, encoding="utf-8") as f:
                     data = json.load(f)
-                    return data['context']
+                    return data["context"]
             except Exception as e:
                 logger.warning(f"Erro ao ler cache {cache_key}: {e}")
-        
+
         return None
-    
+
     def _save_to_cache(self, cache_key: str, context: str):
         """
         Salva contexto no cache.
-        
+
         Args:
             cache_key: Chave do cache
             context: Contexto a salvar
         """
         if not self.enable_caching:
             return
-        
+
         cache_file = self.cache_dir / f"{cache_key}.json"
-        
+
         try:
-            with open(cache_file, 'w', encoding='utf-8') as f:
-                json.dump({
-                    'context': context,
-                    'cache_key': cache_key
-                }, f, ensure_ascii=False, indent=2)
+            with open(cache_file, "w", encoding="utf-8") as f:
+                json.dump(
+                    {"context": context, "cache_key": cache_key}, f, ensure_ascii=False, indent=2
+                )
         except Exception as e:
             logger.warning(f"Erro ao salvar cache {cache_key}: {e}")
-    
+
     def clear_cache(self):
         """Remove todos os contextos cacheados."""
         if not self.enable_caching:
             return
-        
+
         import shutil
+
         if self.cache_dir.exists():
             shutil.rmtree(self.cache_dir)
             self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -540,21 +548,16 @@ Contexto (1-2 sentenças):"""
 
 
 def create_contextual_chunker(
-    use_table_aware: bool = True,
-    enable_caching: bool = True
+    use_table_aware: bool = True, enable_caching: bool = True
 ) -> ContextualChunker:
     """
     Factory para criar ContextualChunker com configurações padrão.
-    
+
     Args:
         use_table_aware: Se True, preserva tabelas intactas
         enable_caching: Se True, cacheia contextos gerados
-        
+
     Returns:
         ContextualChunker configurado
     """
-    return ContextualChunker(
-        use_table_aware=use_table_aware,
-        enable_caching=enable_caching
-    )
-
+    return ContextualChunker(use_table_aware=use_table_aware, enable_caching=enable_caching)
