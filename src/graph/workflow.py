@@ -44,8 +44,8 @@ from src.agents.judge_agent import JudgeAgent
 from src.agents.orchestrator import Orchestrator
 from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
-from src.tools.strategy_map_designer import StrategyMapDesignerTool
 from src.tools.alignment_validator import AlignmentValidatorTool
+from src.tools.strategy_map_designer import StrategyMapDesignerTool
 
 if TYPE_CHECKING:
     pass
@@ -117,6 +117,9 @@ class BSCWorkflow:
         workflow.add_node("onboarding", self.onboarding_handler)
         workflow.add_node("discovery", self.discovery_handler)
         workflow.add_node("approval", self.approval_handler)
+        
+        # SPRINT 2: Solution Design node
+        workflow.add_node("design_solution", self.design_solution_handler)
 
         # RAG traditional nodes
         workflow.add_node("analyze_query", self.analyze_query)
@@ -146,13 +149,25 @@ class BSCWorkflow:
         # onboarding -> save_client_memory -> END (multi-turn stateless)
         workflow.add_edge("onboarding", "save_client_memory")
 
-        # discovery -> approval -> route_by_approval -> {end, discovery}
+        # discovery -> approval -> route_by_approval -> {design_solution, discovery}
         workflow.add_edge("discovery", "approval")
         workflow.add_conditional_edges(
             "approval",
             self.route_by_approval,
-            {"end": "save_client_memory", "discovery": "discovery"},  # Refazer diagnóstico
+            {"end": "design_solution", "discovery": "discovery"},  # Refazer diagnóstico
         )
+        
+        # SPRINT 2: design_solution -> route_by_alignment_score -> {implementation, discovery}
+        # Placeholder implementation node (SPRINT 3)
+        workflow.add_node("implementation", self._placeholder_implementation_handler)
+        workflow.add_conditional_edges(
+            "design_solution",
+            self.route_by_alignment_score,
+            {"implementation": "implementation", "discovery": "discovery"},
+        )
+        
+        # implementation -> save_client_memory -> END
+        workflow.add_edge("implementation", "save_client_memory")
 
         # RAG traditional flow (mantido intacto)
         workflow.add_edge("analyze_query", "execute_agents")
@@ -676,6 +691,55 @@ class BSCWorkflow:
         )
         return "end"
 
+    def route_by_alignment_score(
+        self, state: BSCState
+    ) -> Literal["implementation", "discovery"]:
+        """
+        SPRINT 2 - Tarefa 2.4: Routing condicional baseado em alignment score.
+
+        Decide próximo node baseado no score de alinhamento do Strategy Map:
+        - score >= 80 -> implementation (strategy map validado, criar plano de ação)
+        - score < 80 -> discovery (refazer diagnóstico considerando gaps)
+
+        Args:
+            state: Estado com alignment_report contendo score
+
+        Returns:
+            Nome do próximo node ("implementation" ou "discovery")
+        """
+        try:
+            # Validar se alignment_report existe
+            if not state.alignment_report:
+                logger.warning(
+                    "[WARN] [ROUTING] alignment_report ausente. "
+                    "Fallback para discovery (refazer diagnóstico)."
+                )
+                return "discovery"
+
+            score = state.alignment_report.score
+            threshold = 80  # Mínimo para prosseguir para implementation
+
+            if score >= threshold:
+                next_node = "implementation"
+                logger.info(
+                    f"[OK] [ROUTING] alignment_score={score} >= {threshold} -> {next_node}"
+                )
+            else:
+                next_node = "discovery"
+                logger.info(
+                    f"[WARN] [ROUTING] alignment_score={score} < {threshold} -> {next_node} "
+                    f"(gaps={len(state.alignment_report.gaps)} identificados)"
+                )
+
+            return next_node
+
+        except Exception as e:
+            logger.error(
+                f"[ERROR] [ROUTING] Erro ao decidir routing por alignment score: {e}. "
+                "Fallback para discovery."
+            )
+            return "discovery"
+
     def approval_handler(self, state: BSCState) -> dict[str, Any]:
         """
         FASE 2.8: Handler para aprovação humana do diagnóstico BSC.
@@ -744,6 +808,325 @@ class BSCWorkflow:
                 "approval_feedback": f"Erro durante aprovação: {e!s}",
                 "metadata": {**state.metadata, "approval_error": str(e)},
             }
+
+    def design_solution_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        SPRINT 2 - Tarefa 2.4: Handler para design do Strategy Map BSC.
+
+        Orquestra StrategyMapDesignerTool + AlignmentValidatorTool para criar
+        Strategy Map visual estruturado baseado no diagnóstico aprovado.
+
+        STEPS:
+        1. Validar diagnostic existe e está approved
+        2. Converter diagnostic dict -> CompleteDiagnostic Pydantic
+        3. Chamar StrategyMapDesignerTool.design_strategy_map() (async)
+        4. Chamar AlignmentValidatorTool.validate_strategy_map() (sync)
+        5. Retornar strategy_map + alignment_report no state
+        6. Routing condicional baseado em alignment_report.score
+
+        Args:
+            state: Estado atual com diagnostic e approval_status=APPROVED
+
+        Returns:
+            Estado atualizado com strategy_map, alignment_report, final_response
+
+        Routing:
+            - score >= 80 -> IMPLEMENTATION (strategy map validado)
+            - score < 80 -> DISCOVERY (precisa refazer diagnóstico - gaps críticos)
+        """
+        # Lazy import (evitar circular)
+        from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
+        from src.memory.schemas import CompleteDiagnostic, DiagnosticToolsResult
+
+        try:
+            logger.info("[START] [SOLUTION_DESIGN] Handler iniciado")
+            start_time = time.time()
+
+            # ========== STEP 1: Validações iniciais ==========
+
+            # Validar se diagnostic existe
+            if not state.diagnostic:
+                logger.error(
+                    "[ERROR] [SOLUTION_DESIGN] Diagnostic ausente. "
+                    "Não é possível criar Strategy Map."
+                )
+                return {
+                    "final_response": (
+                        "Erro: Diagnóstico ausente. "
+                        "Execute a fase DISCOVERY primeiro para criar o diagnóstico BSC."
+                    ),
+                    "current_phase": ConsultingPhase.DISCOVERY,
+                    "metadata": {**state.metadata, "solution_design_error": "diagnostic_missing"},
+                }
+
+            # Validar se aprovação foi concedida
+            if state.approval_status != ApprovalStatus.APPROVED:
+                logger.warning(
+                    f"[WARN] [SOLUTION_DESIGN] Diagnostic não aprovado (status: {state.approval_status}). "
+                    "Strategy Map NÃO será criado."
+                )
+                return {
+                    "final_response": (
+                        f"Diagnóstico com status '{state.approval_status.value}'. "
+                        "Aprove o diagnóstico primeiro para criar o Strategy Map."
+                    ),
+                    "current_phase": ConsultingPhase.APPROVAL_PENDING,
+                    "metadata": {
+                        **state.metadata,
+                        "solution_design_error": "diagnostic_not_approved",
+                    },
+                }
+
+            logger.info("[OK] [SOLUTION_DESIGN] Validações iniciais passaram")
+
+            # ========== STEP 2: Converter diagnostic dict -> Pydantic ==========
+
+            try:
+                diagnostic_pydantic = CompleteDiagnostic(**state.diagnostic)
+                logger.info(
+                    f"[OK] [SOLUTION_DESIGN] Diagnostic convertido para Pydantic | "
+                    f"has_summary={diagnostic_pydantic.summary is not None} | "
+                    f"num_recommendations={len(diagnostic_pydantic.recommendations) if diagnostic_pydantic.recommendations else 0}"
+                )
+            except Exception as e:
+                logger.error(
+                    f"[ERROR] [SOLUTION_DESIGN] Falha ao converter diagnostic para Pydantic: {e}"
+                )
+                return {
+                    "final_response": (
+                        f"Erro ao processar diagnóstico: {e}. "
+                        "Por favor, refaça o diagnóstico na fase DISCOVERY."
+                    ),
+                    "current_phase": ConsultingPhase.DISCOVERY,
+                    "metadata": {
+                        **state.metadata,
+                        "solution_design_error": f"pydantic_conversion_failed: {e}",
+                    },
+                }
+
+            # ========== STEP 3: Extrair tool_outputs se disponível ==========
+
+            tools_results = None
+            if state.tool_outputs:
+                try:
+                    # Tentar converter tool_outputs dict -> DiagnosticToolsResult Pydantic
+                    tools_results = DiagnosticToolsResult(**state.tool_outputs)
+                    logger.info(
+                        f"[OK] [SOLUTION_DESIGN] Tools results disponíveis | "
+                        f"swot={tools_results.swot_analysis is not None} | "
+                        f"kpis={tools_results.kpi_definitions is not None} | "
+                        f"objectives={tools_results.strategic_objectives is not None}"
+                    )
+                except Exception as e:
+                    logger.warning(
+                        f"[WARN] [SOLUTION_DESIGN] Falha ao converter tool_outputs: {e}. "
+                        "Continuando sem tools_results..."
+                    )
+                    tools_results = None
+
+            # ========== STEP 4: Chamar StrategyMapDesignerTool (ASYNC) ==========
+
+            logger.info("[INFO] [SOLUTION_DESIGN] Iniciando design do Strategy Map...")
+
+            try:
+                # Python 3.12 compatible - criar loop se não existir
+                try:
+                    loop = asyncio.get_running_loop()
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+
+                strategy_map = loop.run_until_complete(
+                    self.strategy_map_designer.design_strategy_map(
+                        diagnostic=diagnostic_pydantic, tools_results=tools_results
+                    )
+                )
+
+                design_time = time.time() - start_time
+                logger.info(
+                    f"[OK] [SOLUTION_DESIGN] Strategy Map criado em {design_time:.2f}s | "
+                    f"perspectives: Financial={len(strategy_map.financial.objectives)} objs, "
+                    f"Customer={len(strategy_map.customer.objectives)} objs, "
+                    f"Process={len(strategy_map.process.objectives)} objs, "
+                    f"Learning={len(strategy_map.learning.objectives)} objs | "
+                    f"connections={len(strategy_map.cause_effect_connections)}"
+                )
+
+            except Exception as e:
+                logger.error(f"[ERROR] [SOLUTION_DESIGN] Falha ao criar Strategy Map: {e}")
+                return {
+                    "final_response": (
+                        f"Erro ao criar Strategy Map: {e}. "
+                        "Por favor, tente novamente ou refaça o diagnóstico."
+                    ),
+                    "current_phase": ConsultingPhase.SOLUTION_DESIGN,
+                    "metadata": {
+                        **state.metadata,
+                        "solution_design_error": f"strategy_map_creation_failed: {e}",
+                    },
+                }
+
+            # ========== STEP 5: Chamar AlignmentValidatorTool (SYNC) ==========
+
+            logger.info("[INFO] [SOLUTION_DESIGN] Iniciando validação de alinhamento...")
+
+            try:
+                alignment_report = self.alignment_validator.validate_strategy_map(
+                    strategy_map=strategy_map
+                )
+
+                validation_time = time.time() - (start_time + design_time)
+                logger.info(
+                    f"[OK] [SOLUTION_DESIGN] Validação completa em {validation_time:.2f}s | "
+                    f"score={alignment_report.score}/100 | "
+                    f"is_balanced={alignment_report.is_balanced} | "
+                    f"gaps={len(alignment_report.gaps)} | "
+                    f"warnings={len(alignment_report.warnings)}"
+                )
+
+            except Exception as e:
+                logger.error(f"[ERROR] [SOLUTION_DESIGN] Falha ao validar Strategy Map: {e}")
+                return {
+                    "final_response": (
+                        f"Strategy Map criado, mas falhou validação: {e}. "
+                        "Por favor, tente novamente."
+                    ),
+                    "strategy_map": strategy_map,  # Retornar mesmo sem validação
+                    "current_phase": ConsultingPhase.SOLUTION_DESIGN,
+                    "metadata": {
+                        **state.metadata,
+                        "solution_design_error": f"alignment_validation_failed: {e}",
+                    },
+                }
+
+            # ========== STEP 6: Preparar resposta final baseada no score ==========
+
+            total_time = time.time() - start_time
+
+            if alignment_report.score >= 80:
+                final_response = (
+                    f"Strategy Map criado com sucesso! [OK]\n\n"
+                    f"Score de Alinhamento: {alignment_report.score}/100\n"
+                    f"Status: {'Balanceado' if alignment_report.is_balanced else 'Precisa Ajustes'}\n\n"
+                    f"PERSPECTIVAS:\n"
+                    f"- Financeira: {len(strategy_map.financial.objectives)} objetivos\n"
+                    f"- Clientes: {len(strategy_map.customer.objectives)} objetivos\n"
+                    f"- Processos: {len(strategy_map.process.objectives)} objetivos\n"
+                    f"- Aprendizado: {len(strategy_map.learning.objectives)} objetivos\n\n"
+                    f"CONEXÕES CAUSA-EFEITO: {len(strategy_map.cause_effect_connections)} mapeadas\n\n"
+                )
+
+                if alignment_report.warnings:
+                    final_response += f"AVISOS ({len(alignment_report.warnings)}):\n"
+                    for warning in alignment_report.warnings[:3]:  # Top 3
+                        final_response += f"- {warning}\n"
+
+                final_response += "\nPróxima fase: IMPLEMENTATION (plano de ação detalhado)"
+                next_phase = ConsultingPhase.IMPLEMENTATION
+
+            else:
+                final_response = (
+                    f"Strategy Map criado, mas precisa refinamento.\n\n"
+                    f"Score de Alinhamento: {alignment_report.score}/100 (mínimo: 80)\n"
+                    f"Status: Precisa Refinamento\n\n"
+                    f"GAPS CRÍTICOS ({len(alignment_report.gaps)}):\n"
+                )
+                for gap in alignment_report.gaps[:5]:  # Top 5
+                    final_response += f"- {gap}\n"
+
+                final_response += f"\nRECOMENDAÇÕES ({len(alignment_report.recommendations)}):\n"
+                for rec in alignment_report.recommendations[:3]:  # Top 3
+                    final_response += f"- {rec}\n"
+
+                final_response += (
+                    "\nPróxima ação: Refazer diagnóstico considerando os gaps identificados."
+                )
+                next_phase = ConsultingPhase.DISCOVERY
+
+            logger.info(
+                f"[OK] [SOLUTION_DESIGN] Handler completo em {total_time:.2f}s | "
+                f"score={alignment_report.score} | next_phase={next_phase.value}"
+            )
+
+            # ========== STEP 7: Retornar state atualizado ==========
+
+            return {
+                "strategy_map": strategy_map,
+                "alignment_report": alignment_report,
+                "final_response": final_response,
+                "current_phase": next_phase,
+                "metadata": {
+                    **state.metadata,
+                    "solution_design_time": total_time,
+                    "design_time": design_time,
+                    "validation_time": validation_time,
+                    "alignment_score": alignment_report.score,
+                    "is_balanced": alignment_report.is_balanced,
+                    "num_gaps": len(alignment_report.gaps),
+                    "num_warnings": len(alignment_report.warnings),
+                    "routing_decision": next_phase.value,
+                },
+            }
+
+        except Exception as e:
+            logger.error(
+                f"[ERROR] [SOLUTION_DESIGN] Erro inesperado no handler: {e}", exc_info=True
+            )
+            # Import aqui também para except
+            from src.graph.consulting_states import ConsultingPhase
+
+            return {
+                "final_response": (
+                    f"Erro inesperado ao criar Strategy Map: {e}. "
+                    "Por favor, tente novamente ou contate o suporte."
+                ),
+                "current_phase": ConsultingPhase.SOLUTION_DESIGN,
+                "metadata": {**state.metadata, "solution_design_error": f"unexpected_error: {e}"},
+            }
+
+    def _placeholder_implementation_handler(self, state: BSCState) -> dict[str, Any]:
+        """
+        SPRINT 2 - Placeholder para node IMPLEMENTATION (será implementado no Sprint 3).
+
+        Por enquanto, retorna mensagem informando que Strategy Map foi aprovado
+        e aguarda implementação do Action Plan detalhado no Sprint 3.
+
+        Args:
+            state: Estado atual com strategy_map e alignment_report
+
+        Returns:
+            Estado com final_response e phase IMPLEMENTATION
+        """
+        # Lazy import
+        from src.graph.consulting_states import ConsultingPhase
+
+        logger.info("[INFO] [IMPLEMENTATION] Placeholder handler (Sprint 3)")
+
+        strategy_map = state.strategy_map
+        if strategy_map:
+            num_objectives = (
+                len(strategy_map.financial.objectives)
+                + len(strategy_map.customer.objectives)
+                + len(strategy_map.process.objectives)
+                + len(strategy_map.learning.objectives)
+            )
+            final_response = (
+                f"Strategy Map aprovado! [OK]\n\n"
+                f"Total: {num_objectives} objetivos estratégicos mapeados\n"
+                f"Conexões causa-efeito: {len(strategy_map.cause_effect_connections)}\n\n"
+                f"[Sprint 3] Próxima fase: Action Plan (plano de ação detalhado)\n"
+                f"Será implementado na próxima sprint."
+            )
+        else:
+            final_response = (
+                "Strategy Map não disponível. "
+                "Por favor, execute a fase SOLUTION_DESIGN primeiro."
+            )
+
+        return {
+            "final_response": final_response,
+            "current_phase": ConsultingPhase.IMPLEMENTATION,
+        }
 
     # ============ FASE 2.10: PROPERTIES LAZY LOADING ============
 
