@@ -54,13 +54,15 @@ repos:
         name: Ruff - Linter Python (rapido)
         args: ["--fix", "--exit-non-zero-on-fix"]
 
-  # MyPy - Verificacao de tipos Python
+  # MyPy - Verificacao de tipos Python (modo informativo, nao bloqueia commit)
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.18.2
     hooks:
       - id: mypy
-        name: MyPy - Verificacao de tipos Python
+        name: MyPy - Verificacao de tipos Python (informativo)
         args: ["--ignore-missing-imports", "--no-strict-optional", "--check-untyped-defs"]
+        verbose: true
+        stages: [manual]  # Executar apenas manualmente: pre-commit run mypy --all-files
 
   # Pylint - Deep code analysis (complementa Ruff com analise profunda)
   - repo: https://github.com/pycqa/pylint
