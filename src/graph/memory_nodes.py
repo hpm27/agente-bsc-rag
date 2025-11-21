@@ -447,16 +447,29 @@ def _save_structured_data_to_sqlite(state: BSCState):
                 strategy_map = state.strategy_map
                 alignment_score = state.metadata.get("alignment_score") if state.metadata else None
 
+                # Converter dict para StrategyMap Pydantic se necessário
+                if isinstance(strategy_map, dict):
+                    from src.memory.schemas import StrategyMap as StrategyMapSchema
+
+                    strategy_map = StrategyMapSchema(**strategy_map)
+                    logger.info("[SQLite] Strategy Map convertido de dict para Pydantic")
+
+                # Flatten objectives de todas as 4 perspectivas
+                all_objectives = (
+                    strategy_map.financial.objectives
+                    + strategy_map.customer.objectives
+                    + strategy_map.process.objectives
+                    + strategy_map.learning.objectives
+                )
+
                 repo.strategy_maps.create(
                     db,
                     user_id=state.user_id,
-                    objectives=strategy_map.objectives,
-                    connections=strategy_map.connections,
+                    objectives=all_objectives,
+                    connections=strategy_map.cause_effect_connections,
                     alignment_score=alignment_score,
                 )
-                logger.info(
-                    f"[SQLite] Strategy Map salvo: {len(strategy_map.objectives)} objectives"
-                )
+                logger.info(f"[SQLite] Strategy Map salvo: {len(all_objectives)} objectives total")
 
             # 3. Salvar Action Plan (se existir)
             if hasattr(state, "action_plan") and state.action_plan:

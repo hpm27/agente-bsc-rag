@@ -1239,7 +1239,9 @@ class BSCWorkflow:
             )
 
             # Gerar resumo executivo do Action Plan
-            summary = self._generate_action_plan_summary(action_plan, state.strategy_map)
+            summary = self._generate_action_plan_summary(
+                action_plan, state.strategy_map, state.client_profile
+            )
 
             # Serializar action_plan para dict (BSCState aceita dict)
             action_plan_dict = action_plan.model_dump()
@@ -1268,17 +1270,23 @@ class BSCWorkflow:
                 "metadata": {**state.metadata, "implementation_error": f"unexpected_error: {e}"},
             }
 
-    def _generate_action_plan_summary(self, action_plan, strategy_map) -> str:
+    def _generate_action_plan_summary(self, action_plan, strategy_map, client_profile) -> str:
         """
         Gera resumo executivo do Action Plan criado.
 
         Args:
             action_plan: ActionPlan completo
             strategy_map: StrategyMap relacionado
+            client_profile: ClientProfile com company info
 
         Returns:
             String com resumo formatado
         """
+        # Extrair nome da empresa do ClientProfile
+        company_name = (
+            client_profile.company.name if client_profile and client_profile.company else "Cliente"
+        )
+
         # Contar objetivos do Strategy Map
         num_objectives = 0
         if strategy_map:
@@ -1298,8 +1306,8 @@ class BSCWorkflow:
         summary_lines = [
             "# Action Plan - Plano de Ação BSC [OK]",
             "",
-            f"**Empresa**: {action_plan.company_name}",
-            f"**Período**: {action_plan.planning_horizon}",
+            f"**Empresa**: {company_name}",
+            f"**Cronograma**: {action_plan.timeline_summary}",
             "",
             "## Resumo Executivo",
             "",
@@ -1318,10 +1326,10 @@ class BSCWorkflow:
             summary_lines.append("### Prioridade ALTA (executar primeiro)")
             summary_lines.append("")
             for i, action in enumerate(high_priority[:3], 1):
-                summary_lines.append(f"{i}. **{action.name}**")
+                summary_lines.append(f"{i}. **{action.action_title}**")
                 summary_lines.append(f"   - Responsável: {action.responsible}")
-                summary_lines.append(f"   - Prazo: {action.deadline}")
-                summary_lines.append(f"   - KPI: {action.kpi_to_improve}")
+                summary_lines.append(f"   - Prazo: {action.due_date}")
+                summary_lines.append(f"   - Critério Sucesso: {action.success_criteria}")
                 summary_lines.append("")
 
         # Listar top 2 ações MEDIUM
@@ -1329,8 +1337,8 @@ class BSCWorkflow:
             summary_lines.append("### Prioridade MÉDIA")
             summary_lines.append("")
             for i, action in enumerate(medium_priority[:2], 1):
-                summary_lines.append(f"{i}. **{action.name}**")
-                summary_lines.append(f"   - Prazo: {action.deadline}")
+                summary_lines.append(f"{i}. **{action.action_title}**")
+                summary_lines.append(f"   - Prazo: {action.due_date}")
                 summary_lines.append("")
 
         summary_lines.extend(

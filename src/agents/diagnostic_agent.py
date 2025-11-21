@@ -1206,16 +1206,31 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         # ETAPA 4: Construir CompleteDiagnostic
         logger.info("[DIAGNOSTIC] ETAPA 4/5: Construindo diagnóstico completo...")
 
+        # Pydantic V2: Converter instâncias para dict usando .model_dump()
+        # CRÍTICO: CompleteDiagnostic NÃO aceita instâncias Pydantic diretamente
+        financial_dict = perspective_results["Financeira"].model_dump()
+        customer_dict = perspective_results["Clientes"].model_dump()
+        process_dict = perspective_results["Processos Internos"].model_dump()
+        learning_dict = perspective_results["Aprendizado e Crescimento"].model_dump()
+
+        # Converter recommendations list
+        recommendations_dicts = [
+            rec.model_dump() if hasattr(rec, "model_dump") else rec for rec in recommendations
+        ]
+
+        # Converter tools_results (pode ser None)
+        tools_results_dict = tools_results.model_dump() if tools_results else None
+
         complete_diagnostic = CompleteDiagnostic(
-            financial=perspective_results["Financeira"],
-            customer=perspective_results["Clientes"],
-            process=perspective_results["Processos Internos"],
-            learning=perspective_results["Aprendizado e Crescimento"],
-            recommendations=recommendations,
+            financial=financial_dict,
+            customer=customer_dict,
+            process=process_dict,
+            learning=learning_dict,
+            recommendations=recommendations_dicts,
             cross_perspective_synergies=consolidated["cross_perspective_synergies"],
             executive_summary=consolidated["executive_summary"],
             next_phase=consolidated["next_phase"],  # type: ignore
-            diagnostic_tools_results=tools_results,  # SPRINT 1: Incluir outputs das ferramentas
+            diagnostic_tools_results=tools_results_dict,  # SPRINT 1: Incluir outputs das ferramentas
         )
 
         logger.info(
