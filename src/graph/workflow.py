@@ -40,10 +40,15 @@ warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed.*s
 warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed transport")
 warnings.filterwarnings("ignore", category=ResourceWarning, message="unclosed event loop")
 
+from src.agents.customer_agent import CustomerAgent
+from src.agents.financial_agent import FinancialAgent
 from src.agents.judge_agent import JudgeAgent
+from src.agents.learning_agent import LearningAgent
 from src.agents.orchestrator import Orchestrator
+from src.agents.process_agent import ProcessAgent
 from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
+from src.tools.action_plan import ActionPlanTool
 from src.tools.alignment_validator import AlignmentValidatorTool
 from src.tools.strategy_map_designer import StrategyMapDesignerTool
 
@@ -90,9 +95,25 @@ class BSCWorkflow:
         # FASE 2.10: Consulting orchestrator lazy loading (previne circular imports)
         self._consulting_orchestrator_cached = None
 
-        # SPRINT 2: Strategy Map Design tools
-        self.strategy_map_designer = StrategyMapDesignerTool()
+        # SPRINT 2: Inicializar 4 specialist agents para Strategy Map Design
+        self.financial_agent = FinancialAgent()
+        self.customer_agent = CustomerAgent()
+        self.process_agent = ProcessAgent()
+        self.learning_agent = LearningAgent()
+
+        # SPRINT 2: Strategy Map Design tools (passando os 4 agents)
+        self.strategy_map_designer = StrategyMapDesignerTool(
+            financial_agent=self.financial_agent,
+            customer_agent=self.customer_agent,
+            process_agent=self.process_agent,
+            learning_agent=self.learning_agent,
+        )
         self.alignment_validator = AlignmentValidatorTool()
+
+        # SPRINT 3: Action Plan tool (usa mesmos 4 agents)
+        from config.settings import get_llm
+
+        self.action_plan_tool = ActionPlanTool(llm=get_llm(temperature=1.0))
 
         self.graph = self._build_graph()
 
@@ -117,7 +138,7 @@ class BSCWorkflow:
         workflow.add_node("onboarding", self.onboarding_handler)
         workflow.add_node("discovery", self.discovery_handler)
         workflow.add_node("approval", self.approval_handler)
-        
+
         # SPRINT 2: Solution Design node
         workflow.add_node("design_solution", self.design_solution_handler)
 
@@ -149,23 +170,26 @@ class BSCWorkflow:
         # onboarding -> save_client_memory -> END (multi-turn stateless)
         workflow.add_edge("onboarding", "save_client_memory")
 
-        # discovery -> approval -> route_by_approval -> {design_solution, discovery}
+        # discovery -> approval -> route_by_approval -> {design_solution, discovery, END}
         workflow.add_edge("discovery", "approval")
         workflow.add_conditional_edges(
             "approval",
             self.route_by_approval,
-            {"end": "design_solution", "discovery": "discovery"},  # Refazer diagnóstico
+            {
+                "design_solution": "design_solution",  # APPROVED -> criar Strategy Map
+                "discovery": "discovery",  # REJECTED -> refazer diagnóstico
+                "end": END,  # PENDING -> aguardar input humano
+            },
         )
-        
-        # SPRINT 2: design_solution -> route_by_alignment_score -> {implementation, discovery}
-        # Placeholder implementation node (SPRINT 3)
-        workflow.add_node("implementation", self._placeholder_implementation_handler)
+
+        # SPRINT 2+3: design_solution -> route_by_alignment_score -> {implementation, discovery}
+        workflow.add_node("implementation", self.implementation_handler)
         workflow.add_conditional_edges(
             "design_solution",
             self.route_by_alignment_score,
             {"implementation": "implementation", "discovery": "discovery"},
         )
-        
+
         # implementation -> save_client_memory -> END
         workflow.add_edge("implementation", "save_client_memory")
 
@@ -653,20 +677,20 @@ class BSCWorkflow:
                 "metadata": {**state.metadata, "finalize_error": str(e)},
             }
 
-    def route_by_approval(self, state: BSCState) -> Literal["end", "discovery"]:
+    def route_by_approval(self, state: BSCState) -> Literal["design_solution", "discovery", "end"]:
         """
         FASE 2.8: Routing condicional baseado em approval_status.
 
         Decide próximo node baseado na decisão do cliente:
-        - APPROVED -> END (ou SOLUTION_DESIGN futuro)
+        - APPROVED -> design_solution (criar Strategy Map)
         - REJECTED / MODIFIED / TIMEOUT -> discovery (refazer)
-        - PENDING (fallback) -> END
+        - PENDING (fallback) -> end (aguardar input humano)
 
         Args:
             state: Estado com approval_status
 
         Returns:
-            Nome do próximo node ("end" ou "discovery")
+            Nome do próximo node ("design_solution", "discovery" ou "end")
         """
         # Lazy import (evitar circular)
         from src.graph.consulting_states import ApprovalStatus
@@ -674,8 +698,10 @@ class BSCWorkflow:
         approval_status = state.approval_status
 
         if approval_status == ApprovalStatus.APPROVED:
-            logger.info("[INFO] [ROUTING] Aprovação APPROVED -> END")
-            return "end"
+            logger.info(
+                "[INFO] [ROUTING] Aprovação APPROVED -> design_solution (criar Strategy Map)"
+            )
+            return "design_solution"
         if approval_status in (
             ApprovalStatus.REJECTED,
             ApprovalStatus.MODIFIED,
@@ -685,15 +711,14 @@ class BSCWorkflow:
                 f"[INFO] [ROUTING] Aprovação {approval_status.value} -> discovery (refazer)"
             )
             return "discovery"
-        # PENDING (ou None) -> END por design (fase futura pode reabrir)
+        # PENDING (ou None) -> END por design (aguardar input humano via UI futura)
         logger.info(
-            f"[INFO] [ROUTING] Approval status PENDING/None detectado ({approval_status}). Encerrando por design."
+            f"[INFO] [ROUTING] Approval status PENDING/None detectado ({approval_status}). "
+            "Encerrando workflow (aguardar input humano)."
         )
         return "end"
 
-    def route_by_alignment_score(
-        self, state: BSCState
-    ) -> Literal["implementation", "discovery"]:
+    def route_by_alignment_score(self, state: BSCState) -> Literal["implementation", "discovery"]:
         """
         SPRINT 2 - Tarefa 2.4: Routing condicional baseado em alignment score.
 
@@ -721,9 +746,7 @@ class BSCWorkflow:
 
             if score >= threshold:
                 next_node = "implementation"
-                logger.info(
-                    f"[OK] [ROUTING] alignment_score={score} >= {threshold} -> {next_node}"
-                )
+                logger.info(f"[OK] [ROUTING] alignment_score={score} >= {threshold} -> {next_node}")
             else:
                 next_node = "discovery"
                 logger.info(
@@ -775,13 +798,55 @@ class BSCWorkflow:
                     "approval_feedback": "Diagnóstico ausente ou incompleto. Por favor, execute a fase DISCOVERY novamente.",
                 }
 
-            # FASE 2.8 MVP: Aprovação mockada via state (testes)
-            # Produção futura: interrupt() para input humano real
-            approval_status = state.approval_status or ApprovalStatus.PENDING
+            # FASE 2.8 MVP: Aprovação automática baseada em Judge (ou manual via state)
+            # Se state já tem approval_status (input humano via UI), usar esse
+            # Se não, usar avaliação do Judge automaticamente
+            approval_status = state.approval_status
             approval_feedback = state.approval_feedback or ""
 
+            # Se aprovação ainda PENDING e Judge já avaliou, usar avaliação do Judge
+            if approval_status in (None, ApprovalStatus.PENDING):
+                # Extrair avaliação do Judge do diagnostic metadata
+                judge_evaluation = None
+                if state.diagnostic and isinstance(state.diagnostic, dict):
+                    judge_evaluation = state.diagnostic.get("metadata", {}).get("judge_evaluation")
+
+                if judge_evaluation:
+                    judge_verdict = judge_evaluation.get("verdict", "").lower()
+                    judge_score = judge_evaluation.get("quality_score", 0.0)
+
+                    # Aprovar automaticamente se Judge aprovou
+                    if judge_verdict == "approved" and judge_score >= 0.7:
+                        approval_status = ApprovalStatus.APPROVED
+                        approval_feedback = (
+                            f"Diagnóstico aprovado automaticamente pelo Judge Agent "
+                            f"(score: {judge_score:.2f}). Prosseguindo para design de Strategy Map."
+                        )
+                        logger.info(
+                            f"[INFO] [APPROVAL] Aprovação AUTOMÁTICA via Judge | "
+                            f"Score: {judge_score:.2f} | Verdict: {judge_verdict}"
+                        )
+                    else:
+                        # Rejeitar se score baixo ou verdict negativo
+                        approval_status = ApprovalStatus.REJECTED
+                        approval_feedback = (
+                            f"Diagnóstico rejeitado automaticamente (score: {judge_score:.2f}, "
+                            f"verdict: {judge_verdict}). Refinamento necessário."
+                        )
+                        logger.warning(
+                            f"[WARN] [APPROVAL] Diagnóstico REJEITADO via Judge | "
+                            f"Score: {judge_score:.2f} | Verdict: {judge_verdict}"
+                        )
+                else:
+                    # Fallback: sem Judge, manter PENDING (aguardar input humano)
+                    approval_status = ApprovalStatus.PENDING
+                    logger.warning(
+                        "[WARN] [APPROVAL] Judge evaluation ausente. "
+                        "Mantendo PENDING (aguardar input humano)"
+                    )
+
             logger.info(
-                f"[INFO] [APPROVAL] Status recebido: {approval_status.value} | "
+                f"[INFO] [APPROVAL] Status final: {approval_status.value} | "
                 f"Feedback: {approval_feedback[:50] if approval_feedback else 'N/A'}..."
             )
 
@@ -1084,25 +1149,138 @@ class BSCWorkflow:
                 "metadata": {**state.metadata, "solution_design_error": f"unexpected_error: {e}"},
             }
 
-    def _placeholder_implementation_handler(self, state: BSCState) -> dict[str, Any]:
+    async def implementation_handler(self, state: BSCState) -> dict[str, Any]:
         """
-        SPRINT 2 - Placeholder para node IMPLEMENTATION (será implementado no Sprint 3).
+        SPRINT 3 - Handler para criação do Action Plan (plano de ação).
 
-        Por enquanto, retorna mensagem informando que Strategy Map foi aprovado
-        e aguarda implementação do Action Plan detalhado no Sprint 3.
+        Usa ActionPlanTool para criar plano de ação estruturado baseado em:
+        1. Strategy Map aprovado (objetivos estratégicos mapeados)
+        2. Diagnostic completo (4 perspectivas BSC)
+        3. ClientProfile (contexto da empresa)
+        4. Conhecimento BSC (via 4 specialist agents)
 
         Args:
-            state: Estado atual com strategy_map e alignment_report
+            state: Estado com strategy_map, diagnostic e client_profile
 
         Returns:
-            Estado com final_response e phase IMPLEMENTATION
+            Estado atualizado com action_plan e final_response
         """
         # Lazy import
         from src.graph.consulting_states import ConsultingPhase
 
-        logger.info("[INFO] [IMPLEMENTATION] Placeholder handler (Sprint 3)")
+        logger.info("[START] [IMPLEMENTATION] Handler iniciado - Criando Action Plan")
 
-        strategy_map = state.strategy_map
+        try:
+            # Validar inputs necessários
+            if not state.strategy_map:
+                logger.error("[ERROR] [IMPLEMENTATION] Strategy Map ausente!")
+                return {
+                    "final_response": (
+                        "Erro: Strategy Map não encontrado. "
+                        "Execute a fase SOLUTION_DESIGN primeiro."
+                    ),
+                    "current_phase": ConsultingPhase.IMPLEMENTATION,
+                    "metadata": {**state.metadata, "implementation_error": "strategy_map_missing"},
+                }
+
+            if not state.client_profile:
+                logger.error("[ERROR] [IMPLEMENTATION] ClientProfile ausente!")
+                return {
+                    "final_response": (
+                        "Erro: Perfil do cliente não encontrado. "
+                        "Execute a fase ONBOARDING primeiro."
+                    ),
+                    "current_phase": ConsultingPhase.IMPLEMENTATION,
+                    "metadata": {
+                        **state.metadata,
+                        "implementation_error": "client_profile_missing",
+                    },
+                }
+
+            # Extrair diagnostic do state (pode estar como dict)
+            diagnostic = None
+            if state.diagnostic:
+                if isinstance(state.diagnostic, dict):
+                    # Converter dict para CompleteDiagnostic
+                    from src.memory.schemas import CompleteDiagnostic
+
+                    try:
+                        diagnostic = CompleteDiagnostic(**state.diagnostic)
+                        logger.info(
+                            "[INFO] [IMPLEMENTATION] Diagnostic convertido de dict para Pydantic"
+                        )
+                    except Exception as e:
+                        logger.warning(
+                            f"[WARN] [IMPLEMENTATION] Falha ao converter diagnostic: {e}"
+                        )
+                        diagnostic = None
+                else:
+                    diagnostic = state.diagnostic
+
+            logger.info(
+                f"[INFO] [IMPLEMENTATION] Criando Action Plan para {state.client_profile.company.name} "
+                f"(setor: {state.client_profile.company.sector})"
+            )
+
+            # Chamar ActionPlanTool.facilitate() de forma async
+            action_plan = await self.action_plan_tool.facilitate(
+                client_profile=state.client_profile,
+                financial_agent=self.financial_agent,
+                customer_agent=self.customer_agent,
+                process_agent=self.process_agent,
+                learning_agent=self.learning_agent,
+                diagnostic_results=diagnostic,
+            )
+
+            logger.info(
+                f"[OK] [IMPLEMENTATION] Action Plan criado com sucesso | "
+                f"Total ações: {action_plan.total_actions} | "
+                f"Prioritárias: {action_plan.high_priority_count}"
+            )
+
+            # Gerar resumo executivo do Action Plan
+            summary = self._generate_action_plan_summary(action_plan, state.strategy_map)
+
+            # Serializar action_plan para dict (BSCState aceita dict)
+            action_plan_dict = action_plan.model_dump()
+
+            return {
+                "action_plan": action_plan_dict,
+                "final_response": summary,
+                "current_phase": ConsultingPhase.IMPLEMENTATION,
+                "is_complete": True,
+                "metadata": {
+                    **state.metadata,
+                    "action_plan_created_at": time.time(),
+                    "total_actions": action_plan.total_actions,
+                    "high_priority_actions": action_plan.high_priority_count,
+                },
+            }
+
+        except Exception as e:
+            logger.exception("[ERROR] [IMPLEMENTATION] Erro ao criar Action Plan")
+            return {
+                "final_response": (
+                    f"Erro inesperado ao criar Action Plan: {e}. "
+                    "Por favor, tente novamente ou contate o suporte."
+                ),
+                "current_phase": ConsultingPhase.IMPLEMENTATION,
+                "metadata": {**state.metadata, "implementation_error": f"unexpected_error: {e}"},
+            }
+
+    def _generate_action_plan_summary(self, action_plan, strategy_map) -> str:
+        """
+        Gera resumo executivo do Action Plan criado.
+
+        Args:
+            action_plan: ActionPlan completo
+            strategy_map: StrategyMap relacionado
+
+        Returns:
+            String com resumo formatado
+        """
+        # Contar objetivos do Strategy Map
+        num_objectives = 0
         if strategy_map:
             num_objectives = (
                 len(strategy_map.financial.objectives)
@@ -1110,23 +1288,66 @@ class BSCWorkflow:
                 + len(strategy_map.process.objectives)
                 + len(strategy_map.learning.objectives)
             )
-            final_response = (
-                f"Strategy Map aprovado! [OK]\n\n"
-                f"Total: {num_objectives} objetivos estratégicos mapeados\n"
-                f"Conexões causa-efeito: {len(strategy_map.cause_effect_connections)}\n\n"
-                f"[Sprint 3] Próxima fase: Action Plan (plano de ação detalhado)\n"
-                f"Será implementado na próxima sprint."
-            )
-        else:
-            final_response = (
-                "Strategy Map não disponível. "
-                "Por favor, execute a fase SOLUTION_DESIGN primeiro."
-            )
 
-        return {
-            "final_response": final_response,
-            "current_phase": ConsultingPhase.IMPLEMENTATION,
-        }
+        # Agrupar ações por prioridade
+        high_priority = [a for a in action_plan.action_items if a.priority == "HIGH"]
+        medium_priority = [a for a in action_plan.action_items if a.priority == "MEDIUM"]
+        low_priority = [a for a in action_plan.action_items if a.priority == "LOW"]
+
+        # Construir resumo
+        summary_lines = [
+            "# Action Plan - Plano de Ação BSC [OK]",
+            "",
+            f"**Empresa**: {action_plan.company_name}",
+            f"**Período**: {action_plan.planning_horizon}",
+            "",
+            "## Resumo Executivo",
+            "",
+            f"- **Objetivos Estratégicos Mapeados**: {num_objectives}",
+            f"- **Total de Ações Planejadas**: {action_plan.total_actions}",
+            f"- **Ações Prioritárias (HIGH)**: {len(high_priority)}",
+            f"- **Ações Médias (MEDIUM)**: {len(medium_priority)}",
+            f"- **Ações Rápidas (LOW)**: {len(low_priority)}",
+            "",
+            "## Ações por Prioridade",
+            "",
+        ]
+
+        # Listar top 3 ações HIGH
+        if high_priority:
+            summary_lines.append("### Prioridade ALTA (executar primeiro)")
+            summary_lines.append("")
+            for i, action in enumerate(high_priority[:3], 1):
+                summary_lines.append(f"{i}. **{action.name}**")
+                summary_lines.append(f"   - Responsável: {action.responsible}")
+                summary_lines.append(f"   - Prazo: {action.deadline}")
+                summary_lines.append(f"   - KPI: {action.kpi_to_improve}")
+                summary_lines.append("")
+
+        # Listar top 2 ações MEDIUM
+        if medium_priority:
+            summary_lines.append("### Prioridade MÉDIA")
+            summary_lines.append("")
+            for i, action in enumerate(medium_priority[:2], 1):
+                summary_lines.append(f"{i}. **{action.name}**")
+                summary_lines.append(f"   - Prazo: {action.deadline}")
+                summary_lines.append("")
+
+        summary_lines.extend(
+            [
+                "---",
+                "",
+                "**Próximos Passos:**",
+                "1. Revisar e ajustar Action Plan conforme necessário",
+                "2. Designar responsáveis e confirmar prazos",
+                "3. Estabelecer rituais de acompanhamento (weekly/monthly)",
+                "4. Configurar dashboards de monitoramento de KPIs",
+                "",
+                "Consulte as páginas Strategy Map e Action Plan no menu lateral para detalhes completos.",
+            ]
+        )
+
+        return "\n".join(summary_lines)
 
     # ============ FASE 2.10: PROPERTIES LAZY LOADING ============
 

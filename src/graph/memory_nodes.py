@@ -462,6 +462,13 @@ def _save_structured_data_to_sqlite(state: BSCState):
             if hasattr(state, "action_plan") and state.action_plan:
                 action_plan = state.action_plan
 
+                # Converter dict para ActionPlan Pydantic se necessário
+                if isinstance(action_plan, dict):
+                    from src.memory.schemas import ActionPlan as ActionPlanSchema
+
+                    action_plan = ActionPlanSchema(**action_plan)
+                    logger.info("[SQLite] Action Plan convertido de dict para Pydantic")
+
                 repo.action_plans.create(
                     db,
                     user_id=state.user_id,
