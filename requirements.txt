@@ -16,6 +16,9 @@ redis==5.0.1
 qdrant-client==1.15.1
 weaviate-client==4.4.1
 
+# Local Persistence (SQLite)
+sqlalchemy>=2.0.31
+
 # Embeddings & Vector Search
 sentence-transformers==3.3.1
 transformers==4.47.1

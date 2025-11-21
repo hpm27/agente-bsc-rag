@@ -1,17 +1,22 @@
-"""Helper functions para carregar dados do Mem0 na UI Streamlit.
+"""Helper functions para carregar dados do SQLite + Mem0 na UI Streamlit.
 
-SPRINT 4: Integracao Mem0 + Streamlit para visualizacao de Strategy Map e Action Plan.
+SPRINT 4: Dual Persistence Strategy (SQLite primary, Mem0 fallback)
 
 Funcoes:
-- load_strategy_map(user_id) -> Carrega objetivos estrategicos BSC do Mem0
-- load_action_plan(user_id) -> Carrega plano de acao BSC do Mem0
-- list_all_clients() -> Lista todos clientes salvos (para selecao na UI)
+- load_strategy_map(user_id) -> Carrega objetivos estrategicos BSC do SQLite (instant)
+- load_action_plan(user_id) -> Carrega plano de acao BSC do SQLite (instant)
+- list_all_clients() -> Lista todos clientes salvos (SQLite + Mem0)
 
-IMPORTANTE: Zero emojis (memoria [[9776249]], Windows cp1252).
+IMPORTANTE:
+- Zero emojis (memoria [[9776249]], Windows cp1252)
+- SQLite é fonte primária (zero latency, confiável)
+- Mem0 é fallback (eventual consistency até 10 min)
 """
 
 import logging
 
+from src.database import get_db_session
+from src.database.repository import BSCRepository
 from src.memory.schemas import ActionItem, ActionPlan, StrategicObjective, StrategyMap
 
 logger = logging.getLogger(__name__)

@@ -393,10 +393,89 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
         )
         return {"user_id": state.user_id} if state.user_id else {}
 
+    finally:
+        # DUAL PERSISTENCE: Salvar dados estruturados em SQLite local
+        # (Strategy Map, Action Plan - se existirem no state)
+        try:
+            _save_structured_data_to_sqlite(state)
+        except Exception as e:
+            logger.warning(f"[WARN] Falha ao salvar em SQLite (não-crítico): {e}")
+
 
 # ============================================================================
-# HELPER FUNCTIONS (Utilitários para testes)
+# HELPER FUNCTIONS (SQLite Persistence + Utilitários)
 # ============================================================================
+
+
+def _save_structured_data_to_sqlite(state: BSCState):
+    """
+    Salva dados estruturados (Strategy Map, Action Plan) em SQLite local.
+
+    DUAL PERSISTENCE STRATEGY:
+    - Mem0: Memórias conversacionais, histórico
+    - SQLite: Dados estruturados produtos do workflow (confiável, zero latency)
+
+    Args:
+        state: Estado do workflow contendo dados a salvar
+    """
+    if not state.user_id:
+        return
+
+    try:
+        # Lazy imports (evitar circular imports)
+        from src.database import get_db_session
+        from src.database.repository import BSCRepository
+
+        with get_db_session() as db:
+            repo = BSCRepository(db)
+
+            # 1. Garantir que client profile existe
+            client = repo.clients.get_by_user_id(db, state.user_id)
+            if not client and state.client_profile:
+                # Criar client profile básico
+                company_name = (
+                    state.client_profile.company.name if state.client_profile.company else "Cliente"
+                )
+                sector = (
+                    state.client_profile.company.sector if state.client_profile.company else None
+                )
+                client = repo.clients.create(db, state.user_id, company_name, sector)
+                logger.info(f"[SQLite] Client profile criado: {company_name}")
+
+            # 2. Salvar Strategy Map (se existir)
+            if hasattr(state, "strategy_map") and state.strategy_map:
+                strategy_map = state.strategy_map
+                alignment_score = state.metadata.get("alignment_score") if state.metadata else None
+
+                repo.strategy_maps.create(
+                    db,
+                    user_id=state.user_id,
+                    objectives=strategy_map.objectives,
+                    connections=strategy_map.connections,
+                    alignment_score=alignment_score,
+                )
+                logger.info(
+                    f"[SQLite] Strategy Map salvo: {len(strategy_map.objectives)} objectives"
+                )
+
+            # 3. Salvar Action Plan (se existir)
+            if hasattr(state, "action_plan") and state.action_plan:
+                action_plan = state.action_plan
+
+                repo.action_plans.create(
+                    db,
+                    user_id=state.user_id,
+                    actions=action_plan.action_items,
+                    total_actions=action_plan.total_actions,
+                    high_priority_count=action_plan.high_priority_count,
+                    timeline_summary=action_plan.timeline_summary,
+                    by_perspective=action_plan.by_perspective,
+                )
+                logger.info(f"[SQLite] Action Plan salvo: {action_plan.total_actions} actions")
+
+    except Exception as e:
+        logger.error(f"[SQLite] Erro ao salvar dados estruturados: {e}")
+        # Não propagar erro - SQLite é fallback, não crítico
 
 
 def create_placeholder_profile(user_id: str, company_name: str = "Cliente") -> ClientProfile:
