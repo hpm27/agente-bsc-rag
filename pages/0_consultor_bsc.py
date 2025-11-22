@@ -65,9 +65,15 @@ if "messages" not in st.session_state:
 
 # CRITICAL FIX: Usar query_params para persistir user_id entre reloads e páginas
 # Isso garante que Strategy Map e Action Plan usam o MESMO user_id do workflow
+#
+# WORKAROUND BUG STREAMLIT #10406 (Feb 2025): st.query_params NAO persiste apos refresh
+# Solucao temporaria: usar st.experimental_get/set_query_params (deprecated mas FUNCIONA)
+# Migrara para st.query_params quando Streamlit fixar bug
+# Fonte: https://github.com/streamlit/streamlit/issues/10406
 if "user_id" not in st.session_state:
     # Tentar ler user_id da URL primeiro (persiste entre reloads)
-    user_id_from_url = st.query_params.get("uid", None)
+    query_params = st.experimental_get_query_params()
+    user_id_from_url = query_params.get("uid", [None])[0]
 
     if user_id_from_url:
         # Reutilizar user_id existente da URL
@@ -76,7 +82,10 @@ if "user_id" not in st.session_state:
         # Gerar novo user_id e salvar na URL
         new_uid = str(uuid4())
         st.session_state.user_id = new_uid
-        st.query_params.uid = new_uid
+
+# CORREÇÃO SESSAO 40: SEMPRE sincronizar query_params com session_state
+# Garante que URL SEMPRE tem uid atualizado (mesmo se carregado de URL)
+st.experimental_set_query_params(uid=st.session_state.user_id)
 
 if "current_phase" not in st.session_state:
     st.session_state.current_phase = "ONBOARDING"

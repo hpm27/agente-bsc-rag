@@ -47,8 +47,8 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
     """
     # ========== STEP 1: Tentar SQLite primeiro (PRIMARY) ==========
     try:
-        repo = BSCRepository()
         with get_db_session() as db:
+            repo = BSCRepository(db)  # CORREÇÃO SESSAO 40: passar db como argumento obrigatório
             # Buscar Strategy Map mais recente do user
             strategy_map_row = repo.strategy_maps.get_by_user_id(db, user_id)
 
@@ -142,8 +142,8 @@ def load_action_plan(user_id: str) -> tuple[list[ActionItem] | None, str | None]
     """
     # ========== STEP 1: Tentar SQLite primeiro (PRIMARY) ==========
     try:
-        repo = BSCRepository()
         with get_db_session() as db:
+            repo = BSCRepository(db)  # CORREÇÃO SESSAO 40: passar db como argumento obrigatório
             # Buscar Action Plan mais recente do user
             action_plan_row = repo.action_plans.get_by_user_id(db, user_id)
 

@@ -15,14 +15,23 @@ st.title("Dashboard Executivo BSC")
 
 # Carregar user_id da sessao atual (criado no chat com Consultor BSC)
 # CRITICAL: Ler de query_params PRIMEIRO (persiste entre páginas)
+#
+# WORKAROUND BUG STREAMLIT #10406 (Feb 2025): st.query_params NAO persiste apos refresh
+# Solucao temporaria: usar st.experimental_get_query_params (deprecated mas FUNCIONA)
+# Fonte: https://github.com/streamlit/streamlit/issues/10406
 if "user_id" not in st.session_state:
-    user_id_from_url = st.query_params.get("uid", None)
+    query_params = st.experimental_get_query_params()
+    user_id_from_url = query_params.get("uid", [None])[0]
     if user_id_from_url:
         st.session_state.user_id = user_id_from_url
     else:
         st.warning("[INFO] Sessao nao iniciada. Faca uma pergunta ao Consultor BSC primeiro.")
         st.info("Navegue para 'Consultor BSC' no menu lateral e comece a conversa.")
-        st.stop()
+        st.stop()  # Para execução se não tem user_id
+
+# CORREÇÃO SESSAO 40: SEMPRE sincronizar query_params com session_state
+if "user_id" in st.session_state:
+    st.experimental_set_query_params(uid=st.session_state.user_id)
 
 user_id = st.session_state.user_id
 
