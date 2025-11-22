@@ -9,4 +9,3 @@ Fase: 4.4 - Advanced Analytics Dashboard
 from api.middleware.analytics import AnalyticsMiddleware
 
 __all__ = ["AnalyticsMiddleware"]
-

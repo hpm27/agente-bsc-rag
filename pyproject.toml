@@ -12,6 +12,7 @@ select = ["E", "F", "W", "C", "N"]
 ignore = [
     "E402",     # Module level import not at top of file (comum com load_dotenv)
     "E501",     # Line too long (strings longas em testes/logs, a corrigir futuramente)
+    "N805",     # First argument cls (CORRETO em Pydantic @field_validator, false positive)
     "N999",     # Invalid module name (convenção Streamlit para páginas numeradas: 0_, 1_, 2_)
     "C403",     # Unnecessary list comprehension (otimização não-crítica)
     "C408",     # Unnecessary dict() call (otimização não-crítica, comum em plotly)

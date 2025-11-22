@@ -1,8 +1,8 @@
 # [EMOJI] PRD - Agente BSC RAG (Product Requirements Document)
 
-**Versão**: 1.0  
-**Data Criação**: 2025-11-20  
-**Última Atualização**: 2025-11-20  
+**Versão**: 1.0
+**Data Criação**: 2025-11-20
+**Última Atualização**: 2025-11-20
 **Status**: Aprovado - Opção B (Integração Completa)
 
 ---
@@ -138,7 +138,7 @@
 - Validação e confirmação de informações
 - Persistência em Mem0 (multi-client)
 
-**User Story**: 
+**User Story**:
 > "Como consultor, quero que o agente conduza onboarding natural para que o cliente não perceba que está falando com AI."
 
 **Acceptance Criteria**:
@@ -371,12 +371,12 @@ Action Plan:
     Responsável: CFO
     Prazo: 30 dias
     Status: todo
-    
+
   Milestone 2: "Treinar time comercial em upsell/cross-sell"
     Responsável: Diretor Comercial
     Prazo: 45 dias
     Status: todo
-    
+
   Milestone 3: "Lançar programa de fidelidade"
     Responsável: CMO
     Prazo: 90 dias
@@ -561,7 +561,7 @@ class DiagnosticToolsResult(BaseModel):
     benchmarking_report: Optional[BenchmarkingResult] = None
     issue_tree: Optional[IssueTreeResult] = None
     prioritization_matrix: Optional[PrioritizationMatrixResult] = None
-    
+
     execution_time: float
     tools_executed: List[str]
 
@@ -571,7 +571,7 @@ class StrategicObjective(BaseModel):
     perspective: Literal["financial", "customer", "process", "learning"]
     description: str
     kpis: List[KPI]
-    
+
 class KPI(BaseModel):
     """Key Performance Indicator."""
     id: str
@@ -594,9 +594,9 @@ class StrategyMap(BaseModel):
     customer_objectives: List[StrategicObjective]
     process_objectives: List[StrategicObjective]
     learning_objectives: List[StrategicObjective]
-    
+
     cause_effect_connections: List[CauseEffectConnection]
-    
+
     created_at: datetime
     validated: bool
     alignment_score: float  # 0-100
@@ -615,7 +615,7 @@ class ActionPlan(BaseModel):
     objective_id: str
     perspective: Literal["financial", "customer", "process", "learning"]
     milestones: List[Milestone]
-    
+
     created_at: datetime
     total_milestones: int
     completed_milestones: int
@@ -849,7 +849,6 @@ class ActionPlan(BaseModel):
 
 ---
 
-**Última Atualização**: 2025-11-20  
-**Status**: [OK] APROVADO - Opção B (Integração Completa)  
+**Última Atualização**: 2025-11-20
+**Status**: [OK] APROVADO - Opção B (Integração Completa)
 **Próximo Review**: Pós-Sprint 2 (após Strategy Map MVP)
-

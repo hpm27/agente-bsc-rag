@@ -6,6 +6,7 @@ Valida configurações Mem0 e função validate_memory_config().
 NOTA: Testes de Settings com monkeypatch não funcionam porque Settings
 é um singleton já inicializado. Focamos em testar validate_memory_config().
 """
+
 import os
 import sys
 from pathlib import Path
@@ -89,4 +90,3 @@ class TestValidateMemoryConfig:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
-

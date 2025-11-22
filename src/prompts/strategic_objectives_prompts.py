@@ -268,7 +268,7 @@ Para cada objetivo definido, retorne um objeto com os seguintes campos:
 4. timeframe (str): Prazo para alcance (ex: "12 meses", "Q1 2026")
 5. success_criteria (List[str]): 2-4 criterios mensuraveis de sucesso (cada um com 20+ caracteres)
 6. related_kpis (List[str]): Lista de nomes de KPIs que medem progresso deste objetivo (se aplicavel)
-7. priority (str): "Alta", "Media" ou "Baixa" baseado na urgencia e impacto
+7. priority (str): "Alta", "Média" ou "Baixa" baseado na urgencia e impacto
 8. dependencies (List[str]): Lista de nomes de outros objetivos que sao prerequisitos (opcional)
 
 IMPORTANTE:

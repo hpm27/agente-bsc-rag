@@ -42,7 +42,9 @@ env/
 
 # Data and Models
 data/bsc_literature/*.pdf
+data/bsc_literature/*.json
 data/contextual_cache/
+data/bsc_data.db
 models/
 *.pkl
 *.h5
@@ -79,9 +81,6 @@ docs/_build/
 # OS
 Thumbs.db
 .DS_Store
-
-data/contextual_cache/
-venv/
 
 .specstory/
 .mypy_cache/

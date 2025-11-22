@@ -151,7 +151,7 @@ def sample_tools_results():
         opportunities=["Expansão digital", "Mercado em crescimento"],
         threats=["Concorrência intensa", "Mudanças regulatórias"],
     )
-    
+
     # Para outras ferramentas, usar None (são Optional) para simplificar testes
     # O importante é validar que DiagnosticToolsResult funciona e que tools_executed tem 7 itens
     return DiagnosticToolsResult(
@@ -163,7 +163,15 @@ def sample_tools_results():
         issue_tree=None,  # Optional - simplificar para testes
         prioritization_matrix=None,  # Optional - simplificar para testes
         execution_time=45.2,
-        tools_executed=["swot_analysis", "five_whys_analysis", "kpi_framework", "strategic_objectives", "benchmarking_report", "issue_tree", "prioritization_matrix"],
+        tools_executed=[
+            "swot_analysis",
+            "five_whys_analysis",
+            "kpi_framework",
+            "strategic_objectives",
+            "benchmarking_report",
+            "issue_tree",
+            "prioritization_matrix",
+        ],
         tools_failed=[],
     )
 
@@ -226,7 +234,7 @@ async def test_diagnostic_with_all_tools(
 ):
     """
     TESTE 1: Valida que todas 7 ferramentas consultivas são executadas durante diagnóstico.
-    
+
     Validações:
     - _run_consultative_tools() é chamado
     - DiagnosticToolsResult contém outputs de todas 7 ferramentas
@@ -234,6 +242,7 @@ async def test_diagnostic_with_all_tools(
     - tools_executed contém 7 ferramentas
     - tools_failed está vazio (ou pelo menos <7 falhas)
     """
+
     async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
 
@@ -274,32 +283,46 @@ async def test_diagnostic_with_all_tools(
         "next_phase": "APPROVAL_PENDING",
     }
 
-    with patch.object(diagnostic_agent, 'run_parallel_analysis', side_effect=mock_parallel):
-        with patch.object(diagnostic_agent, 'consolidate_diagnostic', return_value=mock_consolidated):
-            with patch.object(diagnostic_agent, 'generate_recommendations', return_value=mock_recommendations):
+    with patch.object(diagnostic_agent, "run_parallel_analysis", side_effect=mock_parallel):
+        with patch.object(
+            diagnostic_agent, "consolidate_diagnostic", return_value=mock_consolidated
+        ):
+            with patch.object(
+                diagnostic_agent, "generate_recommendations", return_value=mock_recommendations
+            ):
                 # Mock _run_consultative_tools para retornar sample_tools_results
-                with patch.object(diagnostic_agent, '_run_consultative_tools', return_value=sample_tools_results):
+                with patch.object(
+                    diagnostic_agent, "_run_consultative_tools", return_value=sample_tools_results
+                ):
                     diagnostic = await diagnostic_agent.run_diagnostic(sample_bsc_state)
 
     # Validações CRÍTICAS
     assert isinstance(diagnostic, CompleteDiagnostic), "Diagnostic deve ser CompleteDiagnostic"
-    
+
     # Verificar que diagnostic_tools_results está presente
-    assert hasattr(diagnostic, 'diagnostic_tools_results'), "CompleteDiagnostic deve ter diagnostic_tools_results"
-    assert diagnostic.diagnostic_tools_results is not None, "diagnostic_tools_results não pode ser None"
-    
+    assert hasattr(
+        diagnostic, "diagnostic_tools_results"
+    ), "CompleteDiagnostic deve ter diagnostic_tools_results"
+    assert (
+        diagnostic.diagnostic_tools_results is not None
+    ), "diagnostic_tools_results não pode ser None"
+
     tools_result = diagnostic.diagnostic_tools_results
-    
+
     # Verificar que todas 7 ferramentas foram executadas
-    assert len(tools_result.tools_executed) == 7, f"Esperado 7 ferramentas executadas, recebido {len(tools_result.tools_executed)}"
-    
+    assert (
+        len(tools_result.tools_executed) == 7
+    ), f"Esperado 7 ferramentas executadas, recebido {len(tools_result.tools_executed)}"
+
     # Verificar que pelo menos uma ferramenta está presente (SWOT no nosso caso)
     # Outras podem ser None (são Optional) - o importante é que tools_executed tem 7 itens
     assert tools_result.swot_analysis is not None, "SWOT Analysis deve estar presente"
     # Nota: Outras ferramentas podem ser None (Optional) - validamos via tools_executed
-    
+
     # Verificar que tools_failed está vazio (ou pelo menos <7)
-    assert len(tools_result.tools_failed) < 7, f"Esperado <7 falhas, recebido {len(tools_result.tools_failed)}"
+    assert (
+        len(tools_result.tools_failed) < 7
+    ), f"Esperado <7 falhas, recebido {len(tools_result.tools_failed)}"
 
 
 # ============================================================================
@@ -316,12 +339,13 @@ async def test_diagnostic_tools_parallel(
 ):
     """
     TESTE 2: Valida que ferramentas consultivas executam em paralelo (asyncio.gather).
-    
+
     Validações:
     - _run_consultative_tools() executa tasks em paralelo
     - Tempo total < soma sequencial (prova paralelização)
     - asyncio.gather() é usado (capturado via mock)
     """
+
     # Mock das ferramentas individuais (simular latência)
     async def mock_swot(*args, **kwargs):
         await asyncio.sleep(0.1)  # Simular latência
@@ -378,14 +402,14 @@ async def test_diagnostic_tools_parallel(
     async def mock_run_consultative_tools(client_profile, state, parallel_results):
         # Simular execução paralela (todas ferramentas executam simultaneamente)
         await asyncio.sleep(0.1)  # Tempo total paralelo (~0.1s ao invés de 0.7s sequencial)
-        
+
         # Criar DiagnosticToolsResult com todas ferramentas
         swot_mock = Mock(spec=SWOTAnalysis)
         swot_mock.strengths = ["S1"]
         swot_mock.weaknesses = ["W1"]
         swot_mock.opportunities = ["O1"]
         swot_mock.threats = ["T1"]
-        
+
         return DiagnosticToolsResult(
             swot_analysis=swot_mock,
             five_whys_analysis=None,  # Simplificado para teste
@@ -395,13 +419,21 @@ async def test_diagnostic_tools_parallel(
             issue_tree=None,
             prioritization_matrix=None,
             execution_time=0.1,
-            tools_executed=["swot_analysis", "five_whys_analysis", "kpi_framework", "strategic_objectives", "benchmarking_report", "issue_tree", "prioritization_matrix"],
+            tools_executed=[
+                "swot_analysis",
+                "five_whys_analysis",
+                "kpi_framework",
+                "strategic_objectives",
+                "benchmarking_report",
+                "issue_tree",
+                "prioritization_matrix",
+            ],
             tools_failed=[],
         )
 
     # Medir tempo de execução paralela
     start_time = time.time()
-    
+
     # Criar parallel_results mock (dict com DiagnosticResult por perspectiva)
     parallel_results_mock = {
         "Financeira": sample_complete_diagnostic.financial,
@@ -409,22 +441,28 @@ async def test_diagnostic_tools_parallel(
         "Processos Internos": sample_complete_diagnostic.process,
         "Aprendizado e Crescimento": sample_complete_diagnostic.learning,
     }
-    
-    with patch.object(diagnostic_agent, '_run_consultative_tools', side_effect=mock_run_consultative_tools):
+
+    with patch.object(
+        diagnostic_agent, "_run_consultative_tools", side_effect=mock_run_consultative_tools
+    ):
         tools_result = await diagnostic_agent._run_consultative_tools(
             sample_client_profile,
             sample_bsc_state,
             parallel_results_mock,
         )
-    
+
     parallel_time = time.time() - start_time
-    
+
     # Tempo sequencial seria 7 * 0.1s = 0.7s
     # Tempo paralelo deve ser ~0.1s (todas executam simultaneamente)
-    assert parallel_time < 0.5, f"Tempo paralelo ({parallel_time:.2f}s) deve ser <0.5s (sequencial seria 0.7s)"
-    
+    assert (
+        parallel_time < 0.5
+    ), f"Tempo paralelo ({parallel_time:.2f}s) deve ser <0.5s (sequencial seria 0.7s)"
+
     # Verificar que resultado foi retornado
-    assert isinstance(tools_result, DiagnosticToolsResult), "Resultado deve ser DiagnosticToolsResult"
+    assert isinstance(
+        tools_result, DiagnosticToolsResult
+    ), "Resultado deve ser DiagnosticToolsResult"
     assert len(tools_result.tools_executed) >= 1, "Pelo menos 1 ferramenta deve ter executado"
 
 
@@ -442,12 +480,13 @@ async def test_diagnostic_latency(
 ):
     """
     TESTE 3: Valida que latência adicional das ferramentas consultivas <60s (P95).
-    
+
     Validações:
     - _run_consultative_tools() executa em <60s
     - execution_time no DiagnosticToolsResult <60s
     - Latência total do diagnóstico não aumenta >60s vs baseline
     """
+
     # Mock run_parallel_analysis
     async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
@@ -507,21 +546,29 @@ async def test_diagnostic_latency(
 
     start_time = time.time()
 
-    with patch.object(diagnostic_agent, 'run_parallel_analysis', side_effect=mock_parallel):
-        with patch.object(diagnostic_agent, 'consolidate_diagnostic', return_value=mock_consolidated):
-            with patch.object(diagnostic_agent, 'generate_recommendations', return_value=mock_recommendations):
-                with patch.object(diagnostic_agent, '_run_consultative_tools', side_effect=mock_tools):
+    with patch.object(diagnostic_agent, "run_parallel_analysis", side_effect=mock_parallel):
+        with patch.object(
+            diagnostic_agent, "consolidate_diagnostic", return_value=mock_consolidated
+        ):
+            with patch.object(
+                diagnostic_agent, "generate_recommendations", return_value=mock_recommendations
+            ):
+                with patch.object(
+                    diagnostic_agent, "_run_consultative_tools", side_effect=mock_tools
+                ):
                     diagnostic = await diagnostic_agent.run_diagnostic(sample_bsc_state)
 
     total_time = time.time() - start_time
 
     # Verificar latência adicional <60s
     assert total_time < 60.0, f"Latência total ({total_time:.2f}s) deve ser <60s"
-    
+
     # Verificar execution_time no DiagnosticToolsResult
-    if hasattr(diagnostic, 'diagnostic_tools_results') and diagnostic.diagnostic_tools_results:
+    if hasattr(diagnostic, "diagnostic_tools_results") and diagnostic.diagnostic_tools_results:
         tools_execution_time = diagnostic.diagnostic_tools_results.execution_time
-        assert tools_execution_time < 60.0, f"execution_time ({tools_execution_time:.2f}s) deve ser <60s"
+        assert (
+            tools_execution_time < 60.0
+        ), f"execution_time ({tools_execution_time:.2f}s) deve ser <60s"
 
 
 # ============================================================================
@@ -539,12 +586,13 @@ async def test_diagnostic_consolidation_enriched(
 ):
     """
     TESTE 4: Valida que consolidate_diagnostic() usa outputs das ferramentas no prompt.
-    
+
     Validações:
     - consolidate_diagnostic() recebe DiagnosticToolsResult como parâmetro
     - _format_tools_results() é chamado para formatar outputs
     - Prompt de consolidação contém contexto das ferramentas
     """
+
     # Mock run_parallel_analysis
     async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
@@ -608,7 +656,7 @@ async def test_diagnostic_consolidation_enriched(
     diagnostic_agent.llm.with_structured_output.return_value = fake_structured_llm
 
     # Patch para evitar side effects externos
-    with patch.object(diagnostic_agent, '_format_tools_results', side_effect=mock_format_tools):
+    with patch.object(diagnostic_agent, "_format_tools_results", side_effect=mock_format_tools):
         with patch("src.agents.diagnostic_agent.track_llm_tokens"):
             result = await diagnostic_agent.consolidate_diagnostic(
                 sample_perspective_results,
@@ -618,10 +666,12 @@ async def test_diagnostic_consolidation_enriched(
     # Validações CRÍTICAS
     assert result["next_phase"] == "APPROVAL_PENDING"
     assert len(result["cross_perspective_synergies"]) == 2
-    
+
     # Verificar que _format_tools_results foi chamado
     assert len(format_calls) >= 1, "_format_tools_results() deve ser chamado"
-    assert isinstance(format_calls[0], DiagnosticToolsResult), "Argumento de _format_tools_results deve ser DiagnosticToolsResult"
+    assert isinstance(
+        format_calls[0], DiagnosticToolsResult
+    ), "Argumento de _format_tools_results deve ser DiagnosticToolsResult"
 
 
 # ============================================================================
@@ -638,7 +688,7 @@ async def test_diagnostic_no_regression(
 ):
     """
     TESTE 5: Valida que não há regressões vs baseline (diagnóstico sem ferramentas).
-    
+
     Validações:
     - CompleteDiagnostic tem mesma estrutura que baseline
     - 4 perspectivas BSC presentes
@@ -647,6 +697,7 @@ async def test_diagnostic_no_regression(
     - Cross-perspective synergies presentes
     - Funcionalidade existente não quebrou
     """
+
     # Mock run_parallel_analysis
     async def mock_parallel(*args, **kwargs):
         return sample_perspective_results
@@ -697,29 +748,37 @@ async def test_diagnostic_no_regression(
             tools_failed=[],
         )
 
-    with patch.object(diagnostic_agent, 'run_parallel_analysis', side_effect=mock_parallel):
-        with patch.object(diagnostic_agent, 'consolidate_diagnostic', return_value=mock_consolidated):
-            with patch.object(diagnostic_agent, 'generate_recommendations', return_value=mock_recommendations):
-                with patch.object(diagnostic_agent, '_run_consultative_tools', side_effect=mock_tools):
+    with patch.object(diagnostic_agent, "run_parallel_analysis", side_effect=mock_parallel):
+        with patch.object(
+            diagnostic_agent, "consolidate_diagnostic", return_value=mock_consolidated
+        ):
+            with patch.object(
+                diagnostic_agent, "generate_recommendations", return_value=mock_recommendations
+            ):
+                with patch.object(
+                    diagnostic_agent, "_run_consultative_tools", side_effect=mock_tools
+                ):
                     diagnostic = await diagnostic_agent.run_diagnostic(sample_bsc_state)
 
     # Validações CRÍTICAS (mesmas do baseline)
     assert isinstance(diagnostic, CompleteDiagnostic), "Diagnostic deve ser CompleteDiagnostic"
-    
+
     # Verificar 4 perspectivas BSC (REGRESSÃO CRÍTICA)
     assert diagnostic.financial is not None, "Perspectiva Financeira deve estar presente"
     assert diagnostic.customer is not None, "Perspectiva Clientes deve estar presente"
     assert diagnostic.process is not None, "Perspectiva Processos deve estar presente"
     assert diagnostic.learning is not None, "Perspectiva Aprendizado deve estar presente"
-    
+
     # Verificar estrutura completa (REGRESSÃO CRÍTICA)
     assert len(diagnostic.recommendations) >= 1, "Deve ter pelo menos 1 recomendação"
     assert len(diagnostic.cross_perspective_synergies) >= 1, "Deve ter pelo menos 1 sinergia"
     assert len(diagnostic.executive_summary) >= 200, "Executive summary deve ter >=200 caracteres"
     assert diagnostic.next_phase is not None, "next_phase deve estar presente"
-    
+
     # Verificar que diagnostic_tools_results está presente (NOVO, não deve quebrar baseline)
-    assert hasattr(diagnostic, 'diagnostic_tools_results'), "CompleteDiagnostic deve ter diagnostic_tools_results (novo campo)"
+    assert hasattr(
+        diagnostic, "diagnostic_tools_results"
+    ), "CompleteDiagnostic deve ter diagnostic_tools_results (novo campo)"
     # diagnostic_tools_results pode ser None se ferramentas falharem, mas campo deve existir
 
 
@@ -737,7 +796,7 @@ async def test_diagnostic_tools_partial_failures(
 ):
     """
     TESTE 6: Valida que diagnóstico continua funcionando mesmo se algumas ferramentas falharem.
-    
+
     Validações:
     - _run_consultative_tools() retorna DiagnosticToolsResult mesmo com falhas parciais
     - tools_executed + tools_failed = 7 (todas tentadas)
@@ -765,10 +824,22 @@ async def test_diagnostic_tools_partial_failures(
     async def prioritization_async(*args, **kwargs):
         return prioritization_mock
 
-    with patch.object(diagnostic_agent, 'generate_swot_analysis', return_value=swot_mock):
-        with patch.object(diagnostic_agent, 'generate_five_whys_analysis', side_effect=Exception("Five Whys failure")):
-            with patch.object(diagnostic_agent, 'generate_issue_tree_analysis', side_effect=Exception("Issue Tree failure")):
-                with patch.object(diagnostic_agent, 'generate_prioritization_matrix', side_effect=prioritization_async):
+    with patch.object(diagnostic_agent, "generate_swot_analysis", return_value=swot_mock):
+        with patch.object(
+            diagnostic_agent,
+            "generate_five_whys_analysis",
+            side_effect=Exception("Five Whys failure"),
+        ):
+            with patch.object(
+                diagnostic_agent,
+                "generate_issue_tree_analysis",
+                side_effect=Exception("Issue Tree failure"),
+            ):
+                with patch.object(
+                    diagnostic_agent,
+                    "generate_prioritization_matrix",
+                    side_effect=prioritization_async,
+                ):
                     tools_result = await diagnostic_agent._run_consultative_tools(
                         sample_client_profile,
                         sample_bsc_state,
@@ -776,22 +847,23 @@ async def test_diagnostic_tools_partial_failures(
                     )
 
     # Validações CRÍTICAS
-    assert isinstance(tools_result, DiagnosticToolsResult), "Resultado deve ser DiagnosticToolsResult mesmo com falhas"
-    
+    assert isinstance(
+        tools_result, DiagnosticToolsResult
+    ), "Resultado deve ser DiagnosticToolsResult mesmo com falhas"
+
     # Verificar que algumas ferramentas executaram com sucesso
     assert len(tools_result.tools_executed) >= 1, "Pelo menos 1 ferramenta deve ter executado"
-    
+
     # Verificar que algumas ferramentas falharam
     assert len(tools_result.tools_failed) >= 1, "Pelo menos 1 ferramenta deve ter falhado"
-    
+
     # Verificar que total = 7 (todas tentadas)
     total_attempted = len(tools_result.tools_executed) + len(tools_result.tools_failed)
     assert total_attempted == 7, f"Total tentado deve ser 7, recebido {total_attempted}"
-    
+
     # Verificar que execution_time está presente
     assert tools_result.execution_time >= 0, "execution_time deve estar presente"
 
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=long"])
-

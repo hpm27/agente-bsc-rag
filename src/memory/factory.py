@@ -54,11 +54,7 @@ class MemoryFactory:
     }
 
     @classmethod
-    def get_provider(
-        cls,
-        provider_type: str = "mem0",
-        **kwargs: Any
-    ) -> MemoryProvider:
+    def get_provider(cls, provider_type: str = "mem0", **kwargs: Any) -> MemoryProvider:
         """Cria instância de memory provider baseado no tipo.
 
         Args:
@@ -89,17 +85,10 @@ class MemoryFactory:
 
         try:
             provider = provider_class(**kwargs)
-            logger.info(
-                "[OK] Memory provider %r inicializado com sucesso",
-                provider_type
-            )
+            logger.info("[OK] Memory provider %r inicializado com sucesso", provider_type)
             return provider
         except Exception as e:
-            logger.error(
-                "[ERRO] Falha ao inicializar provider %r: %s",
-                provider_type,
-                e
-            )
+            logger.error("[ERRO] Falha ao inicializar provider %r: %s", provider_type, e)
             raise
 
     @classmethod
@@ -133,4 +122,3 @@ class MemoryFactory:
             ['mem0']
         """
         return list(cls._registry.keys())
-

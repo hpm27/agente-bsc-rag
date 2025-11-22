@@ -52,9 +52,7 @@ class ProfileValidationError(Mem0ClientError):
     def __init__(self, user_id: str, original_error: Exception):
         self.user_id = user_id
         self.original_error = original_error
-        super().__init__(
-            f"Erro ao validar perfil para user_id {user_id!r}: {original_error!s}"
-        )
+        super().__init__(f"Erro ao validar perfil para user_id {user_id!r}: {original_error!s}")
 
 
 class Mem0APIError(Mem0ClientError):
@@ -80,4 +78,3 @@ class Mem0APIError(Mem0ClientError):
         if api_message:
             msg += f": {api_message}"
         super().__init__(msg)
-

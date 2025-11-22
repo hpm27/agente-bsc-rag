@@ -1,7 +1,7 @@
 # Sprint 2 - Strategy Map MVP - Design Document
 
-**Data:** 2025-11-20  
-**Sessão:** 38  
+**Data:** 2025-11-20
+**Sessão:** 38
 **Status:** [EMOJI] PLANEJAMENTO COMPLETO | [EMOJI] PRONTO PARA IMPLEMENTAÇÃO
 
 ---
@@ -56,7 +56,7 @@ Converter diagnóstico BSC aprovado em **Strategy Map visual** com 4 perspectiva
 ```python
 class CauseEffectConnection(BaseModel):
     """Conexão causa-efeito entre objetivos."""
-    
+
     source_objective_id: str = Field(description="ID objetivo origem")
     target_objective_id: str = Field(description="ID objetivo destino")
     relationship_type: Literal["enables", "drives", "supports"] = Field(
@@ -73,7 +73,7 @@ class CauseEffectConnection(BaseModel):
 
 class StrategyMapPerspective(BaseModel):
     """Uma perspectiva do Strategy Map."""
-    
+
     name: Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"]
     objectives: list[StrategicObjective] = Field(
         min_length=2,
@@ -83,50 +83,50 @@ class StrategyMapPerspective(BaseModel):
 
 class StrategyMap(BaseModel):
     """Strategy Map completo com 4 perspectivas BSC."""
-    
+
     financial: StrategyMapPerspective
-    customer: StrategyMapPerspective  
+    customer: StrategyMapPerspective
     process: StrategyMapPerspective
     learning: StrategyMapPerspective
-    
+
     cause_effect_connections: list[CauseEffectConnection] = Field(
         min_length=4,
         description="Mínimo 4 conexões causa-efeito entre perspectivas"
     )
-    
+
     strategic_priorities: list[str] = Field(
         min_length=1,
         max_length=3,
         description="1-3 prioridades estratégicas top-level"
     )
-    
+
     mission: str | None = None
     vision: str | None = None
     values: list[str] = Field(default_factory=list)
-    
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class AlignmentReport(BaseModel):
     """Report de validação do Strategy Map."""
-    
+
     score: float = Field(ge=0, le=100, description="Score de alinhamento 0-100")
     is_balanced: bool = Field(description="4 perspectivas balanceadas?")
-    
+
     gaps: list[str] = Field(
         default_factory=list,
         description="Lista de gaps detectados"
     )
-    
+
     warnings: list[str] = Field(
         default_factory=list,
         description="Warnings (não-bloqueantes)"
     )
-    
+
     recommendations: list[str] = Field(
         default_factory=list,
         description="Recomendações de correção"
     )
-    
+
     validation_checks: dict[str, bool] = Field(
         description="Checklist de 8 validações executadas"
     )
@@ -140,24 +140,24 @@ class AlignmentReport(BaseModel):
 class StrategyMapDesignerTool:
     """
     Converte diagnóstico BSC em Strategy Map visual com RAG.
-    
+
     Reutiliza PADRÃO VALIDADO Sprint 1:
     - _retrieve_bsc_knowledge() (mesmo pattern SWOT, Five Whys, Issue Tree)
     - 4 specialist agents em paralelo (asyncio.gather)
     - Contexto RAG enriquece design do Strategy Map
-    
+
     Reutiliza Tools FASE 3:
     - StrategicObjectivesTool (já implementada)
     - KPIDefinerTool (já implementada)
-    
+
     Adiciona com RAG:
     - Mapeamento causa-efeito validado contra literatura K&N (NOVO)
     - Validação de objectives contra framework BSC (NOVO)
     - Sugestão de KPIs baseados em benchmarks (NOVO)
-    
+
     Best Practice (BSCDesigner 2025): 8-10 objectives per perspective.
     """
-    
+
     def __init__(
         self,
         llm: BaseLLM,
@@ -168,7 +168,7 @@ class StrategyMapDesignerTool:
     ):
         """
         Inicializa Strategy Map Designer com LLM e 4 specialist agents.
-        
+
         Args:
             llm: Language model para structured output
             financial_agent: Agent perspectiva Financeira (com RAG)
@@ -181,7 +181,7 @@ class StrategyMapDesignerTool:
         self.customer_agent = customer_agent
         self.process_agent = process_agent
         self.learning_agent = learning_agent
-    
+
     async def design_strategy_map(
         self,
         diagnostic: CompleteDiagnostic,
@@ -189,7 +189,7 @@ class StrategyMapDesignerTool:
         use_rag: bool = True
     ) -> StrategyMap:
         """Gera Strategy Map completo a partir do diagnóstico com RAG."""
-        
+
         # ETAPA 0: Buscar contexto RAG (MESMO PATTERN Sprint 1) [OK]
         rag_context = ""
         if use_rag:
@@ -197,34 +197,34 @@ class StrategyMapDesignerTool:
                 diagnostic=diagnostic,
                 topic="strategy map design and cause-effect mapping"
             )
-        
+
         # ETAPA 1: Extrair objetivos estratégicos de cada perspectiva
         # Reutiliza StrategicObjectivesTool + RAG context
         objectives = await self._extract_objectives_by_perspective(
-            diagnostic, 
+            diagnostic,
             rag_context
         )
-        
+
         # ETAPA 2: Definir KPIs para cada objetivo
         # Reutiliza KPIDefinerTool + RAG benchmarks
         objectives_with_kpis = await self._define_kpis_for_objectives(
             objectives,
             rag_context
         )
-        
+
         # ETAPA 3: Mapear conexões causa-efeito (NOVO - core do Sprint 2)
         # Framework K&N validado contra literatura RAG
         connections = await self._map_cause_effect_connections(
             objectives_with_kpis,
             rag_context  # Literatura K&N sobre causa-efeito
         )
-        
+
         # ETAPA 4: Identificar prioridades estratégicas top-level
         priorities = await self._identify_strategic_priorities(
             diagnostic,
             rag_context
         )
-        
+
         # ETAPA 5: Criar Strategy Map estruturado
         strategy_map = StrategyMap(
             financial=StrategyMapPerspective(
@@ -248,9 +248,9 @@ class StrategyMapDesignerTool:
             mission=diagnostic.mission if hasattr(diagnostic, 'mission') else None,
             vision=diagnostic.vision if hasattr(diagnostic, 'vision') else None
         )
-        
+
         return strategy_map
-    
+
     async def _retrieve_bsc_knowledge(
         self,
         diagnostic: CompleteDiagnostic,
@@ -258,25 +258,25 @@ class StrategyMapDesignerTool:
     ) -> str:
         """
         Busca conhecimento BSC usando 4 specialist agents em paralelo.
-        
+
         PADRÃO REUTILIZADO (Sprint 1 - validado SWOT, Five Whys, Issue Tree):
         - asyncio.gather() com 4 agents
         - agent.ainvoke() (não invoke())
         - Contexto enriquece design do Strategy Map
-        
+
         Args:
             diagnostic: Diagnóstico BSC completo
             topic: Tópico específico (ex: "strategy map design", "cause-effect mapping")
-        
+
         Returns:
             String com conhecimento BSC recuperado das 4 perspectivas
         """
         # Query RAG focada em Strategy Map
         rag_query = f"""
         CONTEXTO EMPRESA: {diagnostic.executive_summary[:500]}
-        
+
         TÓPICO: {topic}
-        
+
         Buscar na literatura BSC (Kaplan & Norton):
         - Framework de Strategy Map design
         - Conexões causa-efeito típicas entre perspectivas
@@ -284,7 +284,7 @@ class StrategyMapDesignerTool:
         - Exemplos de objectives estratégicos validados
         - Erros comuns a evitar (jargon, goals operacionais)
         """
-        
+
         # Buscar em paralelo nas 4 perspectivas (MESMO PATTERN Sprint 1)
         results = await asyncio.gather(
             self.financial_agent.ainvoke(rag_query),
@@ -293,15 +293,15 @@ class StrategyMapDesignerTool:
             self.learning_agent.ainvoke(rag_query),
             return_exceptions=True
         )
-        
+
         # Consolidar contexto RAG
         context_parts = []
         for i, result in enumerate(results):
             if isinstance(result, dict) and "output" in result:
                 context_parts.append(f"[PERSPECTIVA {i+1}]\n{result['output'][:2000]}")
-        
+
         return "\n\n".join(context_parts)
-    
+
     async def _map_cause_effect_connections(
         self,
         objectives_by_perspective: dict,
@@ -309,12 +309,12 @@ class StrategyMapDesignerTool:
     ) -> list[CauseEffectConnection]:
         """
         Mapeia conexões causa-efeito entre objetivos com RAG.
-        
+
         Framework Kaplan & Norton (validado contra literatura):
         - Learning enables Process
         - Process drives Customer
         - Customer drives Financial
-        
+
         LLM identifica conexões específicas usando:
         1. Objectives do diagnóstico
         2. RAG context (exemplos validados K&N)
@@ -331,7 +331,7 @@ class StrategyMapDesignerTool:
 class AlignmentValidatorTool:
     """
     Valida se Strategy Map está balanceado e completo.
-    
+
     8 Validações (baseadas em research BSCDesigner 2025):
     1. Todas 4 perspectivas têm 2-10 objetivos
     2. Cada objetivo tem ≥1 KPI (leading + lagging)
@@ -342,13 +342,13 @@ class AlignmentValidatorTool:
     7. Objectives têm rationale explicado
     8. Não usa business jargon genérico
     """
-    
+
     def validate_alignment(
         self,
         strategy_map: StrategyMap
     ) -> AlignmentReport:
         """Executa 8 validações e retorna report."""
-        
+
         checks = {
             "balanced_perspectives": self._check_balanced_perspectives(strategy_map),
             "all_objectives_have_kpis": self._check_objectives_have_kpis(strategy_map),
@@ -359,14 +359,14 @@ class AlignmentValidatorTool:
             "has_rationale": self._check_has_rationale(strategy_map),
             "no_jargon": self._check_no_jargon(strategy_map)
         }
-        
+
         # Score: % de checks passando
         score = (sum(checks.values()) / len(checks)) * 100
-        
+
         # Detectar gaps e gerar recomendações
         gaps = self._identify_gaps(checks, strategy_map)
         recommendations = self._generate_recommendations(gaps)
-        
+
         return AlignmentReport(
             score=score,
             is_balanced=checks["balanced_perspectives"],
@@ -468,23 +468,23 @@ RETORNE lista de conexões causa-efeito.
 def design_solution(self, state: BSCState) -> dict[str, Any]:
     """
     Node: Gera Strategy Map a partir do diagnóstico aprovado.
-    
+
     Routing:
     APPROVAL_PENDING (aprovado) -> SOLUTION_DESIGN -> design_solution()
-    
+
     Best Practice: Reutilizar ferramentas existentes (FASE 3).
     """
     logger.info("[SOLUTION_DESIGN] Gerando Strategy Map...")
-    
+
     # ETAPA 1: Chamar Strategy_Map_Designer_Tool
     strategy_map = self.strategy_map_designer.design_strategy_map(
         diagnostic=state.diagnostic,
         tools_results=state.diagnostic_tools_results
     )
-    
+
     # ETAPA 2: Validar alinhamento
     alignment_report = self.alignment_validator.validate_alignment(strategy_map)
-    
+
     # ETAPA 3: Decidir próximo estado
     if alignment_report.score >= 80:
         # Strategy Map aprovado
@@ -702,6 +702,5 @@ def design_solution(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-**Última Atualização:** 2025-11-20  
+**Última Atualização:** 2025-11-20
 **Próxima Revisão:** Após conclusão Tarefa 2.1
-

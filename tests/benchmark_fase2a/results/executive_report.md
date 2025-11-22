@@ -50,4 +50,3 @@
 ![Latency by Category](latency_by_category.png)
 
 ![RAGAS Metrics](ragas_metrics.png)
-

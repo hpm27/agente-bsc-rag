@@ -865,7 +865,7 @@ def test_strategic_objectives_framework_methods():
         perspective="Financeira",
         timeframe="18 meses",
         success_criteria=["Criterio A com 20 chars", "Criterio B com 20 chars"],
-        priority="Media",
+        priority="Média",
     )
 
     obj1_cust = StrategicObjective(

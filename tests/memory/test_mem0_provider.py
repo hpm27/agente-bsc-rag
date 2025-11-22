@@ -26,7 +26,7 @@ from src.memory.schemas import ClientProfile, CompanyInfo
 @pytest.fixture
 def mock_mem0_client():
     """Fixture que retorna MemoryClient mockado."""
-    with patch('src.memory.mem0_client.MemoryClient') as mock_client_class:
+    with patch("src.memory.mem0_client.MemoryClient") as mock_client_class:
         mock_instance = MagicMock()
         mock_client_class.return_value = mock_instance
         yield mock_instance
@@ -64,10 +64,10 @@ def test_mem0_provider_implements_memory_provider(mem0_provider):
 
 def test_mem0_provider_has_required_methods(mem0_provider):
     """Testa que Mem0Provider possui todos métodos do Protocol."""
-    assert hasattr(mem0_provider, 'save_profile')
-    assert hasattr(mem0_provider, 'load_profile')
-    assert hasattr(mem0_provider, 'update_profile')
-    assert hasattr(mem0_provider, 'search_profiles')
+    assert hasattr(mem0_provider, "save_profile")
+    assert hasattr(mem0_provider, "load_profile")
+    assert hasattr(mem0_provider, "update_profile")
+    assert hasattr(mem0_provider, "search_profiles")
     assert callable(mem0_provider.save_profile)
 
 
@@ -78,7 +78,7 @@ def test_mem0_provider_has_required_methods(mem0_provider):
 
 def test_mem0_provider_init_with_api_key():
     """Testa inicialização com API key fornecida."""
-    with patch('src.memory.mem0_client.MemoryClient'):
+    with patch("src.memory.mem0_client.MemoryClient"):
         provider = Mem0Provider(api_key="explicit_key")
 
         assert provider.client.api_key == "explicit_key"
@@ -153,9 +153,7 @@ def test_update_profile_delegates_to_client(mem0_provider, sample_profile):
 
     result = mem0_provider.update_profile("test_provider_123", updates)
 
-    mem0_provider.client.update_profile.assert_called_once_with(
-        "test_provider_123", updates
-    )
+    mem0_provider.client.update_profile.assert_called_once_with("test_provider_123", updates)
     assert result == sample_profile
 
 
@@ -170,9 +168,7 @@ def test_search_profiles_delegates_to_client(mem0_provider, sample_profile):
 
     result = mem0_provider.search_profiles("technology companies", limit=5)
 
-    mem0_provider.client.search_profiles.assert_called_once_with(
-        "technology companies", 5
-    )
+    mem0_provider.client.search_profiles.assert_called_once_with("technology companies", 5)
     assert result == [sample_profile]
 
 
@@ -203,4 +199,3 @@ Cobertura por categoria:
 Cobertura estimada: ~100%
 Total com test_factory.py: 22 testes (target 10-12+)
 """
-

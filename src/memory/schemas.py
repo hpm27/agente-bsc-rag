@@ -1621,8 +1621,8 @@ class StrategicObjective(BaseModel):
     related_kpis: list[str] = Field(
         default_factory=list, description="Lista de nomes de KPIs que medem progresso (opcional)"
     )
-    priority: Literal["Alta", "Media", "Baixa"] = Field(
-        default="Media", description="Prioridade do objetivo"
+    priority: Literal["Alta", "Média", "Baixa"] = Field(
+        default="Média", description="Prioridade do objetivo"
     )
     dependencies: list[str] = Field(
         default_factory=list, description="Lista de nomes de objetivos prerequisitos (opcional)"
@@ -2979,7 +2979,7 @@ class PrioritizedItem(BaseModel):
         ...     rank=1
         ... )
         >>> item.priority_level
-        "HIGH"
+        "CRITICAL"
     """
 
     item_id: str = Field(description="Identificador único do item")
@@ -3073,7 +3073,7 @@ class PrioritizedItem(BaseModel):
                     "strategic_alignment": 90.0,
                 },
                 "final_score": 79.0,
-                "priority_level": "HIGH",
+                "priority_level": "CRITICAL",
                 "rank": 1,
             }
         }
@@ -3262,7 +3262,7 @@ class PrioritizationMatrix(BaseModel):
                         "item_id": "obj_001",
                         "item_type": "strategic_objective",
                         "title": "Aumentar NPS em 20 pontos",
-                        "description": "...",
+                        "description": "Melhorar satisfacao clientes atraves pesquisas trimestrais",
                         "perspective": "Clientes",
                         "criteria": {
                             "strategic_impact": 85,
@@ -3271,9 +3271,25 @@ class PrioritizationMatrix(BaseModel):
                             "strategic_alignment": 90,
                         },
                         "final_score": 79.0,
-                        "priority_level": "HIGH",
+                        "priority_level": "CRITICAL",
                         "rank": 1,
-                    }
+                    },
+                    {
+                        "item_id": "obj_002",
+                        "item_type": "strategic_objective",
+                        "title": "Reduzir churn rate em 25%",
+                        "description": "Implementar health score para identificar clientes em risco",
+                        "perspective": "Clientes",
+                        "criteria": {
+                            "strategic_impact": 80,
+                            "implementation_effort": 40,
+                            "urgency": 60,
+                            "strategic_alignment": 85,
+                        },
+                        "final_score": 68.0,
+                        "priority_level": "HIGH",
+                        "rank": 2,
+                    },
                 ],
                 "prioritization_context": "Priorização objetivos estratégicos Q1 2025 - TechCorp",
                 "weights_config": {
@@ -4010,17 +4026,25 @@ class StrategyMapPerspective(BaseModel):
                         "name": "Aumentar EBITDA para 18%",
                         "perspective": "Financeira",
                         "description": "Atingir margem EBITDA de 18% até 2026 através de eficiência operacional e mix de produtos premium",
-                        "target_date": "2026-12-31",
-                        "owner": "CFO",
-                        "status": "Em andamento",
+                        "timeframe": "24 meses",
+                        "success_criteria": [
+                            "Margem EBITDA >= 18%",
+                            "Crescimento receita >= 10% YoY",
+                        ],
+                        "related_kpis": ["Margem EBITDA", "Crescimento Receita"],
+                        "priority": "Alta",
                     },
                     {
                         "name": "Reduzir custo operacional em 15%",
                         "perspective": "Financeira",
                         "description": "Reduzir custo por unidade produzida através de automação e Lean Manufacturing",
-                        "target_date": "2026-06-30",
-                        "owner": "COO",
-                        "status": "Planejado",
+                        "timeframe": "18 meses",
+                        "success_criteria": [
+                            "Custo unitário reduzido em 15%",
+                            "ROI automação >= 25%",
+                        ],
+                        "related_kpis": ["Custo por Unidade", "Eficiência Operacional"],
+                        "priority": "Alta",
                     },
                 ],
             }

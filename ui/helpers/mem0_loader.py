@@ -18,18 +18,20 @@ import logging
 from src.database import get_db_session
 from src.database.repository import BSCRepository
 from src.memory.schemas import ActionItem, ActionPlan, StrategicObjective, StrategyMap
+from src.memory.exceptions import ProfileNotFoundError
 
 logger = logging.getLogger(__name__)
 
 
 def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, str | None]:
-    """Carrega Strategy Map (objetivos estrategicos) do Mem0 para user_id.
+    """Carrega Strategy Map (objetivos estrategicos) do SQLite (primary) ou Mem0 (fallback).
 
-    Usa Mem0ClientWrapper.load_profile() para buscar ClientProfile completo
-    e extrair strategy_map do metadata. Mais robusto que busca direta.
+    DUAL PERSISTENCE STRATEGY (SPRINT 4):
+    1. Tenta carregar de SQLite primeiro (instant, confiável)
+    2. Se falhar, tenta Mem0 como fallback (eventual consistency até 10 min)
 
     Args:
-        user_id: ID do cliente no Mem0
+        user_id: ID do cliente
 
     Returns:
         Tupla (objectives, error_message):
@@ -43,16 +45,45 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
         ... else:
         ...     st.write(f"[OK] {len(objectives)} objetivos carregados")
     """
+    # ========== STEP 1: Tentar SQLite primeiro (PRIMARY) ==========
     try:
-        # Usar Mem0ClientWrapper do projeto (mais robusto que MemoryClient direto)
+        repo = BSCRepository()
+        with get_db_session() as db:
+            # Buscar Strategy Map mais recente do user
+            strategy_map_row = repo.strategy_maps.get_by_user_id(db, user_id)
+
+            if strategy_map_row:
+                # Converter SQLAlchemy model -> StrategyMap Pydantic
+                # NOTA: SQLite armazena objectives como JSON flat list, não estrutura 4 perspectivas
+                objectives_data = strategy_map_row.objectives  # JSON já parseado pelo SQLAlchemy
+                objectives = [StrategicObjective(**obj) for obj in objectives_data]
+
+                logger.info(
+                    f"[OK] [SQLite PRIMARY] Strategy Map carregado | user_id: {user_id[:8]}... | Objectives: {len(objectives)}"
+                )
+                return objectives, None
+
+            # SQLite não tem dados, tentar Mem0 fallback
+            logger.warning(
+                f"[WARN] [SQLite] Strategy Map não encontrado para user_id: {user_id[:8]}..."
+            )
+
+    except Exception as e:
+        logger.warning(
+            f"[WARN] [SQLite] Falha ao carregar Strategy Map: {e}. Tentando Mem0 fallback..."
+        )
+
+    # ========== STEP 2: Tentar Mem0 como fallback (SECONDARY) ==========
+    try:
         from src.memory.mem0_client import Mem0ClientWrapper
 
         client = Mem0ClientWrapper()
 
         # Buscar profile completo (inclui strategy_map no metadata)
-        profile = client.load_profile(user_id)
-
-        if not profile:
+        try:
+            profile = client.load_profile(user_id)
+        except ProfileNotFoundError:
+            # CORREÇÃO SESSAO 40: Capturar exceção específica
             return None, "[INFO] Perfil nao encontrado. Execute workflow ONBOARDING primeiro"
 
         # Extrair strategy_map do metadata
@@ -65,35 +96,37 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
             )
 
         # Converter dict -> StrategyMap Pydantic -> extrair objectives
-        try:
-            strategy_map = StrategyMap(**strategy_map_dict)
-            objectives = strategy_map.objectives
+        strategy_map = StrategyMap(**strategy_map_dict)
 
-            logger.info(
-                f"[OK] Strategy Map carregado | user_id: {user_id[:8]}... | Objectives: {len(objectives)}"
-            )
+        # CORREÇÃO BUG #6 SESSAO 39: StrategyMap NÃO tem .objectives (estrutura: 4 perspectivas)
+        # Fazer flatten das 4 perspectivas para extrair todos objectives
+        objectives = []
+        objectives.extend(strategy_map.financial.objectives)
+        objectives.extend(strategy_map.customer.objectives)
+        objectives.extend(strategy_map.process.objectives)
+        objectives.extend(strategy_map.learning.objectives)
 
-            return objectives, None
+        logger.info(
+            f"[OK] [Mem0 FALLBACK] Strategy Map carregado | user_id: {user_id[:8]}... | Objectives: {len(objectives)}"
+        )
 
-        except Exception as e:
-            error_msg = f"[ERRO] Falha ao converter strategy_map para Pydantic: {e}"
-            logger.error(error_msg, exc_info=True)
-            return None, error_msg
+        return objectives, None
 
     except Exception as e:
-        error_msg = f"[ERRO] Falha ao carregar Strategy Map do Mem0: {e}"
+        error_msg = f"[ERRO] Falha ao carregar Strategy Map (SQLite + Mem0): {e}"
         logger.error(error_msg, exc_info=True)
         return None, error_msg
 
 
 def load_action_plan(user_id: str) -> tuple[list[ActionItem] | None, str | None]:
-    """Carrega Action Plan (acoes de implementacao) do Mem0 para user_id.
+    """Carrega Action Plan (acoes de implementacao) do SQLite (primary) ou Mem0 (fallback).
 
-    Usa Mem0ClientWrapper.load_profile() para buscar ClientProfile completo
-    e extrair action_plan do metadata. Mais robusto que busca direta.
+    DUAL PERSISTENCE STRATEGY (SPRINT 4):
+    1. Tenta carregar de SQLite primeiro (instant, confiável)
+    2. Se falhar, tenta Mem0 como fallback (eventual consistency até 10 min)
 
     Args:
-        user_id: ID do cliente no Mem0
+        user_id: ID do cliente
 
     Returns:
         Tupla (action_items, error_message):
@@ -107,16 +140,44 @@ def load_action_plan(user_id: str) -> tuple[list[ActionItem] | None, str | None]
         ... else:
         ...     st.write(f"[OK] {len(actions)} acoes carregadas")
     """
+    # ========== STEP 1: Tentar SQLite primeiro (PRIMARY) ==========
     try:
-        # Usar Mem0ClientWrapper do projeto (mais robusto que MemoryClient direto)
+        repo = BSCRepository()
+        with get_db_session() as db:
+            # Buscar Action Plan mais recente do user
+            action_plan_row = repo.action_plans.get_by_user_id(db, user_id)
+
+            if action_plan_row:
+                # Converter SQLAlchemy model -> lista de ActionItem
+                actions_data = action_plan_row.actions  # JSON já parseado pelo SQLAlchemy
+                action_items = [ActionItem(**action) for action in actions_data]
+
+                logger.info(
+                    f"[OK] [SQLite PRIMARY] Action Plan carregado | user_id: {user_id[:8]}... | Actions: {len(action_items)}"
+                )
+                return action_items, None
+
+            # SQLite não tem dados, tentar Mem0 fallback
+            logger.warning(
+                f"[WARN] [SQLite] Action Plan não encontrado para user_id: {user_id[:8]}..."
+            )
+
+    except Exception as e:
+        logger.warning(
+            f"[WARN] [SQLite] Falha ao carregar Action Plan: {e}. Tentando Mem0 fallback..."
+        )
+
+    # ========== STEP 2: Tentar Mem0 como fallback (SECONDARY) ==========
+    try:
         from src.memory.mem0_client import Mem0ClientWrapper
 
         client = Mem0ClientWrapper()
 
         # Buscar profile completo (inclui action_plan no metadata)
-        profile = client.load_profile(user_id)
-
-        if not profile:
+        try:
+            profile = client.load_profile(user_id)
+        except ProfileNotFoundError:
+            # CORREÇÃO SESSAO 40: Capturar exceção específica
             return None, "[INFO] Perfil nao encontrado. Execute workflow ONBOARDING primeiro"
 
         # Extrair action_plan do metadata
@@ -126,23 +187,17 @@ def load_action_plan(user_id: str) -> tuple[list[ActionItem] | None, str | None]
             return None, "[INFO] Action Plan ainda nao foi gerado (execute workflow IMPLEMENTATION)"
 
         # Converter dict -> ActionPlan Pydantic -> extrair action_items
-        try:
-            action_plan = ActionPlan(**action_plan_dict)
-            action_items = action_plan.action_items
+        action_plan = ActionPlan(**action_plan_dict)
+        action_items = action_plan.action_items
 
-            logger.info(
-                f"[OK] Action Plan carregado | user_id: {user_id[:8]}... | Actions: {len(action_items)}"
-            )
+        logger.info(
+            f"[OK] [Mem0 FALLBACK] Action Plan carregado | user_id: {user_id[:8]}... | Actions: {len(action_items)}"
+        )
 
-            return action_items, None
-
-        except Exception as e:
-            error_msg = f"[ERRO] Falha ao converter action_plan para Pydantic: {e}"
-            logger.error(error_msg, exc_info=True)
-            return None, error_msg
+        return action_items, None
 
     except Exception as e:
-        error_msg = f"[ERRO] Falha ao carregar Action Plan do Mem0: {e}"
+        error_msg = f"[ERRO] Falha ao carregar Action Plan (SQLite + Mem0): {e}"
         logger.error(error_msg, exc_info=True)
         return None, error_msg
 

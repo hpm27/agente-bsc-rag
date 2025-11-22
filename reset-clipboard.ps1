@@ -31,4 +31,3 @@ if($result -eq "TESTE_OK") {
 }
 
 Write-Host "[FIM] Pronto para copiar/colar!" -ForegroundColor Cyan
-

@@ -1,8 +1,8 @@
 # [EMOJI] SPRINT PLAN - Opção B (Integração Completa)
 
-**Versão**: 1.0  
-**Data Criação**: 2025-11-20  
-**Método**: Sequential Thinking (10 thoughts)  
+**Versão**: 1.0
+**Data Criação**: 2025-11-20
+**Método**: Sequential Thinking (10 thoughts)
 **Decisão**: Implementar SOLUTION_DESIGN + IMPLEMENTATION + GAP #2 (Integração Ferramentas)
 
 ---
@@ -84,16 +84,16 @@ Semana 6: [===== SPRINT 5-6 =====] Dashboard (OPCIONAL)
 async def run_diagnostic(self, context: dict) -> CompleteDiagnostic:
     # ETAPA 1: Análise paralela (4 agentes BSC) - JÁ EXISTE
     parallel_results = await self.run_parallel_analysis(context)
-    
+
     # ETAPA 2: Análises consultivas (7 ferramentas) - NOVO!
     tools_results = await self._run_consultative_tools(context, parallel_results)
-    
+
     # ETAPA 3: Consolidação enriquecida - MODIFICAR
     diagnostic = await self.consolidate_diagnostic(
-        parallel_results, 
+        parallel_results,
         tools_results  # Novo parâmetro!
     )
-    
+
     return diagnostic
 ```
 
@@ -120,7 +120,7 @@ async def run_diagnostic(self, context: dict) -> CompleteDiagnostic:
 
 class DiagnosticToolsResult(BaseModel):
     """Agregador de outputs das 7 ferramentas consultivas."""
-    
+
     swot_analysis: Optional[SWOTAnalysisResult] = None
     five_whys_analysis: Optional[FiveWhysResult] = None
     kpi_framework: Optional[KPIFrameworkResult] = None
@@ -128,7 +128,7 @@ class DiagnosticToolsResult(BaseModel):
     benchmarking_report: Optional[BenchmarkingResult] = None
     issue_tree: Optional[IssueTreeResult] = None
     prioritization_matrix: Optional[PrioritizationMatrixResult] = None
-    
+
     execution_time: float  # Tempo total de execução
     tools_executed: List[str]  # Lista de ferramentas executadas
 ```
@@ -302,30 +302,30 @@ pytest tests/test_workflow_e2e.py -v --tb=long 2>&1
 class StrategyMapDesignerTool:
     """
     Converte diagnóstico BSC em Strategy Map visual.
-    
+
     Reutiliza:
     - StrategicObjectivesTool (objetivos SMART)
     - KPIDefinerTool (KPIs alinhados)
-    
+
     Adiciona:
     - Conexões causa-efeito entre perspectivas
     - Validação de balanceamento
     """
-    
+
     async def design_strategy_map(
-        self, 
+        self,
         diagnostic: CompleteDiagnostic,
         tools_results: DiagnosticToolsResult
     ) -> StrategyMap:
         # ETAPA 1: Extrair objetivos de cada perspectiva (reusa StrategicObjectivesTool)
         objectives = await self._extract_objectives(diagnostic)
-        
+
         # ETAPA 2: Definir KPIs para cada objetivo (reusa KPIDefinerTool)
         kpis = await self._define_kpis(objectives)
-        
+
         # ETAPA 3: Mapear conexões causa-efeito (NOVO)
         connections = await self._map_cause_effect(objectives)
-        
+
         # ETAPA 4: Criar Strategy Map estruturado
         strategy_map = StrategyMap(
             financial_objectives=objectives.financial,
@@ -335,7 +335,7 @@ class StrategyMapDesignerTool:
             kpis=kpis,
             cause_effect_connections=connections
         )
-        
+
         return strategy_map
 ```
 
@@ -385,21 +385,21 @@ class StrategyMapDesignerTool:
 def design_solution(self, state: BSCState) -> dict[str, Any]:
     """
     Node: Gera Strategy Map a partir do diagnóstico aprovado.
-    
+
     Routing:
     APPROVAL_PENDING (aprovado) -> SOLUTION_DESIGN -> design_solution()
     """
     logger.info("[SOLUTION_DESIGN] Gerando Strategy Map...")
-    
+
     # ETAPA 1: Chamar Strategy_Map_Designer_Tool
     strategy_map = await self.strategy_map_designer.design_strategy_map(
         diagnostic=state.diagnostic,
         tools_results=state.diagnostic_tools_results
     )
-    
+
     # ETAPA 2: Validar alinhamento
     alignment_report = await self.alignment_validator.validate(strategy_map)
-    
+
     # ETAPA 3: Salvar no state
     return {
         "strategy_map": strategy_map,
@@ -655,35 +655,35 @@ Financial: "Aumentar receita recorrente"
 class ActionPlanGeneratorTool:
     """
     Converte Strategy Map em Action Plans executáveis.
-    
+
     Para cada objetivo estratégico:
     - Gera 3-5 milestones específicos
     - Define responsável (role, não nome)
     - Define prazo (timeline relativo: 30/60/90 dias)
     - Define status inicial: "todo"
     """
-    
+
     async def generate_action_plans(
-        self, 
+        self,
         strategy_map: StrategyMap
     ) -> List[ActionPlan]:
         action_plans = []
-        
+
         for perspective in ["financial", "customer", "process", "learning"]:
             objectives = getattr(strategy_map, f"{perspective}_objectives")
-            
+
             for objective in objectives:
                 # Gerar 3-5 milestones por objetivo
                 milestones = await self._generate_milestones(objective)
-                
+
                 action_plan = ActionPlan(
                     objective_id=objective.id,
                     perspective=perspective,
                     milestones=milestones
                 )
-                
+
                 action_plans.append(action_plan)
-        
+
         return action_plans
 ```
 
@@ -719,17 +719,17 @@ class ActionPlanGeneratorTool:
 def generate_action_plans(self, state: BSCState) -> dict[str, Any]:
     """
     Node: Gera Action Plans a partir do Strategy Map.
-    
+
     Routing:
     SOLUTION_DESIGN -> IMPLEMENTATION -> generate_action_plans()
     """
     logger.info("[IMPLEMENTATION] Gerando Action Plans...")
-    
+
     # ETAPA 1: Chamar Action_Plan_Generator_Tool
     action_plans = await self.action_plan_generator.generate_action_plans(
         strategy_map=state.strategy_map
     )
-    
+
     # ETAPA 2: Salvar no state
     return {
         "action_plans": action_plans,
@@ -926,7 +926,7 @@ def generate_action_plans(self, state: BSCState) -> dict[str, Any]:
 | 4 | Action Plans MVP | 19-26h | ALTO | ALTA |
 | 5-6 | MCPs + Dashboard | 34-44h | MÉDIO | BAIXA (opcional) |
 
-**TOTAL MVP (Sprints 1-4)**: 76-102h (10-13 dias úteis)  
+**TOTAL MVP (Sprints 1-4)**: 76-102h (10-13 dias úteis)
 **TOTAL COMPLETO (Sprints 1-6)**: 110-146h (14-19 dias úteis)
 
 ---
@@ -993,6 +993,5 @@ def generate_action_plans(self, state: BSCState) -> dict[str, Any]:
 
 ---
 
-**Última Atualização**: 2025-11-20  
+**Última Atualização**: 2025-11-20
 **Status**: [OK] PLANO APROVADO - Pronto para execução
-

@@ -12,4 +12,3 @@ Fase: 4.2 - Reports & Exports
 """
 
 __all__ = []
-

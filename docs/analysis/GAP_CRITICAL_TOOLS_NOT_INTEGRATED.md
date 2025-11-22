@@ -1,7 +1,7 @@
 # [EMOJI] GAP CRÍTICO #2: Ferramentas Consultivas NÃO Integradas ao Diagnóstico
 
-**Data Descoberta**: 2025-11-20  
-**Método**: Sequential Thinking (6 thoughts) + Code Analysis  
+**Data Descoberta**: 2025-11-20
+**Método**: Sequential Thinking (6 thoughts) + Code Analysis
 **Severidade**: [EMOJI] ALTA - 70% do valor das ferramentas FASE 3 desperdiçado
 
 ---
@@ -24,9 +24,9 @@ run_diagnostic() -> 4 agentes BSC + RAG + consolidação LLM
 
 ### Descoberta via Sequential Thinking
 
-**Thought 1-2**: Investigar como DiagnosticAgent funciona  
-**Thought 3-4**: Buscar chamadas às ferramentas consultivas no código  
-**Thought 5-6**: Validar testes e confirmar gap  
+**Thought 1-2**: Investigar como DiagnosticAgent funciona
+**Thought 3-4**: Buscar chamadas às ferramentas consultivas no código
+**Thought 5-6**: Validar testes e confirmar gap
 
 **RESULTADO:**
 - [OK] 7 ferramentas consultivas **IMPLEMENTADAS** (FASE 3 - 100%)
@@ -60,16 +60,16 @@ run_diagnostic() -> 4 agentes BSC + RAG + consolidação LLM
 async def _run_diagnostic_inner(self, state: BSCState) -> CompleteDiagnostic:
     # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
     perspective_results = await self.run_parallel_analysis(client_profile, state)
-    
+
     # ETAPA 2: Consolidação cross-perspective
     consolidated = await self.consolidate_diagnostic(perspective_results)
-    
+
     # ETAPA 3: Geração de recomendações priorizadas
     # [...]
-    
+
     # ETAPA 4: Finalização
     # [...]
-    
+
     # [ERRO] ZERO chamadas a:
     # - self.generate_swot_analysis()
     # - self.generate_five_whys_analysis()
@@ -96,15 +96,15 @@ async def run_parallel_analysis(self, client_profile, state):
 async def analyze_perspective(self, perspective, client_profile, state):
     # 1. Formatar query com contexto do cliente
     query = f"Analise {perspective} para {company.name}..."
-    
+
     # 2. RAG via agente especialista (Financial/Customer/Process/Learning)
     agent_response = await agent.ainvoke(query)
-    
+
     # 3. LLM structured output para DiagnosticResult
     diagnostic_result = llm.with_structured_output(DiagnosticResult).invoke(...)
-    
+
     return diagnostic_result
-    
+
     # [ERRO] NÃO usa SWOT, Five Whys, KPI, Benchmarking, etc!
 ```
 
@@ -244,31 +244,31 @@ async def _run_diagnostic_inner(self, state: BSCState) -> CompleteDiagnostic:
     # PRÉ-DIAGNÓSTICO: Ferramentas consultivas estruturadas
     swot = await self.generate_swot_analysis(client_profile)
     five_whys = await self.generate_five_whys_analysis(client_profile, top_challenge)
-    
+
     # ETAPA 1: Análise paralela (ENRIQUECIDA com SWOT + Five Whys)
     perspective_results = await self.run_parallel_analysis(
-        client_profile, state, 
+        client_profile, state,
         swot_context=swot,  # NOVO!
         root_causes=five_whys  # NOVO!
     )
-    
+
     # PÓS-ANÁLISE: KPIs, Objectives, Benchmarking
     kpi_framework = await self.generate_kpi_framework(client_profile, perspective_results)
     objectives = await self.generate_strategic_objectives(client_profile, perspective_results)
     benchmark = await self.generate_benchmarking_report(client_profile)
-    
+
     # ETAPA 2: Consolidação (ENRIQUECIDA)
     consolidated = await self.consolidate_diagnostic(
         perspective_results,
         swot, five_whys, kpi_framework, objectives, benchmark  # NOVO!
     )
-    
+
     # ETAPA 3: Priorização de recomendações VIA MATRIZ
     recommendations = await self.generate_prioritization_matrix(
         items=preliminary_recommendations,
         client_profile=client_profile
     )
-    
+
     # ETAPA 4: Finalização
     return RichCompleteDiagnostic(...)  # Schema expandido
 ```
@@ -307,11 +307,11 @@ async def _run_diagnostic_inner(self, state: BSCState):
     swot = await self.generate_swot_analysis(client_profile, use_rag=True)
     main_challenge = client_profile.context.current_challenges[0]
     five_whys = await self.generate_five_whys_analysis(client_profile, main_challenge)
-    
+
     # ETAPA 1: Análise paralela (adicionar SWOT + Five Whys ao contexto)
     state.metadata["swot_analysis"] = swot.model_dump()
     state.metadata["root_cause_analysis"] = five_whys.model_dump()
-    
+
     perspective_results = await self.run_parallel_analysis(client_profile, state)
     # ... resto igual
 ```
@@ -327,7 +327,7 @@ async def _run_diagnostic_inner(self, state: BSCState):
 ```python
     # Objetivos SMART
     objectives = await self.generate_strategic_objectives(client_profile, perspective_results)
-    
+
     # Priorização via matriz
     matrix = await self.generate_prioritization_matrix(
         items_to_prioritize=[...],  # Recomendações preliminares
@@ -339,7 +339,7 @@ async def _run_diagnostic_inner(self, state: BSCState):
 ```python
     # Benchmarking (requer MCP Brightdata)
     benchmark = await self.generate_benchmarking_report(client_id, client_profile)
-    
+
     # Issue Tree para problema complexo
     main_challenge = client_profile.context.current_challenges[0]
     issue_tree = await self.generate_issue_tree_analysis(client_profile, main_challenge)
@@ -372,14 +372,14 @@ use_benchmarking = st.checkbox("Benchmarking", value=False)
 ```python
 async def _run_diagnostic_inner(self, state: BSCState):
     tools_config = state.metadata.get("diagnostic_tools_config", {})
-    
+
     # Executar ferramentas opcionalmente
     if tools_config.get("use_swot", True):
         swot = await self.generate_swot_analysis(client_profile)
-    
+
     if tools_config.get("use_five_whys", True):
         five_whys = await self.generate_five_whys_analysis(client_profile, ...)
-    
+
     # ... etc
 ```
 
@@ -564,12 +564,11 @@ async def _run_diagnostic_inner(self, state: BSCState):
 
 ---
 
-**Qual opção você prefere?** 
+**Qual opção você prefere?**
 
 Considerando que você já perguntou sobre 2 gaps críticos (SOLUTION_DESIGN + Ferramentas), sugiro **OPÇÃO 2 (Incremental)** para resolver ambos de forma pragmática e validada.
 
 ---
 
-**Última Atualização**: 2025-11-20  
+**Última Atualização**: 2025-11-20
 **Status**: Análise completa [OK] - Aguardando decisão de integração
-

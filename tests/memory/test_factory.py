@@ -22,7 +22,7 @@ from src.memory.provider import MemoryProvider
 @pytest.fixture
 def mock_mem0_client():
     """Fixture que retorna MemoryClient mockado."""
-    with patch('src.memory.mem0_client.MemoryClient') as mock_client_class:
+    with patch("src.memory.mem0_client.MemoryClient") as mock_client_class:
         mock_instance = MagicMock()
         mock_client_class.return_value = mock_instance
         yield mock_instance
@@ -43,6 +43,7 @@ def test_list_providers_default():
 
 def test_register_new_provider():
     """Testa registro de novo provider no factory."""
+
     # Mock provider class
     class DummyProvider:
         def __init__(self, **kwargs):
@@ -111,6 +112,7 @@ def test_get_provider_initialization_error(mock_mem0_client):
 
 def test_register_and_use_custom_provider():
     """Testa registro e uso de provider customizado."""
+
     # Mock custom provider
     class CustomProvider:
         def __init__(self, custom_arg: str):
@@ -152,4 +154,3 @@ Cobertura por categoria:
 
 Cobertura estimada: ~95%
 """
-

@@ -101,7 +101,7 @@ INSTRUÇÕES DE AVALIAÇÃO:
 
 3. VALIDAÇÕES DE QUALIDADE:
    - Scores entre 0-100 para todos critérios
-   - priority_level alinhado com score (ex: score 79 deve ser HIGH, não CRITICAL)
+   - priority_level alinhado com score (ex: score 79 deve ser CRITICAL pois 75-100, NÃO HIGH que é 50-74)
    - Ranks únicos e sequenciais (1, 2, 3, ..., N)
    - Justificativas claras para cada critério
 

@@ -1,7 +1,7 @@
 # Sprint 1 - Integração das 7 Ferramentas Consultivas
 
-**Data:** 2025-11-20  
-**Sessão:** 37  
+**Data:** 2025-11-20
+**Sessão:** 37
 **Status:** [OK] COMPLETO E VALIDADO
 
 ---
@@ -23,7 +23,7 @@ Criado schema `DiagnosticToolsResult` para agregar outputs das 7 ferramentas:
 ```python
 class DiagnosticToolsResult(BaseModel):
     """Agregador de outputs das 7 ferramentas consultivas."""
-    
+
     swot_analysis: Optional[SWOTAnalysis] = None
     five_whys_analysis: Optional[FiveWhysAnalysis] = None
     kpi_framework: Optional[KPIFramework] = None
@@ -31,7 +31,7 @@ class DiagnosticToolsResult(BaseModel):
     benchmarking_report: Optional[BenchmarkReport] = None
     issue_tree: Optional[IssueTreeAnalysis] = None
     prioritization_matrix: Optional[PrioritizationMatrix] = None
-    
+
     execution_time: float
     tools_executed: List[str] = Field(default_factory=list)
     tools_failed: List[str] = Field(default_factory=list)
@@ -62,7 +62,7 @@ async def _run_consultative_tools(
     state: BSCState,
 ) -> DiagnosticToolsResult:
     """SPRINT 1: Executa 7 ferramentas consultivas em paralelo."""
-    
+
     # Preparar tasks async para execução paralela
     tasks = [
         asyncio.to_thread(self.generate_swot_analysis, client_profile, ...),
@@ -73,10 +73,10 @@ async def _run_consultative_tools(
         asyncio.to_thread(self.generate_issue_tree_analysis, client_profile, ...),
         asyncio.to_thread(self.generate_prioritization_matrix, items_to_prioritize=..., ...),
     ]
-    
+
     # Executar em paralelo com asyncio.gather
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     # Processar results e criar DiagnosticToolsResult
     return DiagnosticToolsResult(...)
 ```
@@ -89,30 +89,30 @@ Adicionada **ETAPA 3** para executar ferramentas consultivas entre a análise da
 async def _run_diagnostic_inner(self, state: BSCState) -> CompleteDiagnostic:
     # ETAPA 1: Análise paralela das 4 perspectivas BSC
     perspective_results = await self.run_parallel_analysis(client_profile, state)
-    
+
     # ETAPA 2: Recomendações preliminares
     preliminary_diagnostic = CompleteDiagnostic(...)
-    
+
     # ETAPA 3: Análises consultivas (7 ferramentas) - NOVO!
     tools_results = await self._run_consultative_tools(
         client_profile,
         preliminary_diagnostic,
         state
     )
-    
+
     # ETAPA 4: Consolidação enriquecida (usa tools_results)
     consolidated = await self.consolidate_diagnostic(
         perspective_results,
         tools_results  # Novo parâmetro!
     )
-    
+
     # ETAPA 5: Recomendações finais priorizadas
     recommendations = await self.generate_recommendations(
         perspective_results,
         consolidated,
         tools_results=tools_results
     )
-    
+
     # ETAPA 6: CompleteDiagnostic final com tools_results
     return CompleteDiagnostic(
         ...,
@@ -136,13 +136,13 @@ async def consolidate_diagnostic(
 ) -> ConsolidatedAnalysis:
     # Preparar contexto das 7 ferramentas
     context_tools = self._format_tools_results(tools_results) if tools_results else ""
-    
+
     # Formatar prompt de consolidação
     formatted_prompt = CONSOLIDATE_DIAGNOSTIC_PROMPT.format(
         perspective_analyses=analyses_text,
         consultative_analyses=context_tools  # NOVO!
     )
-    
+
     # ... (rest of the method)
 ```
 
@@ -154,7 +154,7 @@ Formata outputs das 7 ferramentas para o prompt:
 def _format_tools_results(self, tools_results: DiagnosticToolsResult) -> str:
     """Formata outputs das 7 ferramentas para o prompt."""
     sections = []
-    
+
     # SWOT Analysis
     if tools_results.swot_analysis:
         sections.append(f"""
@@ -164,10 +164,10 @@ def _format_tools_results(self, tools_results: DiagnosticToolsResult) -> str:
         **Oportunidades:** {tools_results.swot_analysis.opportunities}
         **Ameaças:** {tools_results.swot_analysis.threats}
         """)
-    
+
     # Five Whys, KPI, Objectives, Benchmarking, Issue Tree, Prioritization...
     # (similar formatting for each tool)
-    
+
     return "\n\n".join(sections)
 ```
 
@@ -498,6 +498,5 @@ tools_failed: List[str] = Field(default_factory=list)
 
 ---
 
-**Última Atualização:** 2025-11-20  
+**Última Atualização:** 2025-11-20
 **Próxima Revisão:** Após validação da otimização de paralelização
-

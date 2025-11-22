@@ -76,7 +76,7 @@ repos:
           - "--fail-under=7.0"  # Score minimo (tolerante para pre-commit)
         files: ^src/
 
-  # Hook customizado anti-emoji (CRITICO)
+  # Hooks customizados locais
   - repo: local
     hooks:
       - id: check-no-emoji
@@ -85,5 +85,14 @@ repos:
         language: system
         types: [python]
         pass_filenames: true
+        stages: [pre-commit]
+        verbose: true
+
+      - id: validate-pydantic-schemas
+        name: Valida json_schema_extra vs validators Pydantic
+        entry: python scripts/validate_pydantic_schemas.py
+        language: system
+        pass_filenames: false
+        files: ^src/memory/schemas\.py$
         stages: [pre-commit]
         verbose: true

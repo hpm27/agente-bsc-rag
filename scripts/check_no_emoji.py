@@ -23,19 +23,19 @@ from typing import List, Tuple
 # Ranges Unicode comuns de emojis e simbolos
 EMOJI_PATTERN = re.compile(
     "["
-    "\U0001F300-\U0001F9FF"  # Simbolos e pictogramas (emojis principais)
-    "\U0001F600-\U0001F64F"  # Emoticons
-    "\U0001F680-\U0001F6FF"  # Transporte e simbolos de mapa
-    "\U0001F1E0-\U0001F1FF"  # Bandeiras (iOS)
-    "\U00002600-\U000026FF"  # Simbolos diversos
-    "\U00002700-\U000027BF"  # Dingbats
-    "\U0000FE00-\U0000FE0F"  # Seletores de variacao
-    "\U00002B50-\U00002BFF"  # Estrelas e simbolos
-    "\U0001F900-\U0001F9FF"  # Simbolos suplementares
-    "\U0001FA00-\U0001FA6F"  # Simbolos estendidos-A
-    "\U0001FA70-\U0001FAFF"  # Simbolos estendidos-B
-    "\U00002190-\U000021FF"  # Setas (exceto basicas)
-    "\U000025A0-\U000025FF"  # Formas geometricas (exceto basicas)
+    "\U0001f300-\U0001f9ff"  # Simbolos e pictogramas (emojis principais)
+    "\U0001f600-\U0001f64f"  # Emoticons
+    "\U0001f680-\U0001f6ff"  # Transporte e simbolos de mapa
+    "\U0001f1e0-\U0001f1ff"  # Bandeiras (iOS)
+    "\U00002600-\U000026ff"  # Simbolos diversos
+    "\U00002700-\U000027bf"  # Dingbats
+    "\U0000fe00-\U0000fe0f"  # Seletores de variacao
+    "\U00002b50-\U00002bff"  # Estrelas e simbolos
+    "\U0001f900-\U0001f9ff"  # Simbolos suplementares
+    "\U0001fa00-\U0001fa6f"  # Simbolos estendidos-A
+    "\U0001fa70-\U0001faff"  # Simbolos estendidos-B
+    "\U00002190-\U000021ff"  # Setas (exceto basicas)
+    "\U000025a0-\U000025ff"  # Formas geometricas (exceto basicas)
     "]+",
     flags=re.UNICODE,
 )
@@ -146,4 +146,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

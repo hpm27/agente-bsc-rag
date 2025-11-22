@@ -29,6 +29,7 @@ def render_results(result: Dict[str, Any]) -> None:
     render_documents_section(result)
     render_judge_section(result)
 
+
 def _coerce_to_dict(obj: Any) -> Dict[str, Any]:
     """Converte objeto Pydantic ou dataclass para dict de forma segura."""
     if obj is None:
@@ -52,6 +53,7 @@ def _bullets_from_paragraph(text: str, max_items: int = 7) -> List[str]:
         return []
     # Quebras por pontuação comum; remove espaços extras e linhas vazias
     import re
+
     parts = re.split(r"[.;]\s+|\n+", text.strip())
     # Filtrar bullets com mínimo 20 chars (evitar fragmentos incompletos)
     bullets = [p.strip("- • ") for p in parts if p and len(p.strip()) >= 20]
@@ -141,15 +143,14 @@ def render_diagnostic_section(result: Dict[str, Any]) -> None:
                     f"<div style='font-size:0.90rem;color:#444;'>"
                     f"<strong>Proximos passos:</strong>"
                     f"<ul style='margin:6px 0 0 20px;line-height:1.6;'>"
-                    + "".join(f"<li>{ns}</li>" for ns in next_steps[:3]) +
-                    "</ul>"
-                    f"</div>"
-                    f"</div>",
+                    + "".join(f"<li>{ns}</li>" for ns in next_steps[:3])
+                    + "</ul>"
+                    "</div>"
+                    "</div>",
                     unsafe_allow_html=True,
                 )
 
     st.divider()
-
 
 
 def render_perspectives_section(result: Dict[str, Any]) -> None:
@@ -192,7 +193,7 @@ def render_single_perspective(response: Dict[str, Any]) -> None:
     st.markdown(
         f'<div style="background-color: {color}; padding: 10px; border-radius: 5px; margin-bottom: 10px;">'
         f'<strong style="color: white;">{agent_name}</strong>'
-        f'</div>',
+        f"</div>",
         unsafe_allow_html=True,
     )
 
@@ -321,7 +322,7 @@ def render_judge_section(result: Dict[str, Any]) -> None:
             f'border-radius: 5px; margin-bottom: 15px;">'
             f'<h3 style="color: white; margin: 0;">{icon} {verdict_text}</h3>'
             f'<p style="color: white; margin: 5px 0 0 0;">Score: {score:.2f}/1.0</p>'
-            f'</div>',
+            f"</div>",
             unsafe_allow_html=True,
         )
 
@@ -361,4 +362,3 @@ def render_judge_section(result: Dict[str, Any]) -> None:
             st.markdown("**Sugestoes de Melhoria:**")
             for suggestion in suggestions:
                 st.info(f"[INFO] {suggestion}")
-

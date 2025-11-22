@@ -87,4 +87,3 @@ class MemoryProvider(Protocol):
             Exception: Erros específicos do provider
         """
         ...
-

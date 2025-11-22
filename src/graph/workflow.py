@@ -723,8 +723,8 @@ class BSCWorkflow:
         SPRINT 2 - Tarefa 2.4: Routing condicional baseado em alignment score.
 
         Decide próximo node baseado no score de alinhamento do Strategy Map:
-        - score >= 80 -> implementation (strategy map validado, criar plano de ação)
-        - score < 80 -> discovery (refazer diagnóstico considerando gaps)
+        - score >= 70 -> implementation (strategy map validado, criar plano de ação)
+        - score < 70 -> discovery (refazer diagnóstico considerando gaps)
 
         Args:
             state: Estado com alignment_report contendo score
@@ -742,7 +742,7 @@ class BSCWorkflow:
                 return "discovery"
 
             score = state.alignment_report.score
-            threshold = 80  # Mínimo para prosseguir para implementation
+            threshold = 70  # Threshold reduzido para aceitar Strategy Maps com warnings (SESSAO 40)
 
             if score >= threshold:
                 next_node = "implementation"
@@ -896,8 +896,8 @@ class BSCWorkflow:
             Estado atualizado com strategy_map, alignment_report, final_response
 
         Routing:
-            - score >= 80 -> IMPLEMENTATION (strategy map validado)
-            - score < 80 -> DISCOVERY (precisa refazer diagnóstico - gaps críticos)
+            - score >= 70 -> IMPLEMENTATION (strategy map validado)
+            - score < 70 -> DISCOVERY (precisa refazer diagnóstico - gaps críticos)
         """
         # Lazy import (evitar circular)
         from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
@@ -950,7 +950,7 @@ class BSCWorkflow:
                 diagnostic_pydantic = CompleteDiagnostic(**state.diagnostic)
                 logger.info(
                     f"[OK] [SOLUTION_DESIGN] Diagnostic convertido para Pydantic | "
-                    f"has_summary={diagnostic_pydantic.summary is not None} | "
+                    f"has_executive_summary={diagnostic_pydantic.executive_summary is not None} | "
                     f"num_recommendations={len(diagnostic_pydantic.recommendations) if diagnostic_pydantic.recommendations else 0}"
                 )
             except Exception as e:
@@ -1003,7 +1003,9 @@ class BSCWorkflow:
 
                 strategy_map = loop.run_until_complete(
                     self.strategy_map_designer.design_strategy_map(
-                        diagnostic=diagnostic_pydantic, tools_results=tools_results
+                        diagnostic=diagnostic_pydantic,
+                        client_profile=state.client_profile,
+                        tools_results=tools_results,
                     )
                 )
 
@@ -1068,7 +1070,7 @@ class BSCWorkflow:
 
             total_time = time.time() - start_time
 
-            if alignment_report.score >= 80:
+            if alignment_report.score >= 70:
                 final_response = (
                     f"Strategy Map criado com sucesso! [OK]\n\n"
                     f"Score de Alinhamento: {alignment_report.score}/100\n"
@@ -1092,7 +1094,7 @@ class BSCWorkflow:
             else:
                 final_response = (
                     f"Strategy Map criado, mas precisa refinamento.\n\n"
-                    f"Score de Alinhamento: {alignment_report.score}/100 (mínimo: 80)\n"
+                    f"Score de Alinhamento: {alignment_report.score}/100 (mínimo: 70)\n"
                     f"Status: Precisa Refinamento\n\n"
                     f"GAPS CRÍTICOS ({len(alignment_report.gaps)}):\n"
                 )

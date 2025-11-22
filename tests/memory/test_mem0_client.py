@@ -25,7 +25,7 @@ from src.memory.schemas import ClientProfile, CompanyInfo, StrategicContext
 @pytest.fixture
 def mock_mem0_client():
     """Fixture que retorna MemoryClient mockado."""
-    with patch('src.memory.mem0_client.MemoryClient') as mock_client_class:
+    with patch("src.memory.mem0_client.MemoryClient") as mock_client_class:
         mock_instance = MagicMock()
         mock_client_class.return_value = mock_instance
         yield mock_instance
@@ -62,7 +62,7 @@ def mem0_wrapper(mock_mem0_client):
 
 def test_init_with_api_key():
     """Testa inicialização com API key fornecida."""
-    with patch('src.memory.mem0_client.MemoryClient'):
+    with patch("src.memory.mem0_client.MemoryClient"):
         wrapper = Mem0ClientWrapper(api_key="explicit_key")
         assert wrapper.api_key == "explicit_key"
 
@@ -71,7 +71,7 @@ def test_init_with_env_var():
     """Testa inicialização com API key do .env."""
     with (
         patch.dict(os.environ, {"MEM0_API_KEY": "env_key"}),
-        patch('src.memory.mem0_client.MemoryClient'),
+        patch("src.memory.mem0_client.MemoryClient"),
     ):
         wrapper = Mem0ClientWrapper()
         assert wrapper.api_key == "env_key"
@@ -89,7 +89,7 @@ def test_init_client_creation_failure():
     """Testa falha na criação do MemoryClient."""
     with (
         patch.dict(os.environ, {"MEM0_API_KEY": "test_key"}),
-        patch('src.memory.mem0_client.MemoryClient', side_effect=Exception("Connection failed")),
+        patch("src.memory.mem0_client.MemoryClient", side_effect=Exception("Connection failed")),
         pytest.raises(Mem0ClientError) as exc_info,
     ):
         Mem0ClientWrapper()
@@ -159,7 +159,7 @@ def test_save_profile_validation_error(mem0_wrapper):
 
     # Força erro de serialização
     with (
-        patch.object(invalid_profile, 'to_mem0', side_effect=Exception("Validation failed")),
+        patch.object(invalid_profile, "to_mem0", side_effect=Exception("Validation failed")),
         pytest.raises(ProfileValidationError),
     ):
         mem0_wrapper.save_profile(invalid_profile)
@@ -202,11 +202,9 @@ def test_load_profile_not_found_raises_error(mem0_wrapper, mock_mem0_client):
 
 def test_load_profile_dict_format(mem0_wrapper, sample_profile, mock_mem0_client):
     """Testa carregamento quando Mem0 retorna dict ao invés de objeto."""
-    mock_mem0_client.get_all.return_value = [{
-        "metadata": {
-            "profile_data": sample_profile.to_mem0()
-        }
-    }]
+    mock_mem0_client.get_all.return_value = [
+        {"metadata": {"profile_data": sample_profile.to_mem0()}}
+    ]
 
     profile = mem0_wrapper.load_profile("test_client_123")
 
@@ -244,13 +242,10 @@ def test_update_profile_not_found(mem0_wrapper, mock_mem0_client):
 
 def test_deep_update_nested_dict(mem0_wrapper):
     """Testa merge recursivo de dicionários nested."""
-    base = {
-        "company": {"name": "Test", "sector": "Tech"},
-        "engagement": {"phase": "ONBOARDING"}
-    }
+    base = {"company": {"name": "Test", "sector": "Tech"}, "engagement": {"phase": "ONBOARDING"}}
     updates = {
         "company": {"sector": "Finance"},  # Atualiza só sector
-        "engagement": {"phase": "DISCOVERY"}
+        "engagement": {"phase": "DISCOVERY"},
     }
 
     mem0_wrapper._deep_update(base, updates)
@@ -269,10 +264,7 @@ def test_search_profiles_success(mem0_wrapper, sample_profile, mock_mem0_client)
     """Testa busca semântica bem-sucedida de ClientProfiles."""
     # Mock resposta do Mem0
     mock_result = MagicMock()
-    mock_result.metadata = {
-        "profile_data": sample_profile.to_mem0(),
-        "user_id": "test_client_123"
-    }
+    mock_result.metadata = {"profile_data": sample_profile.to_mem0(), "user_id": "test_client_123"}
     mock_mem0_client.search.return_value = [mock_result]
 
     profiles = mem0_wrapper.search_profiles("empresas de tecnologia", limit=5)
@@ -318,10 +310,7 @@ def test_search_profiles_with_corrupted_data(mem0_wrapper, sample_profile, mock_
 def test_save_profile_retry_on_connection_error(mem0_wrapper, sample_profile, mock_mem0_client):
     """Testa retry automático em falha de conexão (save_profile)."""
     # Primeira chamada falha, segunda sucede
-    mock_mem0_client.add.side_effect = [
-        ConnectionError("Network error"),
-        {"success": True}
-    ]
+    mock_mem0_client.add.side_effect = [ConnectionError("Network error"), {"success": True}]
 
     result = mem0_wrapper.save_profile(sample_profile)
 
@@ -335,10 +324,7 @@ def test_load_profile_retry_on_timeout_error(mem0_wrapper, sample_profile, mock_
     mock_memory.metadata = {"profile_data": sample_profile.to_mem0()}
 
     # Primeira chamada falha, segunda sucede
-    mock_mem0_client.get_all.side_effect = [
-        TimeoutError("Timeout"),
-        [mock_memory]
-    ]
+    mock_mem0_client.get_all.side_effect = [TimeoutError("Timeout"), [mock_memory]]
 
     profile = mem0_wrapper.load_profile("test_client_123")
 
@@ -374,4 +360,3 @@ Cobertura por categoria:
 
 Cobertura estimada: >= 90%
 """
-

@@ -112,4 +112,3 @@ class Mem0Provider:
             Mem0ClientError: Erros de comunicação ou API
         """
         return self.client.search_profiles(query, limit)
-

@@ -6,6 +6,7 @@ ONBOARDING -> DISCOVERY -> APPROVAL -> SOLUTION_DESIGN -> IMPLEMENTATION
 IMPORTANTE: Zero emojis (memoria [[9776249]], Windows cp1252).
 """
 
+import asyncio
 from uuid import uuid4
 
 import streamlit as st
@@ -166,7 +167,17 @@ if user_input:
             )
 
             # Executar workflow (checkpointer carrega estado anterior automaticamente!)
-            result = workflow.graph.invoke(initial_state, config=config)
+            # CORREÇÃO SESSAO 40: Usar pattern manual asyncio porque implementation_handler é async
+            # asyncio.run() FALHA em Streamlit ScriptRunner.scriptThread (Python 3.12+)
+            # Solução validada: [[memory:10138608]] - pattern manual get_running_loop/new_event_loop
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                # Sem loop em thread customizada -> criar novo
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+
+            result = loop.run_until_complete(workflow.graph.ainvoke(initial_state, config=config))
 
             print(
                 f"[DEBUG STREAMLIT] Workflow concluido | metadata keys: {list(result.get('metadata', {}).keys())}"

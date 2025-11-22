@@ -1,7 +1,7 @@
 # Sprint 1 - Fix Crítico: RAG Usage nos Specialist Agents
 
-**Data:** 2025-11-20 (Tarde)  
-**Sessão:** 37  
+**Data:** 2025-11-20 (Tarde)
+**Sessão:** 37
 **Status:** [OK] RESOLVIDO E VALIDADO
 
 ---
@@ -32,10 +32,10 @@ async def ainvoke(self, query: str, chat_history: List[Dict[str, str]] = None) -
         SystemMessage(content=self.system_prompt),
         HumanMessage(content=query)
     ]
-    
+
     # LLM com ferramentas bound, mas NUNCA chamadas explicitamente
     response = await self.llm_with_tools.ainvoke(messages)
-    
+
     return {
         "output": response.content,  # Resposta GENÉRICA (sem RAG!)
         "agent_name": self.name
@@ -71,21 +71,21 @@ async def ainvoke(self, query: str, chat_history: List[Dict[str, str]] = None) -
                     logger.info(f"[{self.name}] Recuperou {len(result)} chars de contexto RAG")
             except Exception as e:
                 logger.warning(f"[{self.name}] Erro ao buscar contexto RAG: {e}")
-    
+
     # STEP 2: Construir mensagens com contexto RAG
     messages = [
         SystemMessage(content=self.system_prompt)
     ]
-    
+
     # Adicionar contexto RAG às mensagens
     if context_parts:
         messages.insert(1, SystemMessage(content="\n".join(context_parts)))
-    
+
     messages.append(HumanMessage(content=query))
-    
+
     # STEP 3: Invocar LLM com contexto RAG
     response = await self.llm_with_tools.ainvoke(messages)
-    
+
     return {
         "output": response.content,  # Resposta ENRIQUECIDA com RAG!
         "agent_name": self.name
@@ -218,5 +218,5 @@ logger.info(f"[{self.name}] Recuperou {len(result)} chars de contexto RAG")
 
 ---
 
-**Última Atualização:** 2025-11-20  
+**Última Atualização:** 2025-11-20
 **Status:** [OK] RESOLVIDO E VALIDADO

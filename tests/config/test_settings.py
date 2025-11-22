@@ -3,6 +3,7 @@ Testes unitários para config/settings.py - FASE 1.6
 
 Valida configurações Mem0 e função validate_memory_config().
 """
+
 import os
 import sys
 from pathlib import Path
@@ -183,9 +184,7 @@ class TestValidateMemoryConfig:
         mock_factory.list_providers.assert_called_once()
 
     @patch("config.settings.MemoryFactory")
-    def test_validate_memory_config_provider_not_registered(
-        self, mock_factory, monkeypatch
-    ):
+    def test_validate_memory_config_provider_not_registered(self, mock_factory, monkeypatch):
         """Teste 10: Validação deve falhar se provider não estiver registrado."""
         # Setup
         env_vars = {
@@ -240,4 +239,3 @@ class TestValidateMemoryConfig:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])
-
