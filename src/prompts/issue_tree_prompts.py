@@ -196,18 +196,26 @@ LEAF NODES (solucoes finais identificadas):
 
 INSTRUCOES:
 1. Analise os leaf nodes como solucoes finais do problema raiz
-2. Para cada leaf node (ou grupo relacionado):
-   - Transforme em caminho solucao ACIONAVEL
+2. CONSOLIDE leaf nodes relacionados em solution paths principais:
+   - Agrupe 2-4 leaf nodes similares em 1 solution path (evite redundancia)
+   - Cada solution path deve ser UNICO e ACIONAVEL
    - Especifique COMO resolver (nao apenas O QUE resolver)
    - Priorize por impacto BSC (4 perspectivas)
    - Use conhecimento BSC para enriquecer recomendacoes
-3. Quantidade ideal: Min 2, Max 8 caminhos solucao (depende de quantos leaf nodes)
-4. Formato: Lista de strings, cada string = 1 caminho solucao (20-100 palavras)
-5. Exemplos validos:
+3. QUANTIDADE IDEAL (baseado em McKinsey/BCG 2025):
+   - Minimo: 2 solution paths (problemas muito simples)
+   - Tipico BSC: 8-12 solution paths (balanceado nas 4 perspectivas)
+   - Maximo: 15 solution paths (problemas muito complexos)
+   - RATIO TARGET: solution_paths >= leaf_nodes / 3 (consolidacao inteligente)
+4. Formato: Lista de strings, cada string = 1 caminho solucao (30-150 palavras)
+5. Exemplos validos (BSC-specific):
    - "Aumentar volume de vendas via expansao marketing digital nas redes sociais (Meta Ads + Google Ads), focando lead generation com ROI > 3:1 conforme framework BSC perspectiva Clientes"
    - "Reduzir custos fixos atraves de automacao de processos manuais (RPA em back-office), liberando 30% da capacidade equipe para atividades estrategicas conforme perspectiva Processos Internos"
+   - "Implementar programa de capacitacao em metodologias ageis (Scrum + Lean) para equipes de TI e operacoes, acelerando time-to-market em 40% conforme perspectiva Aprendizado e Crescimento"
 
 TOM: Consultivo, especifico, acionavel (nao generico como "melhorar vendas")
+
+IMPORTANTE: Se voce tem 30+ leaf nodes, CONSOLIDE em 10-12 solution paths principais. Qualidade > Quantidade.
 
 RETORNE JSON ESTRUTURADO com lista de solution_paths e reasoning breve.
 """

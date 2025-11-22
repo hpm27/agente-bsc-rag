@@ -579,9 +579,13 @@ class IssueTreeAnalysis(BaseModel):
         if not leaf_nodes:
             issues.append("Arvore nao tem leaf nodes (decomposicao incompleta)")
 
-        if len(self.solution_paths) < len(leaf_nodes) // 2:
+        # SESSAO 40: Threshold ajustado baseado em McKinsey/BCG best practices 2025
+        # Fonte: myconsultingoffer.org - Issue Tree Guide 2025
+        # Ideal: solution_paths >= leaf_nodes / 3 (mais tolerante que // 2)
+        # Razão: LLM pode consolidar múltiplos leaf nodes em soluções principais (design válido)
+        if len(self.solution_paths) < len(leaf_nodes) // 3:
             issues.append(
-                f"Poucas solution paths ({len(self.solution_paths)}) vs leaf nodes ({len(leaf_nodes)})"
+                f"Poucas solution paths ({len(self.solution_paths)}) vs leaf nodes ({len(leaf_nodes)}). Esperado >= {len(leaf_nodes) // 3}"
             )
 
         # Calcular confidence (heuristica: quanto menos issues, maior confidence)
