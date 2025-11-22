@@ -72,7 +72,9 @@ class Settings(BaseSettings):
     # GPT-5 Configuration (para Contextual Retrieval)
     gpt5_model: str = "gpt-5-2025-08-07"
     gpt5_max_completion_tokens: int = 128000
-    gpt5_reasoning_effort: str = "minimal"  # "minimal", "low", "medium", "high"
+    gpt5_reasoning_effort: str = (
+        "medium"  # GPT-5.1 Thinking: apenas "medium" | GPT-5.1 Instant: "none", "low", "medium", "high"
+    )
 
     # Onboarding Agent Configuration (GPT-5 family)
     onboarding_llm_model: str = (

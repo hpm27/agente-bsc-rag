@@ -183,7 +183,9 @@ class WhyIteration(BaseModel):
         min_length=10, max_length=500, description="Pergunta 'Por que?' formulada"
     )
     answer: str = Field(
-        min_length=10, max_length=1000, description="Resposta que leva a proxima iteracao"
+        min_length=10,
+        max_length=85000,
+        description="Resposta que leva a proxima iteracao (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
     confidence: float = Field(
         ge=0.0,
@@ -229,7 +231,9 @@ class FiveWhysAnalysis(BaseModel):
         min_length=3, max_length=7, description="Lista de iteracoes 'Por que?' (min 3, max 7)"
     )
     root_cause: str = Field(
-        min_length=20, max_length=1000, description="Causa raiz fundamental identificada"
+        min_length=20,
+        max_length=85000,
+        description="Causa raiz fundamental identificada (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
     confidence_score: float = Field(
         ge=0.0, le=100.0, description="Confianca de que root cause foi atingida (0-100%)"
@@ -1197,8 +1201,8 @@ class ConsolidatedAnalysis(BaseModel):
     )
     executive_summary: str = Field(
         min_length=200,
-        max_length=10000,
-        description="Resumo executivo da análise diagnóstica (200-2000 caracteres)",
+        max_length=85000,
+        description="Resumo executivo da análise diagnóstica (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
     next_phase: Literal["APPROVAL_PENDING"] = Field(
         default="APPROVAL_PENDING",
@@ -1294,7 +1298,9 @@ class CompleteDiagnostic(BaseModel):
         default_factory=list, description="Synergies cross-perspective identificadas"
     )
     executive_summary: str = Field(
-        min_length=100, description="Resumo executivo completo do diagnóstico"
+        min_length=100,
+        max_length=85000,
+        description="Resumo executivo completo do diagnóstico (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
     next_phase: str = Field(
         default="APPROVAL_PENDING", description="Próxima fase do workflow consultivo"
@@ -1982,8 +1988,8 @@ class BenchmarkComparison(BaseModel):
     )
     insight: str = Field(
         min_length=50,
-        max_length=500,
-        description="Interpretação qualitativa do gap e suas implicações",
+        max_length=1000,
+        description="Interpretação qualitativa do gap e suas implicações (detalhada, até 1000 chars)",
     )
     priority: Literal["HIGH", "MEDIUM", "LOW"] = Field(
         description="Prioridade de ação para fechar o gap"
@@ -2527,7 +2533,9 @@ class ActionItem(BaseModel):
     )
 
     description: str = Field(
-        min_length=20, max_length=1000, description="Descrição detalhada da ação a ser executada"
+        min_length=20,
+        max_length=85000,
+        description="Descrição detalhada da ação a ser executada (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
 
     perspective: Literal[
@@ -2556,8 +2564,8 @@ class ActionItem(BaseModel):
 
     success_criteria: str = Field(
         min_length=10,
-        max_length=500,
-        description="Critérios específicos para medir sucesso da ação",
+        max_length=1000,
+        description="Critérios específicos para medir sucesso da ação (detalhados, até 1000 chars)",
     )
 
     dependencies: list[str] = Field(
@@ -2646,11 +2654,15 @@ class ActionPlan(BaseModel):
     by_perspective: dict = Field(description="Dicionário com ações agrupadas por perspectiva BSC")
 
     summary: str = Field(
-        min_length=50, max_length=2000, description="Resumo executivo do plano de ação"
+        min_length=50,
+        max_length=85000,
+        description="Resumo executivo do plano de ação (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
 
     timeline_summary: str = Field(
-        min_length=30, max_length=1000, description="Resumo do cronograma de execução"
+        min_length=30,
+        max_length=85000,
+        description="Resumo do cronograma de execução (limite LLM: 85K chars = 90% GPT-5/Claude output)",
     )
 
     model_config = ConfigDict(
@@ -3346,7 +3358,9 @@ class Feedback(BaseModel):
         description="Avaliação numérica de 1-5 (1=muito insatisfeito, 5=muito satisfeito)",
     )
     comment: str | None = Field(
-        None, max_length=1000, description="Feedback textual opcional (máximo 1000 caracteres)"
+        None,
+        max_length=3000,
+        description="Feedback textual opcional (detalhado, até 3000 caracteres)",
     )
     diagnostic_id: str = Field(description="ID único do diagnóstico avaliado")
     user_id: str = Field(description="ID do usuário que forneceu o feedback")

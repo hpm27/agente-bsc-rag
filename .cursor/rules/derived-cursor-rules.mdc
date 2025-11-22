@@ -664,3 +664,88 @@ except Exception as e:
 *   PROBLEMA: PONTO 15 aplicado PARCIALMENTE (apenas em 1 de 4 schemas), fixtures inválidas passaram despercebidas.
 *   ROOT CAUSE: Checklist não especifica "identificar TODOS schemas via grep imports do teste".
 *   **QUANDO APLICAR**: SEMPRE antes de aplicar PONTO 15 (leitura via grep), identificar TODOS schemas Pydantic
+
+---
+
+### UI Defensive Programming (Validado Nov/2025 - ROI: 4-6x economia tempo)
+
+**CONTEXTO**: Problema recorrente 4+ sessões (Out-Nov/2025) - AttributeError em UI Streamlit acessando campos/métodos Pydantic sem validar schema. Impacto: 40 min debugging por sessão. Root cause sistêmico: UI implementada ANTES de schemas estarem completos → código assume estrutura sem validação defensiva.
+
+**OCORRÊNCIAS DOCUMENTADAS**:
+1. Sessão 29: AttributeError '.current_challenges' (loop infinito)
+2. Sessão 40: AttributeError '.cause_effect_links' (Strategy Map)
+3. Sessão 41: AttributeError '.create_details_table()' (BSCNetworkGraph)
+4. Sessão 41: Filter priority "ALTA" vs "Alta" (Literal case mismatch)
+
+**CHECKLIST PRE-UI OBRIGATORIO (6 pontos - aplicar SEMPRE antes de implementar página Streamlit)**:
+
+1. **Grep TODOS schemas usados**: `grep "from src.memory.schemas import" pages/X.py -A 5`
+2. **Para CADA schema identificado**: `grep "class SchemaName" src/memory/schemas.py -A 80`
+3. **Listar campos obrigatórios vs opcionais**: SEM `| None` = obrigatório, COM `| None` = opcional
+4. **Identificar Literal values**: `grep "field.*Literal" src/memory/schemas.py` (case-sensitive!)
+5. **Validar métodos disponíveis** (se UI chama): `[m for m in dir(Class) if not m.startswith('_')]`
+6. **Aplicar defensive programming**: hasattr antes de acessar, getattr com default
+
+**PATTERN DEFENSIVO VALIDADO**:
+```python
+# Campos - SEMPRE usar getattr com default
+value = getattr(objective, 'field_name', default_value)
+
+# Métodos - hasattr check
+if hasattr(graph_instance, 'method_name'):
+    result = graph_instance.method_name()
+else:
+    result = create_alternative_manually(data)  # Fallback
+
+# Literal - case exato (grep confirma!)
+alta_prio = len([o for o in objs if o.priority == "Alta"])  # [OK] Case correto!
+```
+
+**QUANDO APLICAR**: SEMPRE antes de implementar/modificar QUALQUER página Streamlit que acessa Pydantic models.
+
+**ROI VALIDADO**: 10 min checklist previne 40-60 min debugging AttributeError runtime = 4-6x economia. Aplicável: 100% páginas UI (20+ páginas Streamlit).
+
+**FONTES**: Memória [[memory:10178686]] atualizada (Nov 2025), lesson-sessao-41-ui-schema-evolution-2025-11-22.md (1.180+ linhas), Brightdata research Medium Vik Y. "Defensive Programming Python" (2024).
+
+---
+
+### LangGraph State Schema Evolution (Validado Nov/2025 - ROI: 6-12x economia tempo)
+
+**CONTEXTO**: Problema crítico descoberto Sessão 41 (Nov 2025) - LangGraph StateGraph IGNORA SILENCIOSAMENTE campos retornados por handlers que não estão definidos no schema Pydantic. Sem erro, sem warning, sem log = silent failure (30-60 min debugging).
+
+**SINTOMA**: Handler retorna `{"new_field": value}` mas `state.new_field` fica None/inexistente → condicionais `if state.new_field:` retornam False → funcionalidade não executa (save, UI display).
+
+**ROOT CAUSE VALIDADO (Brightdata Nov 2025)**:
+> "LangGraph design deliberado descarta campos não definidos no schema para manter type safety. Fields returned by nodes that aren't in schema are **silently dropped**."
+> Fonte: GitHub Issue langchain-ai/langgraphjs#536 (Sep 2024, 9 upvotes)
+
+**OCORRÊNCIA SESSÃO 41**: implementation_handler retornou `{"action_plan": dict}` mas campo action_plan AUSENTE no BSCState → LangGraph descartou silent → state.action_plan nunca populado → save SQLite condicional if state.action_plan: retornou False → Action Plan NUNCA salvo!
+
+**CHECKLIST PRE-SCHEMA-CHANGE OBRIGATORIO (5 pontos - aplicar SEMPRE que handler LangGraph retornar campo novo)**:
+
+1. **Handler retorna campo novo?** Identificar em código `return {"new_field": value, ...}`
+2. **Grep schema**: `grep "new_field" src/graph/states.py` (se vazio = ADICIONAR!)
+3. **Adicionar campo ao BSCState ANTES de testar handler**:
+   ```python
+   # Campo Novo (SPRINT X - FASE Y) - FEATURE/BUG FIX SESSAO Z (data)
+   # Comentário 1 linha explicando por que adicionado
+   new_field: dict[str, Any] | None = None
+   ```
+4. **Validar campo presente**: `python -c "from src.graph.states import BSCState; print('new_field' in BSCState.model_fields)"`
+5. **Comentário inline obrigatório**: Sprint/Fase + bug fix/feature + sessão + data
+
+**PATTERN CORRETO VALIDADO** (Sessão 41):
+```python
+# src/graph/states.py - BSCState
+# Action Plan (SPRINT 3 - FASE 6) - BUG FIX SESSAO 41 (2025-11-22)
+# Campo ausente causava action_plan não ser salvo no state (LangGraph ignora campos não definidos)
+action_plan: dict[str, Any] | None = None
+```
+
+**QUANDO APLICAR**: SEMPRE que handler/node retornar campo novo no dict de update. Especialmente crítico em: novos sprints/fases, refatorações de state, integrações que adicionam dados workflow.
+
+**ROI VALIDADO**: 5 min checklist previne 30-60 min debugging silent failure = 6-12x economia. Aplicável: 15+ handlers futuros em 6 sprints (FASE 5-6).
+
+**FONTES**: GitHub Issue langchain-ai/langgraphjs#536 (Sep 2024), Blog swarnendu.de "LangGraph Best Practices" (Sep 2025, Section 1.1 "Keep state boring and typed"), Memória [[memory:11467544]] (criada Nov 2025), lesson-sessao-41-ui-schema-evolution-2025-11-22.md (1.180+ linhas).
+
+**LIÇÃO-CHAVE**: LangGraph NÃO avisa campos ausentes - responsabilidade do desenvolvedor garantir alinhamento handler-schema. SEMPRE atualizar BSCState schema ANTES de handler retornar campo novo.

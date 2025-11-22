@@ -133,7 +133,7 @@ class ClientProfileAgent:
             model=settings.gpt5_model,
             temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
             max_completion_tokens=settings.gpt5_max_completion_tokens,
-            reasoning_effort="low",  # Low reasoning para extração estruturada (parâmetro direto)
+            reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1: 'medium' para Thinking, 'low'/'none' para Instant)
         )
 
         logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {self.llm.model_name}")

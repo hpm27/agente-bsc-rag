@@ -176,6 +176,10 @@ class BSCState(BaseModel):
     strategy_map: StrategyMap | None = None
     alignment_report: AlignmentReport | None = None
 
+    # Action Plan (SPRINT 3 - FASE 6) - BUG FIX SESSAO 41 (2025-11-22)
+    # Campo ausente causava action_plan não ser salvo no state (LangGraph ignora campos não definidos)
+    action_plan: dict[str, Any] | None = None
+
     model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
 
     def model_dump(self, *args, **kwargs):  # type: ignore[override]

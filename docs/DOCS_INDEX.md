@@ -216,6 +216,7 @@
 - `docs/lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` - 5 Whys Root Cause Debugging (FASE 3.4, mock múltiplas chamadas, itertools.cycle, 950+ linhas, 15-20 min economizados)
 - `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
 - `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` - Streamlit UI & Debugging Complexo (FASE 2.7, 7 problemas, Sequential Thinking, Brightdata research, prompt schema alignment, UI best practices, 800+ linhas, ROI 50-67% debugging)
+- `docs/lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` - UI Defensive Programming + LangGraph Schema Evolution (Sessão 41, 6 bugs críticos, 3 antipadrões recorrentes, AttributeError UI 4x, LangGraph silent failure, 3 checklists acionáveis, 1.180+ linhas, ROI 60-90 min/sessão)
 
 ---
 
@@ -471,6 +472,7 @@
 | **KPI Testing 5 Whys Debugging (FASE 3.4)** | `lessons/lesson-kpi-testing-5whys-methodology-2025-10-19.md` (950+L) | 5 Whys meta-análise, mock múltiplas chamadas, itertools.cycle, 15-20 min economizados, checklist ponto 14 | [OK] |
 | **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | [OK] |
 | **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | [OK] |
+| **UI Defensive + LangGraph Schema Evolution (Sessão 41)** | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (1.180+L) | 6 bugs críticos, AttributeError UI 4x recorrente, LangGraph silent failure, 3 checklists acionáveis (PRE-UI, PRE-SCHEMA-CHANGE, PRE-MAX-LENGTH), ROI 60-90 min/sessão | [OK] |
 
 ---
 
@@ -548,6 +550,9 @@
 | **Formatar UI Streamlit (cards, badges)** | streamlit-ui, cards, layout, best-practices | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 400-600) | `app/components/results.py` |
 | **Debuggar loop infinito LLM** | debugging, sequential-thinking, loop-infinito | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 1-200) | - |
 | **Alinhar prompt com schema Pydantic** | prompt-schema, validation-error, pydantic | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 200-400) | `src/prompts/*.py` |
+| **Prevenir AttributeError UI (hasattr/getattr)** | ui-defensive, hasattr, getattr, pydantic-schema | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-UI 6 pontos) | `pages/*.py` |
+| **LangGraph schema evolution (campos novos)** | langgraph-state, schema-evolution, silent-failure | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-SCHEMA-CHANGE 5 pontos) | `src/graph/states.py` |
+| **max_length Pydantic generoso para LLM** | pydantic-limits, llm-quality, max-length | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-MAX-LENGTH 4 pontos) | `src/memory/schemas.py` |
 | **Adicionar metadados docs** | metadata, index-json | `data/README.md` (Auto-Geração seção) | `scripts/build_knowledge_base.py` |
 | **Entender lições aprendidas** | lessons, antipadrões | `lessons/` directory | - |
 | **Ver progresso histórico** | history, mvp | `history/MVP_100_COMPLETO.md` | - |

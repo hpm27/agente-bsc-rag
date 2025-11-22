@@ -59,7 +59,9 @@ with col2:
 
 with col3:
     if objectives:
-        alta_prio_obj = len([o for o in objectives if o.priority == "ALTA"])
+        # BUG FIX (Sessao 41, 2025-11-22): StrategicObjective.priority usa "Alta" (nao "ALTA")
+        # Schema: Literal["Alta", "Média", "Baixa"] - case-sensitive!
+        alta_prio_obj = len([o for o in objectives if o.priority == "Alta"])
         pct = (alta_prio_obj / total_obj * 100) if total_obj else 0
         st.metric("Objetivos Alta Prioridade", alta_prio_obj, delta=f"{pct:.0f}%")
     else:

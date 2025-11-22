@@ -50,7 +50,7 @@ def real_llm():
         model=settings.onboarding_llm_model,
         temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
         max_completion_tokens=settings.gpt5_max_completion_tokens,
-        reasoning_effort="low",  # Low reasoning para conversação rápida
+        reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1)
     )
 
 

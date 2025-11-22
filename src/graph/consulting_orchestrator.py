@@ -78,7 +78,7 @@ class ConsultingOrchestrator:
                 model=settings.onboarding_llm_model,
                 temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
                 max_completion_tokens=settings.gpt5_max_completion_tokens,
-                reasoning_effort="low",  # Low reasoning para conversação rápida (parâmetro direto)
+                reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1)
             )
 
             # Obter memory client a partir do provider (evita inicialização indevida em testes)
@@ -671,7 +671,7 @@ class ConsultingOrchestrator:
                 model=settings.router_llm_model,  # GPT-5 mini
                 temperature=1.0,  # GPT-5 family exige temperature=1.0
                 max_completion_tokens=4000,  # Espaço para Chain of Thought completo
-                reasoning_effort="medium",  # Raciocínio balanceado
+                reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1)
             )
 
             # Construir contexto para CoT
@@ -1047,7 +1047,7 @@ class ConsultingOrchestrator:
             model=settings.router_llm_model,  # gpt-5-mini-2025-08-07
             temperature=1.0,  # GPT-5 family exige temperature=1.0
             max_completion_tokens=512,  # Classificacao usa poucos tokens
-            reasoning_effort="low",  # Low reasoning para tarefa simples
+            reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1)
         )
 
         # Estruturar output Pydantic

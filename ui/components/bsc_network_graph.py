@@ -13,6 +13,15 @@ import plotly.graph_objects as go
 from src.memory.schemas import StrategicObjective
 from ui.styles.bsc_colors import PERSPECTIVE_COLORS
 
+# MELHORIAS SESSAO 41 (2025-11-22): Cores Material Design vibrantes
+# Fonte: Data Visualization Best Practices 2025 + Plotly Official Docs
+PERSPECTIVE_COLORS_VIVID = {
+    "Financeira": "#EF5350",  # Vermelho vibrante Material Design
+    "Clientes": "#FFC107",  # Amarelo ouro
+    "Processos Internos": "#42A5F5",  # Azul profissional
+    "Aprendizado e Crescimento": "#66BB6A",  # Verde crescimento
+}
+
 
 class BSCNetworkGraph:
     """Componente NetworkX + Plotly para Strategy Map BSC.
@@ -94,17 +103,23 @@ class BSCNetworkGraph:
         # Criar traces de nos (objectives)
         node_trace = self._create_node_trace(pos, filter_perspective, filter_priority)
 
+        # MELHORIA SESSAO 41: Annotations separadas para texto legível
+        # Fonte: Plotly Text Annotations Best Practices 2025
+        annotations = self._create_text_annotations(pos)
+
         # Criar figura
         fig = go.Figure(
             data=[edge_trace, node_trace],
             layout=go.Layout(
                 title="Strategy Map BSC - Conexoes Causa-Efeito",
+                annotations=annotations,  # [OK] NOVO! Texto separado, sem sobreposição
                 showlegend=True,
                 hovermode="closest",
-                margin=dict(b=20, l=5, r=5, t=40),
+                margin=dict(b=20, l=5, r=5, t=60),  # Margem top aumentada
                 xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                 yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                 plot_bgcolor="white",
+                height=600,  # Altura fixa para melhor visualização
             ),
         )
 
@@ -137,10 +152,25 @@ class BSCNetworkGraph:
             "Aprendizado e Crescimento": 0,
         }
 
+        # MELHORIA SESSAO 41: Layout horizontal mais espaçado
+        # Fonte: Network Graph Best Practices 2025
         for persp, nodes in by_perspective.items():
             y = y_levels[persp]
+            num_nodes = len(nodes)
+
+            # Espaçamento dinâmico - mais nós = mais espaço
+            if num_nodes == 1:
+                spacing = 0.5  # Centro
+            elif num_nodes == 2:
+                spacing_list = [0.3, 0.7]
+            elif num_nodes == 3:
+                spacing_list = [0.2, 0.5, 0.8]
+            else:
+                # Distribuição uniforme para 4+ nós
+                spacing_list = [0.1 + (i * 0.8 / (num_nodes - 1)) for i in range(num_nodes)]
+
             for i, node in enumerate(nodes):
-                x = (i + 1) / (len(nodes) + 1)  # Distribuir entre 0 e 1
+                x = spacing_list[i] if num_nodes > 1 else spacing
                 pos[node] = (x, y)
 
         return pos
@@ -164,13 +194,16 @@ class BSCNetworkGraph:
                 edge_x.extend([x0, x1, None])
                 edge_y.extend([y0, y1, None])
 
+        # MELHORIA SESSAO 41: Arestas mais visíveis
+        # Fonte: Hierarchical Graph Visualization Guide 2025
         return go.Scatter(
             x=edge_x,
             y=edge_y,
-            line=dict(width=2, color="#888"),
+            line=dict(width=3, color="#555"),  # Mais grosso e escuro
             hoverinfo="none",
             mode="lines",
             showlegend=False,
+            name="Dependencias",
         )
 
     def _create_node_trace(
@@ -220,11 +253,11 @@ class BSCNetworkGraph:
 
             node_opacity.append(opacity)
 
-            # Cor baseada em perspectiva
-            color = PERSPECTIVE_COLORS.get(persp, "#CCCCCC")
+            # MELHORIA SESSAO 41: Cores vibrantes Material Design
+            color = PERSPECTIVE_COLORS_VIVID.get(persp, "#CCCCCC")
             node_color.append(color)
 
-            # Texto do no
+            # Texto do no (usado apenas para hover, nao para display)
             node_text.append(node)
 
             # Hover info
@@ -236,24 +269,66 @@ class BSCNetworkGraph:
                 hover_text += f"KPIs: {', '.join(kpis[:3])}"
             node_hover.append(hover_text)
 
+        # MELHORIA SESSAO 41: Nós menores SEM texto sobreposto
+        # Fonte: Plotly Network Graph Best Practices + Community 2025
         return go.Scatter(
             x=node_x,
             y=node_y,
-            mode="markers+text",
+            mode="markers",  # [REMOVIDO] 'text' - evita sobreposição!
             hoverinfo="text",
-            text=node_text,
             hovertext=node_hover,
-            textposition="top center",
             marker=dict(
                 showscale=False,
                 color=node_color,
-                size=30,
+                size=20,  # Reduzido de 30 para 20
                 opacity=node_opacity,
                 line_width=2,
-                line_color="#424242",
+                line_color="white",  # Borda branca para contraste
             ),
             showlegend=False,
+            name="Objetivos",
         )
+
+    def _create_text_annotations(self, pos: dict[str, tuple[float, float]]) -> list[dict]:
+        """Cria annotations de texto SEPARADAS dos nós (evita sobreposição).
+
+        MELHORIA SESSAO 41 (2025-11-22): Pattern recomendado Plotly Community
+        Fonte: https://plotly.com/python/text-and-annotations/ + Stack Overflow
+
+        Args:
+            pos: Posicoes dos nos {node_name: (x, y)}
+
+        Returns:
+            list[dict]: Lista de annotations Plotly
+        """
+        annotations = []
+
+        for node in self.graph.nodes():
+            if node not in pos:
+                continue
+
+            x, y = pos[node]
+
+            # Truncar texto longo (max 40 chars)
+            display_text = node[:40] + "..." if len(node) > 40 else node
+
+            annotations.append(
+                dict(
+                    x=x,
+                    y=y + 0.15,  # Posição ACIMA do nó (evita sobreposição)
+                    text=f"<b>{display_text}</b>",
+                    showarrow=False,
+                    font=dict(size=9, color="#1f1f1f", family="Arial"),
+                    bgcolor="rgba(255, 255, 255, 0.85)",  # Fundo semi-transparente
+                    borderpad=4,
+                    bordercolor="#ccc",
+                    borderwidth=1,
+                    xanchor="center",
+                    yanchor="bottom",
+                )
+            )
+
+        return annotations
 
     def get_graph_stats(self) -> dict[str, int]:
         """Retorna estatisticas do grafo.

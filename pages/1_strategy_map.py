@@ -63,15 +63,19 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric("Total Objetivos", len(objectives))
 with col2:
-    alta_prioridade = len([o for o in objectives if o.priority == "ALTA"])
+    # BUG FIX (Sessao 41, 2025-11-22): StrategicObjective.priority usa "Alta" (nao "ALTA")
+    # Schema: Literal["Alta", "Média", "Baixa"] - case-sensitive!
+    alta_prioridade = len([o for o in objectives if o.priority == "Alta"])
     pct = (alta_prioridade / len(objectives) * 100) if objectives else 0
     st.metric("Alta Prioridade", alta_prioridade, delta=f"{pct:.0f}%")
 with col3:
     perspectivas = set([o.perspective for o in objectives])
     st.metric("Perspectivas", len(perspectivas))
 with col4:
-    causas = sum([len(o.cause_effect_links) for o in objectives])
-    st.metric("Relacoes Causa-Efeito", causas)
+    # BUG FIX (Sessao 41, 2025-11-22): cause_effect_links nao existe em StrategicObjective
+    # Usando dependencies como proxy para relacoes entre objetivos
+    total_deps = sum([len(o.dependencies) for o in objectives])
+    st.metric("Total de Dependencias", total_deps)
 
 # Network Graph
 st.subheader("Grafo de Conexoes BSC")
@@ -85,9 +89,28 @@ st.plotly_chart(fig, use_container_width=True)
 # Tabela de objetivos detalhada
 st.subheader("Detalhes dos Objetivos Estrategicos")
 
-table_df = graph.create_details_table()
+# BUG FIX (Sessao 41, 2025-11-22): BSCNetworkGraph nao tem create_details_table()
+# Criar tabela manualmente a partir de objectives (lista de StrategicObjective)
+if objectives:
+    import pandas as pd
 
-if not table_df.empty:
+    table_df = pd.DataFrame(
+        [
+            {
+                "Objetivo": obj.name,
+                "Perspectiva": obj.perspective,
+                "Prioridade": obj.priority,
+                "Prazo": obj.timeframe,
+                "KPIs Relacionados": ", ".join(obj.related_kpis) if obj.related_kpis else "N/A",
+                "Dependencias": ", ".join(obj.dependencies) if obj.dependencies else "Nenhuma",
+                "Descricao": (
+                    obj.description[:100] + "..." if len(obj.description) > 100 else obj.description
+                ),
+            }
+            for obj in objectives
+        ]
+    )
+
     st.dataframe(table_df, use_container_width=True, hide_index=True)
 
     # Botao export CSV

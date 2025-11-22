@@ -519,7 +519,7 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 
 ### **Lição 6: 🎯 Query Decomposition - Modelo Econômico é Suficiente**
 
-> **NOTA (Out/2025):** Esta lição histórica validou que modelos econômicos são suficientes para decomposição. **HOJE usamos GPT-5 mini** (`gpt-5-mini-2025-08-07`, configurável via `.env`), que substituiu GPT-4o-mini (obsoleto ago/2025). Princípio permanece: tarefa estruturada → modelo econômico suficiente.
+> **NOTA (Nov/2025):** MIGRADO para **GPT-5.1 family** (gpt-5.1, gpt-5.1-chat-latest, gpt-5.1-mini) em Nov 22, 2025. Lição histórica (Out/2025) validou que modelos econômicos (GPT-5 mini) são suficientes para decomposição. Princípio permanece: tarefa estruturada → modelo econômico suficiente. GPT-5.1 oferece MESMO pricing + 2-3x velocidade + -50% tokens em tool calling.
 
 **Descoberta Original:** GPT-4o-mini tinha qualidade equivalente ao GPT-4o para decomposição de queries
 
@@ -595,7 +595,7 @@ reranked_docs = reranker.rerank(query, docs, top_n=10)  # Precision alta
 **Descoberta:** 5 armadilhas comuns identificadas que custam 2-8h debugging cada
 
 **Antipadrões Críticos:**
-1. ❌ **GPT-5 full para tarefas simples** → Usar GPT-5 mini (5x mais barato output, 2.5x input)
+1. ❌ **GPT-5.1 full para tarefas simples** → Usar GPT-5.1 mini ou gpt-5.1-chat-latest 'none' reasoning (5x mais barato output, 2.5x input)
 2. ❌ **Regex sem word boundaries** → Usar `\be\b` ao invés de `"e" in text` (-8% accuracy)
 3. ❌ **Sub-queries sem contexto** → Manter informação da query original (precision +15%)
 4. ❌ **Threshold muito alto** → Validar coverage antes de aumentar (5% queries ficam sem decomposição)

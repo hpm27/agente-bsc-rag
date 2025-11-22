@@ -269,7 +269,27 @@ Para cada objetivo definido, retorne um objeto com os seguintes campos:
 5. success_criteria (List[str]): 2-4 criterios mensuraveis de sucesso (cada um com 20+ caracteres)
 6. related_kpis (List[str]): Lista de nomes de KPIs que medem progresso deste objetivo (se aplicavel)
 7. priority (str): "Alta", "Média" ou "Baixa" baseado na urgencia e impacto
-8. dependencies (List[str]): Lista de nomes de outros objetivos que sao prerequisitos (opcional)
+8. dependencies (List[str]): CRITICO! Lista de nomes de objetivos PREREQUISITOS de perspectivas BASE
+
+CRITICO - DEPENDENCIES (Relacoes Causa-Efeito BSC):
+
+O Balanced Scorecard e baseado em HIPOTESES DE CAUSA-EFEITO entre perspectivas:
+
+LOGICA BSC (Kaplan & Norton):
+Aprendizado e Crescimento -> Processos Internos -> Clientes -> Financeira
+      [BASE]                    [INTERMEDIARIA]    [INTERMEDIARIA]   [RESULTADO]
+
+REGRAS PARA DEPENDENCIES:
+- Se perspectiva = "Financeira": dependencies devem referenciar objetivos de "Clientes" ou "Processos Internos"
+  Exemplo: "Aumentar receita" DEPENDE DE "Aumentar satisfação clientes"
+
+- Se perspectiva = "Clientes": dependencies devem referenciar objetivos de "Processos Internos"
+  Exemplo: "Aumentar NPS" DEPENDE DE "Melhorar qualidade entrega"
+
+- Se perspectiva = "Processos Internos": dependencies devem referenciar objetivos de "Aprendizado e Crescimento"
+  Exemplo: "Eliminar gargalo" DEPENDE DE "Desenvolver competências Lean"
+
+- Se perspectiva = "Aprendizado e Crescimento": dependencies = [] (base da cadeia)
 
 IMPORTANTE:
 - Definir ENTRE 2 E 5 objetivos para a perspectiva "{perspective}"
@@ -277,6 +297,7 @@ IMPORTANTE:
 - Priorizar objetivos que abordam os principais desafios identificados no diagnostico
 - success_criteria devem ser ESPECIFICOS e MENSURAVEIS (incluir numeros, percentuais, prazos)
 - Se KPIs foram fornecidos, VINCULAR objetivos aos KPIs relevantes via campo related_kpis
+- SEMPRE definir dependencies seguindo a logica causa-efeito BSC (exceto Aprendizado)
 
 Retorne apenas a lista de objetivos definidos (formato JSON).
 """
