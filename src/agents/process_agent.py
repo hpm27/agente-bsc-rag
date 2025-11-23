@@ -8,6 +8,7 @@ Responsável por:
 - Cadeia de valor interna
 """
 
+import asyncio
 from typing import Any
 
 from config.settings import get_llm
@@ -156,8 +157,20 @@ Por favor, responda baseando-se prioritariamente no contexto fornecido acima."""
 
             messages.append(HumanMessage(content=enhanced_query))
 
-            # Invocar LLM com contexto RAG (async)
-            response = await self.llm_with_tools.ainvoke(messages)
+            # Invocar LLM com contexto RAG (async) com TIMEOUT de 10 minutos
+            logger.info("[PROC] Invocando LLM (timeout: 600s)...")
+            try:
+                response = await asyncio.wait_for(
+                    self.llm_with_tools.ainvoke(messages), timeout=600  # 10 minutos max
+                )
+                logger.info("[PROC] LLM respondeu com sucesso")
+            except asyncio.TimeoutError:
+                logger.error("[PROC] TIMEOUT após 600s esperando resposta do LLM!")
+                return {
+                    "output": "Desculpe, a análise de processos está demorando mais do que o esperado. "
+                    "Por favor, tente novamente ou refine sua pergunta para ser mais específica.",
+                    "perspective": "processos",
+                }
 
             logger.info(f"[OK] {self.name} completou processamento (async)")
             return {

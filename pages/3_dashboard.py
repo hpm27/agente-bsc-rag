@@ -128,7 +128,7 @@ if actions:
     cols = st.columns(3)
     for idx, (month, count) in enumerate(sorted_phases):
         with cols[idx]:
-            st.metric(month, count, label="Acoes agendadas")
+            st.metric(label=month, value=count)
 else:
     st.warning("Action Plan ainda nao foi gerado")
     st.info("Complete o workflow consultivo completo para gerar")

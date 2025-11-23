@@ -294,9 +294,10 @@ class BSCWorkflow:
                 "metadata": {"error": str(e)},
             }
 
-    def execute_agents(self, state: BSCState) -> dict[str, Any]:
+    async def execute_agents(self, state: BSCState) -> dict[str, Any]:
         """
-        Nó 2: Executa agentes especialistas em paralelo.
+        Nó 2: Executa agentes especialistas em paralelo COM RAG.
+        IMPORTANTE: Async para usar ainvoke_agents() que faz retrieval RAG.
 
         Args:
             state: Estado atual do workflow
@@ -346,9 +347,9 @@ class BSCWorkflow:
             # FASE 4.7: Usar query enriquecida se disponível (diagnóstico aprovado)
             query_to_use = state.metadata.get("enriched_query", state.query)
 
-            # Invocar agentes usando Orchestrator
+            # Invocar agentes usando Orchestrator ASYNC (COM RAG!)
             chat_history = state.metadata.get("chat_history", None)
-            raw_responses = self.orchestrator.invoke_agents(
+            raw_responses = await self.orchestrator.ainvoke_agents(
                 query=query_to_use, agent_names=agent_names, chat_history=chat_history
             )
 

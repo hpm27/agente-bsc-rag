@@ -8,6 +8,7 @@ Responsável por:
 - Relação entre estratégia e resultados financeiros
 """
 
+import asyncio
 from typing import Any
 
 from config.settings import get_llm
@@ -175,8 +176,20 @@ Por favor, responda baseando-se prioritariamente no contexto fornecido acima."""
 
             messages.append(HumanMessage(content=enhanced_query))
 
-            # Invocar LLM com contexto RAG (async)
-            response = await self.llm_with_tools.ainvoke(messages)
+            # Invocar LLM com contexto RAG (async) com TIMEOUT de 10 minutos
+            logger.info("[FIN] Invocando LLM (timeout: 600s)...")
+            try:
+                response = await asyncio.wait_for(
+                    self.llm_with_tools.ainvoke(messages), timeout=600  # 10 minutos max
+                )
+                logger.info("[FIN] LLM respondeu com sucesso")
+            except asyncio.TimeoutError:
+                logger.error("[FIN] TIMEOUT após 600s esperando resposta do LLM!")
+                return {
+                    "output": "Desculpe, a análise financeira está demorando mais do que o esperado. "
+                    "Por favor, tente novamente ou refine sua pergunta para ser mais específica.",
+                    "perspective": "financeira",
+                }
 
             logger.info(f"[OK] {self.name} completou processamento (async)")
 
