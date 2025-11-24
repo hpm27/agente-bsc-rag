@@ -1867,26 +1867,6 @@ class BSCWorkflow:
                     ),
                 )
 
-                # DEBUGGING: Log do state após invoke
-                logger.info(
-                    "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
-                    (
-                        final_state.get("current_phase")
-                        if isinstance(final_state, dict)
-                        else getattr(final_state, "current_phase", "N/A")
-                    ),
-                    (
-                        final_state.get("is_complete")
-                        if isinstance(final_state, dict)
-                        else getattr(final_state, "is_complete", "N/A")
-                    ),
-                    (
-                        (final_state.get("client_profile") is not None)
-                        if isinstance(final_state, dict)
-                        else (getattr(final_state, "client_profile", None) is not None)
-                    ),
-                )
-
             except Exception as e:
                 # Fallback: se get_state falhar, assumir primeira invocação
                 logger.warning(
