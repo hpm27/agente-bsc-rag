@@ -64,13 +64,6 @@ st.title("Consultor BSC - Chat Interativo")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# CORREÇÃO SESSAO 43 (2025-11-24): Carregar histórico de chat do LangGraph checkpoint
-# Outras páginas persistem porque carregam do SQLite, chat precisa carregar do checkpoint
-if not st.session_state.messages and st.session_state.get("user_id"):
-    loaded_messages = load_chat_history(st.session_state.user_id)
-    if loaded_messages:
-        st.session_state.messages = loaded_messages
-
 # CRITICAL FIX: Usar query_params para persistir user_id entre reloads e páginas
 # Isso garante que Strategy Map e Action Plan usam o MESMO user_id do workflow
 #
@@ -93,6 +86,14 @@ if "user_id" not in st.session_state:
 # Garante que URL SEMPRE tem uid atualizado (mesmo se carregado de URL)
 # CORREÇÃO SESSAO 43: Substituir experimental_set_query_params (deprecated após 2024-04-11)
 st.query_params["uid"] = st.session_state.user_id
+
+# CORREÇÃO SESSAO 43 (2025-11-24): Carregar histórico de chat do LangGraph checkpoint
+# IMPORTANTE: Deve vir DEPOIS da inicialização de user_id acima!
+# Outras páginas persistem porque carregam do SQLite, chat precisa carregar do checkpoint
+if not st.session_state.messages and st.session_state.get("user_id"):
+    loaded_messages = load_chat_history(st.session_state.user_id)
+    if loaded_messages:
+        st.session_state.messages = loaded_messages
 
 if "current_phase" not in st.session_state:
     st.session_state.current_phase = "ONBOARDING"
