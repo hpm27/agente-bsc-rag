@@ -257,6 +257,10 @@ class ActionPlanTool:
         usamos 50K chars (12.5K tokens) por perspectiva = 200K chars total
         = 50K tokens BSC. Captura análise completa sem truncamento.
 
+        CORREÇÃO SESSAO 43 (2025-11-24): Usar asyncio.gather() para paralelização.
+        ANTES: 4 agents sequenciais = ~120s (30s cada)
+        DEPOIS: 4 agents paralelos = ~30s total (3-4x mais rápido)
+
         Args:
             financial_agent: Agent especialista em perspectiva financeira
             customer_agent: Agent especialista em perspectiva clientes
@@ -268,6 +272,8 @@ class ActionPlanTool:
         Returns:
             String com conhecimento BSC consolidado
         """
+        import asyncio
+        import time
 
         def _normalize_output_to_string(output_value) -> str:
             """Normaliza output do agent para string (defensivo).
@@ -297,78 +303,55 @@ class ActionPlanTool:
 
             knowledge_parts = []
 
-            # Buscar conhecimento de cada perspectiva (se agents disponíveis)
+            # CORREÇÃO SESSAO 43: Criar tasks ANTES de await (paralelização real)
+            # Pattern validado do StrategyMapDesigner (src/tools/strategy_map_designer.py:191)
+            parallel_start = time.time()
+            logger.info("[TIMING] [ACTION_PLAN] INICIANDO RAG paralelo (4 agents)...")
+
+            tasks = {}
             if financial_agent:
-                try:
-                    result = await financial_agent.ainvoke(query)
-                    financial_knowledge = (
-                        _normalize_output_to_string(result.get("output", ""))
-                        if isinstance(result, dict)
-                        else _normalize_output_to_string(result)
-                    )
-                    if financial_knowledge and financial_knowledge.strip():
-                        truncated = (
-                            financial_knowledge[:max_chars_per_perspective]
-                            if len(financial_knowledge) > max_chars_per_perspective
-                            else financial_knowledge
-                        )
-                        knowledge_parts.append(f"FINANCEIRA: {truncated}")
-                except Exception as e:
-                    logger.warning(f"Erro ao buscar conhecimento financeiro: {e}")
-
+                tasks["FINANCEIRA"] = financial_agent.ainvoke(query)
             if customer_agent:
-                try:
-                    result = await customer_agent.ainvoke(query)
-                    customer_knowledge = (
-                        _normalize_output_to_string(result.get("output", ""))
-                        if isinstance(result, dict)
-                        else _normalize_output_to_string(result)
-                    )
-                    if customer_knowledge and customer_knowledge.strip():
-                        truncated = (
-                            customer_knowledge[:max_chars_per_perspective]
-                            if len(customer_knowledge) > max_chars_per_perspective
-                            else customer_knowledge
-                        )
-                        knowledge_parts.append(f"CLIENTES: {truncated}")
-                except Exception as e:
-                    logger.warning(f"Erro ao buscar conhecimento clientes: {e}")
-
+                tasks["CLIENTES"] = customer_agent.ainvoke(query)
             if process_agent:
-                try:
-                    result = await process_agent.ainvoke(query)
-                    process_knowledge = (
-                        _normalize_output_to_string(result.get("output", ""))
-                        if isinstance(result, dict)
-                        else _normalize_output_to_string(result)
-                    )
-                    if process_knowledge and process_knowledge.strip():
-                        truncated = (
-                            process_knowledge[:max_chars_per_perspective]
-                            if len(process_knowledge) > max_chars_per_perspective
-                            else process_knowledge
-                        )
-                        knowledge_parts.append(f"PROCESSOS: {truncated}")
-                except Exception as e:
-                    logger.warning(f"Erro ao buscar conhecimento processos: {e}")
-
+                tasks["PROCESSOS"] = process_agent.ainvoke(query)
             if learning_agent:
+                tasks["APRENDIZADO"] = learning_agent.ainvoke(query)
+
+            if not tasks:
+                logger.warning("Nenhum agent disponível para RAG")
+                return "Conhecimento BSC da literatura não disponível."
+
+            # Executar todos em paralelo com asyncio.gather (return_exceptions para robustez)
+            results = await asyncio.gather(*tasks.values(), return_exceptions=True)
+
+            parallel_elapsed = time.time() - parallel_start
+            logger.info(
+                f"[TIMING] [ACTION_PLAN] RAG paralelo CONCLUIDO em {parallel_elapsed:.2f}s | "
+                f"{len(tasks)} agents"
+            )
+
+            # Processar resultados
+            for (perspective, _task), result in zip(tasks.items(), results):
+                if isinstance(result, Exception):
+                    logger.warning(f"Erro ao buscar conhecimento {perspective}: {result}")
+                    continue
+
                 try:
-                    result = await learning_agent.ainvoke(query)
-                    learning_knowledge = (
+                    knowledge = (
                         _normalize_output_to_string(result.get("output", ""))
                         if isinstance(result, dict)
                         else _normalize_output_to_string(result)
                     )
-                    if learning_knowledge and learning_knowledge.strip():
+                    if knowledge and knowledge.strip():
                         truncated = (
-                            learning_knowledge[:max_chars_per_perspective]
-                            if len(learning_knowledge) > max_chars_per_perspective
-                            else learning_knowledge
+                            knowledge[:max_chars_per_perspective]
+                            if len(knowledge) > max_chars_per_perspective
+                            else knowledge
                         )
-                        knowledge_parts.append(f"APRENDIZADO: {truncated}")
+                        knowledge_parts.append(f"{perspective}: {truncated}")
                 except Exception as e:
-                    logger.warning(f"Erro ao buscar conhecimento aprendizado: {e}")
+                    logger.warning(f"Erro ao processar conhecimento {perspective}: {e}")
 
             if not knowledge_parts:
                 logger.warning("Nenhum conhecimento BSC obtido via RAG")
