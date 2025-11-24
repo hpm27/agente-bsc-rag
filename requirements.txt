@@ -6,6 +6,7 @@ pydantic-settings>=2.1.0
 # LangChain & LangGraph (v0.3 - Outubro 2025)
 langchain>=0.3,<0.4
 langgraph>=0.2.20,<0.3
+langgraph-checkpoint-sqlite>=2.0.0  # CORREÇÃO SESSAO 43: Persistir checkpoints em SQLite (não memória)
 langchain-openai>=0.2,<0.3
 langchain-anthropic>=0.2,<0.3
 langchain-community>=0.3,<0.4

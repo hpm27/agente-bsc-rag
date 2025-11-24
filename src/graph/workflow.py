@@ -19,7 +19,12 @@ import warnings
 from typing import TYPE_CHECKING, Any, Literal
 
 import nest_asyncio
-from langgraph.checkpoint.memory import MemorySaver
+
+# CORREÇÃO SESSAO 43 (2025-11-24): Usar SqliteSaver ao invés de MemorySaver
+# MemorySaver é IN-MEMORY e perde dados ao reiniciar (não persiste entre refreshes)
+# SqliteSaver persiste em disco -> chat_history sobrevive refreshes do browser
+# Pacote: pip install langgraph-checkpoint-sqlite (LangGraph v0.2+)
+from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from loguru import logger
@@ -216,7 +221,10 @@ class BSCWorkflow:
         )
 
         # Adicionar checkpointer para persistir state entre turnos (CRITICAL para onboarding)
-        checkpointer = MemorySaver()
+        # CORREÇÃO SESSAO 43 (2025-11-24): SqliteSaver persiste em DISCO (não apenas memória)
+        # MemorySaver era IN-MEMORY -> perdia chat_history ao refresh do browser
+        # SqliteSaver usa SQLite -> dados persistem entre sessões/refreshes
+        checkpointer = SqliteSaver.from_conn_string("data/langgraph_checkpoints.db")
         return workflow.compile(checkpointer=checkpointer)
 
     def analyze_query(self, state: BSCState) -> dict[str, Any]:
