@@ -19,6 +19,7 @@ Created: 2025-10-27 (FASE 3.11)
 from __future__ import annotations
 
 import logging
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from langchain_core.language_models import BaseLLM
@@ -152,16 +153,29 @@ class ActionPlanTool:
             )
             logger.debug(f"Conhecimento BSC: {len(bsc_knowledge)} caracteres")
 
-            # 4. Construir prompt final
+            # 4. Obter data atual formatada (referência temporal)
+            current_date_str = datetime.now().strftime("%Y-%m-%d")
+            current_date_display = datetime.now().strftime("%d/%m/%Y")
+            current_date_context = (
+                f"Data atual: {current_date_display} ({current_date_str})\n"
+                f"Dia da semana: {datetime.now().strftime('%A')}\n"
+                f"Mês atual: {datetime.now().strftime('%B %Y')}"
+            )
+
+            # 5. Construir prompt final
             prompt = FACILITATE_ACTION_PLAN_PROMPT.format(
+                current_date=current_date_context,
                 company_context=company_context,
                 diagnostic_context=diagnostic_context,
                 bsc_knowledge=bsc_knowledge,
             )
 
-            logger.info(f"Prompt construído: {len(prompt)} caracteres")
+            logger.info(
+                f"Prompt construído: {len(prompt)} caracteres | "
+                f"Data atual de referência: {current_date_display}"
+            )
 
-            # 5. Chamar LLM com retry logic
+            # 6. Chamar LLM com retry logic
             action_plan = await self._call_llm_with_retry(prompt, max_retries=max_retries)
 
             # 6. Validar qualidade do plano
@@ -230,18 +244,49 @@ class ActionPlanTool:
         customer_agent: CustomerAgent | None = None,
         process_agent: ProcessAgent | None = None,
         learning_agent: LearningAgent | None = None,
+        max_chars_per_perspective: int = 50000,
     ) -> str:
         """Constrói contexto de conhecimento BSC via RAG agents.
+
+        ESTRATÉGIA: Maximizar qualidade do conhecimento BSC sem limitações.
+        BSC é complexo e demanda contexto rico. Com 200K+ tokens disponíveis,
+        usamos 50K chars (12.5K tokens) por perspectiva = 200K chars total
+        = 50K tokens BSC. Captura análise completa sem truncamento.
 
         Args:
             financial_agent: Agent especialista em perspectiva financeira
             customer_agent: Agent especialista em perspectiva clientes
             process_agent: Agent especialista em perspectiva processos
             learning_agent: Agent especialista em perspectiva aprendizado
+            max_chars_per_perspective: Máximo de caracteres por perspectiva
+                (default: 50000 = ~12500 tokens, análise completa do agent)
 
         Returns:
             String com conhecimento BSC consolidado
         """
+
+        def _normalize_output_to_string(output_value) -> str:
+            """Normaliza output do agent para string (defensivo).
+
+            Agents podem retornar output como string, lista, ou outro tipo.
+            Esta função garante sempre string antes de processar.
+
+            Args:
+                output_value: Valor do campo "output" do agent (pode ser qualquer tipo)
+
+            Returns:
+                String normalizada (vazia se output_value for None/empty)
+            """
+            if output_value is None:
+                return ""
+            if isinstance(output_value, str):
+                return output_value
+            if isinstance(output_value, list):
+                # Se for lista, juntar elementos com espaço
+                return " ".join(str(item) for item in output_value if item)
+            # Outros tipos: converter para string
+            return str(output_value)
+
         try:
             # Query para buscar conhecimento relevante sobre implementação BSC
             query = "Como implementar Balanced Scorecard ações práticas estratégicas"
@@ -252,32 +297,72 @@ class ActionPlanTool:
             if financial_agent:
                 try:
                     result = await financial_agent.ainvoke(query)
-                    if result and isinstance(result, dict) and "context" in result:
-                        knowledge_parts.append(f"FINANCEIRA: {result['context'][:500]}...")
+                    financial_knowledge = (
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
+                    )
+                    if financial_knowledge and financial_knowledge.strip():
+                        truncated = (
+                            financial_knowledge[:max_chars_per_perspective]
+                            if len(financial_knowledge) > max_chars_per_perspective
+                            else financial_knowledge
+                        )
+                        knowledge_parts.append(f"FINANCEIRA: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento financeiro: {e}")
 
             if customer_agent:
                 try:
                     result = await customer_agent.ainvoke(query)
-                    if result and isinstance(result, dict) and "context" in result:
-                        knowledge_parts.append(f"CLIENTES: {result['context'][:500]}...")
+                    customer_knowledge = (
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
+                    )
+                    if customer_knowledge and customer_knowledge.strip():
+                        truncated = (
+                            customer_knowledge[:max_chars_per_perspective]
+                            if len(customer_knowledge) > max_chars_per_perspective
+                            else customer_knowledge
+                        )
+                        knowledge_parts.append(f"CLIENTES: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento clientes: {e}")
 
             if process_agent:
                 try:
                     result = await process_agent.ainvoke(query)
-                    if result and isinstance(result, dict) and "context" in result:
-                        knowledge_parts.append(f"PROCESSOS: {result['context'][:500]}...")
+                    process_knowledge = (
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
+                    )
+                    if process_knowledge and process_knowledge.strip():
+                        truncated = (
+                            process_knowledge[:max_chars_per_perspective]
+                            if len(process_knowledge) > max_chars_per_perspective
+                            else process_knowledge
+                        )
+                        knowledge_parts.append(f"PROCESSOS: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento processos: {e}")
 
             if learning_agent:
                 try:
                     result = await learning_agent.ainvoke(query)
-                    if result and isinstance(result, dict) and "context" in result:
-                        knowledge_parts.append(f"APRENDIZADO: {result['context'][:500]}...")
+                    learning_knowledge = (
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
+                    )
+                    if learning_knowledge and learning_knowledge.strip():
+                        truncated = (
+                            learning_knowledge[:max_chars_per_perspective]
+                            if len(learning_knowledge) > max_chars_per_perspective
+                            else learning_knowledge
+                        )
+                        knowledge_parts.append(f"APRENDIZADO: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento aprendizado: {e}")
 

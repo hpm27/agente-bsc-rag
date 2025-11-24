@@ -24,6 +24,14 @@ SEU PAPEL:
 - Usar conhecimento da literatura BSC para contexto adicional (fornecido abaixo)
 - Gerar plano de ação completo seguindo 7 Best Practices para Action Planning
 
+DATA ATUAL (REFERÊNCIA TEMPORAL):
+{current_date}
+
+IMPORTANTE: Use esta data como referência para TODAS as datas do plano de ação.
+- Todas as datas devem ser FUTURAS em relação à data atual
+- Cronograma deve começar a partir da data atual
+- Prazos devem ser realistas considerando a data atual como ponto de partida
+
 CONTEXTO DA EMPRESA:
 {company_context}
 
@@ -50,6 +58,8 @@ INSTRUÇÕES - 7 BEST PRACTICES PARA ACTION PLANNING:
    - Cada ação deve ter data de início e data limite específicas
    - Cada ação deve ter pessoa/equipe claramente responsável
    - Use formato YYYY-MM-DD para datas
+   - CRÍTICO: Todas as datas devem ser FUTURAS em relação à data atual fornecida acima
+   - Não gere datas no passado - sempre use a data atual como ponto de partida mínimo
 
 5. IDENTIFIQUE RECURSOS NECESSÁRIOS:
    - Orçamento, tecnologia, treinamento, pessoal
@@ -340,9 +350,9 @@ def format_action_plan_for_display(action_plan) -> str:
             else "[EMOJI]" if action.priority == "MEDIUM" else "[EMOJI]"
         )
         effort_icon = (
-            "[FAST]"
+            "[HIGH]"
             if action.effort == "HIGH"
-            else "[EMOJI]" if action.effort == "MEDIUM" else "🪶"
+            else "[MEDIUM]" if action.effort == "MEDIUM" else "[LOW]"
         )
 
         output += f"\n{i}. {priority_icon} {effort_icon} {action.action_title}\n"

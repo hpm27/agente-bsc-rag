@@ -283,6 +283,29 @@ class PrioritizationMatrixTool:
         Returns:
             String com conhecimento BSC consolidado
         """
+
+        def _normalize_output_to_string(output_value) -> str:
+            """Normaliza output do agent para string (defensivo).
+
+            Agents podem retornar output como string, lista, ou outro tipo.
+            Esta função garante sempre string antes de processar.
+
+            Args:
+                output_value: Valor do campo "output" do agent (pode ser qualquer tipo)
+
+            Returns:
+                String normalizada (vazia se output_value for None/empty)
+            """
+            if output_value is None:
+                return ""
+            if isinstance(output_value, str):
+                return output_value
+            if isinstance(output_value, list):
+                # Se for lista, juntar elementos com espaço
+                return " ".join(str(item) for item in output_value if item)
+            # Outros tipos: converter para string
+            return str(output_value)
+
         try:
             # Query para buscar conhecimento relevante sobre priorização BSC
             query = "Como priorizar objetivos estratégicos Balanced Scorecard impacto esforço critérios avaliação"
@@ -294,7 +317,9 @@ class PrioritizationMatrixTool:
                 try:
                     result = await financial_agent.ainvoke(query)
                     financial_knowledge = (
-                        result.get("output", "") if isinstance(result, dict) else str(result)
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
                     )
                     if financial_knowledge and financial_knowledge.strip():
                         # Limitar caracteres para evitar prompt muito grande
@@ -311,7 +336,9 @@ class PrioritizationMatrixTool:
                 try:
                     result = await customer_agent.ainvoke(query)
                     customer_knowledge = (
-                        result.get("output", "") if isinstance(result, dict) else str(result)
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
                     )
                     if customer_knowledge and customer_knowledge.strip():
                         truncated = (
@@ -327,7 +354,9 @@ class PrioritizationMatrixTool:
                 try:
                     result = await process_agent.ainvoke(query)
                     process_knowledge = (
-                        result.get("output", "") if isinstance(result, dict) else str(result)
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
                     )
                     if process_knowledge and process_knowledge.strip():
                         truncated = (
@@ -343,7 +372,9 @@ class PrioritizationMatrixTool:
                 try:
                     result = await learning_agent.ainvoke(query)
                     learning_knowledge = (
-                        result.get("output", "") if isinstance(result, dict) else str(result)
+                        _normalize_output_to_string(result.get("output", ""))
+                        if isinstance(result, dict)
+                        else _normalize_output_to_string(result)
                     )
                     if learning_knowledge and learning_knowledge.strip():
                         truncated = (
