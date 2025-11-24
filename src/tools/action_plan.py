@@ -154,12 +154,16 @@ class ActionPlanTool:
             logger.debug(f"Conhecimento BSC: {len(bsc_knowledge)} caracteres")
 
             # 4. Obter data atual formatada (referência temporal)
-            current_date_str = datetime.now().strftime("%Y-%m-%d")
-            current_date_display = datetime.now().strftime("%d/%m/%Y")
+            # CRÍTICO: Capturar datetime.now() UMA VEZ para garantir consistência
+            # Se executar próximo à meia-noite/mudança de mês, múltiplas chamadas
+            # podem retornar datas diferentes causando inconsistência no contexto
+            now = datetime.now()
+            current_date_str = now.strftime("%Y-%m-%d")
+            current_date_display = now.strftime("%d/%m/%Y")
             current_date_context = (
                 f"Data atual: {current_date_display} ({current_date_str})\n"
-                f"Dia da semana: {datetime.now().strftime('%A')}\n"
-                f"Mês atual: {datetime.now().strftime('%B %Y')}"
+                f"Dia da semana: {now.strftime('%A')}\n"
+                f"Mês atual: {now.strftime('%B %Y')}"
             )
 
             # 5. Construir prompt final

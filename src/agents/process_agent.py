@@ -134,8 +134,18 @@ Seja objetivo, focado em operações e melhoria contínua, e baseie suas respost
                             {"query": query, "perspective": "processos", "k": 5}
                         )
                         if result:
-                            context_parts.append(f"[CONTEXTO PROCESSOS BSC]\n{result[:2000]}")
-                            logger.info(f"[PROC] Recuperou {len(result)} chars de contexto RAG")
+                            # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
+                            max_context_chars = 50000
+                            truncated_result = (
+                                result[:max_context_chars]
+                                if len(result) > max_context_chars
+                                else result
+                            )
+                            context_parts.append(f"[CONTEXTO PROCESSOS BSC]\n{truncated_result}")
+                            logger.info(
+                                f"[PROC] Recuperou {len(result)} chars de contexto RAG "
+                                f"(usando {len(truncated_result)} chars no prompt)"
+                            )
                     except Exception as e:
                         logger.warning(f"[PROC] Erro ao buscar contexto RAG: {e}")
 

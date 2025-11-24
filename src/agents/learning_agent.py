@@ -134,8 +134,18 @@ Seja objetivo, focado em pessoas e desenvolvimento organizacional, e baseie suas
                             {"query": query, "perspective": "aprendizado", "k": 5}
                         )
                         if result:
-                            context_parts.append(f"[CONTEXTO APRENDIZADO BSC]\n{result[:2000]}")
-                            logger.info(f"[LEARN] Recuperou {len(result)} chars de contexto RAG")
+                            # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
+                            max_context_chars = 50000
+                            truncated_result = (
+                                result[:max_context_chars]
+                                if len(result) > max_context_chars
+                                else result
+                            )
+                            context_parts.append(f"[CONTEXTO APRENDIZADO BSC]\n{truncated_result}")
+                            logger.info(
+                                f"[LEARN] Recuperou {len(result)} chars de contexto RAG "
+                                f"(usando {len(truncated_result)} chars no prompt)"
+                            )
                     except Exception as e:
                         logger.warning(f"[LEARN] Erro ao buscar contexto RAG: {e}")
 

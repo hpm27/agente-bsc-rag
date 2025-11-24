@@ -144,8 +144,18 @@ Seja objetivo, técnico e baseie suas respostas nas melhores práticas da litera
                             {"query": query, "perspective": "financeira", "k": 5}
                         )
                         if result:
-                            context_parts.append(f"[CONTEXTO FINANCEIRO BSC]\\n{result[:2000]}")
-                            logger.info(f"[FIN] Recuperou {len(result)} chars de contexto RAG")
+                            # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
+                            max_context_chars = 50000
+                            truncated_result = (
+                                result[:max_context_chars]
+                                if len(result) > max_context_chars
+                                else result
+                            )
+                            context_parts.append(f"[CONTEXTO FINANCEIRO BSC]\n{truncated_result}")
+                            logger.info(
+                                f"[FIN] Recuperou {len(result)} chars de contexto RAG "
+                                f"(usando {len(truncated_result)} chars no prompt)"
+                            )
                     except Exception as e:
                         logger.warning(f"[FIN] Erro ao buscar contexto RAG: {e}")
                         # Continuar sem contexto se falhar

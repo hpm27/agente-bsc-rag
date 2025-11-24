@@ -130,12 +130,24 @@ Seja objetivo, focado em valor para o cliente, e baseie suas respostas na litera
                 if tool.name == "search_by_perspective":
                     try:
                         # StructuredTool espera dict como tool_input
-                        result = await tool.arun(
-                            {"query": query, "perspective": "clientes", "k": 5}
-                        )
+                        # BUG FIX: Usar "cliente" (singular) não "clientes" (plural)
+                        # Retriever espera singular conforme perspective_mapping
+                        result = await tool.arun({"query": query, "perspective": "cliente", "k": 5})
                         if result:
-                            context_parts.append(f"[CONTEXTO CLIENTES BSC]\n{result[:2000]}")
-                            logger.info(f"[CUST] Recuperou {len(result)} chars de contexto RAG")
+                            # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
+                            # BSC é complexo e demanda contexto rico. Com 200K+ tokens disponíveis,
+                            # usamos 50K chars (~12.5K tokens) para capturar análise completa.
+                            max_context_chars = 50000
+                            truncated_result = (
+                                result[:max_context_chars]
+                                if len(result) > max_context_chars
+                                else result
+                            )
+                            context_parts.append(f"[CONTEXTO CLIENTES BSC]\n{truncated_result}")
+                            logger.info(
+                                f"[CUST] Recuperou {len(result)} chars de contexto RAG "
+                                f"(usando {len(truncated_result)} chars no prompt)"
+                            )
                     except Exception as e:
                         logger.warning(f"[CUST] Erro ao buscar contexto RAG: {e}")
 
@@ -169,7 +181,7 @@ Por favor, responda baseando-se prioritariamente no contexto fornecido acima."""
                 return {
                     "output": "Desculpe, a análise de clientes está demorando mais do que o esperado. "
                     "Por favor, tente novamente ou refine sua pergunta para ser mais específica.",
-                    "perspective": "clientes",
+                    "perspective": "cliente",
                 }
 
             logger.info(f"[OK] {self.name} completou processamento (async)")
