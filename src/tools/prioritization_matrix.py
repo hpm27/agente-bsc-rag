@@ -16,8 +16,12 @@ References:
 Created: 2025-10-27 (FASE 3.12)
 """
 
+# pylint: disable=logging-fstring-interpolation,too-many-arguments,too-many-locals
+# pylint: disable=too-many-positional-arguments,broad-exception-caught,too-many-branches
+
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import TYPE_CHECKING
 
@@ -115,6 +119,7 @@ class PrioritizationMatrixTool:
         learning_agent: LearningAgent | None = None,
         weights_config: dict[str, float] | None = None,
         max_retries: int = 3,
+        bsc_knowledge_max_chars: int = 50000,
     ) -> PrioritizationMatrix:
         """Prioriza objetivos/ações estratégicas BSC usando framework híbrido.
 
@@ -126,8 +131,12 @@ class PrioritizationMatrixTool:
             customer_agent: Agent especialista em perspectiva clientes
             process_agent: Agent especialista em perspectiva processos
             learning_agent: Agent especialista em perspectiva aprendizado
-            weights_config: Configuração de pesos customizada (default: impact 40%, effort 30%, urgency 15%, alignment 15%)
+            weights_config: Configuração de pesos customizada
+                (default: impact 40%, effort 30%, urgency 15%, alignment 15%)
             max_retries: Número máximo de tentativas em caso de erro
+            bsc_knowledge_max_chars: Caracteres máximos por perspectiva BSC
+                (default: 50000 = ~12500 tokens/perspectiva,
+                200K chars total = ~50K tokens de conhecimento BSC completo)
 
         Returns:
             PrioritizationMatrix com items avaliados, scores calculados e ranks definidos
@@ -171,7 +180,11 @@ class PrioritizationMatrixTool:
 
             # 3. Construir conhecimento BSC via RAG (se agents disponíveis)
             bsc_knowledge = await self._build_bsc_knowledge_context(
-                financial_agent, customer_agent, process_agent, learning_agent
+                financial_agent,
+                customer_agent,
+                process_agent,
+                learning_agent,
+                max_chars_per_perspective=bsc_knowledge_max_chars,
             )
             logger.debug(f"Conhecimento BSC: {len(bsc_knowledge)} caracteres")
 
@@ -182,7 +195,21 @@ class PrioritizationMatrixTool:
                 bsc_knowledge=bsc_knowledge,
             )
 
-            logger.info(f"Prompt construído: {len(prompt)} caracteres")
+            # Estimar tokens aproximadamente (1 token ~ 4 chars)
+            estimated_tokens = len(prompt) // 4
+            logger.info(
+                f"Prompt construído: {len(prompt)} caracteres (~{estimated_tokens} tokens estimados)"
+            )
+
+            # ESTRATÉGIA AGRESSIVA: Usar máximo de contexto possível
+            # Claude Sonnet 4.5: 200K input / GPT-5.1: 272K input
+            # Limite warning: 150K tokens (margem confortável)
+            if estimated_tokens > 150000:
+                logger.warning(
+                    f"Prompt muito grande ({estimated_tokens} tokens) - "
+                    "aproximando limite. Considere reduzir "
+                    "bsc_knowledge_max_chars se houver timeout."
+                )
 
             # 5. Chamar LLM com retry logic
             matrix = await self._call_llm_with_retry(
@@ -236,14 +263,22 @@ class PrioritizationMatrixTool:
         customer_agent: CustomerAgent | None = None,
         process_agent: ProcessAgent | None = None,
         learning_agent: LearningAgent | None = None,
+        max_chars_per_perspective: int = 50000,
     ) -> str:
         """Constrói contexto de conhecimento BSC via RAG agents.
+
+        ESTRATÉGIA: Maximizar qualidade do conhecimento BSC sem limitações.
+        BSC é complexo e demanda contexto rico. Com 200K+ tokens disponíveis,
+        usamos 50K chars (12.5K tokens) por perspectiva = 200K chars total
+        = 50K tokens BSC. Captura análise completa sem truncamento.
 
         Args:
             financial_agent: Agent especialista em perspectiva financeira
             customer_agent: Agent especialista em perspectiva clientes
             process_agent: Agent especialista em perspectiva processos
             learning_agent: Agent especialista em perspectiva aprendizado
+            max_chars_per_perspective: Máximo de caracteres por perspectiva
+                (default: 50000 = ~12500 tokens, análise completa do agent)
 
         Returns:
             String com conhecimento BSC consolidado
@@ -259,12 +294,16 @@ class PrioritizationMatrixTool:
                 try:
                     result = await financial_agent.ainvoke(query)
                     financial_knowledge = (
-                        result.get("context", "") if isinstance(result, dict) else str(result)
+                        result.get("output", "") if isinstance(result, dict) else str(result)
                     )
-                    if financial_knowledge:
-                        knowledge_parts.append(
-                            f"FINANCEIRA: {financial_knowledge[0].page_content[:500]}..."
+                    if financial_knowledge and financial_knowledge.strip():
+                        # Limitar caracteres para evitar prompt muito grande
+                        truncated = (
+                            financial_knowledge[:max_chars_per_perspective]
+                            if len(financial_knowledge) > max_chars_per_perspective
+                            else financial_knowledge
                         )
+                        knowledge_parts.append(f"FINANCEIRA: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento financeiro: {e}")
 
@@ -272,12 +311,15 @@ class PrioritizationMatrixTool:
                 try:
                     result = await customer_agent.ainvoke(query)
                     customer_knowledge = (
-                        result.get("context", "") if isinstance(result, dict) else str(result)
+                        result.get("output", "") if isinstance(result, dict) else str(result)
                     )
-                    if customer_knowledge:
-                        knowledge_parts.append(
-                            f"CLIENTES: {customer_knowledge[0].page_content[:500]}..."
+                    if customer_knowledge and customer_knowledge.strip():
+                        truncated = (
+                            customer_knowledge[:max_chars_per_perspective]
+                            if len(customer_knowledge) > max_chars_per_perspective
+                            else customer_knowledge
                         )
+                        knowledge_parts.append(f"CLIENTES: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento clientes: {e}")
 
@@ -285,12 +327,15 @@ class PrioritizationMatrixTool:
                 try:
                     result = await process_agent.ainvoke(query)
                     process_knowledge = (
-                        result.get("context", "") if isinstance(result, dict) else str(result)
+                        result.get("output", "") if isinstance(result, dict) else str(result)
                     )
-                    if process_knowledge:
-                        knowledge_parts.append(
-                            f"PROCESSOS: {process_knowledge[0].page_content[:500]}..."
+                    if process_knowledge and process_knowledge.strip():
+                        truncated = (
+                            process_knowledge[:max_chars_per_perspective]
+                            if len(process_knowledge) > max_chars_per_perspective
+                            else process_knowledge
                         )
+                        knowledge_parts.append(f"PROCESSOS: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento processos: {e}")
 
@@ -298,12 +343,15 @@ class PrioritizationMatrixTool:
                 try:
                     result = await learning_agent.ainvoke(query)
                     learning_knowledge = (
-                        result.get("context", "") if isinstance(result, dict) else str(result)
+                        result.get("output", "") if isinstance(result, dict) else str(result)
                     )
-                    if learning_knowledge:
-                        knowledge_parts.append(
-                            f"APRENDIZADO: {learning_knowledge[0].page_content[:500]}..."
+                    if learning_knowledge and learning_knowledge.strip():
+                        truncated = (
+                            learning_knowledge[:max_chars_per_perspective]
+                            if len(learning_knowledge) > max_chars_per_perspective
+                            else learning_knowledge
                         )
+                        knowledge_parts.append(f"APRENDIZADO: {truncated}")
                 except Exception as e:
                     logger.warning(f"Erro ao buscar conhecimento aprendizado: {e}")
 
@@ -323,6 +371,7 @@ class PrioritizationMatrixTool:
         prioritization_context: str,
         weights_config: dict[str, float] | None,
         max_retries: int = 3,
+        timeout: int = 300,
     ) -> PrioritizationMatrix:
         """Chama LLM com retry logic para structured output.
 
@@ -331,22 +380,26 @@ class PrioritizationMatrixTool:
             prioritization_context: Contexto da priorização
             weights_config: Configuração de pesos (opcional)
             max_retries: Número máximo de tentativas
+            timeout: Timeout em segundos para chamada LLM (default: 300s/5min)
 
         Returns:
             PrioritizationMatrix estruturada
 
         Raises:
             ValidationError: Se todas as tentativas falharem
+            TimeoutError: Se timeout for atingido
         """
         for attempt in range(max_retries):
             try:
                 logger.debug(
-                    f"[PrioritizationMatrixTool] Tentativa {attempt + 1}/{max_retries} - Chamando LLM structured output"
+                    f"[PrioritizationMatrixTool] Tentativa {attempt + 1}/{max_retries} - Chamando LLM structured output (timeout: {timeout}s)"
                 )
 
-                # Chamar LLM structured output diretamente
+                # Chamar LLM structured output com timeout
                 messages = [{"role": "user", "content": prompt}]
-                matrix = await self.structured_llm.ainvoke(messages)
+                matrix = await asyncio.wait_for(
+                    self.structured_llm.ainvoke(messages), timeout=timeout
+                )
 
                 if matrix:
                     # Sobrescrever prioritization_context e weights_config se fornecidos
