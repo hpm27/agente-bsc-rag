@@ -995,10 +995,20 @@ class BSCWorkflow:
             logger.info("[INFO] [SOLUTION_DESIGN] Iniciando design do Strategy Map...")
 
             try:
-                # Python 3.12 compatible - criar loop se não existir
+                # CORREÇÃO SESSAO 43 (2025-11-24): Executar sempre, não apenas no except
+                # Python 3.12 compatible - usar loop existente ou criar novo
                 try:
                     loop = asyncio.get_running_loop()
+                    # CORREÇÃO: Se loop existe (Streamlit + nest_asyncio), usar run_until_complete
+                    strategy_map = loop.run_until_complete(
+                        self.strategy_map_designer.design_strategy_map(
+                            diagnostic=diagnostic_pydantic,
+                            client_profile=state.client_profile,
+                            tools_results=tools_results,
+                        )
+                    )
                 except RuntimeError:
+                    # Sem running loop - criar novo
                     loop = asyncio.new_event_loop()
                     try:
                         asyncio.set_event_loop(loop)
@@ -1407,11 +1417,16 @@ class BSCWorkflow:
                 f"user_id={state.user_id} | query={state.query[:50]}..."
             )
 
-            # Chamar método async - Python 3.12 compatible
-            # Criar event loop se não existir (Streamlit ScriptRunner thread)
+            # CORREÇÃO SESSAO 43 (2025-11-24): Executar sempre, não apenas no except
+            # Python 3.12 compatible - usar loop existente ou criar novo
             try:
                 loop = asyncio.get_running_loop()
+                # CORREÇÃO: Se loop existe (Streamlit + nest_asyncio), usar run_until_complete
+                result = loop.run_until_complete(
+                    self.consulting_orchestrator.coordinate_onboarding(state)
+                )
             except RuntimeError:
+                # Sem running loop - criar novo
                 loop = asyncio.new_event_loop()
                 try:
                     asyncio.set_event_loop(loop)
@@ -1480,11 +1495,17 @@ class BSCWorkflow:
                     f"approval_status={state.approval_status.value if hasattr(state.approval_status, 'value') else state.approval_status}"
                 )
                 # Delegar para coordinate_refinement
+                # CORREÇÃO SESSAO 43 (2025-11-24): Executar sempre, não apenas no except
                 import asyncio
 
                 try:
                     loop = asyncio.get_running_loop()
+                    # CORREÇÃO: Se loop existe (Streamlit + nest_asyncio), usar run_until_complete
+                    result = loop.run_until_complete(
+                        self.consulting_orchestrator.coordinate_refinement(state)
+                    )
                 except RuntimeError:
+                    # Sem running loop - criar novo
                     loop = asyncio.new_event_loop()
                     try:
                         asyncio.set_event_loop(loop)
@@ -1497,12 +1518,18 @@ class BSCWorkflow:
                 # Discovery normal: criar diagnóstico novo
                 logger.info("[INFO] [DISCOVERY] Discovery normal (criar novo diagnóstico)")
                 # Delegar para ConsultingOrchestrator (ASYNC para paralelizar 4 agentes)
-                # Python 3.12 compatible - criar loop se não existir
+                # CORREÇÃO SESSAO 43 (2025-11-24): Executar sempre, não apenas no except
+                # Python 3.12 compatible - usar loop existente ou criar novo
                 import asyncio
 
                 try:
                     loop = asyncio.get_running_loop()
+                    # CORREÇÃO: Se loop existe (Streamlit + nest_asyncio), usar run_until_complete
+                    result = loop.run_until_complete(
+                        self.consulting_orchestrator.coordinate_discovery(state)
+                    )
                 except RuntimeError:
+                    # Sem running loop - criar novo
                     loop = asyncio.new_event_loop()
                     try:
                         asyncio.set_event_loop(loop)
