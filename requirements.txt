@@ -3,12 +3,13 @@ python-dotenv==1.0.0
 pydantic>=2.7.4,<3.0.0
 pydantic-settings>=2.1.0
 
-# LangChain & LangGraph (v0.3 - Outubro 2025)
-langchain>=0.3,<0.4
-langgraph>=0.2.20,<0.3
-langgraph-checkpoint-sqlite>=2.0.0  # CORREÇÃO SESSAO 43: Persistir checkpoints em SQLite (não memória)
-langchain-openai>=0.2,<0.3
-langchain-anthropic>=0.2,<0.3
+# LangChain & LangGraph (v1.x - Novembro 2025)
+# ATUALIZADO SESSAO 43: Migração para v1.x necessária para SqliteSaver checkpoint persistence
+langchain>=1.0,<2.0
+langgraph>=1.0,<2.0
+langgraph-checkpoint-sqlite>=3.0  # SqliteSaver para persistir checkpoints em disco
+langchain-openai>=1.0,<2.0
+langchain-anthropic>=1.0,<2.0
 langchain-community>=0.3,<0.4
 langchain-core>=0.3,<0.4
 
