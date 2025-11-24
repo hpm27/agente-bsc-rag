@@ -108,13 +108,17 @@ class TestBSCWorkflow:
         assert "finalize" in viz
 
     def test_execute_agents_node(self, workflow):
-        """Testa nó execute_agents."""
+        """Testa nó execute_agents (async def - BUG FIX Sessao 42)."""
+        import asyncio
+
         state = BSCState(
             query="Quais KPIs financeiros são importantes?",
             relevant_perspectives=[PerspectiveType.FINANCIAL],
         )
 
-        result = workflow.execute_agents(state)
+        # BUG FIX (Sessao 42, 2025-11-22): execute_agents é async def
+        # Teste deve usar asyncio.run() para chamar método async
+        result = asyncio.run(workflow.execute_agents(state))
 
         assert "agent_responses" in result
         assert isinstance(result["agent_responses"], list)

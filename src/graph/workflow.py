@@ -1000,15 +1000,17 @@ class BSCWorkflow:
                     loop = asyncio.get_running_loop()
                 except RuntimeError:
                     loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-
-                strategy_map = loop.run_until_complete(
-                    self.strategy_map_designer.design_strategy_map(
-                        diagnostic=diagnostic_pydantic,
-                        client_profile=state.client_profile,
-                        tools_results=tools_results,
-                    )
-                )
+                    try:
+                        asyncio.set_event_loop(loop)
+                        strategy_map = loop.run_until_complete(
+                            self.strategy_map_designer.design_strategy_map(
+                                diagnostic=diagnostic_pydantic,
+                                client_profile=state.client_profile,
+                                tools_results=tools_results,
+                            )
+                        )
+                    finally:
+                        loop.close()  # Previne resource leak
 
                 design_time = time.time() - start_time
                 logger.info(
@@ -1411,11 +1413,13 @@ class BSCWorkflow:
                 loop = asyncio.get_running_loop()
             except RuntimeError:
                 loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-
-            result = loop.run_until_complete(
-                self.consulting_orchestrator.coordinate_onboarding(state)
-            )
+                try:
+                    asyncio.set_event_loop(loop)
+                    result = loop.run_until_complete(
+                        self.consulting_orchestrator.coordinate_onboarding(state)
+                    )
+                finally:
+                    loop.close()  # Previne resource leak
 
             logger.info(
                 f"[INFO] [ONBOARDING] Result: is_complete={result.get('is_complete', False)} | "
@@ -1482,11 +1486,13 @@ class BSCWorkflow:
                     loop = asyncio.get_running_loop()
                 except RuntimeError:
                     loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-
-                result = loop.run_until_complete(
-                    self.consulting_orchestrator.coordinate_refinement(state)
-                )
+                    try:
+                        asyncio.set_event_loop(loop)
+                        result = loop.run_until_complete(
+                            self.consulting_orchestrator.coordinate_refinement(state)
+                        )
+                    finally:
+                        loop.close()  # Previne resource leak
             else:
                 # Discovery normal: criar diagnóstico novo
                 logger.info("[INFO] [DISCOVERY] Discovery normal (criar novo diagnóstico)")
@@ -1498,11 +1504,13 @@ class BSCWorkflow:
                     loop = asyncio.get_running_loop()
                 except RuntimeError:
                     loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-
-                result = loop.run_until_complete(
-                    self.consulting_orchestrator.coordinate_discovery(state)
-                )
+                    try:
+                        asyncio.set_event_loop(loop)
+                        result = loop.run_until_complete(
+                            self.consulting_orchestrator.coordinate_discovery(state)
+                        )
+                    finally:
+                        loop.close()  # Previne resource leak
 
             # LOGS DEFENSIVOS: Rastrear estado do resultado
             logger.info("[DEBUG] [DISCOVERY] coordinate_discovery retornou:")
@@ -1790,7 +1798,7 @@ class BSCWorkflow:
                     )
 
                     # Update apenas campos necessários para merge com checkpoint
-                    update = {
+                    state_to_invoke = {
                         "query": query,
                         "metadata": (
                             {**(existing_metadata), "chat_history": chat_history}
@@ -1801,29 +1809,7 @@ class BSCWorkflow:
 
                     logger.info(
                         "[CHECKPOINT] Update sendo enviado ao invoke: metadata keys=%s",
-                        list(update.get("metadata", {}).keys()),
-                    )
-
-                    final_state = self.graph.invoke(update, config)
-
-                    # DEBUGGING: Log do state após invoke
-                    logger.info(
-                        "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
-                        (
-                            final_state.get("current_phase")
-                            if isinstance(final_state, dict)
-                            else getattr(final_state, "current_phase", "N/A")
-                        ),
-                        (
-                            final_state.get("is_complete")
-                            if isinstance(final_state, dict)
-                            else getattr(final_state, "is_complete", "N/A")
-                        ),
-                        (
-                            (final_state.get("client_profile") is not None)
-                            if isinstance(final_state, dict)
-                            else (getattr(final_state, "client_profile", None) is not None)
-                        ),
+                        list(state_to_invoke.get("metadata", {}).keys()),
                     )
                 else:
                     # Primeira invocação: criar state completo
@@ -1832,14 +1818,74 @@ class BSCWorkflow:
                         "Criando state inicial completo"
                     )
 
-                    initial_state = BSCState(
+                    state_to_invoke = BSCState(
                         query=query,
                         session_id=session_id,
                         user_id=user_id,
                         metadata={"chat_history": chat_history} if chat_history else {},
                     )
 
-                    final_state = self.graph.invoke(initial_state, config)
+                # BUG FIX (Sessao 42, 2025-11-22): execute_agents é async def
+                # LangGraph exige .ainvoke() para async nodes (não .invoke())
+                # Pattern manual event loop com CLEANUP (Python 3.12 + Streamlit compatible)
+                try:
+                    asyncio.get_running_loop()
+                    # Se chegou aqui, loop já existe - cenário inesperado em Streamlit
+                    logger.warning(
+                        "[WARN] Loop já rodando - comportamento inesperado em Streamlit ScriptRunner thread"
+                    )
+                except RuntimeError:
+                    pass  # Esperado - Streamlit ScriptRunner thread não tem loop
+
+                # Criar loop novo SEMPRE (pattern consistente)
+                loop = asyncio.new_event_loop()
+                try:
+                    asyncio.set_event_loop(loop)
+                    final_state = loop.run_until_complete(
+                        self.graph.ainvoke(state_to_invoke, config)
+                    )
+                finally:
+                    loop.close()  # Previne resource leak
+
+                # DEBUGGING: Log do state após invoke
+                logger.info(
+                    "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
+                    (
+                        final_state.get("current_phase")
+                        if isinstance(final_state, dict)
+                        else getattr(final_state, "current_phase", "N/A")
+                    ),
+                    (
+                        final_state.get("is_complete")
+                        if isinstance(final_state, dict)
+                        else getattr(final_state, "is_complete", "N/A")
+                    ),
+                    (
+                        (final_state.get("client_profile") is not None)
+                        if isinstance(final_state, dict)
+                        else (getattr(final_state, "client_profile", None) is not None)
+                    ),
+                )
+
+                # DEBUGGING: Log do state após invoke
+                logger.info(
+                    "[CHECKPOINT] State APÓS invoke: current_phase=%s, is_complete=%s, has_client_profile=%s",
+                    (
+                        final_state.get("current_phase")
+                        if isinstance(final_state, dict)
+                        else getattr(final_state, "current_phase", "N/A")
+                    ),
+                    (
+                        final_state.get("is_complete")
+                        if isinstance(final_state, dict)
+                        else getattr(final_state, "is_complete", "N/A")
+                    ),
+                    (
+                        (final_state.get("client_profile") is not None)
+                        if isinstance(final_state, dict)
+                        else (getattr(final_state, "client_profile", None) is not None)
+                    ),
+                )
 
             except Exception as e:
                 # Fallback: se get_state falhar, assumir primeira invocação
@@ -1855,7 +1901,22 @@ class BSCWorkflow:
                     metadata={"chat_history": chat_history} if chat_history else {},
                 )
 
-                final_state = self.graph.invoke(initial_state, config)
+                # Executar com state inicial em caso de erro
+                # Pattern manual event loop com CLEANUP (Python 3.12 + Streamlit compatible)
+                try:
+                    asyncio.get_running_loop()
+                    logger.warning(
+                        "[WARN] Loop já rodando - comportamento inesperado em Streamlit ScriptRunner thread"
+                    )
+                except RuntimeError:
+                    pass  # Esperado - Streamlit ScriptRunner thread não tem loop
+
+                loop = asyncio.new_event_loop()
+                try:
+                    asyncio.set_event_loop(loop)
+                    final_state = loop.run_until_complete(self.graph.ainvoke(initial_state, config))
+                finally:
+                    loop.close()  # Previne resource leak
 
             # Extrair resultado
             result = {
