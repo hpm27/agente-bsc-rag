@@ -331,10 +331,21 @@ class ConsultingOrchestrator:
                 )
 
             # Executar diagnóstico (ASYNC: 4 agentes em paralelo com asyncio.gather)
-            logger.debug("[DEBUG] [ORCHESTRATOR] ANTES de chamar diagnostic_agent.run_diagnostic()")
+            # TIMING DETALHADO - SESSAO 43 (2025-11-24)
+            import time
+
+            diag_start = time.time()
+            logger.info(
+                "[TIMING] [ORCHESTRATOR] INICIANDO run_diagnostic() | "
+                "4 agentes BSC em paralelo (asyncio.gather)"
+            )
+
             complete_diagnostic = await self.diagnostic_agent.run_diagnostic(state)
-            logger.debug(
-                f"[DEBUG] [ORCHESTRATOR] DEPOIS de chamar run_diagnostic() | Recomendações: {len(complete_diagnostic.recommendations)}"
+
+            diag_elapsed = time.time() - diag_start
+            logger.info(
+                f"[TIMING] [ORCHESTRATOR] run_diagnostic() CONCLUIDO em {diag_elapsed:.2f}s | "
+                f"Recomendacoes: {len(complete_diagnostic.recommendations)}"
             )
 
             logger.info(
@@ -345,13 +356,18 @@ class ConsultingOrchestrator:
             )
 
             # AVALIACAO JUDGE: Validar qualidade do diagnostico ANTES de enviar para aprovacao
-            logger.info("[JUDGE] Avaliando qualidade do diagnostico BSC...")
+            # TIMING DETALHADO - SESSAO 43 (2025-11-24)
+            judge_start = time.time()
+            logger.info("[TIMING] [JUDGE] INICIANDO avaliacao do diagnostico BSC...")
 
             try:
                 # Formatar diagnostico para avaliacao
                 diagnostic_formatted = self._format_diagnostic_for_judge(complete_diagnostic)
+                format_elapsed = time.time() - judge_start
+                logger.info(f"[TIMING] [JUDGE] Diagnostico formatado em {format_elapsed:.2f}s")
 
                 # Avaliar com Judge (context='DIAGNOSTIC': relaxa criterios de fontes)
+                judge_eval_start = time.time()
                 judge_result = self.judge_agent.evaluate(
                     original_query=(
                         f"Diagnostico BSC para {state.client_profile.company.name} "
@@ -362,14 +378,15 @@ class ConsultingOrchestrator:
                     agent_name="Diagnostic Agent",
                     evaluation_context="DIAGNOSTIC",
                 )
+                judge_eval_elapsed = time.time() - judge_eval_start
+                judge_total_elapsed = time.time() - judge_start
 
-                # Log resultado Judge
+                # Log resultado Judge com timing
                 logger.info(
-                    f"[JUDGE] Avaliacao concluida | "
+                    f"[TIMING] [JUDGE] CONCLUIDO em {judge_total_elapsed:.2f}s | "
+                    f"(avaliacao LLM: {judge_eval_elapsed:.2f}s) | "
                     f"Score: {judge_result.quality_score:.2f} | "
-                    f"Verdict: {judge_result.verdict} | "
-                    f"Is_grounded: {judge_result.is_grounded} | "
-                    f"Is_complete: {judge_result.is_complete}"
+                    f"Verdict: {judge_result.verdict}"
                 )
 
                 # Armazenar avaliacao Judge em metadata

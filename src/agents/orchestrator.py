@@ -482,7 +482,12 @@ Calcule confidence baseado em:
             Resposta sintetizada
         """
         try:
-            logger.info(f"[SYNTH] {self.name} sintetizando {len(agent_responses)} respostas")
+            # TIMING DETALHADO - SESSAO 43 (2025-11-24)
+            synth_start = time.time()
+
+            logger.info(
+                f"[TIMING] [SYNTH] INICIADO | {len(agent_responses)} respostas para sintetizar"
+            )
 
             # Formata respostas para o prompt
             formatted_responses = "\n\n".join(
@@ -492,13 +497,35 @@ Calcule confidence baseado em:
                 ]
             )
 
+            # Log tamanho do input (causa comum de latência)
+            input_chars = len(formatted_responses)
+            input_tokens_estimate = input_chars // 4  # ~4 chars por token
+            logger.info(
+                f"[TIMING] [SYNTH] Input formatado | "
+                f"~{input_chars:,} chars (~{input_tokens_estimate:,} tokens estimados) | "
+                f"Elapsed: {time.time() - synth_start:.2f}s"
+            )
+
             # FASE 4.9: Capturar tokens para performance monitoring
             # Testar raw LLM para obter metadata (synthesis_chain esconde metadata)
+            logger.info(
+                f"[TIMING] [SYNTH] Invocando LLM raw para captura de metadata | "
+                f"Elapsed: {time.time() - synth_start:.2f}s"
+            )
+
+            llm_raw_start = time.time()
             try:
                 raw_messages = self.synthesis_prompt.format_messages(
                     original_query=original_query, agent_responses=formatted_responses
                 )
                 raw_test = self.llm.invoke(raw_messages)
+
+                llm_raw_elapsed = time.time() - llm_raw_start
+                logger.info(
+                    f"[TIMING] [SYNTH] LLM raw completou em {llm_raw_elapsed:.2f}s | "
+                    f"Total elapsed: {time.time() - synth_start:.2f}s"
+                )
+
                 if hasattr(raw_test, "response_metadata"):
                     metadata = raw_test.response_metadata
                     token_usage = metadata.get("token_usage", {})
@@ -507,17 +534,33 @@ Calcule confidence baseado em:
                         tokens_in = token_usage.get("prompt_tokens", 0)
                         tokens_out = token_usage.get("completion_tokens", 0)
                         track_llm_tokens(tokens_in, tokens_out, model_name)
-                        logger.debug(
-                            f"[PERFORMANCE] [SYNTHESIS] Tokens capturados: {model_name} in={tokens_in} out={tokens_out}"
+                        logger.info(
+                            f"[TIMING] [SYNTH] Tokens: {model_name} | "
+                            f"in={tokens_in:,} out={tokens_out:,} total={tokens_in + tokens_out:,}"
                         )
             except Exception as e:
                 logger.warning(f"[PERFORMANCE] [SYNTHESIS] Erro ao capturar tokens: {e}")
 
+            # Chamada principal de síntese (estruturada)
+            logger.info(
+                f"[TIMING] [SYNTH] Invocando synthesis_chain (structured output) | "
+                f"Elapsed: {time.time() - synth_start:.2f}s"
+            )
+
+            synth_chain_start = time.time()
             synthesis = self.synthesis_chain.invoke(
                 {"original_query": original_query, "agent_responses": formatted_responses}
             )
+            synth_chain_elapsed = time.time() - synth_chain_start
 
-            logger.info(f"[OK] Síntese completa (confidence: {synthesis.confidence:.2f})")
+            total_synth_elapsed = time.time() - synth_start
+            logger.info(
+                f"[TIMING] [SYNTH] CONCLUIDO | "
+                f"synthesis_chain: {synth_chain_elapsed:.2f}s | "
+                f"Total: {total_synth_elapsed:.2f}s | "
+                f"confidence: {synthesis.confidence:.2f}"
+            )
+
             return synthesis
 
         except Exception as e:

@@ -504,9 +504,13 @@ class DiagnosticAgent:
             >>> results['Financeira'].priority
             'HIGH'
         """
-        logger.info("[DIAGNOSTIC v3.1 LOG] >>>>> run_parallel_analysis() CHAMADO <<<<<")
-        logger.info("[DIAGNOSTIC v3.1] Iniciando análise paralela das 4 perspectivas BSC...")
-        logger.debug("[DIAGNOSTIC v3.1] Criando 4 tasks assíncronas para asyncio.gather()...")
+        # TIMING DETALHADO - SESSAO 43 (2025-11-24)
+        import time
+
+        parallel_start = time.time()
+
+        logger.info("[TIMING] [DIAGNOSTIC] >>>>> run_parallel_analysis() INICIADO <<<<<")
+        logger.info("[TIMING] [DIAGNOSTIC] Criando 4 tasks assincronas para asyncio.gather()...")
 
         # Criar tasks para execução paralela (ASYNC coroutines, não threads)
         tasks = {
@@ -532,16 +536,22 @@ class DiagnosticAgent:
             ),
         }
 
+        tasks_created_elapsed = time.time() - parallel_start
+        logger.info(f"[TIMING] [DIAGNOSTIC] Tasks criadas em {tasks_created_elapsed:.2f}s")
+
         # Executar em paralelo via event loop (não threads, sem GIL)
-        logger.info("[DIAGNOSTIC] Executando asyncio.gather() com 4 tasks...")
-        logger.info("[CHECKPOINT v3.7] ANTES de asyncio.gather() - 4 tasks prontas")
+        logger.info("[TIMING] [DIAGNOSTIC] Executando asyncio.gather() com 4 tasks...")
+        gather_start = time.time()
 
         try:
             results_list = await asyncio.gather(*tasks.values())
+            gather_elapsed = time.time() - gather_start
+            total_elapsed = time.time() - parallel_start
             logger.info(
-                f"[CHECKPOINT v3.7] DEPOIS de asyncio.gather() - results_list len={len(results_list)}, type={type(results_list)}"
+                f"[TIMING] [DIAGNOSTIC] asyncio.gather() CONCLUIDO em {gather_elapsed:.2f}s | "
+                f"Total run_parallel: {total_elapsed:.2f}s | "
+                f"results_list len={len(results_list)}"
             )
-            logger.info("[DIAGNOSTIC] asyncio.gather() RETORNOU [OK]")
         except Exception as gather_err:
             logger.error(f"[DIAGNOSTIC] ERRO em asyncio.gather(): {gather_err}", exc_info=True)
             raise
@@ -1161,50 +1171,68 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
 
         logger.info("[DIAGNOSTIC] Validação OK - Dados completos para diagnóstico confiável")
 
-        # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
-        logger.info("[DIAGNOSTIC v3.1 LOG] ETAPA 1/4: Iniciando run_parallel_analysis()...")
-        logger.info("[DIAGNOSTIC v3.1] ETAPA 1/4: Análise paralela das 4 perspectivas BSC...")
+        # TIMING DETALHADO - SESSAO 43 (2025-11-24)
+        import time
 
-        # Aguardar coroutine diretamente (sem asyncio.run - já dentro de event loop)
-        logger.info(
-            f"[DIAGNOSTIC v3.1 LOG] Chamando self.run_parallel_analysis(client_profile={client_profile.company.name if client_profile else 'None'}, state)"
-        )
+        diag_inner_start = time.time()
+
+        # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
+        etapa1_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 1/5: Analise paralela das 4 perspectivas BSC...")
+
         perspective_results = await self.run_parallel_analysis(client_profile, state)
+
+        etapa1_elapsed = time.time() - etapa1_start
         logger.info(
-            f"[DIAGNOSTIC v3.1 LOG] run_parallel_analysis() RETORNOU! Keys: {list(perspective_results.keys())}"
+            f"[TIMING] [DIAGNOSTIC] ETAPA 1/5 CONCLUIDA em {etapa1_elapsed:.2f}s | "
+            f"Keys: {list(perspective_results.keys())}"
         )
 
         # ETAPA 1.5: Análises consultivas (7 ferramentas) - SPRINT 1 (GAP #2)!
-        logger.info(
-            "[DIAGNOSTIC] [SPRINT 1] ETAPA 1.5/5: Executando ferramentas consultivas em paralelo..."
-        )
+        etapa15_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 1.5/5: Ferramentas consultivas em paralelo...")
+
         tools_results = await self._run_consultative_tools(
             client_profile, state, perspective_results
         )
+
+        etapa15_elapsed = time.time() - etapa15_start
         logger.info(
-            f"[DIAGNOSTIC] [SPRINT 1] Ferramentas consultivas concluídas: "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 1.5/5 CONCLUIDA em {etapa15_elapsed:.2f}s | "
             f"{len(tools_results.tools_executed)}/7 sucesso, "
-            f"{len(tools_results.tools_failed)}/7 falhas, "
-            f"tempo: {tools_results.execution_time:.2f}s"
+            f"{len(tools_results.tools_failed)}/7 falhas"
         )
 
         # ETAPA 2: Consolidação cross-perspective (enriquecida com ferramentas)
-        logger.info(
-            "[DIAGNOSTIC] ETAPA 2/5: Consolidação cross-perspective (enriquecida com ferramentas)..."
-        )
+        etapa2_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 2/5: Consolidacao cross-perspective (LLM)...")
 
         consolidated = await self.consolidate_diagnostic(perspective_results, tools_results)
 
+        etapa2_elapsed = time.time() - etapa2_start
+        logger.info(
+            f"[TIMING] [DIAGNOSTIC] ETAPA 2/5 CONCLUIDA em {etapa2_elapsed:.2f}s | "
+            f"{len(consolidated.get('cross_perspective_synergies', []))} synergies"
+        )
+
         # ETAPA 3: Geração de recomendações priorizadas
-        logger.info("[DIAGNOSTIC] ETAPA 3/5: Geração de recomendações priorizadas...")
+        etapa3_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 3/5: Geracao de recomendacoes (LLM)...")
 
         recommendations = await self.generate_recommendations(
             perspective_results,
             consolidated,
         )
 
+        etapa3_elapsed = time.time() - etapa3_start
+        logger.info(
+            f"[TIMING] [DIAGNOSTIC] ETAPA 3/5 CONCLUIDA em {etapa3_elapsed:.2f}s | "
+            f"{len(recommendations)} recomendacoes"
+        )
+
         # ETAPA 4: Construir CompleteDiagnostic
-        logger.info("[DIAGNOSTIC] ETAPA 4/5: Construindo diagnóstico completo...")
+        etapa4_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 4/5: Construindo diagnostico completo...")
 
         # Pydantic V2: Converter instâncias para dict usando .model_dump()
         # CRÍTICO: CompleteDiagnostic NÃO aceita instâncias Pydantic diretamente
@@ -1233,10 +1261,20 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
             diagnostic_tools_results=tools_results_dict,  # SPRINT 1: Incluir outputs das ferramentas
         )
 
+        etapa4_elapsed = time.time() - etapa4_start
+        total_elapsed = time.time() - diag_inner_start
+
         logger.info(
-            f"[DIAGNOSTIC] ========== DIAGNÓSTICO CONCLUÍDO ========== "
-            f"(Perspectives: 4, Recommendations: {len(recommendations)}, "
-            f"Next Phase: {complete_diagnostic.next_phase})"
+            f"[TIMING] [DIAGNOSTIC] ========== DIAGNOSTICO CONCLUIDO ==========\n"
+            f"[TIMING] [DIAGNOSTIC] RESUMO DE TEMPOS:\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 1   (4 Agents paralelo): {etapa1_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 1.5 (7 Ferramentas):     {etapa15_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 2   (Consolidacao LLM):  {etapa2_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 3   (Recomendacoes LLM): {etapa3_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 4   (Build diagnostic):  {etapa4_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   TOTAL:                         {total_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC] Recommendations: {len(recommendations)} | "
+            f"Next Phase: {complete_diagnostic.next_phase}"
         )
 
         return complete_diagnostic
