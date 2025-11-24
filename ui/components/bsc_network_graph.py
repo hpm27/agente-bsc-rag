@@ -7,10 +7,14 @@ IMPORTANTE: Zero emojis (memoria [[9776249]], Windows cp1252).
 Usar ASCII: [OK], [ERRO], [INFO].
 """
 
+import logging
+
 import networkx as nx
 import plotly.graph_objects as go
 
 from src.memory.schemas import StrategicObjective, CauseEffectConnection
+
+logger = logging.getLogger(__name__)
 from ui.styles.bsc_colors import PERSPECTIVE_COLORS
 
 # MELHORIAS SESSAO 41 (2025-11-22): Cores Material Design vibrantes
@@ -83,6 +87,7 @@ class BSCNetworkGraph:
         # CORREÇÃO SESSAO 43: Adicionar arestas a partir de connections (causa-efeito)
         # Usar CauseEffectConnection ao invés de dependencies (padrão BSC)
         if self.connections:
+            dropped_connections = 0
             for conn in self.connections:
                 # Mapear source_objective_id e target_objective_id para nomes
                 # NOTA: IDs podem ser diferentes dos nomes (ex: "learning_obj_1")
@@ -104,6 +109,27 @@ class BSCNetworkGraph:
                                 else conn.rationale
                             ),
                         )
+                    else:
+                        # CORREÇÃO SESSAO 43: Log quando nós não existem no grafo
+                        dropped_connections += 1
+                        logger.warning(
+                            f"[WARN] Conexao ignorada: nos nao encontrados no grafo | "
+                            f"source='{source_name}' target='{target_name}'"
+                        )
+                else:
+                    # CORREÇÃO SESSAO 43: Log quando IDs não podem ser mapeados
+                    dropped_connections += 1
+                    logger.warning(
+                        f"[WARN] Conexao ignorada: IDs nao mapeados | "
+                        f"source_id='{conn.source_objective_id}' -> '{source_name}' | "
+                        f"target_id='{conn.target_objective_id}' -> '{target_name}'"
+                    )
+
+            if dropped_connections > 0:
+                logger.warning(
+                    f"[WARN] Total de {dropped_connections}/{len(self.connections)} "
+                    f"conexoes descartadas por mapeamento falho"
+                )
         else:
             # Fallback: Usar dependencies se connections não disponíveis
             for obj in self.objectives:

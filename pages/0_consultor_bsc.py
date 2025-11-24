@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from src.graph.states import BSCState
-from src.graph.workflow import BSCWorkflow
+from src.graph.workflow import get_workflow
 from ui.helpers.chat_loader import load_chat_history, save_chat_to_checkpoint
 
 st.set_page_config(page_title="Consultor BSC", layout="wide", page_icon="[BSC]")
@@ -130,8 +130,8 @@ with st.sidebar:
         # MANTÉM o mesmo user_id (NÃO gerar novo!) para preservar acesso ao profile
         # Usuário pode continuar acessando Strategy Map e Action Plan após reiniciar
         st.session_state.current_phase = "ONBOARDING"
-        if "workflow" in st.session_state:
-            del st.session_state.workflow  # Forcar recriar workflow
+        # NOTA: Workflow usa singleton get_workflow() (não armazenado em session_state)
+        # O checkpointer mantém o state do workflow, reset apenas limpa UI
         st.rerun()
 
 # Exibir histórico de mensagens
@@ -166,12 +166,12 @@ if user_input:
     # Executar workflow
     with st.spinner("Consultor BSC processando..."):
         try:
-            # Inicializar workflow UMA VEZ e reusar (critical para checkpointer!)
-            if "workflow" not in st.session_state:
-                st.session_state.workflow = BSCWorkflow()
-                print("[DEBUG STREAMLIT] Workflow inicializado PELA PRIMEIRA VEZ")
-
-            workflow = st.session_state.workflow
+            # CORREÇÃO SESSAO 43: Usar singleton get_workflow() para consistência
+            # ANTES: st.session_state.workflow = BSCWorkflow() criava instância separada
+            # PROBLEMA: chat_loader.py usava get_workflow() (singleton diferente!)
+            # SOLUÇÃO: Ambos usam get_workflow() -> mesma instância, mesmo checkpointer
+            workflow = get_workflow()
+            print("[DEBUG STREAMLIT] Usando workflow singleton (get_workflow)")
 
             # Config com thread_id (LangGraph checkpointer persiste state automaticamente!)
             config = {"configurable": {"thread_id": st.session_state.user_id}}
