@@ -8,7 +8,7 @@ from collections.abc import MutableMapping
 from enum import Enum
 from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 from src.memory.schemas import AlignmentReport, ClientProfile, StrategyMap
@@ -124,6 +124,23 @@ class BSCState(BaseModel):
 
     # Memória persistente do cliente (integração Mem0)
     client_profile: ClientProfile | None = None
+
+    @field_validator("client_profile", mode="before")
+    @classmethod
+    def validate_client_profile(cls, value):
+        """Valida client_profile aceitando dict ou instância.
+
+        CORREÇÃO SESSAO 43 (2025-11-24): LangGraph checkpoint serializa ClientProfile
+        como dict, mas Pydantic validation falha. Converter dict -> ClientProfile.
+        """
+        if value is None:
+            return None
+        if isinstance(value, ClientProfile):
+            return value
+        if isinstance(value, dict):
+            # LangGraph deserializou do checkpoint como dict - reconstruir
+            return ClientProfile.from_mem0(value)
+        return value
 
     # Análise da query
     relevant_perspectives: list[PerspectiveType] = Field(default_factory=list)
