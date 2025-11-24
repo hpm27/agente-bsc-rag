@@ -96,3 +96,21 @@ repos:
         files: ^src/memory/schemas\.py$
         stages: [pre-commit]
         verbose: true
+
+      - id: check-config-hardcoding
+        name: CRITICO - Detecta hardcoding de valores configuráveis
+        entry: python scripts/check_config_hardcoding.py
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+        verbose: true
+
+      - id: check-schema-alignment
+        name: CRITICO - Valida alinhamento Schema Pydantic vs Código
+        entry: python scripts/check_schema_alignment.py
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [pre-commit]
+        verbose: true

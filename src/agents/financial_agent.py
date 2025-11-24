@@ -11,7 +11,7 @@ Responsável por:
 import asyncio
 from typing import Any
 
-from config.settings import get_llm
+from config.settings import get_llm, settings
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from loguru import logger
@@ -140,8 +140,14 @@ Seja objetivo, técnico e baseie suas respostas nas melhores práticas da litera
                     try:
                         # Chamar tool diretamente para forçar retrieval
                         # StructuredTool espera dict como tool_input
+                        # BUG FIX: Schema PerspectiveSearchInput espera "top_k" não "k"
+                        # Configurável via .env: TOP_K_PERSPECTIVE_SEARCH
                         result = await tool.arun(
-                            {"query": query, "perspective": "financeira", "k": 5}
+                            {
+                                "query": query,
+                                "perspective": "financeira",
+                                "top_k": settings.top_k_perspective_search,
+                            }
                         )
                         if result:
                             # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)

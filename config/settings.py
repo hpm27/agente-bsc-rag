@@ -59,6 +59,7 @@ class Settings(BaseSettings):
     chunk_size: int = 1000
     chunk_overlap: int = 200
     top_k_retrieval: int = 10
+    top_k_perspective_search: int = 5  # Número de documentos por perspectiva BSC nos agents
     top_n_rerank: int = 5
     hybrid_search_weight_semantic: float = 0.7
     hybrid_search_weight_bm25: float = 0.3

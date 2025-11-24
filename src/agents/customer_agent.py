@@ -11,7 +11,7 @@ Responsável por:
 import asyncio
 from typing import Any
 
-from config.settings import get_llm
+from config.settings import get_llm, settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from loguru import logger
@@ -132,7 +132,15 @@ Seja objetivo, focado em valor para o cliente, e baseie suas respostas na litera
                         # StructuredTool espera dict como tool_input
                         # BUG FIX: Usar "cliente" (singular) não "clientes" (plural)
                         # Retriever espera singular conforme perspective_mapping
-                        result = await tool.arun({"query": query, "perspective": "cliente", "k": 5})
+                        # BUG FIX: Schema PerspectiveSearchInput espera "top_k" não "k"
+                        # Configurável via .env: TOP_K_PERSPECTIVE_SEARCH
+                        result = await tool.arun(
+                            {
+                                "query": query,
+                                "perspective": "cliente",
+                                "top_k": settings.top_k_perspective_search,
+                            }
+                        )
                         if result:
                             # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
                             # BSC é complexo e demanda contexto rico. Com 200K+ tokens disponíveis,

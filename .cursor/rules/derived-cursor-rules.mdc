@@ -749,3 +749,110 @@ action_plan: dict[str, Any] | None = None
 **FONTES**: GitHub Issue langchain-ai/langgraphjs#536 (Sep 2024), Blog swarnendu.de "LangGraph Best Practices" (Sep 2025, Section 1.1 "Keep state boring and typed"), Memória [[memory:11467544]] (criada Nov 2025), lesson-sessao-41-ui-schema-evolution-2025-11-22.md (1.180+ linhas).
 
 **LIÇÃO-CHAVE**: LangGraph NÃO avisa campos ausentes - responsabilidade do desenvolvedor garantir alinhamento handler-schema. SEMPRE atualizar BSCState schema ANTES de handler retornar campo novo.
+
+---
+
+### Configuration Management & Hardcoding Prevention (Validado Nov/2025 - ROI: 65-145 min economia por sessão)
+
+**CONTEXTO**: Problema recorrente 3+ sessões (Out-Nov/2025) - valores hardcoded ao invés de configurações centralizadas via `.env`. Impacto: 30-60 min debugging por ocorrência, dificulta manutenção, bugs em produção. Root cause sistêmico: valores "funcionam" → hardcoded → não configurável → bug quando precisa ajustar.
+
+**OCORRÊNCIAS DOCUMENTADAS**:
+1. Sessão 42: `reasoning_effort="low"` hardcoded (GPT-5.1 migration)
+2. Sessão 42: `model="gpt-5-2025-08-07"` hardcoded (6 locais)
+3. Sessão 43: `k=5`, `k=10`, `k=60` hardcoded (4 agents + 2 tools)
+4. Sessão 43: `datetime.now()` múltiplas chamadas (race condition temporal)
+
+**CHECKLIST PRÉ-COMMIT OBRIGATÓRIO (5 pontos - aplicar SEMPRE antes de commit)**:
+
+**1. Verificar Hardcoding de Valores Configuráveis:**
+```bash
+# [ ] Grep para encontrar valores hardcoded
+grep -r "\"k\":\s*\d\+\|\"top_k\":\s*\d\+\|k=\d\+\|top_k=\d\+" src/ | grep -v "settings\."
+
+# [ ] Para CADA valor encontrado:
+#     - Existe configuração no .env?
+#     - Existe configuração no settings.py?
+#     - Substituir por settings.X
+```
+
+**Valores que DEVEM ser Configuráveis:**
+- `k=5`, `k=10`, `k=60` → `settings.top_k_*`
+- `reasoning_effort="low"` → `settings.gpt5_reasoning_effort`
+- `model="gpt-5-2025-08-07"` → `settings.onboarding_llm_model`
+- `temperature=0.0` → `settings.temperature`
+- `max_tokens=128000` → `settings.max_tokens`
+
+**Valores que PODEM ser Hardcoded (constantes de negócio):**
+- `chunk_size=1000` → OK se é constante de negócio
+- `4 perspectivas BSC` → OK (constante de domínio)
+- `k=60` para RRF → OK se é constante algorítmica (não configuração de usuário)
+
+**2. Verificar Alinhamento Schema Pydantic vs Código:**
+```bash
+# [ ] Identificar TODOS schemas Pydantic usados
+grep "from src.*schemas import\|from src.tools.*import.*Input" src/file.py -A 5
+
+# [ ] Para CADA schema identificado:
+#     - Grep schema completo: grep "class SchemaName" src/path/file.py -A 30
+#     - Listar campos esperados (nomes exatos, tipos, defaults)
+#     - Verificar uso no código: grep "SchemaName\|tool.arun\|tool.invoke" src/file.py -A 10
+#     - Validar: campos usados existem no schema? nomes estão corretos?
+```
+
+**Exemplos de Desalinhamento Comum:**
+- Schema espera `top_k`, código usando `k` → ❌ Silent failure (StructuredTool ignora)
+- Schema espera `perspective: Literal["cliente"]`, código usando `"clientes"` → ❌ Silent failure
+- Schema espera `field: str`, código usando `field_name` → ❌ ValidationError
+
+**3. Verificar Mapeamentos e Convenções:**
+```bash
+# [ ] Verificar mapeamentos (perspectives, enums, etc)
+grep "perspective_mapping\|mapping\|_map\s*=" src/rag/retriever.py -A 10
+
+# [ ] Validar: código usa valores conforme mapeamento?
+#     - Customer Agent: "cliente" (singular) ou "clientes" (plural)?
+#     - Verificar retriever para confirmar
+```
+
+**4. Verificar Race Conditions Temporais:**
+```bash
+# [ ] Grep para múltiplas chamadas datetime.now()
+grep -n "datetime.now()" src/file.py | wc -l
+# Se > 1: verificar se todas usam mesmo timestamp
+
+# [ ] Padrão correto:
+now = datetime.now()  # Captura UMA VEZ
+date1 = now.strftime("%Y-%m-%d")
+date2 = now.strftime("%d/%m/%Y")
+```
+
+**5. Validar Configurações no .env:**
+```bash
+# [ ] Para CADA configuração adicionada em settings.py:
+#     - Existe entrada correspondente no .env?
+#     - Valor padrão faz sentido?
+#     - Documentação incluída?
+```
+
+**PATTERN CORRETO VALIDADO**:
+```python
+# ✅ CORRETO: Configuração centralizada
+from config.settings import settings
+k = settings.top_k_perspective_search
+
+# ✅ CORRETO: Schema alignment
+grep "class PerspectiveSearchInput" src/tools/rag_tools.py -A 10
+# Identificar campos esperados: top_k (não k!)
+result = tool.arun({"query": query, "top_k": settings.top_k_perspective_search})
+
+# ✅ CORRETO: Race condition prevention
+now = datetime.now()  # Captura UMA VEZ
+date1 = now.strftime("%Y-%m-%d")
+date2 = now.strftime("%d/%m/%Y")
+```
+
+**QUANDO APLICAR**: SEMPRE antes de fazer commit de código que usa configurações, schemas Pydantic, ou valores temporais.
+
+**ROI VALIDADO**: 8-15 min checklist previne 80-160 min debugging = **65-145 min economia por sessão**. Aplicável: 100% commits que modificam configurações ou schemas.
+
+**FONTES**: Configu.com "Working with Python Configuration Files" (2024), Micropole "Best practices for configurations" (2025), Pydantic Docs "Settings Management" (2025), lesson-config-hardcoding-schema-alignment-2025-11-22.md (1.200+ linhas, Sessão 43).

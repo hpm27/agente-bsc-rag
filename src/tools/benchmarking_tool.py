@@ -27,6 +27,7 @@ Data: 2025-10-19
 import logging
 from typing import cast
 
+from config.settings import settings
 from langchain_core.language_models import BaseLLM
 from pydantic import ValidationError
 
@@ -175,8 +176,10 @@ class BenchmarkingTool:
             rag_query = f"benchmarking BSC {company_info.sector} {company_info.size} best practices external metrics"
 
             try:
-                # Retrieval (top-10)
-                retrieved_results = self.retriever.get_relevant_documents(rag_query, k=10)
+                # Retrieval (configurável via .env: TOP_K_RETRIEVAL)
+                retrieved_results = self.retriever.get_relevant_documents(
+                    rag_query, k=settings.top_k_retrieval
+                )
                 rag_docs = [doc.page_content for doc in retrieved_results]
 
                 logger.info("[BenchmarkingTool] RAG context retrieved (%d docs)", len(rag_docs))

@@ -100,7 +100,9 @@ class RAGTools:
         try:
             logger.info(f"[PERSPECTIVE] Buscando (perspectiva {perspective}): '{query[:50]}...'")
 
-            k = top_k or settings.top_k_retrieval
+            # BUG FIX: Usar top_k_perspective_search (específico para busca por perspectiva)
+            # ao invés de top_k_retrieval (genérico)
+            k = top_k or settings.top_k_perspective_search
 
             # Valida perspectiva
             valid_perspectives = ["financeira", "cliente", "processos", "aprendizado"]

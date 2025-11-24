@@ -11,7 +11,7 @@ Responsável por:
 import asyncio
 from typing import Any
 
-from config.settings import get_llm
+from config.settings import get_llm, settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from loguru import logger
@@ -130,8 +130,14 @@ Seja objetivo, focado em pessoas e desenvolvimento organizacional, e baseie suas
                 if tool.name == "search_by_perspective":
                     try:
                         # StructuredTool espera dict como tool_input
+                        # BUG FIX: Schema PerspectiveSearchInput espera "top_k" não "k"
+                        # Configurável via .env: TOP_K_PERSPECTIVE_SEARCH
                         result = await tool.arun(
-                            {"query": query, "perspective": "aprendizado", "k": 5}
+                            {
+                                "query": query,
+                                "perspective": "aprendizado",
+                                "top_k": settings.top_k_perspective_search,
+                            }
                         )
                         if result:
                             # ESTRATÉGIA AGRESSIVA: Usar máximo contexto possível (50K chars)
