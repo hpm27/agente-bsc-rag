@@ -18,6 +18,7 @@ load_dotenv()
 
 from src.graph.states import BSCState
 from src.graph.workflow import BSCWorkflow
+from ui.helpers.chat_loader import load_chat_history, save_chat_to_checkpoint
 
 st.set_page_config(page_title="Consultor BSC", layout="wide", page_icon="[BSC]")
 
@@ -63,17 +64,22 @@ st.title("Consultor BSC - Chat Interativo")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# CORREÇÃO SESSAO 43 (2025-11-24): Carregar histórico de chat do LangGraph checkpoint
+# Outras páginas persistem porque carregam do SQLite, chat precisa carregar do checkpoint
+if not st.session_state.messages and st.session_state.get("user_id"):
+    loaded_messages = load_chat_history(st.session_state.user_id)
+    if loaded_messages:
+        st.session_state.messages = loaded_messages
+
 # CRITICAL FIX: Usar query_params para persistir user_id entre reloads e páginas
 # Isso garante que Strategy Map e Action Plan usam o MESMO user_id do workflow
 #
-# WORKAROUND BUG STREAMLIT #10406 (Feb 2025): st.query_params NAO persiste apos refresh
-# Solucao temporaria: usar st.experimental_get/set_query_params (deprecated mas FUNCIONA)
-# Migrara para st.query_params quando Streamlit fixar bug
-# Fonte: https://github.com/streamlit/streamlit/issues/10406
+# CORREÇÃO SESSAO 43 (2025-11-24): Usar APENAS st.query_params (API moderna)
+# Streamlit NÃO permite misturar experimental_get_query_params + query_params
+# StreamlitAPIException se misturadas. Fonte: Streamlit Docs 2025
 if "user_id" not in st.session_state:
     # Tentar ler user_id da URL primeiro (persiste entre reloads)
-    query_params = st.experimental_get_query_params()
-    user_id_from_url = query_params.get("uid", [None])[0]
+    user_id_from_url = st.query_params.get("uid")
 
     if user_id_from_url:
         # Reutilizar user_id existente da URL
@@ -85,7 +91,8 @@ if "user_id" not in st.session_state:
 
 # CORREÇÃO SESSAO 40: SEMPRE sincronizar query_params com session_state
 # Garante que URL SEMPRE tem uid atualizado (mesmo se carregado de URL)
-st.experimental_set_query_params(uid=st.session_state.user_id)
+# CORREÇÃO SESSAO 43: Substituir experimental_set_query_params (deprecated após 2024-04-11)
+st.query_params["uid"] = st.session_state.user_id
 
 if "current_phase" not in st.session_state:
     st.session_state.current_phase = "ONBOARDING"
@@ -168,11 +175,20 @@ if user_input:
             # Config com thread_id (LangGraph checkpointer persiste state automaticamente!)
             config = {"configurable": {"thread_id": st.session_state.user_id}}
 
+            # CORREÇÃO SESSAO 43: Passar chat_history para o workflow
+            # Isso permite que o workflow tenha contexto da conversa
+            chat_history_for_workflow = st.session_state.messages.copy()
+
             # Criar state MINIMO (LangGraph checkpointer carrega resto do checkpoint!)
-            initial_state = BSCState(query=user_input, user_id=st.session_state.user_id)
+            initial_state = BSCState(
+                query=user_input,
+                user_id=st.session_state.user_id,
+                metadata={"chat_history": chat_history_for_workflow},
+            )
 
             print(
-                f"[DEBUG STREAMLIT] Invocando workflow | thread_id={st.session_state.user_id[:8]}..."
+                f"[DEBUG STREAMLIT] Invocando workflow | thread_id={st.session_state.user_id[:8]}... | "
+                f"chat_history={len(chat_history_for_workflow)} msgs"
             )
 
             # Executar workflow (checkpointer carrega estado anterior automaticamente!)
@@ -208,6 +224,9 @@ if user_input:
 
             # Adicionar resposta ao histórico
             st.session_state.messages.append({"role": "assistant", "content": response})
+
+            # CORREÇÃO SESSAO 43: Salvar chat no checkpoint para persistir após reload
+            save_chat_to_checkpoint(st.session_state.user_id, st.session_state.messages)
 
             # Recarregar página para mostrar nova mensagem
             st.rerun()

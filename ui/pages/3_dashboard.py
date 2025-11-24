@@ -44,7 +44,8 @@ user_id = client_options[selected_client]
 
 # Carregar dados do Mem0
 with st.spinner(f"Carregando dados de '{selected_client}'..."):
-    objectives, error_obj = load_strategy_map(user_id)
+    # CORREÇÃO SESSAO 43: load_strategy_map agora retorna 3 valores
+    objectives, connections, error_obj = load_strategy_map(user_id)
     actions, error_act = load_action_plan(user_id)
 
 # Tratamento de erros

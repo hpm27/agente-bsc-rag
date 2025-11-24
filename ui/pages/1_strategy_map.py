@@ -47,7 +47,8 @@ user_id = client_options[selected_client]
 
 # Carregar objectives do Mem0
 with st.spinner(f"Carregando Strategy Map de '{selected_client}'..."):
-    objectives, error = load_strategy_map(user_id)
+    # CORREÇÃO SESSAO 43: load_strategy_map agora retorna 3 valores
+    objectives, connections, error = load_strategy_map(user_id)
 
 if error:
     st.warning(error)
@@ -72,7 +73,8 @@ with st.sidebar:
     )
 
 # Criar grafo
-graph_component = BSCNetworkGraph(objectives)
+# CORREÇÃO SESSAO 43: Passar connections para visualizar setas
+graph_component = BSCNetworkGraph(objectives, connections=connections if connections else [])
 graph = graph_component.build_graph()
 
 # Estatisticas rapidas

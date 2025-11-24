@@ -17,12 +17,11 @@ st.title("Action Plan - Timeline de Implementacao BSC")
 # Carregar user_id da sessao atual (criado no chat com Consultor BSC)
 # CRITICAL: Ler de query_params PRIMEIRO (persiste entre páginas)
 #
-# WORKAROUND BUG STREAMLIT #10406 (Feb 2025): st.query_params NAO persiste apos refresh
-# Solucao temporaria: usar st.experimental_get_query_params (deprecated mas FUNCIONA)
-# Fonte: https://github.com/streamlit/streamlit/issues/10406
+# CORREÇÃO SESSAO 43 (2025-11-24): Usar APENAS st.query_params (API moderna)
+# Streamlit NÃO permite misturar experimental_get + query_params
+# Fonte: StreamlitAPIException + Streamlit Docs 2025
 if "user_id" not in st.session_state:
-    query_params = st.experimental_get_query_params()
-    user_id_from_url = query_params.get("uid", [None])[0]
+    user_id_from_url = st.query_params.get("uid")
     if user_id_from_url:
         st.session_state.user_id = user_id_from_url
     else:
@@ -31,8 +30,9 @@ if "user_id" not in st.session_state:
         st.stop()  # Para execução se não tem user_id
 
 # CORREÇÃO SESSAO 40: SEMPRE sincronizar query_params com session_state
+# CORREÇÃO SESSAO 43: Substituir experimental_set_query_params (deprecated após 2024-04-11)
 if "user_id" in st.session_state:
-    st.experimental_set_query_params(uid=st.session_state.user_id)
+    st.query_params["uid"] = st.session_state.user_id
 
 user_id = st.session_state.user_id
 
@@ -88,7 +88,8 @@ df = gantt_component.create_dataframe(
 )
 
 fig = gantt_component.create_plotly_figure(df)
-st.plotly_chart(fig, use_container_width=True)
+# CORREÇÃO SESSAO 43: Substituir use_container_width (deprecated)
+st.plotly_chart(fig, width="stretch")
 
 # Tabela de detalhes
 st.subheader("Detalhes das Acoes")
@@ -97,7 +98,7 @@ table_df = gantt_component.create_details_table(df)
 
 if not table_df.empty:
     # Tabela interativa
-    st.dataframe(table_df, use_container_width=True, hide_index=True)
+    st.dataframe(table_df, width="stretch", hide_index=True)
 
     # Botao de export CSV
     csv = table_df.to_csv(index=False).encode("utf-8")

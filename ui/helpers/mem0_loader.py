@@ -17,25 +17,37 @@ import logging
 
 from src.database import get_db_session
 from src.database.repository import BSCRepository
-from src.memory.schemas import ActionItem, ActionPlan, StrategicObjective, StrategyMap
+from src.memory.schemas import (
+    ActionItem,
+    ActionPlan,
+    StrategicObjective,
+    StrategyMap,
+    CauseEffectConnection,
+)
 from src.memory.exceptions import ProfileNotFoundError
 
 logger = logging.getLogger(__name__)
 
 
-def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, str | None]:
-    """Carrega Strategy Map (objetivos estrategicos) do SQLite (primary) ou Mem0 (fallback).
+def load_strategy_map(
+    user_id: str,
+) -> tuple[list[StrategicObjective] | None, list[CauseEffectConnection] | None, str | None]:
+    """Carrega Strategy Map (objetivos + conexoes) do SQLite (primary) ou Mem0 (fallback).
 
     DUAL PERSISTENCE STRATEGY (SPRINT 4):
     1. Tenta carregar de SQLite primeiro (instant, confiável)
     2. Se falhar, tenta Mem0 como fallback (eventual consistency até 10 min)
 
+    CORREÇÃO SESSAO 43 (2025-11-24): Agora retorna TAMBÉM as conexões causa-efeito
+    para visualização completa do Strategy Map com setas direcionadas.
+
     Args:
         user_id: ID do cliente
 
     Returns:
-        Tupla (objectives, error_message):
+        Tupla (objectives, connections, error_message):
         - objectives: Lista de StrategicObjective se sucesso, None se erro
+        - connections: Lista de CauseEffectConnection se sucesso, None se erro
         - error_message: Mensagem de erro se falha, None se sucesso
 
     Example:
@@ -58,10 +70,15 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
                 objectives_data = strategy_map_row.objectives  # JSON já parseado pelo SQLAlchemy
                 objectives = [StrategicObjective(**obj) for obj in objectives_data]
 
+                # CORREÇÃO SESSAO 43: Carregar TAMBÉM as conexões causa-efeito
+                connections_data = strategy_map_row.connections  # JSON já parseado pelo SQLAlchemy
+                connections = [CauseEffectConnection(**conn) for conn in connections_data]
+
                 logger.info(
-                    f"[OK] [SQLite PRIMARY] Strategy Map carregado | user_id: {user_id[:8]}... | Objectives: {len(objectives)}"
+                    f"[OK] [SQLite PRIMARY] Strategy Map carregado | user_id: {user_id[:8]}... | "
+                    f"Objectives: {len(objectives)} | Connections: {len(connections)}"
                 )
-                return objectives, None
+                return objectives, connections, None
 
             # SQLite não tem dados, tentar Mem0 fallback
             logger.warning(
@@ -84,7 +101,7 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
             profile = client.load_profile(user_id)
         except ProfileNotFoundError:
             # CORREÇÃO SESSAO 40: Capturar exceção específica
-            return None, "[INFO] Perfil nao encontrado. Execute workflow ONBOARDING primeiro"
+            return None, None, "[INFO] Perfil nao encontrado. Execute workflow ONBOARDING primeiro"
 
         # Extrair strategy_map do metadata
         strategy_map_dict = profile.metadata.get("strategy_map")
@@ -92,10 +109,11 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
         if not strategy_map_dict:
             return (
                 None,
+                None,
                 "[INFO] Strategy Map ainda nao foi gerado (execute workflow SOLUTION_DESIGN)",
             )
 
-        # Converter dict -> StrategyMap Pydantic -> extrair objectives
+        # Converter dict -> StrategyMap Pydantic -> extrair objectives + connections
         strategy_map = StrategyMap(**strategy_map_dict)
 
         # CORREÇÃO BUG #6 SESSAO 39: StrategyMap NÃO tem .objectives (estrutura: 4 perspectivas)
@@ -106,16 +124,20 @@ def load_strategy_map(user_id: str) -> tuple[list[StrategicObjective] | None, st
         objectives.extend(strategy_map.process.objectives)
         objectives.extend(strategy_map.learning.objectives)
 
+        # CORREÇÃO SESSAO 43: Extrair TAMBÉM as conexões
+        connections = strategy_map.cause_effect_connections
+
         logger.info(
-            f"[OK] [Mem0 FALLBACK] Strategy Map carregado | user_id: {user_id[:8]}... | Objectives: {len(objectives)}"
+            f"[OK] [Mem0 FALLBACK] Strategy Map carregado | user_id: {user_id[:8]}... | "
+            f"Objectives: {len(objectives)} | Connections: {len(connections)}"
         )
 
-        return objectives, None
+        return objectives, connections, None
 
     except Exception as e:
         error_msg = f"[ERRO] Falha ao carregar Strategy Map (SQLite + Mem0): {e}"
         logger.error(error_msg, exc_info=True)
-        return None, error_msg
+        return None, None, error_msg
 
 
 def load_action_plan(user_id: str) -> tuple[list[ActionItem] | None, str | None]:

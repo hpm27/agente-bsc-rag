@@ -17,12 +17,11 @@ st.title("Strategy Map BSC - Conexoes Causa-Efeito")
 # Carregar user_id da sessao atual (criado no chat com Consultor BSC)
 # CRITICAL: Ler de query_params PRIMEIRO (persiste entre páginas)
 #
-# WORKAROUND BUG STREAMLIT #10406 (Feb 2025): st.query_params NAO persiste apos refresh
-# Solucao temporaria: usar st.experimental_get_query_params (deprecated mas FUNCIONA)
-# Fonte: https://github.com/streamlit/streamlit/issues/10406
+# CORREÇÃO SESSAO 43 (2025-11-24): Usar APENAS st.query_params (API moderna)
+# Streamlit NÃO permite misturar experimental_get + query_params
+# Fonte: StreamlitAPIException + Streamlit Docs 2025
 if "user_id" not in st.session_state:
-    query_params = st.experimental_get_query_params()
-    user_id_from_url = query_params.get("uid", [None])[0]
+    user_id_from_url = st.query_params.get("uid")
     if user_id_from_url:
         st.session_state.user_id = user_id_from_url
     else:
@@ -31,14 +30,15 @@ if "user_id" not in st.session_state:
         st.stop()  # Para execução se não tem user_id
 
 # CORREÇÃO SESSAO 40: SEMPRE sincronizar query_params com session_state
+# CORREÇÃO SESSAO 43: Substituir experimental_set_query_params (deprecated após 2024-04-11)
 if "user_id" in st.session_state:
-    st.experimental_set_query_params(uid=st.session_state.user_id)
+    st.query_params["uid"] = st.session_state.user_id
 
 user_id = st.session_state.user_id
 
-# Carregar objectives do Mem0 (sessao atual)
+# CORREÇÃO SESSAO 43: Carregar objectives E connections (causa-efeito)
 with st.spinner("Carregando Strategy Map da sessao atual..."):
-    objectives, error = load_strategy_map(user_id)
+    objectives, connections, error = load_strategy_map(user_id)
 
 if error:
     st.warning(error)
@@ -50,6 +50,10 @@ if not objectives:
     st.warning("Nenhum objetivo estrategico encontrado para esta sessao.")
     st.info("Complete a fase SOLUTION DESIGN no chat para gerar o Strategy Map.")
     st.stop()
+
+# Fallback: Se connections não foram carregadas, usar lista vazia
+if connections is None:
+    connections = []
 
 # Mensagem de contexto
 st.info(f"Exibindo Strategy Map da sessao atual (user_id: {user_id[:8]}...)")
@@ -72,19 +76,18 @@ with col3:
     perspectivas = set([o.perspective for o in objectives])
     st.metric("Perspectivas", len(perspectivas))
 with col4:
-    # BUG FIX (Sessao 41, 2025-11-22): cause_effect_links nao existe em StrategicObjective
-    # Usando dependencies como proxy para relacoes entre objetivos
-    total_deps = sum([len(o.dependencies) for o in objectives])
-    st.metric("Total de Dependencias", total_deps)
+    # CORREÇÃO SESSAO 43: Usar connections carregadas do banco
+    total_connections = len(connections) if connections else 0
+    st.metric("Conexoes Causa-Efeito", total_connections)
 
 # Network Graph
 st.subheader("Grafo de Conexoes BSC")
 
-graph = BSCNetworkGraph(objectives)
-fig = graph.create_plotly_figure(
-    filter_perspective=None, filter_priority=None  # Mostrar todas  # Mostrar todas
-)
-st.plotly_chart(fig, use_container_width=True)
+# CORREÇÃO SESSAO 43: Passar connections para o grafo
+graph = BSCNetworkGraph(objectives, connections=connections)
+fig = graph.create_plotly_figure(filter_perspective=None, filter_priority=None)  # Mostrar todas
+# CORREÇÃO SESSAO 43: Substituir use_container_width (deprecated)
+st.plotly_chart(fig, width="stretch")
 
 # Tabela de objetivos detalhada
 st.subheader("Detalhes dos Objetivos Estrategicos")
@@ -111,7 +114,7 @@ if objectives:
         ]
     )
 
-    st.dataframe(table_df, use_container_width=True, hide_index=True)
+    st.dataframe(table_df, width="stretch", hide_index=True)
 
     # Botao export CSV
     csv = table_df.to_csv(index=False).encode("utf-8")
