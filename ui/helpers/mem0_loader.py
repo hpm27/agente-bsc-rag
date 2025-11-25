@@ -20,9 +20,11 @@ from src.database.repository import BSCRepository
 from src.memory.schemas import (
     ActionItem,
     ActionPlan,
+    CauseEffectAnalysis,
+    CauseEffectConnection,
+    KPIAlignmentReport,
     StrategicObjective,
     StrategyMap,
-    CauseEffectConnection,
 )
 from src.memory.exceptions import ProfileNotFoundError
 
@@ -285,3 +287,81 @@ def list_all_clients() -> tuple[list[dict] | None, str | None]:
         # Graceful degradation: retornar lista vazia ao invés de erro
         logger.info("[INFO] Retornando lista vazia (graceful degradation)")
         return [], None
+
+
+def load_validation_reports(
+    user_id: str,
+) -> tuple[KPIAlignmentReport | None, CauseEffectAnalysis | None, str | None]:
+    """Carrega reports de validacao (KPI Alignment, Cause-Effect) do LangGraph state.
+
+    SPRINT 3 - SESSAO 48: Novos reports de validacao do Strategy Map.
+    Carrega do checkpoint LangGraph (state persistido automaticamente).
+
+    Args:
+        user_id: ID do cliente (thread_id do checkpoint)
+
+    Returns:
+        Tupla (kpi_alignment_report, cause_effect_analysis, error_message):
+        - kpi_alignment_report: KPIAlignmentReport se disponivel, None caso contrario
+        - cause_effect_analysis: CauseEffectAnalysis se disponivel, None caso contrario
+        - error_message: Mensagem de erro se falha, None se sucesso
+
+    Example:
+        >>> kpi_report, ce_analysis, error = load_validation_reports("cliente_123")
+        >>> if kpi_report:
+        ...     st.write(f"KPI Score: {kpi_report.overall_score}")
+    """
+    try:
+        from src.graph.workflow import get_workflow
+
+        workflow = get_workflow()
+        config = {"configurable": {"thread_id": user_id}}
+
+        # Usar graph com checkpointer para acessar state
+        graph_with_cp = workflow.get_graph_with_checkpointer()
+        checkpoint_state = graph_with_cp.get_state(config)
+
+        if not checkpoint_state or not checkpoint_state.values:
+            logger.info(f"[INFO] Nenhum checkpoint encontrado para user_id: {user_id[:8]}...")
+            return None, None, "[INFO] Nenhum state encontrado. Execute workflow primeiro."
+
+        # Extrair reports do state
+        state_values = checkpoint_state.values
+        kpi_alignment_report = None
+        cause_effect_analysis = None
+
+        # KPI Alignment Report
+        kpi_data = state_values.get("kpi_alignment_report")
+        if kpi_data:
+            if isinstance(kpi_data, KPIAlignmentReport):
+                kpi_alignment_report = kpi_data
+            elif isinstance(kpi_data, dict):
+                kpi_alignment_report = KPIAlignmentReport(**kpi_data)
+            logger.info(
+                f"[OK] KPI Alignment Report carregado | score: {kpi_alignment_report.overall_score}"
+            )
+
+        # Cause-Effect Analysis
+        ce_data = state_values.get("cause_effect_analysis")
+        if ce_data:
+            if isinstance(ce_data, CauseEffectAnalysis):
+                cause_effect_analysis = ce_data
+            elif isinstance(ce_data, dict):
+                cause_effect_analysis = CauseEffectAnalysis(**ce_data)
+            logger.info(
+                f"[OK] Cause-Effect Analysis carregado | score: {cause_effect_analysis.completeness_score}"
+            )
+
+        if not kpi_alignment_report and not cause_effect_analysis:
+            return (
+                None,
+                None,
+                "[INFO] Reports de validacao nao disponiveis. Execute SOLUTION_DESIGN.",
+            )
+
+        return kpi_alignment_report, cause_effect_analysis, None
+
+    except Exception as e:
+        error_msg = f"[ERRO] Falha ao carregar validation reports: {e}"
+        logger.error(error_msg, exc_info=True)
+        return None, None, error_msg
