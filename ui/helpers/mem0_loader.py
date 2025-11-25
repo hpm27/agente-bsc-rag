@@ -330,9 +330,11 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
             # CRÍTICO: Fazer DENTRO do with, antes da sessão fechar
             clients = []
             for profile in profiles:
-                # Formatar data no padrao brasileiro
+                # Formatar data no padrao brasileiro COM HORA para garantir unicidade
+                # CORREÇÃO SESSAO 49: DD/MM/YYYY HH:MM evita colisão de chaves
+                # quando múltiplos clientes criados no mesmo dia com mesmo nome/setor
                 created_date = (
-                    profile.created_at.strftime("%d/%m/%Y")
+                    profile.created_at.strftime("%d/%m/%Y %H:%M")
                     if profile.created_at
                     else "Data desconhecida"
                 )
@@ -343,7 +345,7 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
                 # Setor (opcional)
                 sector = profile.sector or ""
 
-                # Display name formatado para selectbox
+                # Display name formatado para selectbox (inclui hora para unicidade)
                 if sector:
                     display = f"{company} ({sector}) - {created_date}"
                 else:
