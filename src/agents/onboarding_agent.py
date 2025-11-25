@@ -485,6 +485,7 @@ class OnboardingAgent:
             "timeline": extraction_result.timeline,
             "sponsor_name": extraction_result.sponsor_name,
             "success_criteria": extraction_result.success_criteria,
+            "previous_initiatives": extraction_result.previous_initiatives,  # SESSAO 47: Bug fix - campo estava no schema mas nao sendo extraido
         }
 
         # SESSAO 46: Confidence scores expandidos
@@ -523,6 +524,7 @@ class OnboardingAgent:
             "timeline": 1.0 if extraction_result.has_project_constraints else 0.0,
             "sponsor_name": 1.0 if extraction_result.has_project_constraints else 0.0,
             "success_criteria": 1.0 if extraction_result.has_project_constraints else 0.0,
+            "previous_initiatives": 1.0 if extraction_result.has_project_constraints else 0.0,  # SESSAO 47: Bug fix
         }
 
         # ========================================================================
@@ -568,6 +570,7 @@ class OnboardingAgent:
                 "timeline": None,
                 "sponsor_name": None,
                 "success_criteria": [],
+                "previous_initiatives": [],  # SESSAO 47: Bug fix - campo estava no schema mas nao inicializado
                 # CONFIDENCE TRACKING (Best Practice Sparkco 2025)
                 "confidence_scores": {},  # score por campo
             }
@@ -1367,7 +1370,10 @@ Gere a mensagem de confirmacao:"""
 
         try:
             # RETRY: Chamar LLM com contexto limpo (sem histórico)
-            messages = [{"role": "system", "content": consolidated_prompt}]
+            # SESSAO 47: Bug fix - usar SystemMessage para consistencia e robustez cross-provider
+            from langchain_core.messages import SystemMessage
+
+            messages = [SystemMessage(content=consolidated_prompt)]
             response = await asyncio.wait_for(self.llm.ainvoke(messages), timeout=60)
 
             confirmation = response.content.strip()
@@ -1748,7 +1754,10 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             # Adicionar data atual no início do prompt
             prompt = f"DATA ATUAL: {current_date}\n\n{prompt}"
 
-            messages = [{"role": "system", "content": prompt}]
+            # SESSAO 47: Bug fix - usar SystemMessage para consistencia e robustez cross-provider
+            from langchain_core.messages import SystemMessage
+
+            messages = [SystemMessage(content=prompt)]
 
             # STEP 5: Chamar LLM com structured output (GPT-5 mini configuravel via construtor)
             llm = self.llm  # LLM configurado no construtor (GPT-5 mini para testes/producao)
@@ -2267,8 +2276,11 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             # Usar temperatura 0.8 para respostas mais naturais/variadas (vs 1.0 padrao GPT-5)
             llm = self.llm  # GPT-5 mini configurado no construtor
 
+            # SESSAO 47: Bug fix - usar SystemMessage para consistencia e robustez cross-provider
+            from langchain_core.messages import SystemMessage
+
             # Chamar LLM com timeout 120s
-            messages = [{"role": "system", "content": prompt}]
+            messages = [SystemMessage(content=prompt)]
 
             response = await asyncio.wait_for(llm.ainvoke(messages), timeout=120)
 
@@ -2691,10 +2703,13 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         system_prompt = SEMANTIC_VALIDATION_SYSTEM
         user_prompt = SEMANTIC_VALIDATION_USER.format(entity=entity, entity_type=entity_type)
 
+        # SESSAO 47: Bug fix - usar SystemMessage/HumanMessage para consistencia e robustez cross-provider
+        from langchain_core.messages import HumanMessage, SystemMessage
+
         # Chamar LLM com structured output (JSON)
         messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=user_prompt),
         ]
 
         try:
