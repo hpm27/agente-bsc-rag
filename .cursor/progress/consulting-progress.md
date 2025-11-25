@@ -1,10 +1,269 @@
 # [EMOJI] PROGRESS: Transformação Consultor BSC
 
-**Última Atualização**: 2025-11-22 (Sessão 42 - GPT-5.1 Migration + Limites Máximos LLM) [OK]
-**Fase Atual**: FASE 5-6 Sprint 2+4 - Workflow E2E Completo (100% SPRINT 2 + 50% SPRINT 4)
-**Sessão**: 42 de 15-20
-**Progresso Geral**: 68% -> 61/90 tarefas (GPT-5.1 Migration + Limites 85K + Cache Cleanup)
-**Release**: v2.2.4 - GPT-5.1 Migration + Max Length 85K chars
+**Última Atualização**: 2025-11-25 (Sessão 47 - Bug Fixes OnboardingAgent + Feedback Loop Judge + UX Export CSV) [OK]
+**Fase Atual**: FASE 5-6 Sprint 2+4 - Workflow E2E Completo (100% SPRINT 2 + 75% SPRINT 4)
+**Sessão**: 47 de 15-20
+**Progresso Geral**: 72% -> 66/90 tarefas (+1 tarefa: UX Strategy Map Export)
+**Release**: v2.3.1 - Bug Fixes + Judge Feedback Loop + Strategy Map UX
+
+---
+
+### Atualização 2025-11-25 (Sessão 47 - Bug Fixes + Feedback Loop + UX Export CSV) [OK]
+
+[EMOJI] **4 BUG FIXES + FEEDBACK LOOP JUDGE + UX EXPORT CSV**
+
+#### **Resumo da Sessão 47**
+- **Duração**: ~2h (verificações 20min + implementações 1h + debugging 40min)
+- **Status**: 4 commits realizados, todos problemas resolvidos
+
+**Trabalho Realizado (Sessão 47):**
+
+**1. Bug Fix: OnboardingAgent - previous_initiatives + Message Format** [OK]
+- **Bug 1**: Campo `previous_initiatives` definido no schema `ExtractedEntities` mas nunca extraído
+- **Bug 2**: Inconsistência entre dict-based messages e `SystemMessage`/`HumanMessage` do LangChain
+
+**Correções (src/agents/onboarding_agent.py):**
+- Adicionado `previous_initiatives` em `extracted_entities` dict (linha ~488)
+- Adicionado em `confidence_scores` dict (linha ~527)
+- Adicionado em `partial_profile` initialization (linha ~571)
+- Convertidos 4 locais para usar `SystemMessage`/`HumanMessage`
+
+**2. Documentação: Clarificar Operadores >= vs > em discovery_attempts** [OK]
+- **Problema Reportado**: Inconsistência aparente entre operadores
+- **Análise**: Operadores estão CORRETOS - diferença é QUANDO verificação acontece
+  - `route_by_approval` usa `>=` (valor APÓS tentativa ser concluída)
+  - `discovery_handler` usa `>` (valor ANTES de executar, com current_attempts+1)
+- **Solução**: Adicionados comentários explicativos detalhados
+
+**Código (src/graph/workflow.py):**
+```python
+# Em route_by_approval (~linha 964):
+# NOTA: Usa >= porque discovery_attempts ja foi incrementado APOS a tentativa
+# Com max=2: apos 1a tentativa (1>=2=F->retry), apos 2a tentativa (2>=2=T->end)
+
+# Em discovery_handler (~linha 1776):
+# NOTA: Usa > (nao >=) porque current_attempts e incrementado ANTES de verificar
+# Com max=2: tentativa 1 (1>2=F->executa), tentativa 2 (2>2=F->executa), tentativa 3 (3>2=T->bloqueia)
+```
+
+**3. Bug Fix: Descrição Truncada no Export CSV do Strategy Map** [OK]
+- **Problema**: Usuário recebia descrições truncadas (100 chars) ao exportar CSV
+- **Investigação**:
+  - Dados no SQLite estavam completos (200+ chars)
+  - Código já tinha correção (display_df vs export_df)
+  - **Causa Real**: Usuário usava botão "Download as CSV" NATIVO do Streamlit
+- **Solução**: Separar DataFrames + UX melhorada
+
+**Código (pages/1_strategy_map.py):**
+```python
+# DataFrame para exibicao (truncado para visualização)
+display_df = pd.DataFrame([{
+    "Descricao": obj.description[:100] + "..." if len(obj.description) > 100 else obj.description,
+}])
+
+# DataFrame para exportacao (COMPLETO)
+export_df = pd.DataFrame([{
+    "Descricao": obj.description,  # Dados completos!
+}])
+
+# Aviso sobre botão nativo
+st.caption("[INFO] O botao 'Download as CSV' acima exporta descricoes TRUNCADAS.")
+
+# Botão destacado para download correto
+st.download_button(
+    label="Exportar CSV (Dados Completos)",
+    type="primary",  # Destaque visual azul
+)
+```
+
+**4. Commits Realizados (Sessão 47):**
+
+| Commit | Descrição |
+|--------|-----------|
+| `a13e063` | fix(onboarding): Corrigir bugs previous_initiatives e message format |
+| `962a099` | docs(workflow): Clarificar logica >= vs > em discovery_attempts |
+| `5432278` | fix(strategy_map): Corrigir descricao truncada no export CSV |
+| `f3b7b21` | fix(strategy_map): Clarificar botao CSV correto para dados completos |
+
+**Arquivos Modificados (3):**
+- `src/graph/workflow.py` - Comentários explicativos operadores >= vs >
+- `src/agents/onboarding_agent.py` - Campo previous_initiatives + message format
+- `pages/1_strategy_map.py` - Export CSV com dados completos + UX melhorada
+
+**Lições Aprendidas Sessão 47:**
+
+**1. Operadores >= vs > Podem Ser Ambos Corretos**
+- Depende de QUANDO a verificação acontece (antes vs depois de incrementar)
+- Comentários explicativos previnem confusão futura
+
+**2. Botão Nativo st.dataframe() Usa Dados da Visualização**
+- O "Download as CSV" do Streamlit exporta o DataFrame EXIBIDO
+- Se tabela tem transformações (truncamento), criar DataFrame separado para exportação
+
+**3. Consistência de Message Format em LangChain**
+- SEMPRE usar `SystemMessage`/`HumanMessage` ao invés de dicts
+- Dicts podem não funcionar com todos providers LLM
+
+**Métricas Sessão 47:**
+- [TIMER] **Tempo Total**: ~2h
+- [EMOJI] **Arquivos Modificados**: 3
+- [EMOJI] **Commits**: 4
+- [EMOJI] **Bugs Corrigidos**: 3 (previous_initiatives, message format, CSV truncado)
+- [EMOJI] **UX Melhorada**: 1 (botão CSV destacado + aviso)
+- [EMOJI] **Documentação**: 1 (comentários operadores)
+
+**ROI Validado Sessão 47:**
+- [OK] Campo `previous_initiatives` agora é extraído corretamente
+- [OK] Mensagens LLM consistentes (cross-provider compatibility)
+- [OK] Export CSV com dados completos (UX clara)
+- [OK] Código autodocumentado (operadores explicados)
+
+**Estado Atual Pós-Sessão 47:**
+- **Workflow**: Estável, todos handlers funcionando
+- **OnboardingAgent**: Campo previous_initiatives funcional
+- **Strategy Map UI**: Export CSV com dados completos, UX clara
+- **Próxima Sessão**: Testes E2E completos ou novas features
+
+---
+
+### Atualização 2025-11-25 (Sessão 45-46 - LLM por Tipo de Agente + Bug Fixes Críticos) [OK]
+
+[EMOJI] **ARQUITETURA LLM MULTI-PROVIDER + 7 BUG FIXES CRÍTICOS + DIAGNOSTIC REPORT**
+
+#### **Nova Arquitetura LLM por Tipo de Agente (Sessão 45)** [OK]
+- **Duração**: ~2h (research 30min + implementação 45min + testes 45min)
+- **Status**: 6 tipos de LLM configuráveis via .env, fallback automático Gemini→GPT-5.1
+
+**Trabalho Realizado (Sessões 45-46):**
+
+**1. Arquitetura LLM Multi-Provider (Sessão 45)** [OK]
+- **Problema**: LLM único (GPT-5) para todas tarefas, sem otimização por tipo de agente
+- **Solução**: Factory `get_llm_for_agent()` com 6 tipos especializados
+- **Benefício**: Cada agente usa LLM otimizado para sua tarefa (qualidade máxima)
+
+**Configuração LLM por Tipo (.env):**
+
+| Tipo | Modelo | Agentes/Tools | Justificativa |
+|------|--------|---------------|---------------|
+| `LLM_CONVERSATIONAL` | `gpt-5.1-chat-latest` | OnboardingAgent, CustomerAgent, LearningAgent | Empatia, conversação natural |
+| `LLM_ANALYSIS` | `claude-opus-4-5-20251101` | DiagnosticAgent, JudgeAgent, ProcessAgent | 80.9% SWE-bench, auto-correção |
+| `LLM_SYNTHESIS` | `claude-opus-4-5-20251101` | Orchestrator (40-60K tokens) | Infinite Chat, -48-76% tokens |
+| `LLM_QUANTITATIVE` | `gemini-3-pro-preview` | FinancialAgent, BenchmarkingTool | 92% GPQA Diamond |
+| `LLM_TOOLS` | `claude-opus-4-5-20251101` | SWOT, PrioritizationMatrix, ActionPlan, StrategyMap | Structured output confiável |
+| `LLM_SIMPLE` | `gpt-5-mini-2025-08-07` | Translation, QueryDecomposition, Router | Econômico, suficiente |
+
+**Arquivos Modificados (14):**
+- `config/settings.py`: Nova factory `get_llm_for_agent()` + tratamento timeout por provider
+- `.env`: 6 novas variáveis LLM_* + GOOGLE_API_KEY
+- `src/agents/financial_agent.py`: `get_llm_for_agent("quantitative")`
+- `src/agents/customer_agent.py`: `get_llm_for_agent("conversational")`
+- `src/agents/process_agent.py`: `get_llm_for_agent("analysis")`
+- `src/agents/learning_agent.py`: `get_llm_for_agent("conversational")`
+- `src/agents/orchestrator.py`: `get_llm_for_agent("synthesis", timeout=600)`
+- `src/agents/judge_agent.py`: `get_llm_for_agent("analysis", max_tokens=16384)`
+- `src/agents/diagnostic_agent.py`: `get_llm_for_agent("analysis", timeout=120)`
+- `src/agents/client_profile_agent.py`: `get_llm_for_agent("conversational")`
+- `src/agents/onboarding_agent.py`: `get_llm_for_agent("conversational")`
+- `src/graph/consulting_orchestrator.py`: `get_llm_for_agent("conversational")`
+- `src/tools/strategy_map_designer.py`: `get_llm_for_agent("tools")`
+- `src/graph/workflow.py`: `get_llm_for_agent("tools")` para ActionPlanTool
+
+**2. Bug Fixes Críticos (Sessão 46 - 7 bugs)** [OK]
+
+| Bug | Arquivo | Problema | Solução |
+|-----|---------|----------|---------|
+| #1 | `config/settings.py` | `timeout` ignorado (deveria ser `request_timeout` para OpenAI) | Extrair timeout de kwargs, passar como `request_timeout` (OpenAI) ou `timeout` (Anthropic/Gemini) |
+| #2 | `src/graph/workflow.py:1696` | `>=` terminava prematuramente (2ª tentativa bloqueada) | Usar `>` para permitir tentativas 1 e 2 |
+| #3 | `config/settings.py:306` | `min(max_tokens, 64000)` TypeError com None | Verificação defensiva: `if max_tokens is not None else 64000` |
+| #4 | `src/agents/onboarding_agent.py:752-851` | Fallback sempre executava (indentação errada) | Indentar dentro do `except` block |
+| #5 | `src/memory/schemas.py` | `min_length=20` rejeitava "NPS >= 50" | Reduzir para 8 caracteres |
+| #6 | `src/memory/schemas.py` | `item_type='gap'` não suportado | Adicionar 'gap' ao Literal |
+| #7 | `src/graph/workflow.py` | `discovery_attempts` verificado ANTES de `APPROVED` | Reorganizar: verificar APPROVED primeiro |
+
+**3. Feature: Preservar Relatório Diagnóstico (Sessão 46)** [OK]
+- **Problema**: Usuário quer SEMPRE ver relatório, mesmo com aprovação automática
+- **Solução**: Salvar em `metadata["diagnostic_report"]` + concatenar no design_solution_handler
+- **Resultado**: Diagnóstico + Strategy Map na mesma resposta
+
+**Código Implementado:**
+```python
+# discovery_handler - Salvar relatório
+if result.get("final_response"):
+    result_metadata["diagnostic_report"] = result["final_response"]
+
+# design_solution_handler - Concatenar
+diagnostic_report = state.metadata.get("diagnostic_report", "")
+if diagnostic_report:
+    final_response = f"{diagnostic_report}\n\n---\n\n{strategy_map_response}"
+```
+
+**4. Resultado do Teste E2E (Caso Engelar)** [OK]
+- **Score Judge**: 0.92 (APPROVED)
+- **Recomendações**: 10 priorizadas
+- **Perspectivas**: 4/4 analisadas
+- **Tempo**: ~572s (~9.5 min) para diagnóstico completo
+- **Causa Raiz**: Gap competências gerenciais (Five Whys)
+- **Usuário**: "eu gostei, pode manter"
+
+**Lições Aprendidas Sessões 45-46:**
+
+**1. LLM Multi-Provider = Qualidade Máxima por Tarefa**
+- Claude Opus 4.5 para análise complexa (80.9% SWE-bench)
+- GPT-5.1 para conversação natural (empatia)
+- Gemini 3 Pro para raciocínio quantitativo (92% GPQA Diamond)
+- Fallback automático se provider não disponível
+
+**2. Timeout por Provider é Diferente**
+- OpenAI: `request_timeout` (NÃO `timeout`!)
+- Anthropic: `timeout`
+- Gemini: `timeout`
+- Solução: Extrair de kwargs e passar corretamente por provider
+
+**3. LangGraph Routing Order Crítico**
+- SEMPRE verificar status de aprovação ANTES de contadores
+- `APPROVED` deve ir para próxima fase INDEPENDENTE de `discovery_attempts`
+- Contadores só bloqueiam se for REFAZER (REJECTED/MODIFIED/TIMEOUT)
+
+**4. Preservar Dados Entre Fases = UX Melhor**
+- Usuário quer ver TUDO (diagnóstico + strategy map)
+- Salvar em metadata para não perder entre handlers
+- Concatenar respostas para visão completa
+
+**Métricas Sessões 45-46:**
+- [TIMER] **Tempo Total**: ~4h (Sessão 45: 2h LLM + Sessão 46: 2h bugs/features)
+- [EMOJI] **Arquivos Modificados**: 16 (14 LLM + 2 bug fixes adicionais)
+- [EMOJI] **Bugs Corrigidos**: 7 críticos
+- [EMOJI] **Features Novas**: 1 (diagnostic report preservation)
+- [EMOJI] **Providers LLM**: 3 (OpenAI, Anthropic, Google)
+- [EMOJI] **Tipos LLM**: 6 configuráveis via .env
+
+**ROI Validado Sessões 45-46:**
+- [OK] Diagnóstico E2E completo (score 0.92, 10 recomendações)
+- [OK] LLM otimizado por tarefa (qualidade máxima)
+- [OK] Fallback Gemini→GPT-5.1 (zero downtime)
+- [OK] 7 bugs críticos corrigidos (zero bloqueadores)
+- [OK] UX melhorada (relatório sempre visível)
+
+**Arquivos Modificados (total 16):**
+- `config/settings.py` (factory + timeout + max_tokens)
+- `.env` (6 LLM_* + GOOGLE_API_KEY)
+- `src/graph/workflow.py` (routing + discovery_attempts + diagnostic_report)
+- `src/memory/schemas.py` (min_length + item_type)
+- `src/agents/onboarding_agent.py` (indentação fallback)
+- `src/agents/*.py` (8 agentes → get_llm_for_agent)
+- `src/tools/strategy_map_designer.py` (get_llm_for_agent)
+- `src/graph/consulting_orchestrator.py` (get_llm_for_agent)
+
+**Estado Atual Pós-Sessão 46:**
+- **LLMs**: 3 providers (OpenAI GPT-5.1, Anthropic Claude Opus 4.5, Google Gemini 3 Pro)
+- **Tipos**: 6 configuráveis (conversational, analysis, synthesis, quantitative, tools, simple)
+- **Workflow**: Diagnóstico → Judge → Strategy Map funcional
+- **UX**: Relatório diagnóstico sempre preservado
+- **Próxima Sessão**: Testar Strategy Map + Implementation E2E
+
+**Documentação Atualizada:**
+- `.cursor/progress/consulting-progress.md`: Sessões 45-46 registradas
+- Memórias mantidas: [[10134887]] GPT-5.1, [[11530251]] AsyncSqliteSaver
 
 ---
 
