@@ -1459,14 +1459,25 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
             )
 
         # ETAPA 5: Retornar result agregado
+        # CORREÇÃO SESSAO 49: Converter para dict antes de passar para Pydantic
+        # Evita ValidationError causado por reimport de módulos (Streamlit hot reload)
+        # Pydantic v2 compara tipos por identidade, não por estrutura
+        def _to_dict_if_model(obj):
+            """Converte BaseModel para dict, evitando type mismatch."""
+            if obj is None:
+                return None
+            if hasattr(obj, "model_dump"):
+                return obj.model_dump()
+            return obj
+
         return DiagnosticToolsResult(
-            swot_analysis=swot,
-            five_whys_analysis=five_whys,
-            kpi_framework=kpi,
-            strategic_objectives=objectives,
-            benchmarking_report=benchmarking,
-            issue_tree=issue_tree,
-            prioritization_matrix=prioritization,
+            swot_analysis=_to_dict_if_model(swot),
+            five_whys_analysis=_to_dict_if_model(five_whys),
+            kpi_framework=_to_dict_if_model(kpi),
+            strategic_objectives=_to_dict_if_model(objectives),
+            benchmarking_report=_to_dict_if_model(benchmarking),
+            issue_tree=_to_dict_if_model(issue_tree),
+            prioritization_matrix=_to_dict_if_model(prioritization),
             execution_time=execution_time,
             tools_executed=tools_executed,
             tools_failed=tools_failed,
