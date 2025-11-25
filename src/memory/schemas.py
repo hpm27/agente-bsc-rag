@@ -776,6 +776,137 @@ class StrategicContext(BaseModel):
     )
 
 
+# ============================================================================
+# ESTRUTURA ORGANIZACIONAL E CONTEXTO COMPETITIVO (Kaplan & Norton 2004/2008)
+# Adicionado SESSAO 45: Para diagnóstico BSC completo conforme best practices
+# ============================================================================
+
+
+class CompetitiveContext(BaseModel):
+    """Contexto competitivo e de mercado.
+
+    Armazena informações sobre posicionamento competitivo, concorrentes,
+    diferenciação e segmentos-alvo. Baseado em Strategy Maps (2004) e
+    Execution Premium (2008) - "In what niches will we compete?"
+
+    Attributes:
+        competitors: Principais concorrentes diretos e indiretos
+        competitive_advantages: Diferenciais competitivos / proposta de valor
+        target_customers: Segmentos de clientes-alvo prioritários
+        market_position: Posição atual no mercado (líder, challenger, etc)
+        value_proposition: Proposta de valor única da empresa
+
+    Example:
+        >>> context = CompetitiveContext(
+        ...     competitors=["Accenture", "McKinsey", "BCG"],
+        ...     competitive_advantages=["Expertise em BSC", "Preço competitivo"],
+        ...     target_customers=["Médias empresas", "Indústria de manufatura"],
+        ...     market_position="Challenger regional"
+        ... )
+    """
+
+    competitors: list[str] = Field(
+        default_factory=list, description="Principais concorrentes diretos e indiretos"
+    )
+    competitive_advantages: list[str] = Field(
+        default_factory=list, description="Diferenciais competitivos e proposta de valor"
+    )
+    target_customers: list[str] = Field(
+        default_factory=list, description="Segmentos de clientes-alvo prioritários"
+    )
+    market_position: str | None = Field(
+        None, description="Posição atual no mercado (ex: líder, challenger, nicho)"
+    )
+    value_proposition: str | None = Field(None, description="Proposta de valor única da empresa")
+
+
+class OrganizationStructure(BaseModel):
+    """Estrutura organizacional e capital intangível.
+
+    Armazena informações sobre estrutura, sistemas e recursos da empresa.
+    Baseado em Strategy Maps (2004) - Learning & Growth Perspective:
+    - Human Capital: pessoas, competências
+    - Information Capital: sistemas, tecnologia
+    - Organization Capital: cultura, alinhamento
+
+    Attributes:
+        departments: Departamentos/áreas principais da empresa
+        employee_count: Número aproximado de funcionários
+        key_systems: Sistemas principais (ERP, CRM, BI, etc.)
+        current_metrics: KPIs/métricas já rastreados pela empresa
+        decision_makers: Stakeholders/decisores do projeto BSC
+        organizational_culture: Descrição da cultura organizacional
+        key_competencies: Competências-chave da equipe
+
+    Example:
+        >>> structure = OrganizationStructure(
+        ...     departments=["Comercial", "Operações", "RH", "Financeiro"],
+        ...     employee_count=150,
+        ...     key_systems=["SAP", "Salesforce", "Power BI"],
+        ...     current_metrics=["Faturamento mensal", "NPS", "Turnover"]
+        ... )
+    """
+
+    departments: list[str] = Field(
+        default_factory=list, description="Departamentos/áreas principais"
+    )
+    employee_count: int | None = Field(None, description="Número aproximado de funcionários")
+    key_systems: list[str] = Field(
+        default_factory=list, description="Sistemas principais (ERP, CRM, BI, etc.)"
+    )
+    current_metrics: list[str] = Field(
+        default_factory=list, description="KPIs/métricas já rastreados"
+    )
+    decision_makers: list[str] = Field(
+        default_factory=list, description="Stakeholders/decisores do projeto BSC"
+    )
+    organizational_culture: str | None = Field(
+        None, description="Descrição da cultura organizacional"
+    )
+    key_competencies: list[str] = Field(
+        default_factory=list, description="Competências-chave da equipe"
+    )
+
+
+class ProjectConstraints(BaseModel):
+    """Restrições e parâmetros do projeto de consultoria.
+
+    Armazena informações sobre escopo, orçamento e expectativas do projeto.
+    Baseado em Consulting Success (2025) - Discovery Phase Questions:
+    - Budget, timeline, success criteria
+    - "What would solving this mean to you?"
+
+    Attributes:
+        budget_range: Faixa de orçamento disponível (opcional)
+        timeline: Prazo desejado para implementação
+        sponsor_name: Nome do sponsor/patrocinador do projeto
+        success_criteria: Critérios de sucesso definidos pelo cliente
+        previous_initiatives: Iniciativas anteriores de BSC/estratégia
+        urgency_level: Nível de urgência (baixa, média, alta, crítica)
+
+    Example:
+        >>> constraints = ProjectConstraints(
+        ...     timeline="6 meses",
+        ...     sponsor_name="João Silva - CEO",
+        ...     success_criteria=["Mapa estratégico definido", "KPIs implementados"],
+        ...     previous_initiatives=["Tentativa de BSC em 2020 - abandonado"]
+        ... )
+    """
+
+    budget_range: str | None = Field(None, description="Faixa de orçamento disponível")
+    timeline: str | None = Field(None, description="Prazo desejado para implementação")
+    sponsor_name: str | None = Field(None, description="Nome do sponsor/patrocinador do projeto")
+    success_criteria: list[str] = Field(
+        default_factory=list, description="Critérios de sucesso definidos pelo cliente"
+    )
+    previous_initiatives: list[str] = Field(
+        default_factory=list, description="Iniciativas anteriores de BSC/estratégia"
+    )
+    urgency_level: Literal["baixa", "media", "alta", "critica"] | None = Field(
+        None, description="Nível de urgência do projeto"
+    )
+
+
 class DiagnosticData(BaseModel):
     """Dados coletados durante fase DISCOVERY.
 
@@ -1599,7 +1730,7 @@ class StrategicObjective(BaseModel):
         Validacoes:
             - name e description nao podem ser vazios (field_validator)
             - perspective deve ser uma das 4 perspectivas BSC (Literal)
-            - success_criteria deve ter pelo menos 2 criterios com min_length=20
+            - success_criteria deve ter pelo menos 2 criterios com min_length=8
             - priority deve ser Alta, Media ou Baixa (Literal)
 
         Example:
@@ -1666,9 +1797,11 @@ class StrategicObjective(BaseModel):
         for i, criterion in enumerate(v):
             if not criterion or not criterion.strip():
                 raise ValueError(f"success_criteria[{i}] nao pode ser vazio")
-            if len(criterion.strip()) < 20:
+            # SESSAO 46: Reduzido de 10 para 8 chars
+            # Motivo: Métricas BSC válidas como "NPS >= 50" têm 9 chars
+            if len(criterion.strip()) < 8:
                 raise ValueError(
-                    f"success_criteria[{i}] muito curto (minimo 20 caracteres, "
+                    f"success_criteria[{i}] muito curto (minimo 8 caracteres, "
                     f"recebido {len(criterion.strip())})"
                 )
 
@@ -2308,25 +2441,273 @@ class ExtractedEntities(BaseModel):
         False, description="True se usuario forneceu objetivos nesta mensagem"
     )
 
+    # ========================================================================
+    # NOVOS CAMPOS SESSAO 45 - Diagnostico BSC Completo (Kaplan & Norton)
+    # Permite extracao oportunistica de informacoes avancadas durante onboarding
+    # ========================================================================
+
+    # MVV - Mission, Vision, Values (StrategicContext expansion)
+    mission: str | None = Field(None, description="Missao da empresa se mencionada")
+    vision: str | None = Field(None, description="Visao da empresa se mencionada")
+    core_values: list[str] = Field(
+        default_factory=list, description="Valores organizacionais se mencionados"
+    )
+    has_mvv: bool = Field(False, description="True se usuario forneceu mission/vision/values")
+
+    # Competitive Context
+    competitors: list[str] = Field(
+        default_factory=list, description="Concorrentes mencionados pelo usuario"
+    )
+    competitive_advantages: list[str] = Field(
+        default_factory=list, description="Diferenciais competitivos mencionados"
+    )
+    target_customers: list[str] = Field(
+        default_factory=list, description="Segmentos de cliente-alvo mencionados"
+    )
+    has_competitive_context: bool = Field(
+        False, description="True se usuario forneceu contexto competitivo"
+    )
+
+    # Organization Structure
+    departments: list[str] = Field(
+        default_factory=list, description="Departamentos/areas mencionados"
+    )
+    key_systems: list[str] = Field(
+        default_factory=list, description="Sistemas (ERP, CRM, BI) mencionados"
+    )
+    current_metrics: list[str] = Field(
+        default_factory=list, description="KPIs/metricas atualmente rastreados"
+    )
+    has_organization_structure: bool = Field(
+        False, description="True se usuario forneceu estrutura organizacional"
+    )
+
+    # Project Constraints
+    timeline: str | None = Field(None, description="Prazo mencionado pelo usuario")
+    sponsor_name: str | None = Field(None, description="Sponsor/decisor mencionado")
+    success_criteria: list[str] = Field(
+        default_factory=list, description="Criterios de sucesso mencionados"
+    )
+    previous_initiatives: list[str] = Field(
+        default_factory=list, description="Iniciativas anteriores BSC mencionadas"
+    )
+    has_project_constraints: bool = Field(
+        False, description="True se usuario forneceu restricoes do projeto"
+    )
+
+    # ========================================================================
+    # NOVOS CAMPOS SESSAO 46 - Best Practices Microsoft/Sparkco (Nov 2025)
+    # Incremental Extraction + Update-on-Change + Schema Enforcement
+    # ========================================================================
+
+    # KEY PEOPLE - Pessoas-chave da organização (crítico para BSC!)
+    # Formato: list de dicts com {name, role, responsibilities, department}
+    key_people: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description=(
+            "Pessoas-chave mencionadas. Cada item: "
+            "{name: str, role: str, responsibilities: list[str], department: str}"
+        ),
+        examples=[
+            [
+                {
+                    "name": "Hugo",
+                    "role": "CEO",
+                    "responsibilities": ["Engenharia", "P&D"],
+                    "department": "Diretoria",
+                },
+                {
+                    "name": "Pedro",
+                    "role": "Socio",
+                    "responsibilities": ["Producao", "PPCP", "Logistica"],
+                    "department": "Fabrica",
+                },
+            ]
+        ],
+    )
+    has_key_people: bool = Field(False, description="True se pessoas-chave foram identificadas")
+
+    # BUSINESS PROCESS - Fluxo de negócio/operacional
+    business_process_description: str | None = Field(
+        None,
+        description=(
+            "Descricao textual do fluxo de negocio principal. Ex: "
+            "'SDR prospecta -> Closer fecha venda -> CX valida -> Engenharia projeta -> PPCP programa -> Producao fabrica -> Logistica entrega'"
+        ),
+    )
+    process_bottlenecks: list[str] = Field(
+        default_factory=list,
+        description="Gargalos do processo identificados pelo usuario",
+    )
+    has_business_process: bool = Field(
+        False, description="True se processo de negocio foi descrito"
+    )
+
+    # TEAM STRUCTURE - Estrutura de equipe detalhada
+    employee_count: int | None = Field(None, description="Numero total de funcionarios mencionado")
+    team_distribution: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Distribuicao de equipe por departamento. Ex: "
+            "{'engenharia': 5, 'comercial': 3, 'producao': 20}"
+        ),
+    )
+    has_team_structure: bool = Field(False, description="True se estrutura de equipe foi detalhada")
+
+    # PRODUCTION/OPERATIONAL METRICS - Métricas atuais vs metas
+    production_metrics: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Metricas de producao/operacao. Ex: "
+            "{'atual': '150 ton/mes', 'meta_curto_prazo': '250 ton/mes', 'visao_longo_prazo': '500 ton/mes'}"
+        ),
+    )
+    financial_metrics: dict[str, Any] = Field(
+        default_factory=dict,
+        description=(
+            "Metricas financeiras mencionadas. Ex: "
+            "{'faturamento_atual': 'R$ 2M/mes', 'meta_faturamento': 'R$ 5M/mes', 'margem': '15%'}"
+        ),
+    )
+    has_operational_metrics: bool = Field(
+        False, description="True se metricas operacionais foram fornecidas"
+    )
+
+    # INVESTMENTS & PROJECTS - Investimentos necessários e projetos em andamento
+    investments_needed: list[str] = Field(
+        default_factory=list,
+        description="Investimentos necessarios identificados. Ex: ['maquinas corte/dobra', 'nova perfiladeira', 'ERP']",
+    )
+    pending_projects: list[dict[str, Any]] = Field(
+        default_factory=list,
+        description=(
+            "Projetos em andamento ou planejados. Ex: "
+            "[{'name': 'Implementacao ERP', 'deadline': 'marco 2026', 'status': 'em andamento'}]"
+        ),
+    )
+    has_investments_projects: bool = Field(
+        False, description="True se investimentos/projetos foram mencionados"
+    )
+
+    # PAIN POINTS - Dores específicas (além de challenges genéricos)
+    pain_points: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Dores especificas e detalhadas mencionadas. Ex: "
+            "['demora dos clientes em enviar informacoes', 'falta de visibilidade do estoque', 'fluxo de caixa apertado']"
+        ),
+    )
+    technology_gaps: list[str] = Field(
+        default_factory=list,
+        description="Gaps tecnologicos identificados. Ex: ['uso excessivo de planilhas', 'sem BI', 'ERP incompleto']",
+    )
+    has_pain_points: bool = Field(False, description="True se dores especificas foram detalhadas")
+
+    # CONFIDENCE SCORING - Nível de confiança por categoria (Best Practice Sparkco 2025)
+    confidence_scores: dict[str, float] = Field(
+        default_factory=dict,
+        description=(
+            "Score de confianca (0.0-1.0) por categoria. "
+            "1.0 = explicito, 0.7 = inferido, 0.0 = ausente. Ex: "
+            "{'company_info': 1.0, 'challenges': 0.8, 'key_people': 1.0}"
+        ),
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "company_info": {
-                    "name": "TechCorp Brasil",
-                    "sector": "Tecnologia",
+                    "name": "Engelar",
+                    "sector": "Manufatura/Industria",
                     "size": "media",
                 },
                 "challenges": [
-                    "Dificuldade em escalar equipe sem perder qualidade",
-                    "Processos operacionais ainda imaturos",
+                    "Falta de sistema de gestao BSC",
+                    "Gestao financeira inadequada",
+                    "Interacao S&OP deficiente",
                 ],
                 "objectives": [
-                    "Crescer 30% ao ano mantendo margem",
-                    "Expandir para mercado enterprise",
+                    "Atingir 250 toneladas/mes (curto prazo)",
+                    "Atingir 500 toneladas/mes (visao 5 anos)",
+                    "Melhor visibilidade do estoque",
                 ],
                 "has_company_info": True,
                 "has_challenges": True,
                 "has_objectives": True,
+                # MVV
+                "mission": None,
+                "vision": "Atingir 500 toneladas/mes em 5 anos",
+                "has_mvv": True,
+                # Competitive Context
+                "competitors": [],
+                "target_customers": ["Construtoras de casas populares"],
+                "has_competitive_context": True,
+                # Organization Structure
+                "departments": ["Engenharia", "Fabrica", "Comercial", "Financeiro", "RH"],
+                "key_systems": ["Planilhas", "ERP (em implementacao)"],
+                "has_organization_structure": True,
+                # SESSAO 46: Novos campos detalhados
+                "key_people": [
+                    {
+                        "name": "Hugo",
+                        "role": "CEO",
+                        "responsibilities": ["Engenharia", "P&D"],
+                        "department": "Diretoria",
+                    },
+                    {
+                        "name": "Pedro",
+                        "role": "Socio",
+                        "responsibilities": ["Producao", "PPCP", "Logistica", "Suprimentos"],
+                        "department": "Fabrica",
+                    },
+                    {
+                        "name": "Thaysa",
+                        "role": "Socia",
+                        "responsibilities": ["Comercial", "Marketing", "CX", "Financeiro", "RH"],
+                        "department": "Administrativo",
+                    },
+                ],
+                "has_key_people": True,
+                "business_process_description": "SDR prospecta -> Closer fecha -> CX valida -> Engenharia projeta -> Cliente aprova -> PPCP programa -> Producao fabrica -> Logistica entrega",
+                "process_bottlenecks": [
+                    "Demora dos clientes em enviar informacoes",
+                    "Demora na aprovacao de projetos",
+                ],
+                "has_business_process": True,
+                "employee_count": 50,
+                "team_distribution": {"engenharia": 5, "comercial": 3},
+                "has_team_structure": True,
+                "production_metrics": {
+                    "atual": "150 ton/mes",
+                    "meta_curto_prazo": "250 ton/mes",
+                    "visao_5_anos": "500 ton/mes",
+                },
+                "has_operational_metrics": True,
+                "investments_needed": [
+                    "Maquinas corte e dobra",
+                    "Nova perfiladeira para perfil tabeira",
+                ],
+                "pending_projects": [
+                    {
+                        "name": "Implementacao ERP",
+                        "deadline": "marco 2026",
+                        "status": "em andamento",
+                    }
+                ],
+                "has_investments_projects": True,
+                "pain_points": [
+                    "Uso excessivo de planilhas",
+                    "Falta de controle de estoque",
+                    "Fluxo de caixa apertado",
+                ],
+                "technology_gaps": ["Sem BI", "ERP incompleto"],
+                "has_pain_points": True,
+                "confidence_scores": {
+                    "company_info": 1.0,
+                    "challenges": 0.9,
+                    "key_people": 1.0,
+                    "business_process": 0.8,
+                },
             }
         }
     )
@@ -2966,7 +3347,7 @@ class PrioritizedItem(BaseModel):
 
     Encapsula:
     - item_id: Identificador único do item
-    - item_type: Tipo ("strategic_objective", "action_item", "initiative")
+    - item_type: Tipo ("strategic_objective", "action_item", "initiative", "project", "gap")
     - title: Nome/título do item
     - description: Descrição detalhada
     - perspective: Perspectiva BSC associada
@@ -3000,8 +3381,10 @@ class PrioritizedItem(BaseModel):
 
     item_id: str = Field(description="Identificador único do item")
 
-    item_type: Literal["strategic_objective", "action_item", "initiative", "project"] = Field(
-        description="Tipo do item sendo priorizado"
+    item_type: Literal["strategic_objective", "action_item", "initiative", "project", "gap"] = (
+        Field(
+            description="Tipo do item sendo priorizado (gap = lacuna identificada no diagnóstico BSC)"
+        )
     )
 
     title: str = Field(

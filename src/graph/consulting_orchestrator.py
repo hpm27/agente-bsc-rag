@@ -68,18 +68,12 @@ class ConsultingOrchestrator:
     def onboarding_agent(self) -> OnboardingAgent:
         """Lazy loading OnboardingAgent."""
         if self._onboarding_agent is None:
-            from langchain_openai import ChatOpenAI
+            from config.settings import get_llm_for_agent
 
             from src.agents.onboarding_agent import OnboardingAgent
 
-            # Criar LLM objeto (GPT-5 family para onboarding conversacional)
-            # Suporta: gpt-5-2025-08-07 (default) ou gpt-5-mini-2025-08-07 (econômico)
-            llm = ChatOpenAI(
-                model=settings.onboarding_llm_model,
-                temperature=1.0,  # GPT-5 family: temperature=1.0 obrigatório
-                max_completion_tokens=settings.gpt5_max_completion_tokens,
-                reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1)
-            )
+            # SESSAO 45: LLM conversacional (GPT-5.1 - empatia, conversação natural)
+            llm = get_llm_for_agent("conversational")
 
             # Obter memory client a partir do provider (evita inicialização indevida em testes)
             try:

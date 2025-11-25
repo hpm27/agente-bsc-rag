@@ -123,10 +123,10 @@ class BSCWorkflow:
         )
         self.alignment_validator = AlignmentValidatorTool()
 
-        # SPRINT 3: Action Plan tool (usa mesmos 4 agents)
-        from config.settings import get_llm
+        # SPRINT 3: Action Plan tool - SESSAO 45: LLM ferramentas (Claude Opus 4.5)
+        from config.settings import get_llm_for_agent
 
-        self.action_plan_tool = ActionPlanTool(llm=get_llm(temperature=1.0))
+        self.action_plan_tool = ActionPlanTool(llm=get_llm_for_agent("tools"))
 
         # SESSAO 44: Path do DB para checkpointer async
         self._checkpoint_db_path = "data/langgraph_checkpoints.db"
@@ -532,6 +532,54 @@ class BSCWorkflow:
             # FASE 4.7: Usar query enriquecida se disponível (diagnóstico aprovado)
             query_to_use = state.metadata.get("enriched_query", state.query)
 
+            # SESSAO 47: FEEDBACK LOOP - Enriquecer query com feedback do Judge no refinamento
+            # Pattern: Reflexion (LangChain best practice) - feedback estruturado e grounded
+            if state.refinement_iteration > 0 and state.judge_evaluation:
+                judge = state.judge_evaluation
+
+                # Formatar issues como lista
+                issues_text = ""
+                if judge.issues:
+                    issues_text = "\n".join(f"  - {issue}" for issue in judge.issues)
+                else:
+                    issues_text = "  - Nenhum problema especifico listado"
+
+                # Formatar suggestions como lista
+                suggestions_text = ""
+                if judge.suggestions:
+                    suggestions_text = "\n".join(f"  - {sug}" for sug in judge.suggestions)
+                else:
+                    suggestions_text = "  - Nenhuma sugestao especifica"
+
+                refinement_context = f"""
+=== REFINAMENTO #{state.refinement_iteration} - FEEDBACK DO JUDGE ===
+
+[SCORE ANTERIOR]: {judge.score:.2f} (minimo para aprovacao: 0.85)
+
+[PROBLEMAS IDENTIFICADOS]:
+{issues_text}
+
+[SUGESTOES DE MELHORIA]:
+{suggestions_text}
+
+[FEEDBACK COMPLETO]:
+{judge.feedback}
+
+=== INSTRUCAO ===
+Ao responder a query abaixo, FOQUE nas melhorias indicadas acima.
+Enderece especificamente os problemas identificados e siga as sugestoes.
+=================
+
+"""
+                query_to_use = refinement_context + query_to_use
+
+                logger.info(
+                    f"[FEEDBACK] [execute_agents] Refinamento #{state.refinement_iteration} | "
+                    f"Score anterior: {judge.score:.2f} | "
+                    f"Issues: {len(judge.issues) if judge.issues else 0} | "
+                    f"Suggestions: {len(judge.suggestions) if judge.suggestions else 0}"
+                )
+
             # Invocar agentes usando Orchestrator ASYNC (COM RAG!)
             chat_history = state.metadata.get("chat_history", None)
             raw_responses = await self.orchestrator.ainvoke_agents(
@@ -871,6 +919,7 @@ class BSCWorkflow:
         - APPROVED -> design_solution (criar Strategy Map)
         - REJECTED / MODIFIED / TIMEOUT -> discovery (refazer)
         - PENDING (fallback) -> end (aguardar input humano)
+        - ERROR (fase) -> end (impedir loop infinito)
 
         Args:
             state: Estado com approval_status
@@ -879,22 +928,50 @@ class BSCWorkflow:
             Nome do próximo node ("design_solution", "discovery" ou "end")
         """
         # Lazy import (evitar circular)
-        from src.graph.consulting_states import ApprovalStatus
+        from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
+
+        # CORRECAO SESSAO 45: Verificar se estamos em fase de ERRO antes de qualquer routing
+        # PROBLEMA: Se discovery falha (timeout), approval_handler define REJECTED,
+        #           route_by_approval manda para discovery novamente -> LOOP INFINITO
+        # SOLUÇÃO: Se current_phase == ERROR, ir para END (não tentar refazer)
+        if state.current_phase == ConsultingPhase.ERROR:
+            logger.warning(
+                "[WARN] [ROUTING] current_phase=ERROR detectado. "
+                "Encerrando workflow para evitar loop infinito."
+            )
+            return "end"
 
         approval_status = state.approval_status
 
+        # CORREÇÃO SESSAO 46: Verificar APPROVED ANTES de discovery_attempts
+        # PROBLEMA: Diagnóstico aprovado (score 0.92) estava sendo bloqueado por
+        #           discovery_attempts >= max_discovery_attempts (2 >= 2)
+        # SOLUÇÃO: Se APPROVED, ir para design_solution INDEPENDENTE de discovery_attempts
         if approval_status == ApprovalStatus.APPROVED:
             logger.info(
                 "[INFO] [ROUTING] Aprovação APPROVED -> design_solution (criar Strategy Map)"
             )
             return "design_solution"
+
+        # CORREÇÃO SESSAO 45/46: Verificar discovery_attempts APENAS se for refazer discovery
+        # Isso evita loop infinito quando REJECTED/MODIFIED/TIMEOUT mas permite APPROVED prosseguir
         if approval_status in (
             ApprovalStatus.REJECTED,
             ApprovalStatus.MODIFIED,
             ApprovalStatus.TIMEOUT,
         ):
+            # Verificar se pode tentar novamente
+            if state.discovery_attempts >= state.max_discovery_attempts:
+                logger.warning(
+                    f"[WARN] [ROUTING] discovery_attempts ({state.discovery_attempts}) >= "
+                    f"max ({state.max_discovery_attempts}) com status {approval_status.value}. "
+                    "Encerrando workflow para evitar loop infinito."
+                )
+                return "end"
+
             logger.info(
-                f"[INFO] [ROUTING] Aprovação {approval_status.value} -> discovery (refazer)"
+                f"[INFO] [ROUTING] Aprovação {approval_status.value} -> discovery (refazer) | "
+                f"attempt={state.discovery_attempts}/{state.max_discovery_attempts}"
             )
             return "discovery"
         # PENDING (ou None) -> END por design (aguardar input humano via UI futura)
@@ -1268,18 +1345,32 @@ class BSCWorkflow:
 
             total_time = time.time() - start_time
 
+            # SESSAO 46: Recuperar relatório do diagnóstico (se existir)
+            # Usuário quer SEMPRE ver o relatório, mesmo quando aprova automaticamente
+            diagnostic_report = state.metadata.get("diagnostic_report", "")
+
             if alignment_report.score >= 70:
-                final_response = (
-                    f"Strategy Map criado com sucesso! [OK]\n\n"
-                    f"Score de Alinhamento: {alignment_report.score}/100\n"
-                    f"Status: {'Balanceado' if alignment_report.is_balanced else 'Precisa Ajustes'}\n\n"
-                    f"PERSPECTIVAS:\n"
-                    f"- Financeira: {len(strategy_map.financial.objectives)} objetivos\n"
-                    f"- Clientes: {len(strategy_map.customer.objectives)} objetivos\n"
-                    f"- Processos: {len(strategy_map.process.objectives)} objetivos\n"
-                    f"- Aprendizado: {len(strategy_map.learning.objectives)} objetivos\n\n"
-                    f"CONEXÕES CAUSA-EFEITO: {len(strategy_map.cause_effect_connections)} mapeadas\n\n"
+                # Construir resposta do Strategy Map
+                strategy_map_response = (
+                    f"# [CHECK] Strategy Map Criado com Sucesso!\n\n"
+                    f"**Score de Alinhamento:** {alignment_report.score}/100\n"
+                    f"**Status:** {'Balanceado' if alignment_report.is_balanced else 'Precisa Ajustes'}\n\n"
+                    f"## PERSPECTIVAS:\n"
+                    f"- **Financeira:** {len(strategy_map.financial.objectives)} objetivos\n"
+                    f"- **Clientes:** {len(strategy_map.customer.objectives)} objetivos\n"
+                    f"- **Processos:** {len(strategy_map.process.objectives)} objetivos\n"
+                    f"- **Aprendizado:** {len(strategy_map.learning.objectives)} objetivos\n\n"
+                    f"**CONEXÕES CAUSA-EFEITO:** {len(strategy_map.cause_effect_connections)} mapeadas\n\n"
                 )
+
+                # SESSAO 46: Concatenar diagnóstico + Strategy Map
+                # Se há relatório do diagnóstico, mostrar PRIMEIRO, depois o Strategy Map
+                if diagnostic_report:
+                    final_response = (
+                        f"{diagnostic_report}\n\n" f"---\n\n" f"{strategy_map_response}"
+                    )
+                else:
+                    final_response = strategy_map_response
 
                 if alignment_report.warnings:
                     final_response += f"AVISOS ({len(alignment_report.warnings)}):\n"
@@ -1290,22 +1381,32 @@ class BSCWorkflow:
                 next_phase = ConsultingPhase.IMPLEMENTATION
 
             else:
-                final_response = (
-                    f"Strategy Map criado, mas precisa refinamento.\n\n"
-                    f"Score de Alinhamento: {alignment_report.score}/100 (mínimo: 70)\n"
-                    f"Status: Precisa Refinamento\n\n"
-                    f"GAPS CRÍTICOS ({len(alignment_report.gaps)}):\n"
+                # Construir resposta de refinamento necessário
+                refinement_response = (
+                    f"# [WARN] Strategy Map Precisa Refinamento\n\n"
+                    f"**Score de Alinhamento:** {alignment_report.score}/100 (mínimo: 70)\n"
+                    f"**Status:** Precisa Refinamento\n\n"
+                    f"## GAPS CRÍTICOS ({len(alignment_report.gaps)}):\n"
                 )
                 for gap in alignment_report.gaps[:5]:  # Top 5
-                    final_response += f"- {gap}\n"
+                    refinement_response += f"- {gap}\n"
 
-                final_response += f"\nRECOMENDAÇÕES ({len(alignment_report.recommendations)}):\n"
-                for rec in alignment_report.recommendations[:3]:  # Top 3
-                    final_response += f"- {rec}\n"
-
-                final_response += (
-                    "\nPróxima ação: Refazer diagnóstico considerando os gaps identificados."
+                refinement_response += (
+                    f"\n## RECOMENDAÇÕES ({len(alignment_report.recommendations)}):\n"
                 )
+                for rec in alignment_report.recommendations[:3]:  # Top 3
+                    refinement_response += f"- {rec}\n"
+
+                refinement_response += (
+                    "\n**Próxima ação:** Refazer diagnóstico considerando os gaps identificados."
+                )
+
+                # SESSAO 46: Concatenar diagnóstico + resposta de refinamento
+                if diagnostic_report:
+                    final_response = f"{diagnostic_report}\n\n" f"---\n\n" f"{refinement_response}"
+                else:
+                    final_response = refinement_response
+
                 next_phase = ConsultingPhase.DISCOVERY
 
             logger.info(
@@ -1636,7 +1737,7 @@ class BSCWorkflow:
 
         except Exception as e:
             logger.error(f"[ERROR] [ONBOARDING] Erro no handler: {e}")
-            return self.consulting_orchestrator.handle_error(state, e, "ONBOARDING")
+            return self.consulting_orchestrator.handle_error(e, state, "ONBOARDING")
 
     def discovery_handler(self, state: BSCState) -> dict[str, Any]:
         """
@@ -1659,10 +1760,40 @@ class BSCWorkflow:
             - refinement necessário -> Refina diagnóstico existente (FASE 4.6)
         """
         try:
+            # CORREÇÃO SESSAO 45: Incrementar contador de tentativas
+            # Isso permite limitar loops infinitos via route_by_approval
+            current_attempts = state.discovery_attempts + 1
+
             logger.info(
                 f"[INFO] [DISCOVERY] Handler iniciado | "
-                f"user_id={state.user_id} | has_profile={state.client_profile is not None}"
+                f"user_id={state.user_id} | has_profile={state.client_profile is not None} | "
+                f"attempt={current_attempts}/{state.max_discovery_attempts}"
             )
+
+            # CORREÇÃO SESSAO 46: Verificar se atingiu limite de tentativas
+            # NOTA: Usar > (não >=) porque current_attempts é incrementado ANTES de verificar
+            # Com max=2: tentativa 1 (1>2=F), tentativa 2 (2>2=F), tentativa 3 (3>2=T=bloqueia)
+            if current_attempts > state.max_discovery_attempts:
+                logger.error(
+                    f"[ERROR] [DISCOVERY] Limite de tentativas atingido "
+                    f"({current_attempts} > {state.max_discovery_attempts}). "
+                    "Encerrando para evitar loop infinito."
+                )
+                from src.graph.consulting_states import ConsultingPhase
+
+                return {
+                    "discovery_attempts": current_attempts,
+                    "current_phase": ConsultingPhase.ERROR,
+                    "final_response": (
+                        "Desculpe, não foi possível completar o diagnóstico após múltiplas tentativas. "
+                        "Por favor, tente novamente mais tarde ou reformule sua pergunta."
+                    ),
+                    "metadata": {
+                        **state.metadata,
+                        "discovery_error": "max_attempts_exceeded",
+                        "discovery_attempts": current_attempts,
+                    },
+                }
 
             # FASE 4.6: Detectar se refinement é necessário
             from src.graph.consulting_states import ApprovalStatus
@@ -1752,28 +1883,48 @@ class BSCWorkflow:
 
             logger.info(
                 f"[INFO] [DISCOVERY] Result: has_diagnostic={result.get('diagnostic') is not None} | "
-                f"next_phase={result.get('current_phase', 'N/A')}"
+                f"next_phase={result.get('current_phase', 'N/A')} | "
+                f"attempt={current_attempts}/{state.max_discovery_attempts}"
             )
+
+            # CORREÇÃO SESSAO 45: Incluir discovery_attempts no resultado
+            # Isso permite que route_by_approval verifique o contador
+            result["discovery_attempts"] = current_attempts
+
+            # SESSAO 46: Preservar relatório do diagnóstico em metadata
+            # Motivo: Usuário quer SEMPRE ver o relatório, mesmo se aprovar automaticamente
+            # Quando design_solution_handler executa, ele sobrescreve final_response
+            # Salvando em metadata["diagnostic_report"], garantimos que não se perde
+            if result.get("final_response"):
+                result_metadata = result.get("metadata", {})
+                result_metadata["diagnostic_report"] = result["final_response"]
+                result["metadata"] = result_metadata
+                logger.info(
+                    f"[INFO] [DISCOVERY] Relatório diagnóstico salvo em metadata "
+                    f"({len(result['final_response'])} chars)"
+                )
 
             return result
 
         except RuntimeError as e:
             # ERRO CRÍTICO: ThreadPoolExecutor shutdown (comum em Streamlit)
-            # Evitar crash completo do workflow - fallback para ONBOARDING
+            # Evitar crash completo do workflow - fallback para ERROR (não ONBOARDING!)
+            # CORREÇÃO SESSAO 45: Usar ERROR para evitar loop infinito via route_by_approval
             error_msg = str(e)
+            from src.graph.consulting_states import ConsultingPhase
+
             logger.error(
                 f"[ERROR] [DISCOVERY] RuntimeError (ThreadPoolExecutor shutdown): {error_msg} | "
-                f"Fallback para ONBOARDING (permitir save_client_memory antes de retry)"
+                f"Fase=ERROR (evitar loop infinito)"
             )
 
-            # Retornar para ONBOARDING para salvar profile (se existir)
-            # Na próxima interação, usuário pode tentar discovery novamente
             return {
+                "discovery_attempts": state.discovery_attempts + 1,  # Incrementar tentativa
+                "current_phase": ConsultingPhase.ERROR,  # ERROR para evitar loop
                 "final_response": (
-                    "Seu perfil foi criado com sucesso, mas não consegui completar o diagnóstico agora.\n\n"
-                    "Por favor, faça uma nova pergunta sobre BSC para continuar."
+                    "Ocorreu um erro durante o processamento do diagnóstico.\n\n"
+                    "Por favor, tente novamente ou reformule sua pergunta."
                 ),
-                "current_phase": self._get_consulting_phase("ONBOARDING"),
                 "metadata": {
                     **state.metadata,
                     "discovery_error": error_msg,
@@ -1783,7 +1934,11 @@ class BSCWorkflow:
 
         except Exception as e:
             logger.error(f"[ERROR] [DISCOVERY] Erro no handler: {e}")
-            return self.consulting_orchestrator.handle_error(state, e, "DISCOVERY")
+            # CORREÇÃO SESSAO 45: Incluir discovery_attempts no resultado de erro
+            # Para que route_by_approval possa verificar o contador
+            error_result = self.consulting_orchestrator.handle_error(e, state, "DISCOVERY")
+            error_result["discovery_attempts"] = state.discovery_attempts + 1
+            return error_result
 
     def _collect_feedback_after_diagnostic(self, state: BSCState, approval_status: Any) -> None:
         """

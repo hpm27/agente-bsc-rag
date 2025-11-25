@@ -34,7 +34,7 @@ from src.memory.schemas import (
     CauseEffectConnection,
     DiagnosticToolsResult,
 )
-from config.settings import get_llm
+from config.settings import get_llm_for_agent
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +135,8 @@ class StrategyMapDesignerTool:
         self.customer_agent = customer_agent
         self.process_agent = process_agent
         self.learning_agent = learning_agent
-        self.llm = llm or get_llm(temperature=1.0)
+        # SESSAO 45: LLM ferramentas (Claude Opus 4.5 - structured output confiável)
+        self.llm = llm or get_llm_for_agent("tools")
 
         logger.info("[StrategyMapDesigner] Inicializado com 4 specialist agents + LLM")
 

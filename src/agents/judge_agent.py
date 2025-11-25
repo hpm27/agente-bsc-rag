@@ -11,7 +11,7 @@ Responsável por:
 
 from typing import Any
 
-from config.settings import get_llm
+from config.settings import get_llm_for_agent
 from langchain_core.prompts import ChatPromptTemplate
 from loguru import logger
 from pydantic import BaseModel, Field
@@ -39,12 +39,8 @@ class JudgeAgent:
         """Inicializa o Judge Agent."""
         self.name = "Judge Agent"
 
-        # LLM para avaliação (usa factory)
-        # GPT-5 exige temperature=1.0 (determinismo via reasoning_effort)
-        self.llm = get_llm(
-            temperature=1.0,  # GPT-5 só aceita temperature=1.0
-            max_tokens=16384,  # Limite alto para avaliacoes detalhadas
-        )
+        # SESSAO 45: LLM análise (Claude Opus 4.5 - avaliação crítica rigorosa)
+        self.llm = get_llm_for_agent("analysis", max_tokens=16384)
 
         # NOTA: Chain é criado dinamicamente no evaluate() para suportar context-aware prompts
 

@@ -20,7 +20,7 @@ import logging
 from typing import Any, Literal, Optional, cast
 
 from api.middleware.performance import track_llm_tokens
-from config.settings import settings
+from config.settings import get_llm_for_agent, settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from pydantic import ValidationError
@@ -93,14 +93,12 @@ class DiagnosticAgent:
         Args:
             llm: Modelo LLM customizado (opcional). Se None, usa configuração via .env.
         """
-        self.llm = llm or ChatOpenAI(
-            model=settings.diagnostic_llm_model,  # Configurável via .env (default: gpt-5-2025-08-07)
-            api_key=settings.openai_api_key,  # type: ignore
-            temperature=1.0,  # GPT-5 exige temperature=1.0 (único valor suportado)
-            request_timeout=120,  # Timeout de 2 minutos por request (previne travamentos)
-            max_retries=2,  # Máximo 2 retries automáticos
-            max_completion_tokens=settings.gpt5_max_completion_tokens,  # GPT-5 usa max_completion_tokens (128K máx), NÃO max_tokens!
-            reasoning_effort=settings.gpt5_reasoning_effort,
+        # SESSAO 45: LLM análise (Claude Opus 4.5 - auto-correção, tarefas longas)
+        # max_tokens alto para análises detalhadas, timeout de 2 minutos
+        self.llm = llm or get_llm_for_agent(
+            "analysis",
+            max_tokens=settings.gpt5_max_completion_tokens,  # 128K tokens
+            timeout=120,  # Timeout de 2 minutos
         )
 
         # Log para identificar temperatura do LLM
@@ -2023,7 +2021,7 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         Args:
             items_to_prioritize: Lista de items a priorizar. Cada item deve ser dict com:
                 - id (str, opcional): Identificador único
-                - type (str, opcional): "strategic_objective", "action_item", "initiative", "project"
+                - type (str, opcional): "strategic_objective", "action_item", "initiative", "project", "gap"
                 - title (str, obrigatório): Nome do item (10-200 caracteres)
                 - description (str, obrigatório): Descrição detalhada (20+ caracteres)
                 - perspective (str, obrigatório): Perspectiva BSC ("Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento")

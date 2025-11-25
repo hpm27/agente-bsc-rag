@@ -192,6 +192,11 @@ class BSCState(BaseModel):
     approval_status: ApprovalStatus | None = None
     approval_feedback: str | None = None
 
+    # CORREÇÃO SESSAO 45: Contador de tentativas de discovery para evitar loop infinito
+    # Se discovery falha múltiplas vezes (timeout, erro), workflow deve parar após N tentativas
+    discovery_attempts: int = 0
+    max_discovery_attempts: int = 2  # Máximo 2 tentativas antes de forçar END
+
     # Onboarding (FASE 2.6)
     # Estrutura: {"current_step": int, "followup_counts": dict[int, int], "challenges": bool, "objectives": bool}
     onboarding_progress: dict[str, Any] = Field(default_factory=dict)

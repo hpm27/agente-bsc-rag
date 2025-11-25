@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from api.middleware.performance import track_llm_tokens
-from config.settings import get_llm, settings
+from config.settings import get_llm_for_agent, settings
 from langchain_core.prompts import ChatPromptTemplate
 from loguru import logger
 from pydantic import BaseModel, Field
@@ -57,9 +57,8 @@ class Orchestrator:
         """Inicializa o orquestrador."""
         self.name = "Orchestrator"
 
-        # LLM para routing e synthesis (usa factory)
-        # GPT-5 exige temperature=1.0 (único valor suportado)
-        self.llm = get_llm(temperature=1.0)
+        # SESSAO 45: LLM síntese (Claude Opus 4.5 - Infinite Chat, 40-60K tokens input)
+        self.llm = get_llm_for_agent("synthesis", timeout=600)
 
         # Agentes especialistas
         self.agents = {

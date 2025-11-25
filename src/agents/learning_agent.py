@@ -11,7 +11,7 @@ Responsável por:
 import asyncio
 from typing import Any
 
-from config.settings import get_llm, settings
+from config.settings import get_llm_for_agent, settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from loguru import logger
@@ -27,8 +27,8 @@ class LearningAgent:
         self.name = "Learning & Growth Agent"
         self.perspective = "aprendizado"
 
-        # LLM (usa factory que detecta provider automaticamente)
-        self.llm = get_llm()
+        # SESSAO 45: LLM conversacional (GPT-5.1 - cultura, pessoas, competências)
+        self.llm = get_llm_for_agent("conversational")
 
         # Tools
         self.tools = get_tools_for_agent()

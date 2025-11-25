@@ -58,6 +58,51 @@ Pode listar 3-5 objetivos principais distribuídos nessas 4 áreas."""
 
 
 # ============================================================================
+# PERGUNTAS OPCIONAIS (STEPS 4-7) - Kaplan & Norton Best Practices
+# SESSAO 45: Adicionado para diagnóstico BSC completo
+# ============================================================================
+
+MVV_QUESTION = """**Missão, Visão e Valores (Fundamentos Estratégicos):**
+
+Para um diagnóstico mais completo, preciso entender os fundamentos da empresa:
+
+- **Missão**: Por que a empresa existe? Qual o propósito central?
+- **Visão**: Onde a empresa quer chegar nos próximos 5-10 anos?
+- **Valores**: Quais princípios guiam as decisões e comportamentos?
+
+Se vocês já têm isso definido, pode compartilhar? Se não, também é uma informação valiosa."""
+
+
+COMPETITIVE_CONTEXT_QUESTION = """**Contexto Competitivo:**
+
+Para entender seu posicionamento no mercado:
+
+- **Concorrentes**: Quem são seus principais concorrentes (diretos e indiretos)?
+- **Diferenciação**: O que torna sua empresa única? Qual sua proposta de valor?
+- **Clientes-alvo**: Quais segmentos de clientes são prioritários para vocês?"""
+
+
+ORGANIZATION_STRUCTURE_QUESTION = """**Estrutura Organizacional:**
+
+Para mapear os recursos disponíveis:
+
+- **Estrutura**: Quais os principais departamentos/áreas?
+- **Pessoas**: Aproximadamente quantos funcionários? Competências-chave?
+- **Sistemas**: Que sistemas utilizam (ERP, CRM, BI, etc)?
+- **Métricas**: Quais KPIs já são rastreados hoje?"""
+
+
+PROJECT_CONSTRAINTS_QUESTION = """**Escopo do Projeto BSC:**
+
+Para definir expectativas:
+
+- **Prazo**: Qual o prazo ideal para implementar o BSC?
+- **Sponsor**: Quem será o patrocinador/responsável pelo projeto?
+- **Sucesso**: Como vocês vão medir o sucesso deste projeto?
+- **Histórico**: Já tentaram implementar BSC ou algo similar antes?"""
+
+
+# ============================================================================
 # TEMPLATES DE FOLLOW-UP (INFORMAÇÕES FALTANTES)
 # ============================================================================
 
@@ -186,8 +231,13 @@ def get_initial_question(step: int) -> str:
     """
     Retorna pergunta inicial para um step específico.
 
+    SESSAO 45: Expandido para 7 steps baseado em Kaplan & Norton best practices.
+
     Args:
-        step: OnboardingStep (1=COMPANY_INFO, 2=CHALLENGES, 3=OBJECTIVES)
+        step: OnboardingStep (1-7)
+            1=COMPANY_INFO, 2=CHALLENGES, 3=OBJECTIVES (obrigatórios)
+            4=MVV, 5=COMPETITIVE_CONTEXT, 6=ORGANIZATION_STRUCTURE,
+            7=PROJECT_CONSTRAINTS (opcionais)
 
     Returns:
         str: Pergunta formatada
@@ -195,11 +245,19 @@ def get_initial_question(step: int) -> str:
     Example:
         >>> get_initial_question(1)
         "**Sobre sua empresa:**..."
+        >>> get_initial_question(4)
+        "**Missão, Visão e Valores (Fundamentos Estratégicos):**..."
     """
     questions = {
+        # OBRIGATÓRIOS (Steps 1-3)
         1: COMPANY_INFO_QUESTION,
         2: CHALLENGES_QUESTION,
         3: OBJECTIVES_QUESTION,
+        # OPCIONAIS (Steps 4-7) - Kaplan & Norton best practices
+        4: MVV_QUESTION,
+        5: COMPETITIVE_CONTEXT_QUESTION,
+        6: ORGANIZATION_STRUCTURE_QUESTION,
+        7: PROJECT_CONSTRAINTS_QUESTION,
     }
 
     return questions.get(step, "")
@@ -211,8 +269,10 @@ def get_followup_question(
     """
     Retorna pergunta de follow-up baseado em informações faltantes.
 
+    SESSAO 45: Expandido para 7 steps.
+
     Args:
-        step: OnboardingStep atual
+        step: OnboardingStep atual (1-7)
         missing_info: Lista de campos faltando
         context: Contexto adicional (opcional)
 
@@ -242,6 +302,19 @@ def get_followup_question(
 
         return FOLLOWUP_INCOMPLETE_OBJECTIVES.format(missing_perspectives=missing_perspectives)
 
+    # OPCIONAIS (Steps 4-7) - perguntas de enriquecimento
+    elif step == 4:  # MVV
+        return MVV_QUESTION
+
+    elif step == 5:  # COMPETITIVE_CONTEXT
+        return COMPETITIVE_CONTEXT_QUESTION
+
+    elif step == 6:  # ORGANIZATION_STRUCTURE
+        return ORGANIZATION_STRUCTURE_QUESTION
+
+    elif step == 7:  # PROJECT_CONSTRAINTS
+        return PROJECT_CONSTRAINTS_QUESTION
+
     return FOLLOWUP_GENERIC
 
 
@@ -249,8 +322,10 @@ def get_confirmation_message(step: int, extraction: dict[str, Any]) -> str:
     """
     Retorna mensagem de confirmação ao completar um step.
 
+    SESSAO 45: Expandido para 7 steps.
+
     Args:
-        step: OnboardingStep recém completo
+        step: OnboardingStep recém completo (1-7)
         extraction: Dados extraídos (dict com name, industry, challenges, objectives, etc)
 
     Returns:
@@ -275,5 +350,44 @@ def get_confirmation_message(step: int, extraction: dict[str, Any]) -> str:
     if step == 3:  # OBJECTIVES
         objectives = extraction.get("objectives", [])
         return generate_objectives_confirmation(len(objectives), objectives)
+
+    # OPCIONAIS (Steps 4-7) - confirmações simplificadas
+    if step == 4:  # MVV
+        mission = extraction.get("mission", "")
+        vision = extraction.get("vision", "")
+        values = extraction.get("core_values", [])
+        parts = []
+        if mission:
+            parts.append(f"Missão: {mission[:50]}...")
+        if vision:
+            parts.append(f"Visão: {vision[:50]}...")
+        if values:
+            parts.append(f"Valores: {', '.join(values[:3])}")
+        return "[OK] Fundamentos estratégicos registrados!\n   " + "\n   ".join(parts)
+
+    if step == 5:  # COMPETITIVE_CONTEXT
+        competitors = extraction.get("competitors", [])
+        advantages = extraction.get("competitive_advantages", [])
+        return (
+            f"[OK] Contexto competitivo mapeado!\n"
+            f"   Concorrentes: {len(competitors)} identificados\n"
+            f"   Diferenciais: {len(advantages)} registrados"
+        )
+
+    if step == 6:  # ORGANIZATION_STRUCTURE
+        departments = extraction.get("departments", [])
+        systems = extraction.get("key_systems", [])
+        return (
+            f"[OK] Estrutura organizacional registrada!\n"
+            f"   Departamentos: {len(departments)} áreas\n"
+            f"   Sistemas: {len(systems)} identificados"
+        )
+
+    if step == 7:  # PROJECT_CONSTRAINTS
+        timeline = extraction.get("timeline", "não definido")
+        sponsor = extraction.get("sponsor_name", "não definido")
+        return (
+            f"[OK] Escopo do projeto definido!\n" f"   Prazo: {timeline}\n" f"   Sponsor: {sponsor}"
+        )
 
     return "[OK] Informações registradas!"

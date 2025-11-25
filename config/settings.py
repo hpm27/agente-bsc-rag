@@ -10,6 +10,15 @@ from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Gemini é opcional - só importa se disponível
+try:
+    from langchain_google_genai import ChatGoogleGenerativeAI  # type: ignore[import-not-found]
+
+    GEMINI_AVAILABLE = True
+except ImportError:
+    ChatGoogleGenerativeAI = None  # type: ignore[misc, assignment]
+    GEMINI_AVAILABLE = False
+
 from src.memory.factory import MemoryFactory  # Exposto no módulo para facilitar patch em testes
 
 
@@ -35,6 +44,9 @@ class Settings(BaseSettings):
     # Anthropic (para Contextual Retrieval)
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-sonnet-4-5-20250929"
+
+    # Google (para Gemini)
+    google_api_key: str | None = None
 
     # Vector Store Configuration
     vector_store_type: str = "qdrant"  # 'qdrant', 'weaviate', ou 'redis'
@@ -87,6 +99,32 @@ class Settings(BaseSettings):
 
     # Diagnostic Agent Configuration (Análise 4 perspectivas BSC)
     diagnostic_llm_model: str = "gpt-5-2025-08-07"  # Reasoning avançado necessário
+
+    # ========================================================================
+    # LLM POR TIPO DE AGENTE - SESSAO 45 (Qualidade Máxima)
+    # Baseado em benchmarks Claude Opus 4.5 vs GPT-5.1 vs Gemini 3 Pro
+    # ========================================================================
+
+    # CONVERSAÇÃO/EMPATIA: GPT-5.1 (melhor em conversação natural, empatia)
+    llm_conversational: str = "gpt-5.1-chat-latest"  # OnboardingAgent, CustomerAgent, LearningAgent
+
+    # ANÁLISE COMPLEXA: Claude Opus 4.5 (80.9% SWE-bench, auto-correção, tarefas longas)
+    llm_analysis: str = "claude-opus-4-5-20250924"  # DiagnosticAgent, JudgeAgent, ProcessAgent
+
+    # SÍNTESE LONGA: Claude Opus 4.5 (Infinite Chat, contexto infinito)
+    llm_synthesis: str = "claude-opus-4-5-20250924"  # Orchestrator (40-60K tokens input)
+
+    # RACIOCÍNIO QUANTITATIVO: GPT-5.1 (fallback se Gemini não instalado)
+    # Ideal: Gemini 3 Pro (92% GPQA Diamond) - requer: pip install langchain-google-genai
+    llm_quantitative: str = "gpt-5.1-chat-latest"  # FinancialAgent, BenchmarkingTool
+
+    # FERRAMENTAS CONSULTIVAS: Claude Opus 4.5 (structured output confiável, menos erros)
+    llm_tools: str = (
+        "claude-opus-4-5-20250924"  # SWOT, PrioritizationMatrix, ActionPlan, StrategyMap
+    )
+
+    # TAREFAS SIMPLES (econômico): GPT-5 mini (custo baixo, qualidade suficiente)
+    llm_simple: str = "gpt-5-mini-2025-08-07"  # Translation, Query Decomposition, Router
 
     # Agent Configuration
     max_iterations: int = 10
@@ -258,23 +296,41 @@ def get_llm(
     temperature = temperature if temperature is not None else settings.temperature
     max_tokens = max_tokens or settings.max_tokens
 
+    # SESSAO 46: Extrair timeout de kwargs para tratar por provider
+    # - ChatAnthropic: usa 'timeout'
+    # - ChatOpenAI: usa 'request_timeout' (NÃO 'timeout'!)
+    # - ChatGoogleGenerativeAI: usa 'timeout'
+    timeout_value = kwargs.pop("timeout", None)
+
     # Detecta provider pelo nome do modelo
     if model.startswith("claude-"):
-        # Modelo Anthropic
+        # Modelo Anthropic - limite de 64K tokens para Claude Opus 4.5
+        # SESSAO 46: Verificar se max_tokens não é None antes de min()
+        claude_max_tokens = min(max_tokens, 64000) if max_tokens is not None else 64000
         if not settings.anthropic_api_key:
             raise ValueError(
                 "ANTHROPIC_API_KEY nao configurada no .env. " "Necessaria para usar modelos Claude."
             )
 
+        # Anthropic usa 'timeout' diretamente
+        anthropic_kwargs = {**kwargs}
+        if timeout_value is not None:
+            anthropic_kwargs["timeout"] = timeout_value
+
         return ChatAnthropic(  # type: ignore[call-arg]
             model=model,
             anthropic_api_key=settings.anthropic_api_key,
             temperature=temperature,
-            max_tokens=max_tokens,
-            **kwargs,
+            max_tokens=claude_max_tokens,
+            **anthropic_kwargs,
         )
     if model.startswith("gpt-"):
         # Modelo OpenAI
+        # SESSAO 46: OpenAI usa 'request_timeout', NÃO 'timeout'!
+        openai_kwargs = {**kwargs}
+        if timeout_value is not None:
+            openai_kwargs["request_timeout"] = timeout_value  # Converter timeout -> request_timeout
+
         # GPT-5 usa max_completion_tokens, modelos antigos usam max_tokens
         if model.startswith("gpt-5"):
             return ChatOpenAI(  # type: ignore[arg-type,call-arg]
@@ -283,19 +339,117 @@ def get_llm(
                 temperature=1.0,  # GPT-5 exige temperature=1.0
                 max_completion_tokens=max_tokens,  # GPT-5 usa max_completion_tokens
                 reasoning_effort=settings.gpt5_reasoning_effort,
-                **kwargs,
+                **openai_kwargs,
             )
         return ChatOpenAI(  # type: ignore[arg-type,call-arg]
             model=model,
             api_key=SecretStr(settings.openai_api_key),
             temperature=temperature,
             max_tokens=max_tokens,  # GPT-4/3.5 usam max_tokens
-            **kwargs,
+            **openai_kwargs,
+        )
+    if model.startswith("gemini-"):
+        # Modelo Google Gemini
+        if not GEMINI_AVAILABLE:
+            raise ImportError(
+                "langchain_google_genai nao instalado. "
+                "Execute: pip install langchain-google-genai"
+            )
+        if not settings.google_api_key:
+            raise ValueError(
+                "GOOGLE_API_KEY nao configurada no .env. " "Necessaria para usar modelos Gemini."
+            )
+
+        # Gemini usa 'timeout' diretamente
+        gemini_kwargs = {**kwargs}
+        if timeout_value is not None:
+            gemini_kwargs["timeout"] = timeout_value
+
+        return ChatGoogleGenerativeAI(  # type: ignore[call-arg]
+            model=model,
+            google_api_key=settings.google_api_key,
+            temperature=temperature,
+            max_output_tokens=max_tokens,
+            **gemini_kwargs,
         )
     raise ValueError(
         f"Modelo '{model}' nao reconhecido. "
-        f"Deve comecar com 'gpt-' (OpenAI) ou 'claude-' (Anthropic)."
+        f"Deve comecar com 'gpt-' (OpenAI), 'claude-' (Anthropic) ou 'gemini-' (Google)."
     )
+
+
+def get_llm_for_agent(
+    agent_type: str,
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    **kwargs: Any,
+):
+    """
+    Factory function que retorna LLM otimizado para cada tipo de agente.
+
+    SESSAO 45: Baseado em benchmarks Claude Opus 4.5 vs GPT-5.1 vs Gemini 3 Pro.
+    Prioriza qualidade máxima sem restrição de custo.
+
+    Args:
+        agent_type: Tipo de agente/ferramenta. Valores válidos:
+            - "conversational": OnboardingAgent, CustomerAgent, LearningAgent
+            - "analysis": DiagnosticAgent, JudgeAgent, ProcessAgent
+            - "synthesis": Orchestrator (síntese de grandes inputs)
+            - "quantitative": FinancialAgent, BenchmarkingTool
+            - "tools": SWOT, PrioritizationMatrix, ActionPlan, StrategyMap
+            - "simple": Translation, QueryDecomposition, Router
+        temperature: Override de temperatura (opcional)
+        max_tokens: Override de max tokens (opcional)
+        **kwargs: Argumentos adicionais para o LLM
+
+    Returns:
+        LLM configurado para o tipo de agente
+
+    Example:
+        >>> llm = get_llm_for_agent("analysis")  # Claude Opus 4.5
+        >>> llm = get_llm_for_agent("conversational")  # GPT-5.1
+        >>> llm = get_llm_for_agent("quantitative")  # Gemini 3 Pro
+
+    Mapping:
+        - conversational -> GPT-5.1 (empatia, conversação natural)
+        - analysis -> Claude Opus 4.5 (auto-correção, tarefas longas)
+        - synthesis -> Claude Opus 4.5 (Infinite Chat, contexto infinito)
+        - quantitative -> Gemini 3 Pro (GPQA Diamond 92%)
+        - tools -> Claude Opus 4.5 (structured output confiável)
+        - simple -> GPT-5 mini (econômico, suficiente)
+    """
+    # Mapeamento tipo de agente -> configuração do modelo
+    agent_llm_mapping = {
+        "conversational": settings.llm_conversational,
+        "analysis": settings.llm_analysis,
+        "synthesis": settings.llm_synthesis,
+        "quantitative": settings.llm_quantitative,
+        "tools": settings.llm_tools,
+        "simple": settings.llm_simple,
+    }
+
+    # Validar tipo de agente
+    if agent_type not in agent_llm_mapping:
+        raise ValueError(
+            f"agent_type '{agent_type}' não reconhecido. "
+            f"Valores válidos: {list(agent_llm_mapping.keys())}"
+        )
+
+    model = agent_llm_mapping[agent_type]
+
+    # SESSAO 45: Fallback para Gemini se não estiver disponível
+    # Quando Gemini não está instalado, usa GPT-5.1 mini como fallback para quantitative
+    if not GEMINI_AVAILABLE and model and "gemini" in model.lower():
+        import logging
+
+        logging.getLogger(__name__).warning(
+            f"[WARN] Gemini não disponível para agent_type='{agent_type}'. "
+            f"Usando fallback: {settings.default_llm_model}"
+        )
+        model = settings.default_llm_model
+
+    # Usar get_llm para criar o LLM apropriado
+    return get_llm(model=model, temperature=temperature, max_tokens=max_tokens, **kwargs)
 
 
 def validate_memory_config() -> None:

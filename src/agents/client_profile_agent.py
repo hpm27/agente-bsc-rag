@@ -127,14 +127,10 @@ class ClientProfileAgent:
         Args:
             llm: LLM customizado (opcional). Se None, usa GPT-5 padrão.
         """
-        from config.settings import settings
+        from config.settings import get_llm_for_agent
 
-        self.llm = llm or ChatOpenAI(
-            model=settings.gpt5_model,
-            temperature=1.0,  # GPT-5 só aceita temperature=1.0 (default)
-            max_completion_tokens=settings.gpt5_max_completion_tokens,
-            reasoning_effort=settings.gpt5_reasoning_effort,  # Configurável via .env (GPT-5.1: 'medium' para Thinking, 'low'/'none' para Instant)
-        )
+        # SESSAO 45: LLM conversacional (GPT-5.1 - extração de contexto empresarial)
+        self.llm = llm or get_llm_for_agent("conversational")
 
         logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {self.llm.model_name}")
 

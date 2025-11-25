@@ -11,7 +11,7 @@ Responsável por:
 import asyncio
 from typing import Any
 
-from config.settings import get_llm, settings
+from config.settings import get_llm_for_agent, settings
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from loguru import logger
@@ -27,8 +27,8 @@ class FinancialAgent:
         self.name = "Financial Agent"
         self.perspective = "financeira"
 
-        # LLM (usa factory que detecta provider automaticamente)
-        self.llm = get_llm()
+        # SESSAO 45: LLM quantitativo (Gemini 3 Pro - 92% GPQA Diamond, melhor em análise financeira)
+        self.llm = get_llm_for_agent("quantitative")
 
         # Tools
         self.tools = get_tools_for_agent()
