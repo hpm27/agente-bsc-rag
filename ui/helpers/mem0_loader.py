@@ -318,44 +318,46 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
     try:
         from src.database.repository import ClientProfileRepository
 
-        # CORREÇÃO SESSAO 49: get_db_session() é context manager, usar with
+        # CORREÇÃO SESSAO 49: Processar DENTRO do context manager
+        # SQLAlchemy lazy loading requer sessão ativa para acessar atributos
         with get_db_session() as db:
             profiles = ClientProfileRepository.get_all(db, limit=100)
 
-        if not profiles:
-            return [], "[INFO] Nenhuma consulta anterior encontrada."
+            if not profiles:
+                return [], "[INFO] Nenhuma consulta anterior encontrada."
 
-        # Converter ClientProfile ORM -> dict simplificado para UI
-        clients = []
-        for profile in profiles:
-            # Formatar data no padrao brasileiro
-            created_date = (
-                profile.created_at.strftime("%d/%m/%Y")
-                if profile.created_at
-                else "Data desconhecida"
-            )
+            # Converter ClientProfile ORM -> dict simplificado para UI
+            # CRÍTICO: Fazer DENTRO do with, antes da sessão fechar
+            clients = []
+            for profile in profiles:
+                # Formatar data no padrao brasileiro
+                created_date = (
+                    profile.created_at.strftime("%d/%m/%Y")
+                    if profile.created_at
+                    else "Data desconhecida"
+                )
 
-            # Nome da empresa (fallback se vazio)
-            company = profile.company_name or "[Sem nome]"
+                # Nome da empresa (fallback se vazio)
+                company = profile.company_name or "[Sem nome]"
 
-            # Setor (opcional)
-            sector = profile.sector or ""
+                # Setor (opcional)
+                sector = profile.sector or ""
 
-            # Display name formatado para selectbox
-            if sector:
-                display = f"{company} ({sector}) - {created_date}"
-            else:
-                display = f"{company} - {created_date}"
+                # Display name formatado para selectbox
+                if sector:
+                    display = f"{company} ({sector}) - {created_date}"
+                else:
+                    display = f"{company} - {created_date}"
 
-            clients.append(
-                {
-                    "user_id": profile.user_id,
-                    "company_name": company,
-                    "sector": sector,
-                    "created_at": created_date,
-                    "display_name": display,
-                }
-            )
+                clients.append(
+                    {
+                        "user_id": profile.user_id,
+                        "company_name": company,
+                        "sector": sector,
+                        "created_at": created_date,
+                        "display_name": display,
+                    }
+                )
 
         logger.info(f"[OK] {len(clients)} clientes carregados do SQLite")
         return clients, None
