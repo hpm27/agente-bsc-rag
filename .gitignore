@@ -89,6 +89,9 @@ Thumbs.db
 .specstory/
 .mypy_cache/
 
+# Artefatos de teste Mock (prevenir vazamento para raiz)
+MagicMock/
+
 # Cursor Progress (arquivos temporários)
 .cursor/progress/
 

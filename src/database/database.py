@@ -4,7 +4,6 @@ Database connection management para SQLite local.
 Padrão baseado em SQLAlchemy best practices 2025.
 """
 
-import os
 from contextlib import contextmanager
 from pathlib import Path
 

@@ -22,14 +22,11 @@ Scoring: Score = (validações passando / 8) * 100
 
 import logging
 import re
-from typing import List, Dict, Set
+from typing import List
 from datetime import datetime, timezone
 
 from src.memory.schemas import (
     StrategyMap,
-    StrategyMapPerspective,
-    StrategicObjective,
-    CauseEffectConnection,
     AlignmentReport,
 )
 

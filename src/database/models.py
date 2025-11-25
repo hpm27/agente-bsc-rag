@@ -9,7 +9,6 @@ ROI: Zero latency vs Mem0 eventual consistency (10 min)
 """
 
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import JSON, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, relationship

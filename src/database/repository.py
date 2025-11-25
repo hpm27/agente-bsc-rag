@@ -6,9 +6,8 @@ Padrão baseado em:
 - SQLAlchemy ORM best practices 2025
 """
 
-import json
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 

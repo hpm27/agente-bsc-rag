@@ -19,10 +19,9 @@ Best Practices (BSCDesigner 2025):
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict
 from datetime import datetime, timezone
 
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage, HumanMessage
 
 if TYPE_CHECKING:
@@ -30,11 +29,8 @@ if TYPE_CHECKING:
 
 from src.memory.schemas import (
     CompleteDiagnostic,
-    CompanyInfo,
-    StrategicContext,
     StrategyMap,
     StrategyMapPerspective,
-    StrategicObjective,
     CauseEffectConnection,
     DiagnosticToolsResult,
 )
