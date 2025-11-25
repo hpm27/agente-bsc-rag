@@ -65,6 +65,7 @@ from src.tools.action_plan import ActionPlanTool
 from src.tools.alignment_validator import AlignmentValidatorTool
 from src.tools.cause_effect_mapper import CauseEffectMapperTool
 from src.tools.kpi_alignment_checker import KPIAlignmentCheckerTool
+from src.tools.milestone_tracker import MilestoneTrackerTool
 from src.tools.strategy_map_designer import StrategyMapDesignerTool
 
 if TYPE_CHECKING:
@@ -134,6 +135,7 @@ class BSCWorkflow:
         # Estas ferramentas são executadas APÓS o AlignmentValidator para validações profundas
         self.kpi_alignment_checker = KPIAlignmentCheckerTool(llm=get_llm_for_agent("tools"))
         self.cause_effect_mapper = CauseEffectMapperTool(llm=get_llm_for_agent("tools"))
+        self.milestone_tracker = MilestoneTrackerTool(llm=get_llm_for_agent("tools"))
 
         # SESSAO 44: Path do DB para checkpointer async
         self._checkpoint_db_path = "data/langgraph_checkpoints.db"
@@ -1712,25 +1714,60 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                 f"Prioritárias: {action_plan.high_priority_count}"
             )
 
+            # ========== SPRINT 4 - SESSAO 49: Gerar Milestones ==========
+            milestone_report = None
+            milestone_report_dict = None
+            try:
+                from datetime import datetime
+
+                current_date = datetime.now().strftime("%Y-%m-%d")
+                milestone_report = (
+                    await self.milestone_tracker.generate_milestones_from_action_plan(
+                        action_plan=action_plan,
+                        current_date=current_date,
+                    )
+                )
+                milestone_report_dict = milestone_report.model_dump()
+                logger.info(
+                    f"[OK] [IMPLEMENTATION] Milestones gerados | "
+                    f"total={milestone_report.total_milestones} | "
+                    f"progresso={milestone_report.overall_progress:.1f}% | "
+                    f"em_risco={milestone_report.at_risk_count}"
+                )
+            except Exception as e:
+                logger.warning(
+                    f"[WARN] [IMPLEMENTATION] Falha ao gerar milestones (não crítico): {e}"
+                )
+
             # Gerar resumo executivo do Action Plan
             summary = self._generate_action_plan_summary(
-                action_plan, state.strategy_map, state.client_profile
+                action_plan, state.strategy_map, state.client_profile, milestone_report
             )
 
             # Serializar action_plan para dict (BSCState aceita dict)
             action_plan_dict = action_plan.model_dump()
 
+            # Construir metadata
+            result_metadata = {
+                **state.metadata,
+                "action_plan_created_at": time.time(),
+                "total_actions": action_plan.total_actions,
+                "high_priority_actions": action_plan.high_priority_count,
+            }
+
+            # Adicionar métricas de milestones se disponíveis
+            if milestone_report:
+                result_metadata["milestone_total"] = milestone_report.total_milestones
+                result_metadata["milestone_progress"] = milestone_report.overall_progress
+                result_metadata["milestone_at_risk"] = milestone_report.at_risk_count
+
             return {
                 "action_plan": action_plan_dict,
+                "milestone_report": milestone_report_dict,
                 "final_response": summary,
                 "current_phase": ConsultingPhase.IMPLEMENTATION,
                 "is_complete": True,
-                "metadata": {
-                    **state.metadata,
-                    "action_plan_created_at": time.time(),
-                    "total_actions": action_plan.total_actions,
-                    "high_priority_actions": action_plan.high_priority_count,
-                },
+                "metadata": result_metadata,
             }
 
         except Exception as e:
@@ -1744,7 +1781,9 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                 "metadata": {**state.metadata, "implementation_error": f"unexpected_error: {e}"},
             }
 
-    def _generate_action_plan_summary(self, action_plan, strategy_map, client_profile) -> str:
+    def _generate_action_plan_summary(
+        self, action_plan, strategy_map, client_profile, milestone_report=None
+    ) -> str:
         """
         Gera resumo executivo do Action Plan criado.
 
@@ -1752,6 +1791,7 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             action_plan: ActionPlan completo
             strategy_map: StrategyMap relacionado
             client_profile: ClientProfile com company info
+            milestone_report: MilestoneTrackerReport opcional (SPRINT 4)
 
         Returns:
             String com resumo formatado
@@ -1813,6 +1853,37 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             for i, action in enumerate(medium_priority[:2], 1):
                 summary_lines.append(f"{i}. **{action.action_title}**")
                 summary_lines.append(f"   - Prazo: {action.due_date}")
+                summary_lines.append("")
+
+        # SPRINT 4 - SESSAO 49: Adicionar resumo de milestones
+        if milestone_report:
+            summary_lines.extend(
+                [
+                    "## Rastreamento de Milestones",
+                    "",
+                    f"- **Total de Milestones**: {milestone_report.total_milestones}",
+                    f"- **Progresso Geral**: {milestone_report.overall_progress:.1f}%",
+                    f"- **Completados**: {milestone_report.completed_count}",
+                    f"- **Em Andamento**: {milestone_report.in_progress_count}",
+                    f"- **Em Risco**: {milestone_report.at_risk_count}",
+                    "",
+                ]
+            )
+
+            # Próximos milestones
+            if milestone_report.next_due_milestones:
+                summary_lines.append("### Próximos Prazos")
+                summary_lines.append("")
+                for m_name in milestone_report.next_due_milestones[:3]:
+                    summary_lines.append(f"- {m_name}")
+                summary_lines.append("")
+
+            # Recomendações
+            if milestone_report.recommendations:
+                summary_lines.append("### Recomendações")
+                summary_lines.append("")
+                for rec in milestone_report.recommendations[:3]:
+                    summary_lines.append(f"- {rec}")
                 summary_lines.append("")
 
         summary_lines.extend(

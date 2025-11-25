@@ -226,6 +226,10 @@ class BSCState(BaseModel):
     # Campo ausente causava action_plan não ser salvo no state (LangGraph ignora campos não definidos)
     action_plan: dict[str, Any] | None = None
 
+    # Milestone Report (SPRINT 4 - FASE 5.6) - Sessão 49 (2025-11-25)
+    # Rastreamento de progresso dos milestones do Action Plan
+    milestone_report: dict[str, Any] | None = None
+
     model_config = ConfigDict(arbitrary_types_allowed=True, populate_by_name=True)
 
     def model_dump(self, *args, **kwargs):  # type: ignore[override]
