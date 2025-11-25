@@ -491,6 +491,17 @@ def load_milestone_report(
                 milestone_report = milestone_data
             elif isinstance(milestone_data, dict):
                 milestone_report = MilestoneTrackerReport(**milestone_data)
+            else:
+                # Tipo inesperado - log warning e retornar erro
+                logger.warning(
+                    f"[WARN] milestone_data tipo inesperado: {type(milestone_data).__name__}"
+                )
+                return (
+                    None,
+                    f"[ERRO] Tipo inesperado de milestone_data: {type(milestone_data).__name__}",
+                )
+
+            # Só loga se milestone_report foi criado com sucesso
             logger.info(
                 f"[OK] Milestone Report carregado | "
                 f"total={milestone_report.total_milestones} | "

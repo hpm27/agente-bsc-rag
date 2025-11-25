@@ -133,10 +133,10 @@ elif milestone_report:
     with m_col4:
         st.metric("Em Andamento", milestone_report.in_progress_count)
     with m_col5:
-        # Em risco com cor de alerta
+        # Em risco - usar help para status ao inves de delta (delta espera numero)
         at_risk = milestone_report.at_risk_count
-        delta_color = "off" if at_risk == 0 else "inverse"
-        st.metric("Em Risco", at_risk, delta="[ATENCAO]" if at_risk > 0 else "[OK]")
+        status_msg = "[ATENCAO] Milestones em risco!" if at_risk > 0 else "[OK] Nenhum em risco"
+        st.metric("Em Risco", at_risk, help=status_msg)
 
     # Proximos prazos
     if milestone_report.next_due_milestones:
