@@ -5230,3 +5230,261 @@ class CauseEffectAnalysis(BaseModel):
             }
         }
     )
+
+
+# ============================================================================
+# MILESTONE TRACKER SCHEMAS (Sprint 4.2 - Nov/2025)
+# ============================================================================
+
+
+class Milestone(BaseModel):
+    """Marco individual de acompanhamento de progresso de Action Plan.
+
+    Representa um marco intermediario para rastrear progresso de implementacao BSC.
+    Cada milestone esta vinculado a um ou mais ActionItems e tem status/progresso.
+
+    Segue best practices OKR+BSC (balancedscorecard.org 2025):
+    - Milestones sao checkpoints mensuraveis
+    - Status tracking: NOT_STARTED -> IN_PROGRESS -> COMPLETED
+    - Risk identification: AT_RISK ou BLOCKED quando há impedimentos
+
+    Attributes:
+        name: Nome do milestone (descritivo e curto)
+        description: Descricao detalhada do que o milestone representa
+        action_item_ref: Referencia ao ActionItem relacionado
+        status: Status atual do milestone
+        progress_percent: Percentual de conclusao (0-100)
+        target_date: Data alvo para conclusao
+        actual_date: Data real de conclusao (se completado)
+        responsible: Responsavel pela entrega
+        dependencies: Lista de milestones que este depende
+        blockers: Lista de impedimentos identificados
+        notes: Notas adicionais
+
+    Example:
+        >>> milestone = Milestone(
+        ...     name="Sistema CRM configurado",
+        ...     description="CRM operacional com integracao de dados de clientes",
+        ...     action_item_ref="Implementar sistema CRM",
+        ...     status="IN_PROGRESS",
+        ...     progress_percent=65.0,
+        ...     target_date="2025-12-15",
+        ...     responsible="TI / Marketing",
+        ...     dependencies=["Definicao de requisitos"],
+        ...     blockers=[]
+        ... )
+    """
+
+    name: str = Field(
+        min_length=5,
+        max_length=100,
+        description="Nome descritivo do milestone",
+    )
+    description: str = Field(
+        min_length=20,
+        max_length=500,
+        description="Descricao detalhada do milestone e seu objetivo",
+    )
+    action_item_ref: str = Field(
+        min_length=5,
+        description="Referencia ao ActionItem relacionado (titulo ou ID)",
+    )
+    status: Literal["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "BLOCKED", "AT_RISK"] = Field(
+        default="NOT_STARTED",
+        description="Status atual do milestone",
+    )
+    progress_percent: float = Field(
+        ge=0,
+        le=100,
+        default=0.0,
+        description="Percentual de conclusao (0-100)",
+    )
+    target_date: str = Field(
+        min_length=10,
+        max_length=10,
+        description="Data alvo para conclusao (formato YYYY-MM-DD)",
+    )
+    actual_date: str | None = Field(
+        default=None,
+        description="Data real de conclusao (formato YYYY-MM-DD, se completado)",
+    )
+    responsible: str = Field(
+        min_length=3,
+        max_length=100,
+        description="Pessoa ou equipe responsavel pela entrega",
+    )
+    dependencies: list[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de milestones que este depende",
+    )
+    blockers: list[str] = Field(
+        default_factory=list,
+        description="Lista de impedimentos identificados",
+    )
+    notes: str | None = Field(
+        default=None,
+        description="Notas adicionais sobre o milestone",
+    )
+
+    def is_on_track(self) -> bool:
+        """Verifica se milestone esta no prazo."""
+        return self.status not in ["BLOCKED", "AT_RISK"]
+
+    def is_completed(self) -> bool:
+        """Verifica se milestone foi completado."""
+        return self.status == "COMPLETED"
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "name": "Sistema CRM configurado",
+                "description": "CRM operacional com integracao de dados de clientes e dashboard de metricas",
+                "action_item_ref": "Implementar sistema de coleta de feedback de clientes",
+                "status": "IN_PROGRESS",
+                "progress_percent": 65.0,
+                "target_date": "2025-12-15",
+                "actual_date": None,
+                "responsible": "TI / Marketing",
+                "dependencies": ["Definicao de requisitos"],
+                "blockers": [],
+                "notes": "Integracao com ERP em andamento",
+            }
+        }
+    )
+
+
+class MilestoneTrackerReport(BaseModel):
+    """Relatorio consolidado de acompanhamento de milestones do Action Plan.
+
+    Consolida todos os milestones de um Action Plan BSC com metricas de progresso,
+    riscos identificados, caminho critico e proximas entregas.
+
+    Segue best practices de Project Management (PMI 2025):
+    - Overall progress = media ponderada dos milestones
+    - Critical path = sequencia de milestones que determina duracao total
+    - At risk = milestones com blockers ou atrasados
+
+    Attributes:
+        milestones: Lista de todos os milestones rastreados
+        total_milestones: Numero total de milestones
+        completed_count: Quantidade de milestones completados
+        in_progress_count: Quantidade de milestones em andamento
+        at_risk_count: Quantidade de milestones em risco ou bloqueados
+        overall_progress: Progresso geral do plano (0-100)
+        critical_path: Lista de milestones no caminho critico
+        next_due_milestones: Proximos milestones com data limite
+        summary: Resumo executivo do status
+        recommendations: Recomendacoes para mitigar riscos
+        tracked_at: Timestamp da geracao do relatorio
+
+    Example:
+        >>> report = MilestoneTrackerReport(
+        ...     milestones=[...],
+        ...     total_milestones=10,
+        ...     completed_count=3,
+        ...     in_progress_count=5,
+        ...     at_risk_count=2,
+        ...     overall_progress=45.0,
+        ...     critical_path=["Milestone A", "Milestone B"],
+        ...     next_due_milestones=["Milestone C"],
+        ...     summary="Plano 45% completo, 2 milestones em risco"
+        ... )
+    """
+
+    milestones: list[Milestone] = Field(
+        min_length=1,
+        description="Lista de todos os milestones do Action Plan",
+    )
+    total_milestones: int = Field(
+        ge=1,
+        description="Numero total de milestones rastreados",
+    )
+    completed_count: int = Field(
+        ge=0,
+        description="Quantidade de milestones com status COMPLETED",
+    )
+    in_progress_count: int = Field(
+        ge=0,
+        description="Quantidade de milestones com status IN_PROGRESS",
+    )
+    at_risk_count: int = Field(
+        ge=0,
+        description="Quantidade de milestones com status BLOCKED ou AT_RISK",
+    )
+    overall_progress: float = Field(
+        ge=0,
+        le=100,
+        description="Progresso geral do plano de acao (0-100, media dos milestones)",
+    )
+    critical_path: list[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de milestones no caminho critico",
+    )
+    next_due_milestones: list[str] = Field(
+        default_factory=list,
+        description="Lista de proximos milestones com data limite proxima",
+    )
+    summary: str = Field(
+        min_length=20,
+        description="Resumo executivo do status geral do plano",
+    )
+    recommendations: list[str] = Field(
+        default_factory=list,
+        description="Recomendacoes para mitigar riscos e acelerar progresso",
+    )
+    tracked_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp da geracao do relatorio",
+    )
+
+    def get_milestones_by_status(self, status: str) -> list[Milestone]:
+        """Retorna milestones filtrados por status."""
+        return [m for m in self.milestones if m.status == status]
+
+    def get_blocked_milestones(self) -> list[Milestone]:
+        """Retorna milestones bloqueados ou em risco."""
+        return [m for m in self.milestones if m.status in ["BLOCKED", "AT_RISK"]]
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "milestones": [
+                    {
+                        "name": "Sistema CRM configurado",
+                        "description": "CRM operacional com integracao de dados de clientes",
+                        "action_item_ref": "Implementar sistema CRM",
+                        "status": "IN_PROGRESS",
+                        "progress_percent": 65.0,
+                        "target_date": "2025-12-15",
+                        "responsible": "TI / Marketing",
+                        "dependencies": ["Definicao de requisitos"],
+                        "blockers": [],
+                    },
+                    {
+                        "name": "Dashboard KPIs operacional",
+                        "description": "Dashboard com top 10 KPIs das 4 perspectivas BSC",
+                        "action_item_ref": "Criar dashboard executivo",
+                        "status": "NOT_STARTED",
+                        "progress_percent": 0.0,
+                        "target_date": "2025-12-30",
+                        "responsible": "BI / Financeiro",
+                        "dependencies": ["Sistema CRM configurado"],
+                        "blockers": [],
+                    },
+                ],
+                "total_milestones": 2,
+                "completed_count": 0,
+                "in_progress_count": 1,
+                "at_risk_count": 0,
+                "overall_progress": 32.5,
+                "critical_path": ["Sistema CRM configurado", "Dashboard KPIs operacional"],
+                "next_due_milestones": ["Sistema CRM configurado"],
+                "summary": "Plano de acao 32.5% completo. 1 milestone em andamento, nenhum bloqueio identificado.",
+                "recommendations": [
+                    "Priorizar conclusao do Sistema CRM para desbloquear Dashboard KPIs",
+                    "Agendar reuniao de kickoff com equipe de BI para Dashboard",
+                ],
+                "tracked_at": "2025-11-25T16:00:00Z",
+            }
+        }
+    )

@@ -290,14 +290,14 @@ with tab_causa_efeito:
             st.markdown("### Gaps Identificados")
 
             for gap in ce_analysis.gaps:
-                severity_icon = {
-                    "critical": "[CRITICO]",
+                # SESSAO 48 FIX: Schema usa 'impact' (high/medium/low), nao 'severity'
+                impact_icon = {
                     "high": "[ALTO]",
                     "medium": "[MEDIO]",
                     "low": "[BAIXO]",
-                }.get(gap.severity, "[INFO]")
+                }.get(gap.impact, "[INFO]")
 
-                with st.expander(f"{severity_icon} {gap.gap_type}: {gap.description[:50]}..."):
+                with st.expander(f"{impact_icon} {gap.gap_type}: {gap.description[:50]}..."):
                     st.markdown(f"**Tipo:** {gap.gap_type}")
                     st.markdown(
                         f"**Perspectivas:** {gap.source_perspective} -> {gap.target_perspective}"

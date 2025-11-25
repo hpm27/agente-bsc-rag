@@ -1267,6 +1267,7 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             # ========== STEP 4: Chamar StrategyMapDesignerTool (ASYNC) ==========
 
             logger.info("[INFO] [SOLUTION_DESIGN] Iniciando design do Strategy Map...")
+            design_start = time.time()  # SESSAO 48 FIX: Track phase start timestamp
 
             try:
                 # CORREÇÃO SESSAO 43 (2025-11-24): Executar sempre, não apenas no except
@@ -1296,7 +1297,7 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                     finally:
                         loop.close()  # Previne resource leak
 
-                design_time = time.time() - start_time
+                design_time = time.time() - design_start  # SESSAO 48 FIX: Duration from phase start
                 logger.info(
                     f"[OK] [SOLUTION_DESIGN] Strategy Map criado em {design_time:.2f}s | "
                     f"perspectives: Financial={len(strategy_map.financial.objectives)} objs, "
@@ -1323,13 +1324,16 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             # ========== STEP 5: Chamar AlignmentValidatorTool (SYNC) ==========
 
             logger.info("[INFO] [SOLUTION_DESIGN] Iniciando validação de alinhamento...")
+            validation_start = time.time()  # SESSAO 48 FIX: Track phase start timestamp
 
             try:
                 alignment_report = self.alignment_validator.validate_strategy_map(
                     strategy_map=strategy_map
                 )
 
-                validation_time = time.time() - (start_time + design_time)
+                validation_time = (
+                    time.time() - validation_start
+                )  # SESSAO 48 FIX: Duration from phase start
                 logger.info(
                     f"[OK] [SOLUTION_DESIGN] Validação completa em {validation_time:.2f}s | "
                     f"score={alignment_report.score}/100 | "
@@ -1356,9 +1360,10 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             # ========== STEP 5.5: KPI Alignment Checker (SPRINT 3 - SESSAO 48) ==========
 
             kpi_alignment_report = None
-            kpi_validation_time = 0  # Inicializar para evitar NameError
+            kpi_validation_time = 0.0  # Inicializar para evitar NameError
             if tools_results and tools_results.kpi_framework:
                 logger.info("[INFO] [SOLUTION_DESIGN] Iniciando validação de alinhamento KPI...")
+                kpi_validation_start = time.time()  # SESSAO 48 FIX: Track phase start timestamp
                 try:
                     # NOTA: validate_kpi_alignment é async - usar pattern existente do projeto
                     try:
@@ -1381,7 +1386,9 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                             )
                         finally:
                             loop.close()
-                    kpi_validation_time = time.time() - (start_time + design_time + validation_time)
+                    kpi_validation_time = (
+                        time.time() - kpi_validation_start
+                    )  # SESSAO 48 FIX: Duration from phase start
                     logger.info(
                         f"[OK] [SOLUTION_DESIGN] KPI Alignment validado em {kpi_validation_time:.2f}s | "
                         f"score={kpi_alignment_report.overall_score}/100 | "
@@ -1401,7 +1408,9 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             # ========== STEP 5.6: Cause-Effect Mapper (SPRINT 3 - SESSAO 48) ==========
 
             cause_effect_analysis = None
+            cause_effect_time = 0.0  # SESSAO 48 FIX: Inicializar para evitar NameError
             logger.info("[INFO] [SOLUTION_DESIGN] Iniciando análise causa-efeito...")
+            cause_effect_start = time.time()  # SESSAO 48 FIX: Track phase start timestamp
             try:
                 # NOTA: analyze_cause_effect é async - usar pattern existente do projeto
                 try:
@@ -1422,9 +1431,9 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                         )
                     finally:
                         loop.close()
-                cause_effect_time = time.time() - (
-                    start_time + design_time + validation_time + kpi_validation_time
-                )
+                cause_effect_time = (
+                    time.time() - cause_effect_start
+                )  # SESSAO 48 FIX: Duration from phase start
                 logger.info(
                     f"[OK] [SOLUTION_DESIGN] Causa-Efeito analisado em {cause_effect_time:.2f}s | "
                     f"score={cause_effect_analysis.completeness_score}/100 | "

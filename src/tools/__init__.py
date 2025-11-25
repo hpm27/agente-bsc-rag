@@ -4,6 +4,7 @@ Ferramentas disponíveis para os agentes.
 Sprint 1: RAGTools (retrieval paralelo 4 perspectivas)
 Sprint 2: AlignmentValidatorTool, StrategyMapDesignerTool
 Sprint 3: KPIAlignmentCheckerTool, CauseEffectMapperTool
+Sprint 4: MilestoneTrackerTool
 """
 
 from src.tools.rag_tools import RAGTools, create_rag_tools, get_tools_for_agent
@@ -17,6 +18,7 @@ from src.tools.kpi_alignment_checker import (
     create_kpi_alignment_checker_tool,
 )
 from src.tools.cause_effect_mapper import CauseEffectMapperTool, create_cause_effect_mapper_tool
+from src.tools.milestone_tracker import MilestoneTrackerTool, create_milestone_tracker_tool
 
 __all__ = [
     # Sprint 1
@@ -33,4 +35,7 @@ __all__ = [
     "create_kpi_alignment_checker_tool",
     "CauseEffectMapperTool",
     "create_cause_effect_mapper_tool",
+    # Sprint 4
+    "MilestoneTrackerTool",
+    "create_milestone_tracker_tool",
 ]
