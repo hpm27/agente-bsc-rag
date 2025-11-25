@@ -961,6 +961,11 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             ApprovalStatus.TIMEOUT,
         ):
             # Verificar se pode tentar novamente
+            # NOTA: Usa >= porque discovery_attempts ja foi incrementado APOS a tentativa
+            # (o handler salva discovery_attempts=N apos executar a N-esima tentativa)
+            # Com max=2: apos 1a tentativa (1>=2=F->retry), apos 2a tentativa (2>=2=T->end)
+            # Resultado: permite exatamente max_discovery_attempts tentativas
+            # Ver tambem: discovery_handler linha ~1776 usa > com current_attempts (valor futuro)
             if state.discovery_attempts >= state.max_discovery_attempts:
                 logger.warning(
                     f"[WARN] [ROUTING] discovery_attempts ({state.discovery_attempts}) >= "
@@ -1771,8 +1776,14 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             )
 
             # CORREÇÃO SESSAO 46: Verificar se atingiu limite de tentativas
-            # NOTA: Usar > (não >=) porque current_attempts é incrementado ANTES de verificar
-            # Com max=2: tentativa 1 (1>2=F), tentativa 2 (2>2=F), tentativa 3 (3>2=T=bloqueia)
+            # NOTA: Usa > (nao >=) porque current_attempts e incrementado ANTES de verificar
+            # (current_attempts = discovery_attempts + 1, ou seja, valor FUTURO)
+            # Com max=2: tentativa 1 (1>2=F->executa), tentativa 2 (2>2=F->executa), tentativa 3 (3>2=T->bloqueia)
+            # Resultado: permite exatamente max_discovery_attempts tentativas
+            # Ver tambem: route_by_approval linha ~964 usa >= com discovery_attempts (valor atual)
+            # AMBOS OPERADORES SAO CORRETOS - diferenca e QUANDO a verificacao acontece:
+            #   - Aqui: ANTES de executar (com valor futuro) -> usa >
+            #   - Router: DEPOIS de executar (com valor atual) -> usa >=
             if current_attempts > state.max_discovery_attempts:
                 logger.error(
                     f"[ERROR] [DISCOVERY] Limite de tentativas atingido "
