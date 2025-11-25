@@ -115,7 +115,21 @@ if objectives:
         ]
     )
 
-    st.dataframe(display_df, width="stretch", hide_index=True)
+    # CORREÇÃO SESSAO 47: Desabilitar botão CSV nativo do Streamlit
+    # O botão nativo usa display_df (truncado), causando confusão
+    # Usuário deve usar botão "Exportar CSV" abaixo (dados completos)
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Descricao": st.column_config.TextColumn(
+                "Descricao",
+                help="Descricao truncada na tabela. Use 'Exportar CSV' abaixo para versao completa.",
+                width="large",
+            )
+        },
+    )
 
     # DataFrame para exportacao CSV (descricao COMPLETA - Sessao 47)
     export_df = pd.DataFrame(
@@ -133,10 +147,20 @@ if objectives:
         ]
     )
 
+    # AVISO: Botão nativo do Streamlit (canto superior direito) exporta dados TRUNCADOS
+    st.caption(
+        "[INFO] O botao 'Download as CSV' acima exporta descricoes TRUNCADAS. "
+        "Use o botao abaixo para exportar dados COMPLETOS."
+    )
+
     # Botao export CSV (usa export_df com descricao completa)
     csv = export_df.to_csv(index=False).encode("utf-8")
     st.download_button(
-        label="Exportar CSV", data=csv, file_name="strategy_map_bsc.csv", mime="text/csv"
+        label="Exportar CSV (Dados Completos)",
+        data=csv,
+        file_name="strategy_map_bsc.csv",
+        mime="text/csv",
+        type="primary",  # Destaque visual
     )
 else:
     st.info("Nenhum objetivo corresponde aos criterios.")
