@@ -318,8 +318,9 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
     try:
         from src.database.repository import ClientProfileRepository
 
-        db = get_db_session()
-        profiles = ClientProfileRepository.get_all(db, limit=100)
+        # CORREÇÃO SESSAO 49: get_db_session() é context manager, usar with
+        with get_db_session() as db:
+            profiles = ClientProfileRepository.get_all(db, limit=100)
 
         if not profiles:
             return [], "[INFO] Nenhuma consulta anterior encontrada."
