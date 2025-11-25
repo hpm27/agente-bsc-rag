@@ -97,7 +97,8 @@ st.subheader("Detalhes dos Objetivos Estrategicos")
 if objectives:
     import pandas as pd
 
-    table_df = pd.DataFrame(
+    # DataFrame para exibicao (descricao truncada para melhor visualizacao)
+    display_df = pd.DataFrame(
         [
             {
                 "Objetivo": obj.name,
@@ -114,10 +115,26 @@ if objectives:
         ]
     )
 
-    st.dataframe(table_df, width="stretch", hide_index=True)
+    st.dataframe(display_df, width="stretch", hide_index=True)
 
-    # Botao export CSV
-    csv = table_df.to_csv(index=False).encode("utf-8")
+    # DataFrame para exportacao CSV (descricao COMPLETA - Sessao 47)
+    export_df = pd.DataFrame(
+        [
+            {
+                "Objetivo": obj.name,
+                "Perspectiva": obj.perspective,
+                "Prioridade": obj.priority,
+                "Prazo": obj.timeframe,
+                "KPIs Relacionados": ", ".join(obj.related_kpis) if obj.related_kpis else "N/A",
+                "Dependencias": ", ".join(obj.dependencies) if obj.dependencies else "Nenhuma",
+                "Descricao": obj.description,  # Descricao COMPLETA para CSV
+            }
+            for obj in objectives
+        ]
+    )
+
+    # Botao export CSV (usa export_df com descricao completa)
+    csv = export_df.to_csv(index=False).encode("utf-8")
     st.download_button(
         label="Exportar CSV", data=csv, file_name="strategy_map_bsc.csv", mime="text/csv"
     )
