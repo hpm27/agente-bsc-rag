@@ -1325,6 +1325,7 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
 
             logger.info("[INFO] [SOLUTION_DESIGN] Iniciando validação de alinhamento...")
             validation_start = time.time()  # SESSAO 48 FIX: Track phase start timestamp
+            validation_time = 0.0  # SESSAO 49 FIX: Inicializar para evitar NameError se exceção
 
             try:
                 alignment_report = self.alignment_validator.validate_strategy_map(
