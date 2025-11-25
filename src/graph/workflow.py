@@ -63,6 +63,8 @@ from src.graph.memory_nodes import load_client_memory, save_client_memory
 from src.graph.states import AgentResponse, BSCState, JudgeEvaluation, PerspectiveType
 from src.tools.action_plan import ActionPlanTool
 from src.tools.alignment_validator import AlignmentValidatorTool
+from src.tools.cause_effect_mapper import CauseEffectMapperTool
+from src.tools.kpi_alignment_checker import KPIAlignmentCheckerTool
 from src.tools.strategy_map_designer import StrategyMapDesignerTool
 
 if TYPE_CHECKING:
@@ -127,6 +129,11 @@ class BSCWorkflow:
         from config.settings import get_llm_for_agent
 
         self.action_plan_tool = ActionPlanTool(llm=get_llm_for_agent("tools"))
+
+        # SPRINT 3 - SESSAO 48: Validações Avançadas (KPI Alignment + Cause-Effect Mapping)
+        # Estas ferramentas são executadas APÓS o AlignmentValidator para validações profundas
+        self.kpi_alignment_checker = KPIAlignmentCheckerTool(llm=get_llm_for_agent("tools"))
+        self.cause_effect_mapper = CauseEffectMapperTool(llm=get_llm_for_agent("tools"))
 
         # SESSAO 44: Path do DB para checkpointer async
         self._checkpoint_db_path = "data/langgraph_checkpoints.db"
@@ -1346,6 +1353,90 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                     },
                 }
 
+            # ========== STEP 5.5: KPI Alignment Checker (SPRINT 3 - SESSAO 48) ==========
+
+            kpi_alignment_report = None
+            kpi_validation_time = 0  # Inicializar para evitar NameError
+            if tools_results and tools_results.kpi_framework:
+                logger.info("[INFO] [SOLUTION_DESIGN] Iniciando validação de alinhamento KPI...")
+                try:
+                    # NOTA: validate_kpi_alignment é async - usar pattern existente do projeto
+                    try:
+                        loop = asyncio.get_running_loop()
+                        kpi_alignment_report = loop.run_until_complete(
+                            self.kpi_alignment_checker.validate_kpi_alignment(
+                                strategy_map=strategy_map,
+                                kpi_framework=tools_results.kpi_framework,
+                            )
+                        )
+                    except RuntimeError:
+                        loop = asyncio.new_event_loop()
+                        try:
+                            asyncio.set_event_loop(loop)
+                            kpi_alignment_report = loop.run_until_complete(
+                                self.kpi_alignment_checker.validate_kpi_alignment(
+                                    strategy_map=strategy_map,
+                                    kpi_framework=tools_results.kpi_framework,
+                                )
+                            )
+                        finally:
+                            loop.close()
+                    kpi_validation_time = time.time() - (start_time + design_time + validation_time)
+                    logger.info(
+                        f"[OK] [SOLUTION_DESIGN] KPI Alignment validado em {kpi_validation_time:.2f}s | "
+                        f"score={kpi_alignment_report.overall_score}/100 | "
+                        f"is_aligned={kpi_alignment_report.is_aligned} | "
+                        f"issues={len(kpi_alignment_report.alignment_issues)}"
+                    )
+                except Exception as e:
+                    logger.warning(
+                        f"[WARN] [SOLUTION_DESIGN] KPI Alignment falhou (não crítico): {e}"
+                    )
+                    kpi_alignment_report = None
+            else:
+                logger.info(
+                    "[INFO] [SOLUTION_DESIGN] KPI Alignment pulado (KPI Framework não disponível)"
+                )
+
+            # ========== STEP 5.6: Cause-Effect Mapper (SPRINT 3 - SESSAO 48) ==========
+
+            cause_effect_analysis = None
+            logger.info("[INFO] [SOLUTION_DESIGN] Iniciando análise causa-efeito...")
+            try:
+                # NOTA: analyze_cause_effect é async - usar pattern existente do projeto
+                try:
+                    loop = asyncio.get_running_loop()
+                    cause_effect_analysis = loop.run_until_complete(
+                        self.cause_effect_mapper.analyze_cause_effect(
+                            strategy_map=strategy_map,
+                        )
+                    )
+                except RuntimeError:
+                    loop = asyncio.new_event_loop()
+                    try:
+                        asyncio.set_event_loop(loop)
+                        cause_effect_analysis = loop.run_until_complete(
+                            self.cause_effect_mapper.analyze_cause_effect(
+                                strategy_map=strategy_map,
+                            )
+                        )
+                    finally:
+                        loop.close()
+                cause_effect_time = time.time() - (
+                    start_time + design_time + validation_time + kpi_validation_time
+                )
+                logger.info(
+                    f"[OK] [SOLUTION_DESIGN] Causa-Efeito analisado em {cause_effect_time:.2f}s | "
+                    f"score={cause_effect_analysis.completeness_score}/100 | "
+                    f"is_complete={cause_effect_analysis.is_complete} | "
+                    f"gaps={len(cause_effect_analysis.gaps)}"
+                )
+            except Exception as e:
+                logger.warning(
+                    f"[WARN] [SOLUTION_DESIGN] Análise Causa-Efeito falhou (não crítico): {e}"
+                )
+                cause_effect_analysis = None
+
             # ========== STEP 6: Preparar resposta final baseada no score ==========
 
             total_time = time.time() - start_time
@@ -1378,11 +1469,40 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                     final_response = strategy_map_response
 
                 if alignment_report.warnings:
-                    final_response += f"AVISOS ({len(alignment_report.warnings)}):\n"
+                    final_response += f"## AVISOS ({len(alignment_report.warnings)}):\n"
                     for warning in alignment_report.warnings[:3]:  # Top 3
                         final_response += f"- {warning}\n"
+                    final_response += "\n"
 
-                final_response += "\nPróxima fase: IMPLEMENTATION (plano de ação detalhado)"
+                # SPRINT 3 - SESSAO 48: Adicionar resultados das validações avançadas
+                if kpi_alignment_report:
+                    final_response += (
+                        f"## [KPI] ALINHAMENTO KPIs:\n"
+                        f"- **Score:** {kpi_alignment_report.overall_score:.1f}/100\n"
+                        f"- **Status:** {'Alinhado [OK]' if kpi_alignment_report.is_aligned else 'Precisa Ajustes [WARN]'}\n"
+                    )
+                    if kpi_alignment_report.alignment_issues:
+                        final_response += f"- **Issues:** {len(kpi_alignment_report.alignment_issues)} encontrados\n"
+                        critical = kpi_alignment_report.critical_issues_count()
+                        if critical > 0:
+                            final_response += f"  - [WARN] {critical} issues criticos\n"
+                    final_response += "\n"
+
+                if cause_effect_analysis:
+                    final_response += (
+                        f"## [LINKS] ANALISE CAUSA-EFEITO:\n"
+                        f"- **Score:** {cause_effect_analysis.completeness_score:.1f}/100\n"
+                        f"- **Status:** {'Completo [OK]' if cause_effect_analysis.is_complete else 'Gaps Identificados [WARN]'}\n"
+                    )
+                    if cause_effect_analysis.gaps:
+                        final_response += (
+                            f"- **Gaps:** {len(cause_effect_analysis.gaps)} encontrados\n"
+                        )
+                    final_response += "\n"
+
+                final_response += (
+                    "---\n\n**Próxima fase:** IMPLEMENTATION (plano de ação detalhado)"
+                )
                 next_phase = ConsultingPhase.IMPLEMENTATION
 
             else:
@@ -1401,6 +1521,25 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                 )
                 for rec in alignment_report.recommendations[:3]:  # Top 3
                     refinement_response += f"- {rec}\n"
+
+                # SPRINT 3 - SESSAO 48: Adicionar resultados das validações avançadas na resposta de refinamento
+                if kpi_alignment_report and not kpi_alignment_report.is_aligned:
+                    refinement_response += (
+                        f"\n## [WARN] PROBLEMAS DE ALINHAMENTO KPIs:\n"
+                        f"- **Score:** {kpi_alignment_report.overall_score:.1f}/100\n"
+                    )
+                    for issue in kpi_alignment_report.alignment_issues[:3]:  # Top 3
+                        refinement_response += f"- [{issue.severity.upper()}] {issue.description}\n"
+                        if issue.recommendation:
+                            refinement_response += f"  [TIP] {issue.recommendation}\n"
+
+                if cause_effect_analysis and not cause_effect_analysis.is_complete:
+                    refinement_response += (
+                        f"\n## [WARN] GAPS CAUSA-EFEITO:\n"
+                        f"- **Score:** {cause_effect_analysis.completeness_score:.1f}/100\n"
+                    )
+                    for gap in cause_effect_analysis.gaps[:3]:  # Top 3
+                        refinement_response += f"- [{gap.gap_type.upper()}] {gap.description}\n"
 
                 refinement_response += (
                     "\n**Próxima ação:** Refazer diagnóstico considerando os gaps identificados."
@@ -1421,22 +1560,41 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
 
             # ========== STEP 7: Retornar state atualizado ==========
 
+            # Construir metadata com novos reports (se disponíveis)
+            result_metadata = {
+                **state.metadata,
+                "solution_design_time": total_time,
+                "design_time": design_time,
+                "validation_time": validation_time,
+                "alignment_score": alignment_report.score,
+                "is_balanced": alignment_report.is_balanced,
+                "num_gaps": len(alignment_report.gaps),
+                "num_warnings": len(alignment_report.warnings),
+                "routing_decision": next_phase.value,
+            }
+
+            # SPRINT 3 - SESSAO 48: Adicionar métricas das validações avançadas
+            if kpi_alignment_report:
+                result_metadata["kpi_alignment_score"] = kpi_alignment_report.overall_score
+                result_metadata["kpi_is_aligned"] = kpi_alignment_report.is_aligned
+                result_metadata["kpi_issues_count"] = len(kpi_alignment_report.alignment_issues)
+                result_metadata["kpi_critical_issues"] = (
+                    kpi_alignment_report.critical_issues_count()
+                )
+
+            if cause_effect_analysis:
+                result_metadata["cause_effect_score"] = cause_effect_analysis.completeness_score
+                result_metadata["cause_effect_is_complete"] = cause_effect_analysis.is_complete
+                result_metadata["cause_effect_gaps_count"] = len(cause_effect_analysis.gaps)
+
             return {
                 "strategy_map": strategy_map,
                 "alignment_report": alignment_report,
+                "kpi_alignment_report": kpi_alignment_report,
+                "cause_effect_analysis": cause_effect_analysis,
                 "final_response": final_response,
                 "current_phase": next_phase,
-                "metadata": {
-                    **state.metadata,
-                    "solution_design_time": total_time,
-                    "design_time": design_time,
-                    "validation_time": validation_time,
-                    "alignment_score": alignment_report.score,
-                    "is_balanced": alignment_report.is_balanced,
-                    "num_gaps": len(alignment_report.gaps),
-                    "num_warnings": len(alignment_report.warnings),
-                    "routing_decision": next_phase.value,
-                },
+                "metadata": result_metadata,
             }
 
         except Exception as e:

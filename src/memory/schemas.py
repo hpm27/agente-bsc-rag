@@ -4750,3 +4750,483 @@ class AlignmentReport(BaseModel):
             }
         }
     )
+
+
+# ============================================================================
+# KPI ALIGNMENT SCHEMAS (Sprint 3.1 - Sessao 48, Nov 2025)
+# ============================================================================
+
+
+class AlignmentIssue(BaseModel):
+    """Issue identificada na validacao de alinhamento KPI-Objective.
+
+    Representa um problema especifico encontrado durante a validacao de alinhamento
+    entre KPIs e objetivos estrategicos do Strategy Map.
+
+    Attributes:
+        issue_type: Tipo do problema identificado
+        severity: Severidade do problema (critical bloqueia, low e informativo)
+        objective_name: Nome do objetivo afetado (se aplicavel)
+        kpi_name: Nome do KPI afetado (se aplicavel)
+        perspective: Perspectiva BSC afetada (se aplicavel)
+        description: Descricao detalhada do problema
+        recommendation: Sugestao de correcao
+
+    Examples:
+        >>> issue = AlignmentIssue(
+        ...     issue_type="perspective_mismatch",
+        ...     severity="high",
+        ...     objective_name="Aumentar EBITDA",
+        ...     kpi_name="NPS Score",
+        ...     perspective="Financeira",
+        ...     description="KPI 'NPS Score' (Clientes) associado a objetivo 'Aumentar EBITDA' (Financeira)",
+        ...     recommendation="Mover KPI para objetivo da perspectiva Clientes ou substituir por KPI financeiro"
+        ... )
+    """
+
+    issue_type: Literal[
+        "perspective_mismatch",
+        "semantic_mismatch",
+        "orphan_kpi",
+        "missing_kpi",
+        "insufficient_kpis",
+        "duplicate_kpi",
+    ] = Field(
+        description=(
+            "Tipo do problema de alinhamento:\n"
+            "- perspective_mismatch: KPI perspectiva != Objective perspectiva\n"
+            "- semantic_mismatch: KPI nao mede o objetivo (relacao semantica fraca)\n"
+            "- orphan_kpi: KPI no framework sem objetivo associado\n"
+            "- missing_kpi: Objetivo sem nenhum KPI associado\n"
+            "- insufficient_kpis: Objetivo com poucos KPIs (ideal 1-3)\n"
+            "- duplicate_kpi: KPI duplicado em multiplos objetivos"
+        )
+    )
+
+    severity: Literal["critical", "high", "medium", "low"] = Field(
+        default="medium",
+        description=(
+            "Severidade do problema:\n"
+            "- critical: Bloqueia uso do Strategy Map (ex: perspective sem KPIs)\n"
+            "- high: Impacta significativamente qualidade (ex: mismatch perspective)\n"
+            "- medium: Requer atencao mas nao bloqueia (ex: KPI insuficiente)\n"
+            "- low: Informativo, melhoria recomendada (ex: KPI poderia ser mais especifico)"
+        ),
+    )
+
+    objective_name: str | None = Field(
+        default=None, description="Nome do objetivo estrategico afetado (se aplicavel)"
+    )
+
+    kpi_name: str | None = Field(default=None, description="Nome do KPI afetado (se aplicavel)")
+
+    perspective: (
+        Literal["Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"] | None
+    ) = Field(default=None, description="Perspectiva BSC afetada (se aplicavel)")
+
+    description: str = Field(
+        min_length=20,
+        description="Descricao detalhada do problema identificado",
+    )
+
+    recommendation: str = Field(
+        min_length=20,
+        description="Sugestao de correcao acionavel",
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "issue_type": "perspective_mismatch",
+                "severity": "high",
+                "objective_name": "Aumentar margem EBITDA para 18%",
+                "kpi_name": "Net Promoter Score (NPS)",
+                "perspective": "Financeira",
+                "description": "KPI 'NPS' pertence a perspectiva Clientes mas esta associado ao objetivo 'Aumentar EBITDA' da perspectiva Financeira",
+                "recommendation": "Substituir NPS por KPI financeiro (ex: Margem EBITDA %) ou mover para objetivo de Clientes",
+            }
+        }
+    )
+
+
+class KPIAlignmentReport(BaseModel):
+    """Report completo de validacao de alinhamento KPI-Objective.
+
+    Resultado da analise de alinhamento entre KPIs do KPIFramework e
+    objetivos estrategicos do Strategy Map, incluindo validacao semantica via LLM.
+
+    Attributes:
+        overall_score: Score geral de alinhamento 0-100%
+        is_aligned: Indica se alinhamento e aceitavel (score >= 80)
+        alignment_by_perspective: Score de alinhamento por perspectiva BSC
+        orphan_kpis: Lista de KPIs sem objetivo associado
+        objectives_without_kpis: Lista de objetivos sem KPI
+        alignment_issues: Lista de problemas detalhados
+        recommendations: Sugestoes de melhoria consolidadas
+        validated_at: Timestamp da validacao
+
+    Scoring:
+        - 100: Alinhamento perfeito (todos KPIs vinculados corretamente)
+        - 80-99: Bom alinhamento (pequenos ajustes recomendados)
+        - 60-79: Alinhamento regular (varios problemas a corrigir)
+        - <60: Alinhamento ruim (requer revisao completa)
+
+    Examples:
+        >>> report = KPIAlignmentReport(
+        ...     overall_score=85.0,
+        ...     is_aligned=True,
+        ...     alignment_by_perspective={
+        ...         "Financeira": 90.0,
+        ...         "Clientes": 80.0,
+        ...         "Processos Internos": 85.0,
+        ...         "Aprendizado e Crescimento": 85.0
+        ...     },
+        ...     orphan_kpis=["Taxa de Retrabalho"],
+        ...     objectives_without_kpis=[],
+        ...     alignment_issues=[...],
+        ...     recommendations=["Vincular KPI 'Taxa de Retrabalho' a objetivo de Processos"]
+        ... )
+    """
+
+    overall_score: float = Field(
+        ge=0,
+        le=100,
+        description="Score geral de alinhamento KPI-Objective (0-100%). Score >= 80 considerado bom.",
+    )
+
+    is_aligned: bool = Field(
+        description="Indica se o alinhamento e aceitavel (overall_score >= 80)"
+    )
+
+    alignment_by_perspective: dict[str, float] = Field(
+        description=(
+            "Score de alinhamento por perspectiva BSC. "
+            "Keys: 'Financeira', 'Clientes', 'Processos Internos', 'Aprendizado e Crescimento'. "
+            "Values: 0-100%"
+        )
+    )
+
+    orphan_kpis: list[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de KPIs que nao estao associados a nenhum objetivo estrategico",
+    )
+
+    objectives_without_kpis: list[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de objetivos estrategicos que nao tem KPIs associados",
+    )
+
+    alignment_issues: list[AlignmentIssue] = Field(
+        default_factory=list,
+        description="Lista detalhada de problemas de alinhamento encontrados",
+    )
+
+    recommendations: list[str] = Field(
+        default_factory=list,
+        description="Lista consolidada de sugestoes de melhoria para o alinhamento",
+    )
+
+    validated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp da execucao da validacao de alinhamento",
+    )
+
+    def critical_issues_count(self) -> int:
+        """Retorna numero de issues criticas."""
+        return sum(1 for issue in self.alignment_issues if issue.severity == "critical")
+
+    def high_issues_count(self) -> int:
+        """Retorna numero de issues de alta severidade."""
+        return sum(1 for issue in self.alignment_issues if issue.severity == "high")
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "overall_score": 82.5,
+                "is_aligned": True,
+                "alignment_by_perspective": {
+                    "Financeira": 90.0,
+                    "Clientes": 75.0,
+                    "Processos Internos": 85.0,
+                    "Aprendizado e Crescimento": 80.0,
+                },
+                "orphan_kpis": ["Taxa de Absenteismo"],
+                "objectives_without_kpis": [],
+                "alignment_issues": [
+                    {
+                        "issue_type": "orphan_kpi",
+                        "severity": "medium",
+                        "kpi_name": "Taxa de Absenteismo",
+                        "perspective": "Aprendizado e Crescimento",
+                        "description": "KPI 'Taxa de Absenteismo' nao esta vinculado a nenhum objetivo estrategico",
+                        "recommendation": "Vincular a objetivo de Learning (ex: 'Melhorar engajamento equipe')",
+                    }
+                ],
+                "recommendations": [
+                    "Vincular KPI 'Taxa de Absenteismo' ao objetivo 'Melhorar engajamento equipe'"
+                ],
+                "validated_at": "2025-11-25T15:00:00Z",
+            }
+        }
+    )
+
+
+# ============================================================================
+# CAUSE-EFFECT ANALYSIS SCHEMAS (Sprint 3.2 - Sessao 48, Nov 2025)
+# ============================================================================
+
+
+class CauseEffectGap(BaseModel):
+    """Gap identificado nas conexoes causa-efeito do Strategy Map.
+
+    Representa uma conexao faltante ou problematica entre objetivos estrategicos
+    de diferentes perspectivas do BSC.
+
+    Attributes:
+        gap_type: Tipo do gap identificado
+        source_perspective: Perspectiva origem esperada
+        target_perspective: Perspectiva destino esperada
+        source_objective: Nome do objetivo origem (se identificado)
+        target_objective: Nome do objetivo destino (se identificado)
+        description: Descricao detalhada do gap
+        impact: Impacto do gap no Strategy Map
+
+    Gap Types:
+        - missing_connection: Conexao esperada nao existe (ex: Learning -> Process ausente)
+        - wrong_direction: Conexao existe mas na direcao errada (ex: Financial -> Learning)
+        - isolated_objective: Objetivo sem nenhuma conexao (nem source nem target)
+        - weak_connection: Conexao existe mas e fraca/indireta
+
+    Examples:
+        >>> gap = CauseEffectGap(
+        ...     gap_type="missing_connection",
+        ...     source_perspective="Aprendizado e Crescimento",
+        ...     target_perspective="Processos Internos",
+        ...     source_objective="Certificar equipe em Lean",
+        ...     target_objective="Reduzir lead time",
+        ...     description="Nao existe conexao entre 'Certificar equipe' e 'Reduzir lead time'",
+        ...     impact="high"
+        ... )
+    """
+
+    gap_type: Literal[
+        "missing_connection", "wrong_direction", "isolated_objective", "weak_connection"
+    ] = Field(
+        description=(
+            "Tipo do gap nas conexoes causa-efeito:\n"
+            "- missing_connection: Conexao esperada entre perspectivas adjacentes nao existe\n"
+            "- wrong_direction: Conexao existe mas viola fluxo L->P->C->F\n"
+            "- isolated_objective: Objetivo completamente desconectado (sem source ou target)\n"
+            "- weak_connection: Conexao existe mas strength='weak' ou rationale insuficiente"
+        )
+    )
+
+    source_perspective: Literal[
+        "Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"
+    ] = Field(description="Perspectiva BSC de origem (esperada ou atual)")
+
+    target_perspective: Literal[
+        "Financeira", "Clientes", "Processos Internos", "Aprendizado e Crescimento"
+    ] = Field(description="Perspectiva BSC de destino (esperada ou atual)")
+
+    source_objective: str | None = Field(
+        default=None,
+        description="Nome do objetivo estrategico origem (se identificado)",
+    )
+
+    target_objective: str | None = Field(
+        default=None,
+        description="Nome do objetivo estrategico destino (se identificado)",
+    )
+
+    description: str = Field(
+        min_length=20,
+        description="Descricao detalhada do gap identificado",
+    )
+
+    impact: Literal["high", "medium", "low"] = Field(
+        default="medium",
+        description=(
+            "Impacto do gap no Strategy Map:\n"
+            "- high: Gap entre perspectivas adjacentes (L->P, P->C, C->F) ou objetivo critico isolado\n"
+            "- medium: Gap entre perspectivas nao-adjacentes ou conexao fraca\n"
+            "- low: Gap menor ou conexao indireta faltante"
+        ),
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "gap_type": "missing_connection",
+                "source_perspective": "Aprendizado e Crescimento",
+                "target_perspective": "Processos Internos",
+                "source_objective": "Certificar 80% equipe em Lean Six Sigma",
+                "target_objective": "Reduzir lead time de producao em 30%",
+                "description": "Nao existe conexao causa-efeito entre 'Certificar equipe Lean' (Learning) e 'Reduzir lead time' (Process), apesar de serem logicamente relacionados",
+                "impact": "high",
+            }
+        }
+    )
+
+
+class CauseEffectAnalysis(BaseModel):
+    """Analise completa das conexoes causa-efeito do Strategy Map.
+
+    Resultado da analise de completude, correcao e balanceamento das conexoes
+    causa-efeito entre objetivos estrategicos das 4 perspectivas BSC.
+
+    Framework Kaplan & Norton: Learning -> Process -> Customer -> Financial
+    - Lower perspectives (enablers) EXPLICAM como atingir higher perspectives (outcomes)
+    - Minimo 4 conexoes (1 entre cada par de perspectivas adjacentes)
+    - Ideal 8-12 conexoes para Strategy Map completo
+
+    Attributes:
+        completeness_score: Score de completude das conexoes 0-100%
+        is_complete: Indica se conexoes estao completas (score >= 80)
+        total_connections: Numero total de conexoes no Strategy Map
+        connections_by_type: Contagem por tipo (enables, drives, supports)
+        connections_by_perspective_pair: Contagem por par de perspectivas
+        gaps: Lista de gaps identificados
+        flow_violations: Lista de violacoes do fluxo L->P->C->F
+        isolated_objectives: Lista de objetivos sem conexao
+        suggested_connections: Conexoes sugeridas via LLM+RAG
+        recommendations: Sugestoes consolidadas de melhoria
+        analyzed_at: Timestamp da analise
+
+    Examples:
+        >>> analysis = CauseEffectAnalysis(
+        ...     completeness_score=75.0,
+        ...     is_complete=False,
+        ...     total_connections=6,
+        ...     connections_by_type={"enables": 2, "drives": 3, "supports": 1},
+        ...     connections_by_perspective_pair={"L->P": 2, "P->C": 2, "C->F": 2, "L->C": 0},
+        ...     gaps=[...],
+        ...     flow_violations=[],
+        ...     isolated_objectives=["Desenvolver cultura inovacao"],
+        ...     suggested_connections=[...],
+        ...     recommendations=["Conectar 'Desenvolver cultura inovacao' a objetivo de Processos"]
+        ... )
+    """
+
+    completeness_score: float = Field(
+        ge=0,
+        le=100,
+        description=(
+            "Score de completude das conexoes causa-efeito (0-100%). "
+            "Calculado baseado em: conexoes por par de perspectivas, objectives conectados, "
+            "flow direction correto. Score >= 80 considerado completo."
+        ),
+    )
+
+    is_complete: bool = Field(
+        description="Indica se conexoes estao completas (completeness_score >= 80)"
+    )
+
+    total_connections: int = Field(
+        ge=0,
+        description="Numero total de conexoes causa-efeito no Strategy Map",
+    )
+
+    connections_by_type: dict[str, int] = Field(
+        description=(
+            "Contagem de conexoes por tipo de relacionamento. "
+            "Keys: 'enables', 'drives', 'supports'. Values: contagem"
+        )
+    )
+
+    connections_by_perspective_pair: dict[str, int] = Field(
+        description=(
+            "Contagem de conexoes por par de perspectivas. "
+            "Keys: 'L->P' (Learning->Process), 'P->C' (Process->Customer), "
+            "'C->F' (Customer->Financial), 'L->C', 'L->F', 'P->F'. Values: contagem"
+        )
+    )
+
+    gaps: list[CauseEffectGap] = Field(
+        default_factory=list,
+        description="Lista de gaps identificados nas conexoes causa-efeito",
+    )
+
+    flow_violations: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Lista de violacoes do fluxo correto L->P->C->F. "
+            "Exemplo: 'Conexao Financial->Learning viola direcao (reverse flow)'"
+        ),
+    )
+
+    isolated_objectives: list[str] = Field(
+        default_factory=list,
+        description="Lista de nomes de objetivos sem nenhuma conexao (nem source nem target)",
+    )
+
+    suggested_connections: list[CauseEffectConnection] = Field(
+        default_factory=list,
+        description=(
+            "Lista de conexoes sugeridas via LLM+RAG para melhorar completude. "
+            "Cada sugestao inclui source, target, type, strength e rationale"
+        ),
+    )
+
+    recommendations: list[str] = Field(
+        default_factory=list,
+        description="Lista consolidada de sugestoes de melhoria para conexoes",
+    )
+
+    analyzed_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp da execucao da analise de causa-efeito",
+    )
+
+    def high_impact_gaps_count(self) -> int:
+        """Retorna numero de gaps de alto impacto."""
+        return sum(1 for gap in self.gaps if gap.impact == "high")
+
+    def has_all_adjacent_connections(self) -> bool:
+        """Verifica se existe pelo menos 1 conexao entre cada par de perspectivas adjacentes."""
+        pairs = self.connections_by_perspective_pair
+        return pairs.get("L->P", 0) >= 1 and pairs.get("P->C", 0) >= 1 and pairs.get("C->F", 0) >= 1
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "completeness_score": 78.0,
+                "is_complete": False,
+                "total_connections": 7,
+                "connections_by_type": {"enables": 3, "drives": 3, "supports": 1},
+                "connections_by_perspective_pair": {
+                    "L->P": 2,
+                    "P->C": 2,
+                    "C->F": 2,
+                    "L->C": 1,
+                    "L->F": 0,
+                    "P->F": 0,
+                },
+                "gaps": [
+                    {
+                        "gap_type": "isolated_objective",
+                        "source_perspective": "Aprendizado e Crescimento",
+                        "target_perspective": "Aprendizado e Crescimento",
+                        "source_objective": "Implementar programa de mentoria",
+                        "description": "Objetivo 'Implementar programa de mentoria' nao tem conexoes como source ou target",
+                        "impact": "medium",
+                    }
+                ],
+                "flow_violations": [],
+                "isolated_objectives": ["Implementar programa de mentoria"],
+                "suggested_connections": [
+                    {
+                        "source_objective_id": "Implementar programa de mentoria",
+                        "target_objective_id": "Reduzir turnover para <10%",
+                        "relationship_type": "enables",
+                        "strength": "medium",
+                        "rationale": "Programa de mentoria aumenta engajamento e retencao, reduzindo turnover",
+                    }
+                ],
+                "recommendations": [
+                    "Conectar 'Implementar programa de mentoria' a 'Reduzir turnover' via enables"
+                ],
+                "analyzed_at": "2025-11-25T15:30:00Z",
+            }
+        }
+    )

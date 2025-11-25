@@ -12,7 +12,13 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from config.settings import settings
 from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
-from src.memory.schemas import AlignmentReport, ClientProfile, StrategyMap
+from src.memory.schemas import (
+    AlignmentReport,
+    CauseEffectAnalysis,
+    ClientProfile,
+    KPIAlignmentReport,
+    StrategyMap,
+)
 
 # ============================================================================
 # CONSTANTES DE CONFIGURAÇÃO (capturadas no import - imutáveis por classe)
@@ -210,6 +216,11 @@ class BSCState(BaseModel):
     # Strategy Map (SPRINT 2 - FASE 5)
     strategy_map: StrategyMap | None = None
     alignment_report: AlignmentReport | None = None
+
+    # Validações Avançadas (SPRINT 3 - FASE 5.5) - Sessão 48 (2025-11-25)
+    # Adicionados para validações profundas de alinhamento KPI e análise causa-efeito
+    kpi_alignment_report: KPIAlignmentReport | None = None
+    cause_effect_analysis: CauseEffectAnalysis | None = None
 
     # Action Plan (SPRINT 3 - FASE 6) - BUG FIX SESSAO 41 (2025-11-22)
     # Campo ausente causava action_plan não ser salvo no state (LangGraph ignora campos não definidos)
