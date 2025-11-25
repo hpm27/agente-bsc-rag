@@ -1,8 +1,8 @@
-# Refatoracao Pendente: Estrutura UI Duplicada
+# Refatoracao UI: CONCLUIDA
 
 **Data:** 2025-11-24
 **Sessao:** 45 (Revisao de Codigo)
-**Status:** PENDENTE - Requer decisao arquitetural
+**Status:** CONCLUIDA
 
 ---
 
@@ -114,4 +114,60 @@ Durante a revisao de codigo (Sessao 45), foram identificadas duplicacoes na estr
 
 ---
 
-**Nota:** Esta refatoracao foi adiada da revisao de codigo (Sessao 45) por requerer decisao arquitetural. Prioridade: MEDIA.
+---
+
+## Resolucao (Sessao 45)
+
+### Acoes Executadas
+
+1. **REMOVIDO `ui/pages/`** - Duplicata real de `pages/`
+   - 3 arquivos removidos (1_strategy_map.py, 2_action_plan.py, 3_dashboard.py)
+   - Nenhum import quebrado (nao era referenciado)
+
+2. **MANTIDO `pages/`** - Estrutura oficial Streamlit multipage
+   - API moderna (st.query_params)
+   - Correcoes recentes (Sessao 43-45)
+   - Padrao Streamlit multipage
+
+3. **MANTIDO `app/`** - Funcionalidades DIFERENTES (nao duplicata)
+   - `app/main.py` - Chat com analytics
+   - `app/components/analytics.py` - Dashboard API REST (Fase 4.4)
+   - `app/components/dashboard.py` - Dashboard Multi-Cliente
+
+### Estrutura Final
+
+```
+agente-bsc-rag/
+├── app.py                    # Entry point multipage (usa pages/)
+├── pages/                    # Paginas Streamlit OFICIAIS
+│   ├── 0_consultor_bsc.py   # Chat BSC (PRINCIPAL)
+│   ├── 1_strategy_map.py    # Strategy Map
+│   ├── 2_action_plan.py     # Action Plan
+│   └── 3_dashboard.py       # Dashboard
+├── app/                      # Aplicacao alternativa (analytics)
+│   ├── main.py              # Chat + Analytics
+│   └── components/          # Components unicos
+│       ├── analytics.py     # Dashboard API REST
+│       ├── dashboard.py     # Multi-cliente
+│       ├── results.py       # Display resultados
+│       └── sidebar.py       # Navegacao
+├── ui/                       # Components compartilhados
+│   ├── components/          # BSCNetworkGraph, GanttTimeline, etc
+│   └── helpers/             # Loaders (mem0_loader, chat_loader)
+└── run_streamlit.py         # Wrapper para app/main.py
+```
+
+### Como Usar
+
+| Comando | Entry Point | Proposito |
+|---------|-------------|-----------|
+| `streamlit run app.py` | `app.py` + `pages/` | Multipage BSC (RECOMENDADO) |
+| `python run_streamlit.py` | `app/main.py` | Chat + Analytics |
+| `streamlit run app/main.py` | `app/main.py` | Chat + Analytics |
+
+### Conclusao
+
+A duplicacao real era `ui/pages/` que foi removida. `app/` e `pages/` servem propositos diferentes e devem coexistir.
+
+**Status:** CONCLUIDA
+**Prioridade:** N/A (resolvido)
