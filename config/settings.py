@@ -94,6 +94,11 @@ class Settings(BaseSettings):
     max_tokens: int = 128000
     agent_max_workers: int = 4
 
+    # Workflow Refinement Configuration (SESSAO 44)
+    # Controla quantas vezes o Judge pode solicitar refinamento dos agentes
+    # 0 = sem refinamento (resposta única), 1 = 1 refinamento, 2 = 2 refinamentos (padrão)
+    max_refinement_iterations: int = 2
+
     # Embedding Fine-tuning
     use_finetuned_embeddings: bool = False
     finetuned_model_path: str = "./models/bsc-embeddings"

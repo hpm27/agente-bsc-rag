@@ -181,11 +181,15 @@ if user_input:
             chat_history_for_workflow = st.session_state.messages.copy()
 
             # Criar state MINIMO (LangGraph checkpointer carrega resto do checkpoint!)
+            # CORREÇÃO SESSAO 45: Converter para dict - ainvoke() espera dict[str, Any]
+            # BSCState.model_dump() garante serialização correta para checkpoints
+            # CORREÇÃO SESSAO 45: Incluir session_id para consistência com workflow.run()
             initial_state = BSCState(
                 query=user_input,
+                session_id=st.session_state.user_id,  # Usar user_id como session_id
                 user_id=st.session_state.user_id,
                 metadata={"chat_history": chat_history_for_workflow},
-            )
+            ).model_dump()
 
             print(
                 f"[DEBUG STREAMLIT] Invocando workflow | thread_id={st.session_state.user_id[:8]}... | "
@@ -193,17 +197,35 @@ if user_input:
             )
 
             # Executar workflow (checkpointer carrega estado anterior automaticamente!)
-            # CORREÇÃO SESSAO 40: Usar pattern manual asyncio porque implementation_handler é async
-            # asyncio.run() FALHA em Streamlit ScriptRunner.scriptThread (Python 3.12+)
-            # Solução validada: [[memory:10138608]] - pattern manual get_running_loop/new_event_loop
+            # CORREÇÃO SESSAO 44-45 (2025-11-24): Usar ainvoke() ASYNC com AsyncSqliteSaver
+            # ROOT CAUSE: Handlers async (execute_agents, implementation_handler) requerem ainvoke()
+            # ainvoke() requer checkpointer async (AsyncSqliteSaver) criado dinamicamente
+            # Fonte: Medium "Async, Parameters and LangGraph" (Apr 2025),
+            #        Medium "Conversational AI with Streamlit" (Jul 2025)
+            #
+            # CORREÇÃO SESSAO 45: SEMPRE criar novo event loop
+            # PROBLEMA: get_running_loop() + run_until_complete() causa RuntimeError:
+            #           "This event loop is already running"
+            # SOLUÇÃO: Criar novo loop isolado (pattern validado em workflow.run())
+            loop = asyncio.new_event_loop()
             try:
-                loop = asyncio.get_running_loop()
-            except RuntimeError:
-                # Sem loop em thread customizada -> criar novo
-                loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
-
-            result = loop.run_until_complete(workflow.graph.ainvoke(initial_state, config=config))
+                result = loop.run_until_complete(workflow.ainvoke(initial_state, config=config))
+            finally:
+                # CORREÇÃO SESSAO 45: Cleanup completo antes de fechar loop
+                # Sequência recomendada por Python asyncio docs:
+                # 1. shutdown_asyncgens() - limpa async generators
+                # 2. shutdown_default_executor() - limpa thread pool threads
+                # 3. close() - fecha o loop
+                try:
+                    loop.run_until_complete(loop.shutdown_asyncgens())
+                except Exception:
+                    pass  # Ignorar erros de cleanup
+                try:
+                    loop.run_until_complete(loop.shutdown_default_executor())
+                except Exception:
+                    pass  # Ignorar erros de cleanup (executor pode não existir)
+                loop.close()  # Sempre fechar loop que criamos
 
             print(
                 f"[DEBUG STREAMLIT] Workflow concluido | metadata keys: {list(result.get('metadata', {}).keys())}"

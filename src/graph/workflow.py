@@ -13,6 +13,8 @@ Orquestra o fluxo completo:
 from __future__ import annotations
 
 import asyncio
+import atexit
+import os
 import sys
 import time
 import warnings
@@ -20,11 +22,17 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import nest_asyncio
 
-# CORREÇÃO SESSAO 43 (2025-11-24): Usar SqliteSaver ao invés de MemorySaver
-# MemorySaver é IN-MEMORY e perde dados ao reiniciar (não persiste entre refreshes)
-# SqliteSaver persiste em disco -> chat_history sobrevive refreshes do browser
-# Pacote: pip install langgraph-checkpoint-sqlite (LangGraph v0.2+)
+# CORREÇÃO SESSAO 44 (2025-11-24): Usar AsyncSqliteSaver para suportar handlers async
+# SqliteSaver é SYNC-ONLY e não suporta ainvoke() (NotImplementedError)
+# AsyncSqliteSaver suporta ainvoke() necessário para handlers async (execute_agents, implementation_handler)
+# SqliteSaver usado para operações sync (get_state, update_state) em chat_loader.py
+# Pacote: pip install langgraph-checkpoint-sqlite aiosqlite
+import sqlite3
+
+import aiosqlite  # SESSAO 45: Para configurar PRAGMAs na conexão async
+
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from loguru import logger
@@ -120,18 +128,187 @@ class BSCWorkflow:
 
         self.action_plan_tool = ActionPlanTool(llm=get_llm(temperature=1.0))
 
-        self.graph = self._build_graph()
+        # SESSAO 44: Path do DB para checkpointer async
+        self._checkpoint_db_path = "data/langgraph_checkpoints.db"
+        os.makedirs(os.path.dirname(self._checkpoint_db_path), exist_ok=True)
+
+        # CORREÇÃO SESSAO 45: Wrap inicialização em try-except para garantir cleanup em falha
+        # PROBLEMA: Se setup(), _build_graph(), ou compile() falharem após criar conexão,
+        #           a conexão SQLite fica aberta (dangling file lock) porque atexit.register()
+        #           só é chamado no final do __init__
+        # SOLUÇÃO: Registrar atexit ANTES de criar recursos, e fazer cleanup em exceção
+        self._sqlite_conn = None  # Pré-inicializar para _cleanup_resources funcionar
+        atexit.register(self._cleanup_resources)  # Registrar ANTES de criar recursos
+
+        try:
+            # SESSAO 44: Conexão SQLite sync para operações get_state/update_state (chat_loader.py)
+            # check_same_thread=False necessário para Streamlit (múltiplas threads)
+            self._sqlite_conn = sqlite3.connect(self._checkpoint_db_path, check_same_thread=False)
+
+            # CORREÇÃO SESSAO 45: Habilitar WAL mode para permitir concorrência sync/async
+            # PROBLEMA: Duas conexões ao mesmo DB (sync persistente + async por ainvoke())
+            #           podem causar "database is locked" sem WAL mode
+            # SOLUÇÃO: WAL (Write-Ahead Logging) permite:
+            #          - Um writer + múltiplos readers simultâneos
+            #          - Leituras não bloqueiam escritas
+            #          - Melhor performance para padrão read-heavy (get_state frequente)
+            # Fonte: SQLite WAL mode documentation, LangGraph Checkpointer best practices
+            self._sqlite_conn.execute("PRAGMA journal_mode=WAL;")
+            self._sqlite_conn.execute("PRAGMA busy_timeout=5000;")  # 5s timeout para locks
+            self._sqlite_conn.commit()  # CORREÇÃO SESSAO 45: Commit para garantir PRAGMA persista
+
+            self._sync_checkpointer = SqliteSaver(self._sqlite_conn)
+
+            # CORREÇÃO SESSAO 45: Inicializar tabelas SQLite ANTES de usar o checkpointer
+            # Sem setup(), chat_loader.py falha com "table not found" ao chamar get_state()
+            # ANTES de qualquer ainvoke() (que inicializa o async checkpointer separadamente)
+            self._sync_checkpointer.setup()
+
+            # SESSAO 44: Armazenar workflow builder E graph compilado (sem checkpointer)
+            # workflow_builder: usado para recompilar com checkpointer em ainvoke()
+            # graph: usado para chamadas que não precisam de persistência
+            self._workflow_builder, self.graph = self._build_graph()
+
+            # SESSAO 44: Graph com checkpointer sync para operações get_state/update_state
+            # Usado por chat_loader.py e outras funções que precisam acessar checkpoints
+            self._graph_with_checkpointer = self._workflow_builder.compile(
+                checkpointer=self._sync_checkpointer
+            )
+
+        except Exception as e:
+            # CORREÇÃO SESSAO 45: Cleanup em caso de falha na inicialização
+            # Previne dangling file lock se setup/build_graph/compile falharem
+            logger.error(f"[ERROR] Falha na inicialização do BSCWorkflow: {e}")
+            self._cleanup_resources()
+            raise  # Re-raise para caller saber que inicialização falhou
 
         logger.info("[OK] BSCWorkflow inicializado com grafo LangGraph")
 
-    def _build_graph(self) -> CompiledStateGraph:
+    def get_graph_with_checkpointer(self) -> CompiledStateGraph:
+        """
+        Retorna graph compilado COM checkpointer sync para operações get_state/update_state.
+
+        SESSAO 44 (2025-11-24): Necessário para chat_loader.py e outras funções que
+        precisam acessar checkpoints de forma síncrona (get_state, update_state).
+
+        Usa SqliteSaver (sync) compartilhando o mesmo arquivo DB do AsyncSqliteSaver.
+
+        Returns:
+            CompiledStateGraph com SqliteSaver checkpointer
+        """
+        return self._graph_with_checkpointer
+
+    def _cleanup_resources(self) -> None:
+        """
+        Cleanup interno de recursos (SQLite connection).
+
+        SESSAO 45 (2025-11-25): Previne resource leak da conexão SQLite.
+        Chamado por: atexit handler, close(), __del__
+
+        Idempotente - pode ser chamado múltiplas vezes sem efeito.
+        """
+        if hasattr(self, "_sqlite_conn") and self._sqlite_conn is not None:
+            try:
+                self._sqlite_conn.close()
+                self._sqlite_conn = None
+                logger.debug("[CLEANUP] SQLite connection fechada com sucesso")
+            except Exception as e:
+                # Silenciar erros no cleanup (pode estar em shutdown)
+                logger.debug(f"[CLEANUP] Erro ao fechar SQLite connection: {e}")
+
+    def close(self) -> None:
+        """
+        Fecha recursos do workflow explicitamente.
+
+        SESSAO 45 (2025-11-25): Método público para fechamento programático.
+        Usar quando o workflow não será mais utilizado.
+
+        Exemplo:
+            workflow = BSCWorkflow()
+            try:
+                result = await workflow.ainvoke(state, config)
+            finally:
+                workflow.close()
+        """
+        self._cleanup_resources()
+
+    def __del__(self):
+        """
+        Fallback cleanup quando objeto é garbage collected.
+
+        SESSAO 45 (2025-11-25): Última linha de defesa contra resource leak.
+        Não é garantido ser chamado (Python GC não garante __del__),
+        mas serve como fallback. atexit é mais confiável.
+        """
+        self._cleanup_resources()
+
+    async def ainvoke(self, state: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+        """
+        Executa o workflow de forma assíncrona com checkpointer persistente.
+
+        CORREÇÃO SESSAO 44 (2025-11-24):
+        - Handlers async (execute_agents, implementation_handler) requerem ainvoke()
+        - ainvoke() requer checkpointer async (AsyncSqliteSaver)
+        - AsyncSqliteSaver precisa ser criado em contexto async
+        - Checkpointer DEVE ser passado em compile(), não em config!
+        - Solução: Usar from_conn_string como context manager e recompilar graph
+        - Fonte: Medium "LangGraph + FastAPI + AsyncSqliteSaver" (Jun 2025)
+
+        Args:
+            state: Estado inicial do workflow
+            config: Configuração incluindo thread_id
+
+        Returns:
+            Estado final após execução do workflow
+        """
+        # CORREÇÃO SESSAO 45: Configurar WAL mode e busy_timeout na conexão async
+        # PROBLEMA: AsyncSqliteSaver.from_conn_string() cria conexão nova que não herda
+        #           PRAGMAs da conexão sync (WAL mode, busy_timeout)
+        # SOLUÇÃO: Usar aiosqlite diretamente para configurar PRAGMAs antes de usar
+        # Fonte: SQLite docs - PRAGMA settings são per-connection
+        async with aiosqlite.connect(self._checkpoint_db_path) as pragma_conn:
+            # Aplicar mesmas configurações da conexão sync
+            await pragma_conn.execute("PRAGMA journal_mode=WAL;")
+            await pragma_conn.execute("PRAGMA busy_timeout=5000;")
+            await pragma_conn.commit()
+
+        # Usar from_conn_string como context manager (pattern validado Jun 2025)
+        # Checkpointer DEVE ser passado em compile(), não em config runtime!
+        async with AsyncSqliteSaver.from_conn_string(self._checkpoint_db_path) as checkpointer:
+            # CORREÇÃO SESSAO 45: Inicializar tabelas SQLite antes de usar checkpointer
+            # Sem setup(), primeira execução falha com "table not found"
+            await checkpointer.setup()
+
+            # Recompilar graph COM checkpointer (necessário para LangGraph)
+            compiled_graph = self._workflow_builder.compile(checkpointer=checkpointer)
+
+            # Executar workflow async
+            result = await compiled_graph.ainvoke(state, config=config)
+
+            # CORREÇÃO SESSAO 45: Garantir que todas operações IO completaram
+            # PROBLEMA: Context manager pode fechar conexão antes de writes pendentes
+            # SOLUÇÃO: await asyncio.sleep(0) força yield para event loop processar
+            #          todas tasks pendentes antes de sair do context manager
+            # Fonte: Python asyncio docs - "Yield to event loop"
+            await asyncio.sleep(0)
+
+            return result
+
+    def _build_graph(self) -> tuple[StateGraph, CompiledStateGraph]:
         """
         Constrói o grafo de execução LangGraph.
+
+        SESSAO 44: Retorna tuple (workflow_builder, compiled_graph)
+        - workflow_builder: StateGraph não compilado, usado para recompilar com checkpointer
+        - compiled_graph: Graph compilado sem checkpointer, para uso básico
 
         Fluxo:
         START -> load_client_memory -> analyze_query -> execute_agents
         -> synthesize_response -> judge_validation -> decide_next
         -> [finalize OR execute_agents (refinement)] -> save_client_memory -> END
+
+        Returns:
+            Tuple[StateGraph, CompiledStateGraph]: workflow builder e graph compilado
         """
         # Criar grafo com schema BSCState
         workflow = StateGraph(BSCState)
@@ -220,12 +397,12 @@ class BSCWorkflow:
             "3 conditional edges (route_by_phase, route_by_approval, decide_next_step)"
         )
 
-        # Adicionar checkpointer para persistir state entre turnos (CRITICAL para onboarding)
-        # CORREÇÃO SESSAO 43 (2025-11-24): SqliteSaver persiste em DISCO (não apenas memória)
-        # MemorySaver era IN-MEMORY -> perdia chat_history ao refresh do browser
-        # SqliteSaver usa SQLite -> dados persistem entre sessões/refreshes
-        checkpointer = SqliteSaver.from_conn_string("data/langgraph_checkpoints.db")
-        return workflow.compile(checkpointer=checkpointer)
+        # CORREÇÃO SESSAO 44 (2025-11-24): Retornar workflow builder + graph compilado
+        # - workflow: StateGraph não compilado, para recompilar com checkpointer em ainvoke()
+        # - compiled: Graph compilado sem checkpointer, para uso básico/fallback
+        # Checkpointer DEVE ser passado em compile(), não em config runtime!
+        # Fonte: Medium "LangGraph + FastAPI + AsyncSqliteSaver" (Jun 2025)
+        return workflow, workflow.compile()
 
     def analyze_query(self, state: BSCState) -> dict[str, Any]:
         """
@@ -1815,8 +1992,9 @@ class BSCWorkflow:
             # Verificar se é primeira invocação ou turno subsequente
             # Para multi-turn: apenas passar campos NOVOS (query), não state completo!
             try:
-                # Tentar obter state existente do checkpoint
-                existing_state = self.graph.get_state(config)
+                # SESSAO 44 (2025-11-24): Usar graph COM checkpointer para get_state
+                # self.graph não tem checkpointer, usar _graph_with_checkpointer
+                existing_state = self._graph_with_checkpointer.get_state(config)
 
                 if existing_state and existing_state.values:
                     # Turno subsequente: passar apenas updates (não sobrescrever checkpoint!)
@@ -1832,9 +2010,15 @@ class BSCWorkflow:
                         existing_metadata.get("partial_profile", "N/A"),
                     )
 
-                    # Update apenas campos necessários para merge com checkpoint
+                    # CORREÇÃO SESSAO 45: Update com campos consistentes para merge com checkpoint
+                    # PROBLEMA: Antes passava apenas query+metadata, mas primeira invocação
+                    #           passa todos campos via BSCState.model_dump()
+                    # SOLUÇÃO: Incluir session_id e user_id para consistência
+                    #          Checkpoint merge sobrescreve apenas campos fornecidos
                     state_to_invoke = {
                         "query": query,
+                        "session_id": session_id,  # Manter consistência com primeira invocação
+                        "user_id": user_id,  # Manter consistência com primeira invocação
                         "metadata": (
                             {**(existing_metadata), "chat_history": chat_history}
                             if chat_history
@@ -1853,12 +2037,14 @@ class BSCWorkflow:
                         "Criando state inicial completo"
                     )
 
+                    # CORREÇÃO SESSAO 45: Converter para dict - ainvoke() espera dict[str, Any]
+                    # BSCState.model_dump() garante serialização correta para checkpoints
                     state_to_invoke = BSCState(
                         query=query,
                         session_id=session_id,
                         user_id=user_id,
                         metadata={"chat_history": chat_history} if chat_history else {},
-                    )
+                    ).model_dump()
 
                 # BUG FIX (Sessao 42, 2025-11-22): execute_agents é async def
                 # LangGraph exige .ainvoke() para async nodes (não .invoke())
@@ -1876,10 +2062,20 @@ class BSCWorkflow:
                 loop = asyncio.new_event_loop()
                 try:
                     asyncio.set_event_loop(loop)
-                    final_state = loop.run_until_complete(
-                        self.graph.ainvoke(state_to_invoke, config)
-                    )
+                    # CORREÇÃO SESSAO 45: Usar self.ainvoke() para persistência de checkpoints
+                    # self.graph não tem checkpointer, self.ainvoke() usa AsyncSqliteSaver
+                    final_state = loop.run_until_complete(self.ainvoke(state_to_invoke, config))
                 finally:
+                    # CORREÇÃO SESSAO 45: Cleanup completo antes de fechar loop
+                    # Sequencia: shutdown_asyncgens -> shutdown_default_executor -> close
+                    try:
+                        loop.run_until_complete(loop.shutdown_asyncgens())
+                    except Exception:
+                        pass  # Ignorar erros de cleanup
+                    try:
+                        loop.run_until_complete(loop.shutdown_default_executor())
+                    except Exception:
+                        pass  # Ignorar erros de cleanup
                     loop.close()  # Previne resource leak
 
                 # DEBUGGING: Log do state após invoke
@@ -1909,12 +2105,14 @@ class BSCWorkflow:
                     "Assumindo primeira invocação"
                 )
 
+                # CORREÇÃO SESSAO 45: Converter para dict - ainvoke() espera dict[str, Any]
+                # BSCState.model_dump() garante serialização correta para checkpoints
                 initial_state = BSCState(
                     query=query,
                     session_id=session_id,
                     user_id=user_id,
                     metadata={"chat_history": chat_history} if chat_history else {},
-                )
+                ).model_dump()
 
                 # Executar com state inicial em caso de erro
                 # Pattern manual event loop com CLEANUP (Python 3.12 + Streamlit compatible)
@@ -1929,41 +2127,101 @@ class BSCWorkflow:
                 loop = asyncio.new_event_loop()
                 try:
                     asyncio.set_event_loop(loop)
-                    final_state = loop.run_until_complete(self.graph.ainvoke(initial_state, config))
+                    # CORREÇÃO SESSAO 45: Usar self.ainvoke() para persistência de checkpoints
+                    final_state = loop.run_until_complete(self.ainvoke(initial_state, config))
                 finally:
+                    # CORREÇÃO SESSAO 45: Cleanup completo antes de fechar loop
+                    # Sequencia: shutdown_asyncgens -> shutdown_default_executor -> close
+                    try:
+                        loop.run_until_complete(loop.shutdown_asyncgens())
+                    except Exception:
+                        pass  # Ignorar erros de cleanup
+                    try:
+                        loop.run_until_complete(loop.shutdown_default_executor())
+                    except Exception:
+                        pass  # Ignorar erros de cleanup
                     loop.close()  # Previne resource leak
 
             # Extrair resultado
+            # CORREÇÃO SESSAO 45: Checkpoint pode deserializar Pydantic models como dicts
+            # Usar acesso defensivo (dict.get() ou getattr()) para evitar AttributeError
+            def _safe_perspective_value(p):
+                """Extrai value de enum ou string de forma segura."""
+                if hasattr(p, "value"):
+                    return p.value
+                return str(p) if p else None
+
+            def _safe_agent_response(r):
+                """Extrai campos de AgentResponse (objeto ou dict) de forma segura."""
+                if isinstance(r, dict):
+                    perspective = r.get("perspective", "")
+                    if hasattr(perspective, "value"):
+                        perspective = perspective.value
+                    return {
+                        "perspective": perspective,
+                        "content": r.get("content", ""),
+                        "confidence": r.get("confidence", 0.0),
+                        "sources": r.get("sources", []),
+                    }
+                # É objeto AgentResponse
+                return {
+                    "perspective": (
+                        r.perspective.value
+                        if hasattr(r.perspective, "value")
+                        else str(r.perspective)
+                    ),
+                    "content": r.content,
+                    "confidence": r.confidence,
+                    "sources": r.sources,
+                }
+
+            def _safe_sources(r):
+                """Extrai sources de AgentResponse (objeto ou dict) de forma segura."""
+                if isinstance(r, dict):
+                    return r.get("sources", [])
+                return getattr(r, "sources", [])
+
+            def _safe_judge_evaluation(je):
+                """Converte JudgeEvaluation (objeto ou dict) para dict de forma segura."""
+                if je is None:
+                    return None
+                if isinstance(je, dict):
+                    return je  # Já é dict
+                if hasattr(je, "model_dump"):
+                    return je.model_dump()
+                return dict(je)  # Fallback
+
+            def _safe_judge_approved(je):
+                """Extrai approved de JudgeEvaluation (objeto ou dict) de forma segura."""
+                if je is None:
+                    return None
+                if isinstance(je, dict):
+                    return je.get("approved")
+                return getattr(je, "approved", None)
+
             result = {
                 "query": final_state["query"],
                 "final_response": final_state.get("final_response", ""),
                 "client_profile": final_state.get("client_profile"),
-                "perspectives": [p.value for p in final_state.get("relevant_perspectives", [])],
+                "perspectives": [
+                    _safe_perspective_value(p) for p in final_state.get("relevant_perspectives", [])
+                ],
                 "agent_responses": [
-                    {
-                        "perspective": r.perspective.value,
-                        "content": r.content,
-                        "confidence": r.confidence,
-                        "sources": r.sources,  # Campo omitido - Streamlit precisa!
-                    }
-                    for r in final_state.get("agent_responses", [])
+                    _safe_agent_response(r) for r in final_state.get("agent_responses", [])
                 ],
                 # Agregar retrieved_documents de todas as respostas dos agentes
                 "retrieved_documents": [
-                    doc for r in final_state.get("agent_responses", []) for doc in r.sources
+                    doc for r in final_state.get("agent_responses", []) for doc in _safe_sources(r)
                 ],
-                "judge_evaluation": (
-                    final_state["judge_evaluation"].model_dump()
-                    if final_state.get("judge_evaluation")
-                    else None
-                ),
+                "judge_evaluation": _safe_judge_evaluation(final_state.get("judge_evaluation")),
                 "refinement_iterations": final_state.get("refinement_iteration", 0),
                 "metadata": final_state.get("metadata", {}),
             }
 
             # Adicionar judge_approved ao metadata top-level para E2E tests
-            if final_state.get("judge_evaluation"):
-                result["metadata"]["judge_approved"] = final_state["judge_evaluation"].approved
+            judge_approved = _safe_judge_approved(final_state.get("judge_evaluation"))
+            if judge_approved is not None:
+                result["metadata"]["judge_approved"] = judge_approved
 
             # FASE 2.10: Adicionar current_phase, diagnostic e metadados consultivos
             result["current_phase"] = final_state.get("current_phase")

@@ -1,8 +1,8 @@
 # [EMOJI] ÍNDICE DE DOCUMENTAÇÃO - BSC RAG Project
 
-**Versão:** 1.5
-**Última Atualização:** 2025-11-20
-**Total de Documentos:** 53 (47 docs/ + 4 rules/ + 2 tool docs) - +3 docs FASE 5-6 planning!
+**Versão:** 1.6
+**Última Atualização:** 2025-11-24
+**Total de Documentos:** 54 (48 docs/ + 4 rules/ + 2 tool docs) - +1 doc Sessão 44 LangGraph Checkpointer!
 
 ---
 
@@ -202,7 +202,7 @@
 - `src/graph/workflow.py` - Código
 - `src/graph/states.py` - Estados
 
-**lessons** (Docs: 10 - Todas criadas!)
+**lessons** (Docs: 11 - Todas criadas!)
 - `docs/lessons/lesson-e2e-validation-corrections-2025-10-14.md` - E2E corrections (validado)
 - `docs/lessons/lesson-query-decomposition-2025-10-14.md` - Query Decomp (545 linhas, GPT-5 mini)
 - `docs/lessons/lesson-adaptive-reranking-2025-10-14.md` - Adaptive Re-ranking (626 linhas, TDD)
@@ -217,6 +217,7 @@
 - `docs/lessons/lesson-async-parallelization-langgraph-2025-10-20.md` - Async/Await & LangGraph State (FASE 1 Onboarding, 4 problemas críticos, GIL+threads, nested loops, state mutation, Mem0 v2, 950+ linhas, ROI 35-85% speedup, checklists completos)
 - `docs/lessons/lesson-streamlit-ui-debugging-2025-10-22.md` - Streamlit UI & Debugging Complexo (FASE 2.7, 7 problemas, Sequential Thinking, Brightdata research, prompt schema alignment, UI best practices, 800+ linhas, ROI 50-67% debugging)
 - `docs/lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` - UI Defensive Programming + LangGraph Schema Evolution (Sessão 41, 6 bugs críticos, 3 antipadrões recorrentes, AttributeError UI 4x, LangGraph silent failure, 3 checklists acionáveis, 1.180+ linhas, ROI 60-90 min/sessão)
+- `docs/lessons/lesson-sessao-44-langgraph-checkpointer-2025-11-24.md` - LangGraph Checkpointer Sync/Async (Sessão 44, 4 bugs críticos, dual checkpointer pattern, NotImplementedError SqliteSaver, checkpointer em compile(), 400+ linhas, ROI 60-90 min/sessão)
 
 ---
 
@@ -473,6 +474,7 @@
 | **Async/Await & LangGraph State (FASE 1)** | `lessons/lesson-async-parallelization-langgraph-2025-10-20.md` (950+L) | 4 problemas (GIL+threads, nested loops, state mutation, Mem0 v2), ROI 4x speedup, checklists async + immutable, Brightdata research | [OK] |
 | **Streamlit UI & Debugging Complexo (FASE 2.7)** | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (800+L) | 7 problemas, Sequential Thinking, prompt schema alignment, UI research-first, ROI 50-67% debugging, UI 1h vs 3-4h | [OK] |
 | **UI Defensive + LangGraph Schema Evolution (Sessão 41)** | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (1.180+L) | 6 bugs críticos, AttributeError UI 4x recorrente, LangGraph silent failure, 3 checklists acionáveis (PRE-UI, PRE-SCHEMA-CHANGE, PRE-MAX-LENGTH), ROI 60-90 min/sessão | [OK] |
+| **LangGraph Checkpointer Sync/Async (Sessão 44)** | `lessons/lesson-sessao-44-langgraph-checkpointer-2025-11-24.md` (400+L) | 4 bugs críticos, NotImplementedError SqliteSaver, checkpointer em compile(), dual checkpointer pattern, ROI 60-90 min/sessão | [OK] |
 
 ---
 
@@ -552,6 +554,7 @@
 | **Alinhar prompt com schema Pydantic** | prompt-schema, validation-error, pydantic | `lessons/lesson-streamlit-ui-debugging-2025-10-22.md` (linhas 200-400) | `src/prompts/*.py` |
 | **Prevenir AttributeError UI (hasattr/getattr)** | ui-defensive, hasattr, getattr, pydantic-schema | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-UI 6 pontos) | `pages/*.py` |
 | **LangGraph schema evolution (campos novos)** | langgraph-state, schema-evolution, silent-failure | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-SCHEMA-CHANGE 5 pontos) | `src/graph/states.py` |
+| **LangGraph checkpointer sync/async** | langgraph-checkpointer, sqlitesaver, asyncsqlitesaver, compile | `lessons/lesson-sessao-44-langgraph-checkpointer-2025-11-24.md` (checklist PRE-CHECKPOINTER 5 pontos) | `src/graph/workflow.py` |
 | **max_length Pydantic generoso para LLM** | pydantic-limits, llm-quality, max-length | `lessons/lesson-sessao-41-ui-schema-evolution-2025-11-22.md` (checklist PRE-MAX-LENGTH 4 pontos) | `src/memory/schemas.py` |
 | **Adicionar metadados docs** | metadata, index-json | `data/README.md` (Auto-Geração seção) | `scripts/build_knowledge_base.py` |
 | **Entender lições aprendidas** | lessons, antipadrões | `lessons/` directory | - |

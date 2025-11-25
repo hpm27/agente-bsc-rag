@@ -10,8 +10,20 @@ from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from config.settings import settings
 from src.graph.consulting_states import ApprovalStatus, ConsultingPhase
 from src.memory.schemas import AlignmentReport, ClientProfile, StrategyMap
+
+# ============================================================================
+# CONSTANTES DE CONFIGURAÇÃO (capturadas no import - imutáveis por classe)
+# ============================================================================
+
+# SESSAO 44-45: max_refinement_iterations configurável via .env (MAX_REFINEMENT_ITERATIONS)
+# Valor capturado UMA VEZ no import - NÃO usar default_factory com settings.X
+# Fonte: Medium "Understanding default_factory in Pydantic" (Tulsi Shankar, May 2025)
+# Razão: default_factory re-avalia a cada instância, violando imutabilidade de defaults
+_DEFAULT_MAX_REFINEMENT_ITERATIONS: int = settings.max_refinement_iterations
+
 
 # ============================================================================
 # CUSTOM REDUCER: Deep Merge para Metadata
@@ -157,8 +169,9 @@ class BSCState(BaseModel):
     judge_evaluation: JudgeEvaluation | None = None
 
     # Refinamento (se necessário)
+    # SESSAO 44-45: Usa constante de módulo (imutável), não default_factory
     refinement_iteration: int = 0
-    max_refinement_iterations: int = 2
+    max_refinement_iterations: int = _DEFAULT_MAX_REFINEMENT_ITERATIONS
 
     # Output final
     final_response: str | None = None

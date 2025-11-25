@@ -34,8 +34,11 @@ def load_chat_history(user_id: str) -> List[Dict[str, str]]:
         workflow = get_workflow()
         config = {"configurable": {"thread_id": user_id}}
 
+        # SESSAO 44 (2025-11-24): Usar graph COM checkpointer para get_state
+        graph_with_cp = workflow.get_graph_with_checkpointer()
+
         # Tentar obter state existente do checkpoint
-        checkpoint_state = workflow.graph.get_state(config)
+        checkpoint_state = graph_with_cp.get_state(config)
 
         if not checkpoint_state or not checkpoint_state.values:
             logger.info(f"[INFO] Nenhum checkpoint encontrado para user_id: {user_id[:8]}...")
@@ -87,8 +90,13 @@ def save_chat_to_checkpoint(user_id: str, messages: List[Dict[str, str]]) -> boo
         workflow = get_workflow()
         config = {"configurable": {"thread_id": user_id}}
 
+        # SESSAO 44 (2025-11-24): Usar graph COM checkpointer para get_state/update_state
+        # workflow.graph não tem checkpointer (compilado sem para permitir recompilação async)
+        # get_graph_with_checkpointer() retorna graph com SqliteSaver (sync)
+        graph_with_cp = workflow.get_graph_with_checkpointer()
+
         # Obter state atual do checkpoint
-        checkpoint_state = workflow.graph.get_state(config)
+        checkpoint_state = graph_with_cp.get_state(config)
 
         if not checkpoint_state or not checkpoint_state.values:
             logger.warning(
@@ -102,7 +110,7 @@ def save_chat_to_checkpoint(user_id: str, messages: List[Dict[str, str]]) -> boo
         updated_metadata = {**existing_metadata, "chat_history": messages}
 
         # Update do checkpoint (merge com state existente)
-        workflow.graph.update_state(
+        graph_with_cp.update_state(
             config, values={"metadata": updated_metadata}, as_node="save_client_memory"
         )
 

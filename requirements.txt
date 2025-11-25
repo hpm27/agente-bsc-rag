@@ -65,6 +65,7 @@ gradio==4.8.0
 
 # Asyncio Support (nested event loops para Streamlit/Jupyter)
 nest-asyncio==1.6.0
+aiosqlite>=0.20.0  # SESSAO 44: Async SQLite para AsyncSqliteSaver (handlers async)
 
 # API & Async
 fastapi==0.108.0
