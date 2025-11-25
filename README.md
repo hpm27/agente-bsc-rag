@@ -318,7 +318,7 @@ Você verá:
 - [FAST] **[MULTILINGUAL_OPTIMIZATION_SUMMARY.md](MULTILINGUAL_OPTIMIZATION_SUMMARY.md)** - Busca cross-lingual
 - [EMOJI] **[VECTOR_DB_COMPARISON.md](docs/VECTOR_DB_COMPARISON.md)** - Benchmark Qdrant vs Weaviate
 - [EMOJI] **[GPT5_CONTEXTUAL_RETRIEVAL.md](docs/GPT5_CONTEXTUAL_RETRIEVAL.md)** - Contextual chunking
-- [EMOJI] **[LESSONS_LEARNED.md](LESSONS_LEARNED.md)** - Lições aprendidas
+- [EMOJI] **[LESSONS_LEARNED.md](docs/LESSONS_LEARNED.md)** - Lições aprendidas
 
 ### Organização e Discovery (Cursor Rules)
 
