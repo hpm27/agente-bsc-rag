@@ -19,6 +19,7 @@ load_dotenv()
 from src.graph.states import BSCState
 from src.graph.workflow import get_workflow
 from ui.helpers.chat_loader import load_chat_history, save_chat_to_checkpoint
+from ui.helpers.mem0_loader import load_all_clients_sqlite
 
 st.set_page_config(page_title="Consultor BSC", layout="wide", page_icon="[BSC]")
 
@@ -104,28 +105,93 @@ if "current_phase" not in st.session_state:
 
 # Sidebar com informações
 with st.sidebar:
-    st.header("Informacoes da Sessao")
+    st.header("Gerenciar Consultas")
 
-    st.metric("User ID", st.session_state.user_id[:8] + "...")
-    st.metric("Fase Atual", st.session_state.current_phase)
+    # ============================================================================
+    # SESSAO 49: SELETOR DE CLIENTES PARA RETOMAR CONSULTAS ANTERIORES
+    # Permite fechar Streamlit e retomar trabalho depois
+    # ============================================================================
+
+    # Carregar lista de clientes do SQLite (mais confiavel que Mem0)
+    existing_clients, clients_error = load_all_clients_sqlite()
+
+    # Botao para nova consulta (sempre visivel)
+    if st.button("Nova Consulta", type="primary", use_container_width=True):
+        # Gerar novo UUID
+        new_uid = str(uuid4())
+        st.session_state.user_id = new_uid
+        st.session_state.messages = []
+        st.session_state.current_phase = "ONBOARDING"
+        st.query_params["uid"] = new_uid
+        st.rerun()
+
+    # Seletor de consultas anteriores
+    if existing_clients:
+        st.markdown("---")
+        st.subheader("Retomar Consulta Anterior")
+
+        # Criar opcoes para selectbox
+        options = ["-- Selecione uma consulta --"] + [c["display_name"] for c in existing_clients]
+
+        # Map display_name -> user_id
+        client_map = {c["display_name"]: c["user_id"] for c in existing_clients}
+
+        selected = st.selectbox(
+            "Consultas salvas:",
+            options,
+            index=0,
+            key="client_selector",
+            help="Selecione uma consulta anterior para retomar o trabalho",
+        )
+
+        if selected != "-- Selecione uma consulta --":
+            selected_uid = client_map[selected]
+
+            # Verificar se precisa trocar de cliente
+            if selected_uid != st.session_state.user_id:
+                if st.button("Carregar Consulta", type="secondary", use_container_width=True):
+                    # Trocar para o cliente selecionado
+                    st.session_state.user_id = selected_uid
+                    st.query_params["uid"] = selected_uid
+
+                    # Limpar mensagens atuais e carregar historico do cliente selecionado
+                    st.session_state.messages = []
+                    loaded_messages = load_chat_history(selected_uid)
+                    if loaded_messages:
+                        st.session_state.messages = loaded_messages
+
+                    # Resetar fase (sera atualizada pelo workflow)
+                    st.session_state.current_phase = "ONBOARDING"
+
+                    st.success(f"Consulta carregada: {selected[:50]}...")
+                    st.rerun()
+    elif clients_error:
+        st.caption(clients_error)
+
+    st.markdown("---")
+
+    # Informacoes da sessao atual
+    st.subheader("Sessao Atual")
+    st.metric("ID", st.session_state.user_id[:8] + "...")
+    st.metric("Fase", st.session_state.current_phase)
     st.metric("Mensagens", len(st.session_state.messages))
 
-    st.divider()
+    st.markdown("---")
 
     st.subheader("Fases do Workflow")
     st.markdown(
         """
-    1. **ONBOARDING** - Coleta de informacoes basicas
-    2. **DISCOVERY** - Diagnostico BSC completo
-    3. **APPROVAL** - Aprovacao do diagnostico
-    4. **SOLUTION_DESIGN** - Criacao do Strategy Map
-    5. **IMPLEMENTATION** - Geracao do Action Plan
+    1. **ONBOARDING** - Coleta de informacoes
+    2. **DISCOVERY** - Diagnostico BSC
+    3. **APPROVAL** - Aprovacao
+    4. **SOLUTION_DESIGN** - Strategy Map
+    5. **IMPLEMENTATION** - Action Plan
     """
     )
 
-    st.divider()
+    st.markdown("---")
 
-    if st.button("Reiniciar Sessao", type="secondary"):
+    if st.button("Reiniciar Sessao", type="secondary", use_container_width=True):
         st.session_state.messages = []
         # MANTÉM o mesmo user_id (NÃO gerar novo!) para preservar acesso ao profile
         # Usuário pode continuar acessando Strategy Map e Action Plan após reiniciar
@@ -283,5 +349,5 @@ if len(st.session_state.messages) == 0:
 # Footer
 st.divider()
 st.caption(
-    f"BSC RAG Agent - Sessao 40 (Nov 21, 2025) - Sprint 4: Chat + UI Visualization | User ID: {st.session_state.user_id[:13]}..."
+    f"BSC RAG Agent - Sessao 49 (Nov 25, 2025) - Persistencia de Sessoes | User ID: {st.session_state.user_id[:13]}..."
 )

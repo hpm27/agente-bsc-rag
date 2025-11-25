@@ -291,6 +291,80 @@ def list_all_clients() -> tuple[list[dict] | None, str | None]:
         return [], None
 
 
+def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
+    """Lista todos clientes salvos no SQLite (para selecao na UI).
+
+    SESSAO 49 - SOLUCAO PERSISTENCIA: Carrega do SQLite local (instant, confiavel).
+    Permite retomar consultas anteriores mostrando nome da empresa, setor e data.
+
+    Retorna lista de dicts com informacoes amigaveis de cada cliente:
+    - user_id: ID do cliente (UUID)
+    - company_name: Nome da empresa
+    - sector: Setor
+    - created_at: Data de criacao formatada (DD/MM/AAAA)
+    - display_name: String formatada para selectbox ("Empresa (Setor) - DD/MM/AAAA")
+
+    Returns:
+        Tupla (clients, error_message):
+        - clients: Lista de dicts com info dos clientes, None se erro
+        - error_message: Mensagem de erro se falha, None se sucesso
+
+    Example:
+        >>> clients, error = load_all_clients_sqlite()
+        >>> if clients:
+        ...     for client in clients:
+        ...         st.write(client['display_name'])
+    """
+    try:
+        from src.database.repository import ClientProfileRepository
+
+        db = get_db_session()
+        profiles = ClientProfileRepository.get_all(db, limit=100)
+
+        if not profiles:
+            return [], "[INFO] Nenhuma consulta anterior encontrada."
+
+        # Converter ClientProfile ORM -> dict simplificado para UI
+        clients = []
+        for profile in profiles:
+            # Formatar data no padrao brasileiro
+            created_date = (
+                profile.created_at.strftime("%d/%m/%Y")
+                if profile.created_at
+                else "Data desconhecida"
+            )
+
+            # Nome da empresa (fallback se vazio)
+            company = profile.company_name or "[Sem nome]"
+
+            # Setor (opcional)
+            sector = profile.sector or ""
+
+            # Display name formatado para selectbox
+            if sector:
+                display = f"{company} ({sector}) - {created_date}"
+            else:
+                display = f"{company} - {created_date}"
+
+            clients.append(
+                {
+                    "user_id": profile.user_id,
+                    "company_name": company,
+                    "sector": sector,
+                    "created_at": created_date,
+                    "display_name": display,
+                }
+            )
+
+        logger.info(f"[OK] {len(clients)} clientes carregados do SQLite")
+        return clients, None
+
+    except Exception as e:
+        error_msg = f"[ERRO] Falha ao listar clientes do SQLite: {e}"
+        logger.error(error_msg, exc_info=True)
+        return [], error_msg
+
+
 def load_validation_reports(
     user_id: str,
 ) -> tuple[KPIAlignmentReport | None, CauseEffectAnalysis | None, str | None]:
