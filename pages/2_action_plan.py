@@ -1,14 +1,16 @@
-"""Pagina Streamlit - Action Plan (Timeline Gantt).
+"""Pagina Streamlit - Action Plan (Timeline Gantt + Milestones).
 
 Visualiza plano de acao BSC gerado no chat com Consultor BSC.
 Carrega automaticamente da sessao atual.
+
+SPRINT 4 - SESSAO 49: Adiciona dashboard de milestones.
 
 IMPORTANTE: Zero emojis (memoria [[9776249]], Windows cp1252).
 """
 
 import streamlit as st
 from ui.components.gantt_timeline import GanttTimeline
-from ui.helpers.mem0_loader import load_action_plan
+from ui.helpers.mem0_loader import load_action_plan, load_milestone_report
 
 st.set_page_config(page_title="Action Plan", layout="wide")
 
@@ -105,3 +107,85 @@ if not table_df.empty:
     st.download_button(label="Exportar CSV", data=csv, file_name="action_plan.csv", mime="text/csv")
 else:
     st.info("Nenhuma acao corresponde aos filtros selecionados.")
+
+# ============================================================================
+# SPRINT 4 - SESSAO 49: DASHBOARD DE MILESTONES
+# ============================================================================
+
+st.markdown("---")
+st.subheader("Rastreamento de Milestones")
+
+# Carregar milestone report
+milestone_report, milestone_error = load_milestone_report(user_id)
+
+if milestone_error:
+    st.info(milestone_error)
+elif milestone_report:
+    # Row 1: Metricas de progresso
+    m_col1, m_col2, m_col3, m_col4, m_col5 = st.columns(5)
+
+    with m_col1:
+        st.metric("Total Milestones", milestone_report.total_milestones)
+    with m_col2:
+        st.metric("Progresso Geral", f"{milestone_report.overall_progress:.1f}%")
+    with m_col3:
+        st.metric("Completados", milestone_report.completed_count)
+    with m_col4:
+        st.metric("Em Andamento", milestone_report.in_progress_count)
+    with m_col5:
+        # Em risco com cor de alerta
+        at_risk = milestone_report.at_risk_count
+        delta_color = "off" if at_risk == 0 else "inverse"
+        st.metric("Em Risco", at_risk, delta="[ATENCAO]" if at_risk > 0 else "[OK]")
+
+    # Proximos prazos
+    if milestone_report.next_due_milestones:
+        st.markdown("#### Proximos Prazos")
+        for m_name in milestone_report.next_due_milestones[:5]:
+            st.markdown(f"- {m_name}")
+
+    # Recomendacoes
+    if milestone_report.recommendations:
+        st.markdown("#### Recomendacoes")
+        for rec in milestone_report.recommendations[:5]:
+            st.markdown(f"- {rec}")
+
+    # Tabela de milestones
+    st.markdown("#### Detalhes dos Milestones")
+
+    milestone_data = []
+    for m in milestone_report.milestones:
+        status_emoji = {
+            "NOT_STARTED": "[--]",
+            "IN_PROGRESS": "[>>]",
+            "COMPLETED": "[OK]",
+            "BLOCKED": "[XX]",
+            "AT_RISK": "[!!]",
+        }.get(m.status, "[??]")
+
+        milestone_data.append(
+            {
+                "Status": f"{status_emoji} {m.status}",
+                "Milestone": m.name[:50] + "..." if len(m.name) > 50 else m.name,
+                "Progresso": f"{m.progress_percent:.0f}%",
+                "Prazo": m.target_date,
+                "Responsavel": m.responsible,
+            }
+        )
+
+    if milestone_data:
+        import pandas as pd
+
+        milestone_df = pd.DataFrame(milestone_data)
+        st.dataframe(milestone_df, width="stretch", hide_index=True)
+
+        # Export CSV de milestones
+        ms_csv = milestone_df.to_csv(index=False).encode("utf-8")
+        st.download_button(
+            label="Exportar Milestones CSV",
+            data=ms_csv,
+            file_name="milestones.csv",
+            mime="text/csv",
+        )
+else:
+    st.info("Milestone report nao disponivel. Execute a fase IMPLEMENTATION no chat.")

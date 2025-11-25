@@ -23,6 +23,8 @@ from src.memory.schemas import (
     CauseEffectAnalysis,
     CauseEffectConnection,
     KPIAlignmentReport,
+    Milestone,
+    MilestoneTrackerReport,
     StrategicObjective,
     StrategyMap,
 )
@@ -365,3 +367,63 @@ def load_validation_reports(
         error_msg = f"[ERRO] Falha ao carregar validation reports: {e}"
         logger.error(error_msg, exc_info=True)
         return None, None, error_msg
+
+
+def load_milestone_report(
+    user_id: str,
+) -> tuple[MilestoneTrackerReport | None, str | None]:
+    """Carrega MilestoneTrackerReport do LangGraph state.
+
+    SPRINT 4 - SESSAO 49: Report de rastreamento de milestones do Action Plan.
+    Carrega do checkpoint LangGraph (state persistido automaticamente).
+
+    Args:
+        user_id: ID do cliente (thread_id do checkpoint)
+
+    Returns:
+        Tupla (milestone_report, error_message):
+        - milestone_report: MilestoneTrackerReport se disponivel, None caso contrario
+        - error_message: Mensagem de erro se falha, None se sucesso
+
+    Example:
+        >>> report, error = load_milestone_report("cliente_123")
+        >>> if report:
+        ...     st.write(f"Progresso: {report.overall_progress}%")
+    """
+    try:
+        from src.graph.workflow import get_workflow
+
+        workflow = get_workflow()
+        config = {"configurable": {"thread_id": user_id}}
+
+        # Usar graph com checkpointer para acessar state
+        graph_with_cp = workflow.get_graph_with_checkpointer()
+        checkpoint_state = graph_with_cp.get_state(config)
+
+        if not checkpoint_state or not checkpoint_state.values:
+            logger.info(f"[INFO] Nenhum checkpoint encontrado para user_id: {user_id[:8]}...")
+            return None, "[INFO] Nenhum state encontrado. Execute workflow primeiro."
+
+        # Extrair milestone_report do state
+        state_values = checkpoint_state.values
+        milestone_report = None
+
+        milestone_data = state_values.get("milestone_report")
+        if milestone_data:
+            if isinstance(milestone_data, MilestoneTrackerReport):
+                milestone_report = milestone_data
+            elif isinstance(milestone_data, dict):
+                milestone_report = MilestoneTrackerReport(**milestone_data)
+            logger.info(
+                f"[OK] Milestone Report carregado | "
+                f"total={milestone_report.total_milestones} | "
+                f"progresso={milestone_report.overall_progress:.1f}%"
+            )
+            return milestone_report, None
+
+        return None, "[INFO] Milestone Report nao disponivel. Execute IMPLEMENTATION."
+
+    except Exception as e:
+        error_msg = f"[ERRO] Falha ao carregar milestone report: {e}"
+        logger.error(error_msg, exc_info=True)
+        return None, error_msg
