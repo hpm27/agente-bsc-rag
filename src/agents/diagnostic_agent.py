@@ -1661,7 +1661,8 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
     ) -> CompleteDiagnostic:
         """Orquestrador completo do diagnóstico com timeout global (failsafe)."""
         logger.info("[DIAGNOSTIC v3.4 PRINT] >>>>> run_diagnostic() CHAMADO <<<<<")
-        global_timeout_sec = 900  # 15 minutos para todo o diagnóstico (consolidação pode demorar)
+        # SESSAO 49: Aumentar timeout para 20 min (adicionada ETAPA 4.5 KPI Framework)
+        global_timeout_sec = 1200  # 20 minutos para diagnóstico completo + KPI Framework
         logger.info(
             f"[DIAGNOSTIC v3.4] Iniciando run_diagnostic com timeout global de {global_timeout_sec}s (15 min)"
         )
