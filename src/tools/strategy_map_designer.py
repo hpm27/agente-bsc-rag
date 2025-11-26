@@ -363,6 +363,15 @@ Strategic Objectives (já definidos):
         customer_persp = perspectives_dict.get("Clientes")
         financial_persp = perspectives_dict.get("Financeira")
 
+        # DEBUG: Log quantidade de objetivos por perspectiva
+        logger.info(
+            f"[DEBUG] Objetivos por perspectiva: "
+            f"L={len(learning_persp.objectives) if learning_persp and learning_persp.objectives else 0}, "
+            f"P={len(process_persp.objectives) if process_persp and process_persp.objectives else 0}, "
+            f"C={len(customer_persp.objectives) if customer_persp and customer_persp.objectives else 0}, "
+            f"F={len(financial_persp.objectives) if financial_persp and financial_persp.objectives else 0}"
+        )
+
         # Learning -> Process: CADA objetivo Learning conecta ao primeiro Process
         if (
             learning_persp

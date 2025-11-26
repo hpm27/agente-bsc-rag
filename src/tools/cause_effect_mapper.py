@@ -349,6 +349,21 @@ class CauseEffectMapperTool:
             "Aprendizado e Crescimento": strategy_map.learning,
         }
 
+        # DEBUG: Log estado das perspectivas (apenas uma vez)
+        if not hasattr(self, "_perspective_debug_logged"):
+            self._perspective_debug_logged = True
+            for persp_name, perspective in perspectives_map.items():
+                if perspective is None:
+                    logger.warning(f"[DEBUG] Perspectiva '{persp_name}' e None!")
+                elif not perspective.objectives:
+                    logger.warning(f"[DEBUG] Perspectiva '{persp_name}' tem 0 objetivos!")
+                else:
+                    obj_names = [obj.name[:40] for obj in perspective.objectives[:2]]
+                    logger.info(
+                        f"[DEBUG] Perspectiva '{persp_name}': {len(perspective.objectives)} objetivos. "
+                        f"Primeiros: {obj_names}"
+                    )
+
         # PASSO 1: Tentar match EXATO (comportamento original)
         for persp_name, perspective in perspectives_map.items():
             # Null-check: perspective pode ser None se strategy_map incompleto
@@ -387,9 +402,10 @@ class CauseEffectMapperTool:
             )
             return best_match_persp
 
-        # Nenhum match encontrado
+        # Nenhum match encontrado - log com mais contexto
         logger.warning(
-            f"[WARN] Objetivo nao encontrado (nem fuzzy): '{obj_name[:50]}...'"
+            f"[WARN] Objetivo nao encontrado (nem fuzzy): '{obj_name[:50]}...' | "
+            f"Melhor match: '{best_match_name[:30]}...' ({best_match_ratio:.0%})"
         )
         return "Desconhecida"
 
@@ -566,17 +582,44 @@ class CauseEffectMapperTool:
             "P->F": 0,
         }
 
-        for conn in connections:
+        # DEBUG: Log objetivos disponíveis no strategy_map
+        all_obj_names = self._collect_all_objectives_names(strategy_map)
+        logger.info(
+            f"[DEBUG] _count_by_perspective_pair: {len(connections)} conexoes, "
+            f"{len(all_obj_names)} objetivos no strategy_map"
+        )
+        if all_obj_names:
+            logger.info(f"[DEBUG] Primeiros 3 objetivos do map: {all_obj_names[:3]}")
+
+        unknown_count = 0
+        for idx, conn in enumerate(connections):
             source_persp = self._get_objective_perspective(strategy_map, conn.source_objective_id)
             target_persp = self._get_objective_perspective(strategy_map, conn.target_objective_id)
 
             source_abbrev = PERSPECTIVE_ABBREV.get(source_persp, "?")
             target_abbrev = PERSPECTIVE_ABBREV.get(target_persp, "?")
 
+            # DEBUG: Log primeiras 3 conexões para diagnóstico
+            if idx < 3:
+                logger.info(
+                    f"[DEBUG] Conexao {idx}: source='{conn.source_objective_id[:50]}...' -> "
+                    f"persp={source_persp} ({source_abbrev}), "
+                    f"target='{conn.target_objective_id[:50]}...' -> persp={target_persp} ({target_abbrev})"
+                )
+
             pair_key = f"{source_abbrev}->{target_abbrev}"
             if pair_key in counts:
                 counts[pair_key] += 1
+            else:
+                unknown_count += 1
 
+        # DEBUG: Log se muitas conexões desconhecidas
+        if unknown_count > 0:
+            logger.warning(
+                f"[DEBUG] {unknown_count}/{len(connections)} conexoes com perspectiva DESCONHECIDA (nao contadas)"
+            )
+
+        logger.info(f"[DEBUG] Contagem final por par: {counts}")
         return counts
 
     async def _suggest_connections(
