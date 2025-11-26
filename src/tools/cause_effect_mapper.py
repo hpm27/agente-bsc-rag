@@ -351,6 +351,9 @@ class CauseEffectMapperTool:
 
         # PASSO 1: Tentar match EXATO (comportamento original)
         for persp_name, perspective in perspectives_map.items():
+            # Null-check: perspective pode ser None se strategy_map incompleto
+            if perspective is None or not perspective.objectives:
+                continue
             for obj in perspective.objectives:
                 if obj.name == obj_name:
                     return persp_name
@@ -361,6 +364,9 @@ class CauseEffectMapperTool:
         best_match_name = ""
 
         for persp_name, perspective in perspectives_map.items():
+            # Null-check: perspective pode ser None se strategy_map incompleto
+            if perspective is None or not perspective.objectives:
+                continue
             for obj in perspective.objectives:
                 # Normalizar para comparação (lowercase, sem espaços extras)
                 name_normalized = obj.name.lower().strip()
