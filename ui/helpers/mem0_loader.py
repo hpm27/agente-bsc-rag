@@ -338,8 +338,15 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
                 # quando múltiplos clientes criados no mesmo dia com mesmo nome/setor
                 # CORREÇÃO FUSO: Usar zoneinfo para conversão robusta (futuro-proof)
                 if profile.created_at:
-                    # Tratar timestamp como UTC e converter para Sao Paulo
-                    utc_time = profile.created_at.replace(tzinfo=timezone.utc)
+                    ts = profile.created_at
+                    # Verificar se datetime é naive (sem timezone) ou aware
+                    if ts.tzinfo is None:
+                        # Naive datetime: assumir UTC e adicionar timezone
+                        utc_time = ts.replace(tzinfo=timezone.utc)
+                    else:
+                        # Aware datetime: converter para UTC primeiro
+                        utc_time = ts.astimezone(timezone.utc)
+                    # Converter para Sao Paulo
                     local_time = utc_time.astimezone(ZoneInfo("America/Sao_Paulo"))
                     created_date = local_time.strftime("%d/%m/%Y %H:%M")
                 else:
