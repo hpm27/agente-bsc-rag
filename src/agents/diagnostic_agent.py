@@ -1260,6 +1260,39 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         )
 
         etapa4_elapsed = time.time() - etapa4_start
+
+        # ETAPA 4.5: 2ª FASE - Gerar KPI Framework (SESSAO 49 - BUG FIX)
+        # KPI Framework precisa do CompleteDiagnostic para contexto
+        etapa45_start = time.time()
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 4.5/5: Gerando KPI Framework (2a fase)...")
+
+        kpi_framework = None
+        try:
+            kpi_framework = self.generate_kpi_framework(
+                client_profile=client_profile,
+                diagnostic_result=complete_diagnostic,
+                use_rag=True,
+            )
+            if kpi_framework:
+                logger.info(
+                    f"[OK] [DIAGNOSTIC] KPI Framework gerado: {kpi_framework.total_kpis()} KPIs"
+                )
+                # Atualizar tools_results com KPI Framework
+                tools_results.kpi_framework = kpi_framework
+                if "kpi_framework" not in tools_results.tools_executed:
+                    tools_results.tools_executed.append("kpi_framework")
+                if "kpi_framework" in tools_results.tools_failed:
+                    tools_results.tools_failed.remove("kpi_framework")
+        except Exception as e:
+            logger.warning(f"[WARN] [DIAGNOSTIC] Falha ao gerar KPI Framework: {e}")
+
+        etapa45_elapsed = time.time() - etapa45_start
+
+        # Atualizar diagnostic com tools_results atualizado (inclui KPI Framework)
+        complete_diagnostic.diagnostic_tools_results = (
+            tools_results.model_dump() if tools_results else None
+        )
+
         total_elapsed = time.time() - diag_inner_start
 
         logger.info(
@@ -1270,8 +1303,10 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
             f"[TIMING] [DIAGNOSTIC]   ETAPA 2   (Consolidacao LLM):  {etapa2_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC]   ETAPA 3   (Recomendacoes LLM): {etapa3_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC]   ETAPA 4   (Build diagnostic):  {etapa4_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 4.5 (KPI Framework):     {etapa45_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC]   TOTAL:                         {total_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC] Recommendations: {len(recommendations)} | "
+            f"KPI Framework: {'[OK]' if kpi_framework else '[--]'} | "
             f"Next Phase: {complete_diagnostic.next_phase}"
         )
 
