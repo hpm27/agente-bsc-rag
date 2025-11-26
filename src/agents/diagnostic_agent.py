@@ -1209,7 +1209,7 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
 
         etapa2_elapsed = time.time() - etapa2_start
         logger.info(
-            f"[TIMING] [DIAGNOSTIC] ETAPA 3/6 CONCLUIDA em {etapa3_elapsed:.2f}s | "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 3/6 CONCLUIDA em {etapa2_elapsed:.2f}s | "
             f"{len(consolidated.get('cross_perspective_synergies', []))} synergies"
         )
 
