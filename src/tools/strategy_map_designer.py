@@ -343,68 +343,107 @@ Strategic Objectives (já definidos):
         self, perspectives_dict: Dict[str, StrategyMapPerspective]
     ) -> list[CauseEffectConnection]:
         """
-        Cria conexões causa-efeito mínimas default (fallback).
+        Cria conexoes causa-efeito default (fallback) para TODOS objetivos.
 
-        Conecta o primeiro objetivo de cada perspectiva seguindo lógica K&N:
-        Learning -> Process -> Customer -> Financial
+        CORRECAO SESSAO 49: Conecta TODOS objetivos, nao apenas o primeiro.
+        Framework K&N: Learning -> Process -> Customer -> Financial
+
+        Estrategia:
+        1. Conecta cada objetivo Learning ao primeiro objetivo Process
+        2. Conecta cada objetivo Process ao primeiro objetivo Customer
+        3. Conecta cada objetivo Customer ao primeiro objetivo Financial
+        4. Adiciona conexoes diretas P->F (eficiencia operacional)
         """
-        logger.info("[StrategyMapDesigner] Criando conexões causa-efeito default (fallback)")
+        logger.info("[StrategyMapDesigner] Criando conexoes causa-efeito default (TODOS objetivos)")
 
         connections = []
 
-        # Learning -> Process
-        learning_obj = perspectives_dict.get("Aprendizado e Crescimento")
-        process_obj = perspectives_dict.get("Processos Internos")
-        if learning_obj and process_obj and learning_obj.objectives and process_obj.objectives:
-            connections.append(
-                CauseEffectConnection(
-                    source_objective_id=learning_obj.objectives[0].name,
-                    target_objective_id=process_obj.objectives[0].name,
-                    relationship_type="enables",
-                    strength="medium",
-                    rationale="Capacitação da equipe permite melhorar execução dos processos internos críticos",
-                )
-            )
+        learning_persp = perspectives_dict.get("Aprendizado e Crescimento")
+        process_persp = perspectives_dict.get("Processos Internos")
+        customer_persp = perspectives_dict.get("Clientes")
+        financial_persp = perspectives_dict.get("Financeira")
 
-        # Process -> Customer
-        customer_obj = perspectives_dict.get("Clientes")
-        if process_obj and customer_obj and process_obj.objectives and customer_obj.objectives:
-            connections.append(
-                CauseEffectConnection(
-                    source_objective_id=process_obj.objectives[0].name,
-                    target_objective_id=customer_obj.objectives[0].name,
-                    relationship_type="drives",
-                    strength="strong",
-                    rationale="Melhoria nos processos internos impulsiona diretamente satisfação e retenção de clientes",
+        # Learning -> Process: CADA objetivo Learning conecta ao primeiro Process
+        if (
+            learning_persp
+            and process_persp
+            and learning_persp.objectives
+            and process_persp.objectives
+        ):
+            target_obj = process_persp.objectives[0]
+            for idx, source_obj in enumerate(learning_persp.objectives):
+                connections.append(
+                    CauseEffectConnection(
+                        source_objective_id=source_obj.name,
+                        target_objective_id=target_obj.name,
+                        relationship_type="enables",
+                        strength="medium" if idx > 0 else "strong",
+                        rationale=f"Capacitacao '{source_obj.name[:50]}' habilita execucao de processos internos",
+                    )
                 )
-            )
 
-        # Customer -> Financial
-        financial_obj = perspectives_dict.get("Financeira")
-        if customer_obj and financial_obj and customer_obj.objectives and financial_obj.objectives:
-            connections.append(
-                CauseEffectConnection(
-                    source_objective_id=customer_obj.objectives[0].name,
-                    target_objective_id=financial_obj.objectives[0].name,
-                    relationship_type="drives",
-                    strength="strong",
-                    rationale="Maior satisfação e retenção de clientes impulsiona crescimento de receita e margem EBITDA",
+        # Process -> Customer: CADA objetivo Process conecta ao primeiro Customer
+        if (
+            process_persp
+            and customer_persp
+            and process_persp.objectives
+            and customer_persp.objectives
+        ):
+            target_obj = customer_persp.objectives[0]
+            for idx, source_obj in enumerate(process_persp.objectives):
+                connections.append(
+                    CauseEffectConnection(
+                        source_objective_id=source_obj.name,
+                        target_objective_id=target_obj.name,
+                        relationship_type="drives",
+                        strength="strong" if idx == 0 else "medium",
+                        rationale=f"Processo '{source_obj.name[:50]}' impulsiona satisfacao do cliente",
+                    )
                 )
-            )
 
-        # Process -> Financial (conexão direta adicional)
-        if process_obj and financial_obj and process_obj.objectives and financial_obj.objectives:
-            connections.append(
-                CauseEffectConnection(
-                    source_objective_id=process_obj.objectives[0].name,
-                    target_objective_id=financial_obj.objectives[0].name,
-                    relationship_type="supports",
-                    strength="medium",
-                    rationale="Eficiência operacional suporta redução de custos e melhoria de margem EBITDA",
+        # Customer -> Financial: CADA objetivo Customer conecta ao primeiro Financial
+        if (
+            customer_persp
+            and financial_persp
+            and customer_persp.objectives
+            and financial_persp.objectives
+        ):
+            target_obj = financial_persp.objectives[0]
+            for idx, source_obj in enumerate(customer_persp.objectives):
+                connections.append(
+                    CauseEffectConnection(
+                        source_objective_id=source_obj.name,
+                        target_objective_id=target_obj.name,
+                        relationship_type="drives",
+                        strength="strong" if idx == 0 else "medium",
+                        rationale=f"Cliente '{source_obj.name[:50]}' impulsiona crescimento de receita",
+                    )
                 )
-            )
 
-        logger.info(f"[StrategyMapDesigner] Conexões default criadas: {len(connections)}")
+        # Process -> Financial (conexoes diretas - eficiencia operacional)
+        if (
+            process_persp
+            and financial_persp
+            and process_persp.objectives
+            and financial_persp.objectives
+        ):
+            target_obj = financial_persp.objectives[0]
+            for source_obj in process_persp.objectives[
+                1:
+            ]:  # Exceto o primeiro (ja conectou via Customer)
+                connections.append(
+                    CauseEffectConnection(
+                        source_objective_id=source_obj.name,
+                        target_objective_id=target_obj.name,
+                        relationship_type="supports",
+                        strength="weak",
+                        rationale=f"Eficiencia em '{source_obj.name[:50]}' suporta reducao de custos",
+                    )
+                )
+
+        logger.info(
+            f"[StrategyMapDesigner] Conexoes default criadas: {len(connections)} (TODOS objetivos)"
+        )
         return connections
 
     async def design_strategy_map(
