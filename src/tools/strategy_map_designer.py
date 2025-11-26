@@ -103,6 +103,16 @@ STRENGTH LEVELS:
 - "medium": Conexão provável mas dependente de contexto
 - "weak": Conexão indireta ou condicional
 
+PERSPECTIVAS (OBRIGATÓRIO especificar em cada conexão):
+- "Aprendizado e Crescimento" (Learning)
+- "Processos Internos" (Process)
+- "Clientes" (Customer)
+- "Financeira" (Financial)
+
+IMPORTANTE: Para cada conexão, SEMPRE preencha:
+- source_perspective: A perspectiva do objetivo origem (ex: "Aprendizado e Crescimento")
+- target_perspective: A perspectiva do objetivo destino (ex: "Processos Internos")
+
 RETORNE lista de CauseEffectConnection (JSON schema fornecido).
 Mínimo: 4 conexões (1 entre cada par de perspectivas adjacentes).
 Ideal: 8-12 conexões para Strategy Map completo.
