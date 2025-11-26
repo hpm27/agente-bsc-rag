@@ -421,6 +421,8 @@ Strategic Objectives (já definidos):
                 )
 
         # Process -> Financial (conexoes diretas - eficiencia operacional)
+        # CORRECAO: Incluir TODOS Process, nao apenas a partir do indice 1
+        # Conexao P->F direta representa impacto em custos/eficiencia (diferente de P->C->F via cliente)
         if (
             process_persp
             and financial_persp
@@ -428,15 +430,13 @@ Strategic Objectives (já definidos):
             and financial_persp.objectives
         ):
             target_obj = financial_persp.objectives[0]
-            for source_obj in process_persp.objectives[
-                1:
-            ]:  # Exceto o primeiro (ja conectou via Customer)
+            for idx, source_obj in enumerate(process_persp.objectives):
                 connections.append(
                     CauseEffectConnection(
                         source_objective_id=source_obj.name,
                         target_objective_id=target_obj.name,
                         relationship_type="supports",
-                        strength="weak",
+                        strength="medium" if idx == 0 else "weak",
                         rationale=f"Eficiencia em '{source_obj.name[:50]}' suporta reducao de custos",
                     )
                 )
