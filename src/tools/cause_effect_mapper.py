@@ -330,7 +330,18 @@ class CauseEffectMapperTool:
         return names
 
     def _get_objective_perspective(self, strategy_map: StrategyMap, obj_name: str) -> str:
-        """Retorna a perspectiva de um objective pelo nome."""
+        """Retorna a perspectiva de um objective pelo nome.
+
+        SESSAO 49 FIX: Adiciona FUZZY MATCHING para resolver desalinhamento
+        entre nomes gerados pelo LLM e nomes reais dos objetivos.
+
+        Algoritmo:
+        1. Tentar match EXATO primeiro (mais rápido)
+        2. Se não encontrar, fazer fuzzy match com difflib.SequenceMatcher
+        3. Retornar perspectiva se match ratio >= 0.80 (80% similaridade)
+        """
+        from difflib import SequenceMatcher
+
         perspectives_map = {
             "Financeira": strategy_map.financial,
             "Clientes": strategy_map.customer,
@@ -338,11 +349,42 @@ class CauseEffectMapperTool:
             "Aprendizado e Crescimento": strategy_map.learning,
         }
 
+        # PASSO 1: Tentar match EXATO (comportamento original)
         for persp_name, perspective in perspectives_map.items():
             for obj in perspective.objectives:
                 if obj.name == obj_name:
                     return persp_name
 
+        # PASSO 2: FUZZY MATCHING - encontrar objetivo mais similar
+        best_match_ratio = 0.0
+        best_match_persp = "Desconhecida"
+        best_match_name = ""
+
+        for persp_name, perspective in perspectives_map.items():
+            for obj in perspective.objectives:
+                # Normalizar para comparação (lowercase, sem espaços extras)
+                name_normalized = obj.name.lower().strip()
+                query_normalized = obj_name.lower().strip()
+
+                ratio = SequenceMatcher(None, name_normalized, query_normalized).ratio()
+
+                if ratio > best_match_ratio:
+                    best_match_ratio = ratio
+                    best_match_persp = persp_name
+                    best_match_name = obj.name
+
+        # PASSO 3: Retornar se ratio >= 0.80 (80% similaridade)
+        if best_match_ratio >= 0.80:
+            logger.debug(
+                f"[FUZZY MATCH] '{obj_name[:40]}...' -> '{best_match_name[:40]}...' "
+                f"({best_match_ratio:.0%}) = {best_match_persp}"
+            )
+            return best_match_persp
+
+        # Nenhum match encontrado
+        logger.warning(
+            f"[WARN] Objetivo nao encontrado (nem fuzzy): '{obj_name[:50]}...'"
+        )
         return "Desconhecida"
 
     def _check_flow_direction(
