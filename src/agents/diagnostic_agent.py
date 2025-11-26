@@ -1664,10 +1664,10 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         # SESSAO 49: Aumentar timeout para 20 min (adicionada ETAPA 4.5 KPI Framework)
         global_timeout_sec = 1200  # 20 minutos para diagnóstico completo + KPI Framework
         logger.info(
-            f"[DIAGNOSTIC v3.4] Iniciando run_diagnostic com timeout global de {global_timeout_sec}s (15 min)"
+            f"[DIAGNOSTIC v3.4] Iniciando run_diagnostic com timeout global de {global_timeout_sec}s (20 min)"
         )
         logger.info(
-            f"[DIAGNOSTIC v3.4 PRINT] Timeout global: {global_timeout_sec}s (15 min) - Consolidação pode demorar 3-5 min"
+            f"[DIAGNOSTIC v3.4 PRINT] Timeout global: {global_timeout_sec}s (20 min) - Inclui KPI Framework (ETAPA 4.5)"
         )
         try:
             logger.info("[DIAGNOSTIC v3.1 LOG] ANTES de asyncio.wait_for(_run_diagnostic_inner)")
