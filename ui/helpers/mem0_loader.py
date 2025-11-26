@@ -11,11 +11,12 @@ IMPORTANTE:
 - Zero emojis (memoria [[9776249]], Windows cp1252)
 - SQLite é fonte primária (zero latency, confiável)
 - Mem0 é fallback (eventual consistency até 10 min)
-- Timestamps convertidos de UTC para Brasilia (UTC-3)
+- Timestamps convertidos de UTC para America/Sao_Paulo (zoneinfo)
 """
 
 import logging
-from datetime import timedelta
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from src.database import get_db_session
 from src.database.repository import BSCRepository
@@ -335,9 +336,11 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
                 # Formatar data no padrao brasileiro COM HORA para garantir unicidade
                 # CORREÇÃO SESSAO 49: DD/MM/YYYY HH:MM evita colisão de chaves
                 # quando múltiplos clientes criados no mesmo dia com mesmo nome/setor
-                # CORREÇÃO FUSO: Banco salva UTC, converter para Brasilia (UTC-3)
+                # CORREÇÃO FUSO: Usar zoneinfo para conversão robusta (futuro-proof)
                 if profile.created_at:
-                    local_time = profile.created_at - timedelta(hours=3)
+                    # Tratar timestamp como UTC e converter para Sao Paulo
+                    utc_time = profile.created_at.replace(tzinfo=timezone.utc)
+                    local_time = utc_time.astimezone(ZoneInfo("America/Sao_Paulo"))
                     created_date = local_time.strftime("%d/%m/%Y %H:%M")
                 else:
                     created_date = "Data desconhecida"

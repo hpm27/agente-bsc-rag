@@ -1176,19 +1176,19 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
 
         # ETAPA 1: Análise paralela das 4 perspectivas (AsyncIO)
         etapa1_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 1/5: Analise paralela das 4 perspectivas BSC...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 1/6: Analise paralela das 4 perspectivas BSC...")
 
         perspective_results = await self.run_parallel_analysis(client_profile, state)
 
         etapa1_elapsed = time.time() - etapa1_start
         logger.info(
-            f"[TIMING] [DIAGNOSTIC] ETAPA 1/5 CONCLUIDA em {etapa1_elapsed:.2f}s | "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 1/6 CONCLUIDA em {etapa1_elapsed:.2f}s | "
             f"Keys: {list(perspective_results.keys())}"
         )
 
         # ETAPA 1.5: Análises consultivas (7 ferramentas) - SPRINT 1 (GAP #2)!
         etapa15_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 1.5/5: Ferramentas consultivas em paralelo...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 2/6: Ferramentas consultivas em paralelo...")
 
         tools_results = await self._run_consultative_tools(
             client_profile, state, perspective_results
@@ -1196,26 +1196,26 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
 
         etapa15_elapsed = time.time() - etapa15_start
         logger.info(
-            f"[TIMING] [DIAGNOSTIC] ETAPA 1.5/5 CONCLUIDA em {etapa15_elapsed:.2f}s | "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 2/6 CONCLUIDA em {etapa15_elapsed:.2f}s | "
             f"{len(tools_results.tools_executed)}/7 sucesso, "
             f"{len(tools_results.tools_failed)}/7 falhas"
         )
 
         # ETAPA 2: Consolidação cross-perspective (enriquecida com ferramentas)
         etapa2_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 2/5: Consolidacao cross-perspective (LLM)...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 3/6: Consolidacao cross-perspective (LLM)...")
 
         consolidated = await self.consolidate_diagnostic(perspective_results, tools_results)
 
         etapa2_elapsed = time.time() - etapa2_start
         logger.info(
-            f"[TIMING] [DIAGNOSTIC] ETAPA 2/5 CONCLUIDA em {etapa2_elapsed:.2f}s | "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 3/6 CONCLUIDA em {etapa3_elapsed:.2f}s | "
             f"{len(consolidated.get('cross_perspective_synergies', []))} synergies"
         )
 
         # ETAPA 3: Geração de recomendações priorizadas
         etapa3_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 3/5: Geracao de recomendacoes (LLM)...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 4/6: Geracao de recomendacoes (LLM)...")
 
         recommendations = await self.generate_recommendations(
             perspective_results,
@@ -1224,13 +1224,13 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
 
         etapa3_elapsed = time.time() - etapa3_start
         logger.info(
-            f"[TIMING] [DIAGNOSTIC] ETAPA 3/5 CONCLUIDA em {etapa3_elapsed:.2f}s | "
+            f"[TIMING] [DIAGNOSTIC] ETAPA 4/6 CONCLUIDA em {etapa3_elapsed:.2f}s | "
             f"{len(recommendations)} recomendacoes"
         )
 
         # ETAPA 4: Construir CompleteDiagnostic
         etapa4_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 4/5: Construindo diagnostico completo...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 5/6: Construindo diagnostico completo...")
 
         # Pydantic V2: Converter instâncias para dict usando .model_dump()
         # CRÍTICO: CompleteDiagnostic NÃO aceita instâncias Pydantic diretamente
@@ -1264,7 +1264,7 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         # ETAPA 4.5: 2ª FASE - Gerar KPI Framework (SESSAO 49 - BUG FIX)
         # KPI Framework precisa do CompleteDiagnostic para contexto
         etapa45_start = time.time()
-        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 4.5/5: Gerando KPI Framework (2a fase)...")
+        logger.info("[TIMING] [DIAGNOSTIC] ETAPA 6/6: Gerando KPI Framework...")
 
         kpi_framework = None
         try:
@@ -1277,12 +1277,15 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
                 logger.info(
                     f"[OK] [DIAGNOSTIC] KPI Framework gerado: {kpi_framework.total_kpis()} KPIs"
                 )
-                # Atualizar tools_results com KPI Framework
-                tools_results.kpi_framework = kpi_framework
-                if "kpi_framework" not in tools_results.tools_executed:
-                    tools_results.tools_executed.append("kpi_framework")
-                if "kpi_framework" in tools_results.tools_failed:
-                    tools_results.tools_failed.remove("kpi_framework")
+                # Atualizar tools_results com KPI Framework (com null-check defensivo)
+                if tools_results is not None:
+                    tools_results.kpi_framework = kpi_framework
+                    if "kpi_framework" not in tools_results.tools_executed:
+                        tools_results.tools_executed.append("kpi_framework")
+                    if "kpi_framework" in tools_results.tools_failed:
+                        tools_results.tools_failed.remove("kpi_framework")
+                else:
+                    logger.warning("[WARN] [DIAGNOSTIC] tools_results is None, cannot update KPI Framework")
         except Exception as e:
             logger.warning(f"[WARN] [DIAGNOSTIC] Falha ao gerar KPI Framework: {e}")
 
@@ -1298,12 +1301,12 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
         logger.info(
             f"[TIMING] [DIAGNOSTIC] ========== DIAGNOSTICO CONCLUIDO ==========\n"
             f"[TIMING] [DIAGNOSTIC] RESUMO DE TEMPOS:\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 1   (4 Agents paralelo): {etapa1_elapsed:.2f}s\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 1.5 (7 Ferramentas):     {etapa15_elapsed:.2f}s\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 2   (Consolidacao LLM):  {etapa2_elapsed:.2f}s\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 3   (Recomendacoes LLM): {etapa3_elapsed:.2f}s\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 4   (Build diagnostic):  {etapa4_elapsed:.2f}s\n"
-            f"[TIMING] [DIAGNOSTIC]   ETAPA 4.5 (KPI Framework):     {etapa45_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 1/6 (4 Agents paralelo): {etapa1_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 2/6 (7 Ferramentas):     {etapa15_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 3/6 (Consolidacao LLM):  {etapa2_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 4/6 (Recomendacoes LLM): {etapa3_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 5/6 (Build diagnostic):  {etapa4_elapsed:.2f}s\n"
+            f"[TIMING] [DIAGNOSTIC]   ETAPA 6/6 (KPI Framework):     {etapa45_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC]   TOTAL:                         {total_elapsed:.2f}s\n"
             f"[TIMING] [DIAGNOSTIC] Recommendations: {len(recommendations)} | "
             f"KPI Framework: {'[OK]' if kpi_framework else '[--]'} | "
