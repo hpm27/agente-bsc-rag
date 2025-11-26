@@ -492,14 +492,47 @@ class CauseEffectMapperTool:
         Encontra objectives que nao tem nenhuma conexao.
 
         REGRA: Todo objective deve aparecer como source OU target
+
+        SESSAO 49 FIX: Adiciona fuzzy matching para evitar falsos positivos
+        quando nomes nas conexoes sao ligeiramente diferentes dos objetivos reais.
         """
-        connected = set()
+        from difflib import SequenceMatcher
 
+        # Coletar nomes nas conexoes
+        connected_names = set()
         for conn in connections:
-            connected.add(conn.source_objective_id)
-            connected.add(conn.target_objective_id)
+            connected_names.add(conn.source_objective_id)
+            connected_names.add(conn.target_objective_id)
 
-        isolated = [obj for obj in all_objectives if obj not in connected]
+        def is_connected(obj_name: str) -> bool:
+            """Verifica se objetivo esta conectado (exact ou fuzzy match)."""
+            # PASSO 1: Exact match
+            if obj_name in connected_names:
+                return True
+
+            # PASSO 2: Fuzzy match (threshold 80%)
+            obj_normalized = obj_name.lower().strip()
+            for conn_name in connected_names:
+                conn_normalized = conn_name.lower().strip()
+                ratio = SequenceMatcher(None, obj_normalized, conn_normalized).ratio()
+                if ratio >= 0.80:
+                    logger.debug(
+                        f"[FUZZY CONNECTED] '{obj_name[:30]}...' matches "
+                        f"'{conn_name[:30]}...' ({ratio:.0%})"
+                    )
+                    return True
+
+            return False
+
+        isolated = [obj for obj in all_objectives if not is_connected(obj)]
+
+        # DEBUG: Log resultado
+        if isolated:
+            logger.info(
+                f"[DEBUG] _find_isolated_objectives: {len(isolated)}/{len(all_objectives)} "
+                f"objetivos isolados"
+            )
+
         return isolated
 
     def _check_minimum_connections(
