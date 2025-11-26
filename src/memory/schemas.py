@@ -4347,6 +4347,25 @@ class CauseEffectConnection(BaseModel):
         ),
     )
 
+    # SESSAO 49 FIX: Campos opcionais para perspectiva (evita busca por nome)
+    source_perspective: str | None = Field(
+        default=None,
+        description=(
+            "Perspectiva BSC do objetivo origem. "
+            "Valores: 'Aprendizado e Crescimento', 'Processos Internos', 'Clientes', 'Financeira'. "
+            "Se preenchido, evita busca por nome do objetivo (mais robusto)."
+        ),
+    )
+
+    target_perspective: str | None = Field(
+        default=None,
+        description=(
+            "Perspectiva BSC do objetivo destino. "
+            "Valores: 'Aprendizado e Crescimento', 'Processos Internos', 'Clientes', 'Financeira'. "
+            "Se preenchido, evita busca por nome do objetivo (mais robusto)."
+        ),
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -4355,6 +4374,8 @@ class CauseEffectConnection(BaseModel):
                 "relationship_type": "enables",
                 "strength": "strong",
                 "rationale": "Programa de certificação Lean Six Sigma (120h) capacita equipe a identificar e eliminar waste nos processos de manufatura, habilitando redução de 25% no lead time de produção",
+                "source_perspective": "Aprendizado e Crescimento",
+                "target_perspective": "Processos Internos",
             }
         }
     )

@@ -593,8 +593,17 @@ class CauseEffectMapperTool:
 
         unknown_count = 0
         for idx, conn in enumerate(connections):
-            source_persp = self._get_objective_perspective(strategy_map, conn.source_objective_id)
-            target_persp = self._get_objective_perspective(strategy_map, conn.target_objective_id)
+            # SESSAO 49 FIX: Usar campos source_perspective/target_perspective se disponiveis
+            # Isso evita busca por nome (mais robusto)
+            if conn.source_perspective:
+                source_persp = conn.source_perspective
+            else:
+                source_persp = self._get_objective_perspective(strategy_map, conn.source_objective_id)
+            
+            if conn.target_perspective:
+                target_persp = conn.target_perspective
+            else:
+                target_persp = self._get_objective_perspective(strategy_map, conn.target_objective_id)
 
             source_abbrev = PERSPECTIVE_ABBREV.get(source_persp, "?")
             target_abbrev = PERSPECTIVE_ABBREV.get(target_persp, "?")

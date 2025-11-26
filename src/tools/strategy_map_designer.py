@@ -388,6 +388,9 @@ Strategic Objectives (já definidos):
                         relationship_type="enables",
                         strength="medium" if idx > 0 else "strong",
                         rationale=f"Capacitacao '{source_obj.name[:50]}' habilita execucao de processos internos",
+                        # SESSAO 49 FIX: Perspectivas explicitas (evita busca por nome)
+                        source_perspective="Aprendizado e Crescimento",
+                        target_perspective="Processos Internos",
                     )
                 )
 
@@ -407,6 +410,9 @@ Strategic Objectives (já definidos):
                         relationship_type="drives",
                         strength="strong" if idx == 0 else "medium",
                         rationale=f"Processo '{source_obj.name[:50]}' impulsiona satisfacao do cliente",
+                        # SESSAO 49 FIX: Perspectivas explicitas
+                        source_perspective="Processos Internos",
+                        target_perspective="Clientes",
                     )
                 )
 
@@ -426,6 +432,9 @@ Strategic Objectives (já definidos):
                         relationship_type="drives",
                         strength="strong" if idx == 0 else "medium",
                         rationale=f"Cliente '{source_obj.name[:50]}' impulsiona crescimento de receita",
+                        # SESSAO 49 FIX: Perspectivas explicitas
+                        source_perspective="Clientes",
+                        target_perspective="Financeira",
                     )
                 )
 
@@ -447,6 +456,9 @@ Strategic Objectives (já definidos):
                         relationship_type="supports",
                         strength="medium" if idx == 0 else "weak",
                         rationale=f"Eficiencia em '{source_obj.name[:50]}' suporta reducao de custos",
+                        # SESSAO 49 FIX: Perspectivas explicitas
+                        source_perspective="Processos Internos",
+                        target_perspective="Financeira",
                     )
                 )
 
