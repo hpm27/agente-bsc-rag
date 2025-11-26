@@ -11,9 +11,11 @@ IMPORTANTE:
 - Zero emojis (memoria [[9776249]], Windows cp1252)
 - SQLite é fonte primária (zero latency, confiável)
 - Mem0 é fallback (eventual consistency até 10 min)
+- Timestamps convertidos de UTC para Brasilia (UTC-3)
 """
 
 import logging
+from datetime import timedelta
 
 from src.database import get_db_session
 from src.database.repository import BSCRepository
@@ -333,11 +335,12 @@ def load_all_clients_sqlite() -> tuple[list[dict] | None, str | None]:
                 # Formatar data no padrao brasileiro COM HORA para garantir unicidade
                 # CORREÇÃO SESSAO 49: DD/MM/YYYY HH:MM evita colisão de chaves
                 # quando múltiplos clientes criados no mesmo dia com mesmo nome/setor
-                created_date = (
-                    profile.created_at.strftime("%d/%m/%Y %H:%M")
-                    if profile.created_at
-                    else "Data desconhecida"
-                )
+                # CORREÇÃO FUSO: Banco salva UTC, converter para Brasilia (UTC-3)
+                if profile.created_at:
+                    local_time = profile.created_at - timedelta(hours=3)
+                    created_date = local_time.strftime("%d/%m/%Y %H:%M")
+                else:
+                    created_date = "Data desconhecida"
 
                 # Nome da empresa (fallback se vazio)
                 company = profile.company_name or "[Sem nome]"
