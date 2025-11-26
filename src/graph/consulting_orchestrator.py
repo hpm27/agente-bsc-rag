@@ -422,6 +422,17 @@ class ConsultingOrchestrator:
                 diagnostic_dict["metadata"] = {}
             diagnostic_dict["metadata"]["judge_evaluation"] = judge_evaluation
 
+            # SESSAO 49 FIX: Extrair tool_outputs para KPI Alignment funcionar
+            # design_solution_handler espera state.tool_outputs com kpi_framework
+            tool_outputs = diagnostic_dict.get("diagnostic_tools_results", {})
+            if tool_outputs:
+                logger.info(
+                    f"[OK] [ORCHESTRATOR] tool_outputs extraido | "
+                    f"kpi_framework={'kpi_framework' in tool_outputs and tool_outputs['kpi_framework'] is not None}"
+                )
+            else:
+                logger.warning("[WARN] [ORCHESTRATOR] diagnostic_tools_results vazio/ausente")
+
             # Gerar resumo para resposta
             summary = self._generate_diagnostic_summary(complete_diagnostic)
 
@@ -433,6 +444,7 @@ class ConsultingOrchestrator:
 
             return {
                 "diagnostic": diagnostic_dict,
+                "tool_outputs": tool_outputs,  # SESSAO 49 FIX: Passar para state
                 "final_response": summary,
                 "is_complete": True,
                 **transition_data,
