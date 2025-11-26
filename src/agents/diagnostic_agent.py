@@ -1286,8 +1286,16 @@ Por favor, volte ao onboarding e forneça as informações faltantes. Depois pod
                         tools_results.tools_failed.remove("kpi_framework")
                 else:
                     logger.warning("[WARN] [DIAGNOSTIC] tools_results is None, cannot update KPI Framework")
+            else:
+                # Falha: retornou None/falsy - rastrear em tools_failed
+                logger.warning("[WARN] [DIAGNOSTIC] KPI Framework retornou None/vazio")
+                if tools_results is not None and "kpi_framework" not in tools_results.tools_failed:
+                    tools_results.tools_failed.append("kpi_framework")
         except Exception as e:
             logger.warning(f"[WARN] [DIAGNOSTIC] Falha ao gerar KPI Framework: {e}")
+            # Falha: excecao - rastrear em tools_failed
+            if tools_results is not None and "kpi_framework" not in tools_results.tools_failed:
+                tools_results.tools_failed.append("kpi_framework")
 
         etapa45_elapsed = time.time() - etapa45_start
 
