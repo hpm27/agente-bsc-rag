@@ -1561,6 +1561,23 @@ class OnboardingAgent:
         pain_points = partial_profile.get("pain_points", [])
         technology_gaps = partial_profile.get("technology_gaps", [])
 
+        # SESSAO 50 (Dez/2025): Campos FASE 2 e FASE 3 (Steps 7-14)
+        # FASE 2 - Enriquecimento
+        mission = partial_profile.get("mission", "")
+        vision = partial_profile.get("vision", "")
+        core_values = partial_profile.get("core_values", [])
+        competitors = partial_profile.get("competitors", [])
+        competitive_advantages = partial_profile.get("competitive_advantages", [])
+        market_share = partial_profile.get("market_share", "")
+        timeline = partial_profile.get("timeline", "")
+        sponsor_name = partial_profile.get("sponsor_name", "")
+        success_criteria = partial_profile.get("success_criteria", [])
+        # FASE 3 - KPIs por perspectiva BSC
+        financial_metrics = partial_profile.get("financial_metrics", {})
+        customer_metrics = partial_profile.get("customer_metrics", {})
+        process_metrics = partial_profile.get("process_kpis", {})
+        learning_metrics = partial_profile.get("learning_metrics", {})
+
         # Formatar listas para o prompt
         challenges_str = ", ".join(challenges[:5]) if challenges else ""
         goals_str = ", ".join(goals[:4]) if goals else ""
@@ -1596,12 +1613,56 @@ class OnboardingAgent:
         all_pains = (pain_points or []) + (technology_gaps or [])
         pains_str = ", ".join(all_pains[:4]) if all_pains else ""
 
-        # Prompt LIMPO (sem histórico) - EXPANDIDO SESSAO 46
+        # SESSAO 50: Formatar campos FASE 2 e FASE 3
+        # MVV
+        values_str = ", ".join(core_values[:5]) if core_values else ""
+        # Contexto Competitivo
+        competitors_str = ", ".join(competitors[:5]) if competitors else ""
+        advantages_str = ", ".join(competitive_advantages[:4]) if competitive_advantages else ""
+        # Restrições do Projeto
+        criteria_str = ", ".join(success_criteria[:3]) if success_criteria else ""
+        # KPIs por Perspectiva
+        financial_kpis_str = ""
+        if financial_metrics:
+            if isinstance(financial_metrics, dict):
+                financial_kpis_str = ", ".join(f"{k}: {v}" for k, v in financial_metrics.items())
+            elif isinstance(financial_metrics, list):
+                financial_kpis_str = ", ".join(str(m) for m in financial_metrics[:4])
+            else:
+                financial_kpis_str = str(financial_metrics)
+        customer_kpis_str = ""
+        if customer_metrics:
+            if isinstance(customer_metrics, dict):
+                customer_kpis_str = ", ".join(f"{k}: {v}" for k, v in customer_metrics.items())
+            elif isinstance(customer_metrics, list):
+                customer_kpis_str = ", ".join(str(m) for m in customer_metrics[:4])
+            else:
+                customer_kpis_str = str(customer_metrics)
+        process_kpis_str = ""
+        if process_metrics:
+            if isinstance(process_metrics, dict):
+                process_kpis_str = ", ".join(f"{k}: {v}" for k, v in process_metrics.items())
+            elif isinstance(process_metrics, list):
+                process_kpis_str = ", ".join(str(m) for m in process_metrics[:4])
+            else:
+                process_kpis_str = str(process_metrics)
+        learning_kpis_str = ""
+        if learning_metrics:
+            if isinstance(learning_metrics, dict):
+                learning_kpis_str = ", ".join(f"{k}: {v}" for k, v in learning_metrics.items())
+            elif isinstance(learning_metrics, list):
+                learning_kpis_str = ", ".join(str(m) for m in learning_metrics[:4])
+            else:
+                learning_kpis_str = str(learning_metrics)
+
+        # Prompt LIMPO (sem histórico) - EXPANDIDO SESSAO 46 + SESSAO 50
         consolidated_prompt = f"""Voce e um consultor BSC experiente e profissional.
 
 TAREFA: Gerar mensagem de CONFIRMACAO estruturada das informacoes coletadas.
 
 DADOS COLETADOS:
+
+**FASE 1 - IDENTIFICACAO (Steps 1-6):**
 - Empresa: {company_name}
 - Setor: {industry or 'nao informado'}
 - Porte: {size or 'nao informado'}
@@ -1615,6 +1676,23 @@ DADOS COLETADOS:
 - Investimentos necessarios: {investments_str or 'nao identificados'}
 - Projetos em andamento: {projects_str or 'nenhum mencionado'}
 - Dores/Gaps: {pains_str or 'nao identificados'}
+
+**FASE 2 - ENRIQUECIMENTO (Steps 7-10):**
+- Missao: {mission[:150] + '...' if mission and len(mission) > 150 else mission or 'nao informada'}
+- Visao: {vision[:100] + '...' if vision and len(vision) > 100 else vision or 'nao informada'}
+- Valores: {values_str or 'nao informados'}
+- Concorrentes: {competitors_str or 'nao identificados'}
+- Diferenciais competitivos: {advantages_str or 'nao identificados'}
+- Market share: {market_share or 'nao informado'}
+- Timeline projeto BSC: {timeline or 'nao definido'}
+- Sponsor: {sponsor_name or 'nao definido'}
+- Criterios de sucesso: {criteria_str or 'nao definidos'}
+
+**FASE 3 - KPIs BSC (Steps 11-14):**
+- KPIs Financeiros: {financial_kpis_str or 'nao acompanhados'}
+- KPIs Clientes: {customer_kpis_str or 'nao acompanhados'}
+- KPIs Processos: {process_kpis_str or 'nao acompanhados'}
+- KPIs Aprendizado: {learning_kpis_str or 'nao acompanhados'}
 
 REGRAS:
 1. Mensagem ESTRUTURADA com secoes claras (use markdown)
