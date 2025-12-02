@@ -3261,8 +3261,10 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 followup = check["followup"]
                 if _is_followup_also_answered(followup):
                     followup = _get_next_unanswered_followup(check_idx)
+                    # BUGFIX Dez/2025: Null check antes de substring (followup pode ser None)
+                    followup_preview = followup[:50] if followup else "[nenhum disponivel]"
                     logger.warning(
-                        f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup[:50]}..."
+                        f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup_preview}..."
                     )
                 return False, followup
 
@@ -3287,8 +3289,10 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                     followup = check["followup"]
                     if _is_followup_also_answered(followup):
                         followup = _get_next_unanswered_followup(check_idx)
+                        # BUGFIX Dez/2025: Null check antes de substring (followup pode ser None)
+                        followup_preview = followup[:50] if followup else "[nenhum disponivel]"
                         logger.warning(
-                            f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup[:50]}..."
+                            f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup_preview}..."
                         )
                     return False, followup
 
