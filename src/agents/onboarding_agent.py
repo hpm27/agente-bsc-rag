@@ -3905,10 +3905,31 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 # Transicionar para DISCOVERY (onboarding completo!)
                 logger.info("[ENRICHMENT] ===== ONBOARDING COMPLETO! Iniciando DISCOVERY =====")
 
-                # Retornar None para deixar o fluxo principal lidar com a transição
+                # BUGFIX Dez/2025: Retornar is_complete=True para transicionar para DISCOVERY
+                # Antes retornava None que fazia o fluxo continuar sem completar
                 state.metadata["awaiting_confirmation"] = False
                 state.metadata["onboarding_complete"] = True
-                return None
+                state.current_phase = ConsultingPhase.DISCOVERY
+
+                company_name = partial_profile.get("company_name", "sua empresa")
+                return {
+                    "question": (
+                        f"## Onboarding Completo para {company_name}!\n\n"
+                        f"Todas as 14 etapas foram coletadas com sucesso.\n\n"
+                        f"Iniciando o **diagnostico BSC completo**...\n\n"
+                        f"_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas._"
+                    ),
+                    "is_complete": True,
+                    "extracted_entities": extracted_entities,
+                    "accumulated_profile": partial_profile,
+                    "metadata": {
+                        "partial_profile": partial_profile,
+                        "awaiting_confirmation": False,
+                        "onboarding_complete": True,
+                        "onboarding_phase": "completed",
+                        "current_enrichment_step": 14,
+                    },
+                }
 
         # ========================================================================
         # DEFINICAO DAS PERGUNTAS POR STEP
