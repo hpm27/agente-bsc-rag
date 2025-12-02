@@ -3831,6 +3831,71 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         company_name = partial_profile.get("company_name", "sua empresa")
 
         # ========================================================================
+        # SESSAO 50 (Dez/2025): DETECTAR CONFIRMACAO PARA TRANSICAO DE FASE
+        # Quando awaiting_confirmation=True e usuario responde "sim", avançar para proxima fase
+        # ========================================================================
+        awaiting_confirmation = state.metadata.get("awaiting_confirmation", False)
+        confirmation_keywords = ["sim", "confirmo", "ok", "pode continuar", "vamos", "confirma"]
+        is_confirmation = any(kw in user_lower for kw in confirmation_keywords) and len(user_lower) < 50
+
+        if awaiting_confirmation and is_confirmation:
+            logger.info(
+                "[ENRICHMENT] ===== CONFIRMACAO DETECTADA! Transicionando de %s Step %d =====",
+                current_phase,
+                current_step,
+            )
+
+            if current_phase == "enrichment" and current_step == 10:
+                # Transicionar para FASE 3 (bsc_kpis)
+                logger.info("[ENRICHMENT] ===== INICIANDO FASE 3 - PERSPECTIVAS BSC =====")
+
+                state.metadata["onboarding_phase"] = "bsc_kpis"
+                state.metadata["current_enrichment_step"] = 11
+                state.metadata["awaiting_confirmation"] = False
+
+                bsc_intro = (
+                    f"Otimo! Agora vamos detalhar os **KPIs por perspectiva BSC**.\n\n"
+                    f"**Step 11 - Perspectiva Financeira:**\n"
+                    f"Quais **KPIs financeiros** a {company_name} acompanha ou gostaria de acompanhar?\n"
+                    f"_Exemplos: ROI, EBITDA, Margem Bruta, Margem Liquida, Faturamento, Fluxo de Caixa, etc._"
+                )
+
+                return {
+                    "question": bsc_intro,
+                    "is_complete": False,
+                    "extracted_entities": extracted_entities,
+                    "accumulated_profile": partial_profile,
+                    "metadata": {
+                        "partial_profile": partial_profile,
+                        "onboarding_phase": "bsc_kpis",
+                        "current_enrichment_step": 11,
+                        "awaiting_confirmation": False,
+                        "conversation_history": state.metadata.get("conversation_history", []),
+                    },
+                }
+
+            elif current_phase == "bsc_kpis" and current_step == 14:
+                # Transicionar para DISCOVERY (onboarding completo!)
+                logger.info("[ENRICHMENT] ===== ONBOARDING COMPLETO! Iniciando DISCOVERY =====")
+
+                # Retornar None para deixar o fluxo principal lidar com a transição
+                state.metadata["awaiting_confirmation"] = False
+                state.metadata["onboarding_complete"] = True
+                return None
+
+        # Se awaiting_confirmation mas usuario pulou (nao confirmou)
+        if awaiting_confirmation and is_skip:
+            logger.info("[ENRICHMENT] Usuario escolheu PULAR a fase de confirmacao")
+
+            if current_phase == "enrichment" and current_step == 10:
+                # Pular FASE 3, ir direto para completion
+                logger.info("[ENRICHMENT] Pulando FASE 3 (KPIs BSC) - Indo para DISCOVERY")
+
+                state.metadata["awaiting_confirmation"] = False
+                state.metadata["onboarding_complete"] = True
+                return None
+
+        # ========================================================================
         # DEFINICAO DAS PERGUNTAS POR STEP
         # ========================================================================
         step_questions = {
