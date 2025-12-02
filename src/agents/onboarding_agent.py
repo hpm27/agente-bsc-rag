@@ -3273,7 +3273,8 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                     continue
 
                 # Se o campo tem valor, verifica se contem a metrica
-                field_str = str(field_value).lower()
+                # BUGFIX Dez/2025: Usar helper para extrair string buscavel (evita falsos negativos em dicts)
+                field_str = _field_value_to_searchable_string(field_value)
                 has_metric = any(content in field_str for content in check["check_content"])
 
                 if has_metric:
