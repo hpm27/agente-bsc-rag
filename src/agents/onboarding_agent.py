@@ -1575,7 +1575,7 @@ class OnboardingAgent:
         # FASE 3 - KPIs por perspectiva BSC
         financial_metrics = partial_profile.get("financial_metrics", {})
         customer_metrics = partial_profile.get("customer_metrics", {})
-        process_metrics = partial_profile.get("process_kpis", {})
+        process_metrics = partial_profile.get("process_metrics", {})
         learning_metrics = partial_profile.get("learning_metrics", {})
 
         # Formatar listas para o prompt
