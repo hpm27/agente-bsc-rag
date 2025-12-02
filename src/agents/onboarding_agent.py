@@ -3931,12 +3931,33 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             )
 
             if current_phase == "enrichment" and current_step == 10:
-                # Pular FASE 3, ir direto para completion
+                # Pular FASE 3, ir direto para DISCOVERY
                 logger.info("[ENRICHMENT] Pulando FASE 3 (KPIs BSC) - Indo para DISCOVERY")
 
                 state.metadata["awaiting_confirmation"] = False
                 state.metadata["onboarding_complete"] = True
-                return None
+                state.current_phase = ConsultingPhase.DISCOVERY
+
+                company_name = partial_profile.get("company_name", "sua empresa")
+                # BUGFIX Dez/2025: Retornar is_complete=True (antes retornava None)
+                return {
+                    "question": (
+                        f"## Onboarding Completo para {company_name}!\n\n"
+                        f"FASE 2 (Enriquecimento) concluida. Pulando FASE 3 (KPIs detalhados).\n\n"
+                        f"Iniciando o **diagnostico BSC completo**...\n\n"
+                        f"_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas._"
+                    ),
+                    "is_complete": True,
+                    "extracted_entities": extracted_entities,
+                    "accumulated_profile": partial_profile,
+                    "metadata": {
+                        "partial_profile": partial_profile,
+                        "awaiting_confirmation": False,
+                        "onboarding_complete": True,
+                        "onboarding_phase": "completed",
+                        "current_enrichment_step": 10,
+                    },
+                }
 
             elif current_phase == "bsc_kpis" and current_step == 14:
                 # BUGFIX Dez/2025: Tambem tratar skip na FASE 3 (bsc_kpis)
@@ -3944,7 +3965,28 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
                 state.metadata["awaiting_confirmation"] = False
                 state.metadata["onboarding_complete"] = True
-                return None
+                state.current_phase = ConsultingPhase.DISCOVERY
+
+                company_name = partial_profile.get("company_name", "sua empresa")
+                # BUGFIX Dez/2025: Retornar is_complete=True (antes retornava None)
+                return {
+                    "question": (
+                        f"## Onboarding Completo para {company_name}!\n\n"
+                        f"Todas as informacoes foram coletadas com sucesso.\n\n"
+                        f"Iniciando o **diagnostico BSC completo**...\n\n"
+                        f"_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas._"
+                    ),
+                    "is_complete": True,
+                    "extracted_entities": extracted_entities,
+                    "accumulated_profile": partial_profile,
+                    "metadata": {
+                        "partial_profile": partial_profile,
+                        "awaiting_confirmation": False,
+                        "onboarding_complete": True,
+                        "onboarding_phase": "completed",
+                        "current_enrichment_step": 14,
+                    },
+                }
 
         # Confirmacao so e processada se NAO houve skip
         if awaiting_confirmation and is_confirmation and not is_skip:
