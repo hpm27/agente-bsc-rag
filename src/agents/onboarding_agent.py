@@ -3831,14 +3831,41 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         company_name = partial_profile.get("company_name", "sua empresa")
 
         # ========================================================================
-        # SESSAO 50 (Dez/2025): DETECTAR CONFIRMACAO PARA TRANSICAO DE FASE
+        # SESSAO 50 (Dez/2025): DETECTAR CONFIRMACAO/SKIP PARA TRANSICAO DE FASE
         # Quando awaiting_confirmation=True e usuario responde "sim", avançar para proxima fase
+        # BUGFIX Dez/2025: Skip tem prioridade sobre confirmacao (ex: "vamos pular" = skip)
         # ========================================================================
         awaiting_confirmation = state.metadata.get("awaiting_confirmation", False)
         confirmation_keywords = ["sim", "confirmo", "ok", "pode continuar", "vamos", "confirma"]
         is_confirmation = any(kw in user_lower for kw in confirmation_keywords) and len(user_lower) < 50
 
-        if awaiting_confirmation and is_confirmation:
+        # BUGFIX Dez/2025: Skip tem prioridade quando ambos estao presentes
+        # Ex: "vamos pular" deve ser tratado como skip, nao confirmacao
+        if awaiting_confirmation and is_skip:
+            logger.info(
+                "[ENRICHMENT] Usuario escolheu PULAR na transicao de fase (phase=%s, step=%d)",
+                current_phase,
+                current_step,
+            )
+
+            if current_phase == "enrichment" and current_step == 10:
+                # Pular FASE 3, ir direto para completion
+                logger.info("[ENRICHMENT] Pulando FASE 3 (KPIs BSC) - Indo para DISCOVERY")
+
+                state.metadata["awaiting_confirmation"] = False
+                state.metadata["onboarding_complete"] = True
+                return None
+
+            elif current_phase == "bsc_kpis" and current_step == 14:
+                # BUGFIX Dez/2025: Tambem tratar skip na FASE 3 (bsc_kpis)
+                logger.info("[ENRICHMENT] Pulando confirmacao final - Indo para DISCOVERY")
+
+                state.metadata["awaiting_confirmation"] = False
+                state.metadata["onboarding_complete"] = True
+                return None
+
+        # Confirmacao so e processada se NAO houve skip
+        if awaiting_confirmation and is_confirmation and not is_skip:
             logger.info(
                 "[ENRICHMENT] ===== CONFIRMACAO DETECTADA! Transicionando de %s Step %d =====",
                 current_phase,
@@ -3879,18 +3906,6 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 logger.info("[ENRICHMENT] ===== ONBOARDING COMPLETO! Iniciando DISCOVERY =====")
 
                 # Retornar None para deixar o fluxo principal lidar com a transição
-                state.metadata["awaiting_confirmation"] = False
-                state.metadata["onboarding_complete"] = True
-                return None
-
-        # Se awaiting_confirmation mas usuario pulou (nao confirmou)
-        if awaiting_confirmation and is_skip:
-            logger.info("[ENRICHMENT] Usuario escolheu PULAR a fase de confirmacao")
-
-            if current_phase == "enrichment" and current_step == 10:
-                # Pular FASE 3, ir direto para completion
-                logger.info("[ENRICHMENT] Pulando FASE 3 (KPIs BSC) - Indo para DISCOVERY")
-
                 state.metadata["awaiting_confirmation"] = False
                 state.metadata["onboarding_complete"] = True
                 return None
