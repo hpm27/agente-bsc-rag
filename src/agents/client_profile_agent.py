@@ -132,7 +132,9 @@ class ClientProfileAgent:
         # SESSAO 45: LLM conversacional (GPT-5.1 - extração de contexto empresarial)
         self.llm = llm or get_llm_for_agent("conversational")
 
-        logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {self.llm.model_name}")
+        # SESSAO DEZ/2025: Compatibilidade ChatOpenAI e ChatAnthropic
+        model_name = getattr(self.llm, "model_name", None) or getattr(self.llm, "model", "unknown")
+        logger.info(f"[INIT] ClientProfileAgent inicializado | Model: {model_name}")
 
     # ========================================================================
     # MÉTODOS AUXILIARES

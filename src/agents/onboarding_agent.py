@@ -13,6 +13,7 @@ from __future__ import annotations  # PEP 563: Postponed annotations
 
 import asyncio
 import logging
+from collections import defaultdict
 from datetime import datetime
 from enum import IntEnum
 from typing import TYPE_CHECKING, Any
@@ -88,26 +89,38 @@ logger = logging.getLogger(__name__)
 class OnboardingStep(IntEnum):
     """Steps do processo de onboarding BSC.
 
-    Baseado em Kaplan & Norton (Execution Premium 2008, Strategy Maps 2004)
-    e Consulting Best Practices (ConsultingSuccess 2025).
+    SESSAO 49 (Dez/2025): Atualizado baseado em Kaplan & Norton best practices.
+    - Adicionadas perguntas de estrategia/visao ANTES dos desafios
+    - Adicionada identificacao de estagio do negocio (Growth/Sustain/Harvest)
+    - Adicionadas perguntas de segmentacao de clientes
 
-    Steps 1-3: OBRIGATÓRIOS (mínimo para diagnóstico básico)
-    Steps 4-7: OPCIONAIS (enriquecem diagnóstico se coletados)
+    Steps 1-6: OBRIGATORIOS (minimo para diagnostico BSC completo)
+    Steps 7-10: OPCIONAIS (enriquecem diagnostico se coletados)
+    Steps 11-14: PERSPECTIVAS BSC (sob demanda para aprofundamento)
 
-    Fluxo adaptativo: coleta oportunística permite pular steps se
-    informações já foram fornecidas em mensagens anteriores.
+    Fluxo adaptativo: coleta oportunistica permite pular steps se
+    informacoes ja foram fornecidas em mensagens anteriores.
     """
 
-    # OBRIGATÓRIOS - Core do diagnóstico BSC
+    # OBRIGATORIOS - Core do diagnostico BSC (ordem Kaplan & Norton)
     COMPANY_INFO = 1  # Nome, setor, tamanho da empresa
-    CHALLENGES = 2  # Desafios estratégicos atuais (mínimo 2)
-    OBJECTIVES = 3  # Objetivos nas 4 perspectivas BSC (mínimo 3)
+    STRATEGY_VISION = 2  # NOVO: Visao, proposta de valor, diferenciais
+    BUSINESS_STAGE = 3  # NOVO: Growth/Sustain/Harvest (determina KPIs)
+    CUSTOMER_SEGMENTATION = 4  # NOVO: Segmentos-alvo, proposta por segmento
+    CHALLENGES = 5  # Desafios estrategicos atuais (minimo 2)
+    OBJECTIVES = 6  # Objetivos nas 4 perspectivas BSC (minimo 3)
 
-    # OPCIONAIS - Enriquecem diagnóstico (Kaplan & Norton best practices)
-    MVV = 4  # Missão, Visão, Valores (Stage 1 - Execution Premium)
-    COMPETITIVE_CONTEXT = 5  # Concorrentes, diferenciação, clientes-alvo
-    ORGANIZATION_STRUCTURE = 6  # Departamentos, sistemas, pessoas, processos
-    PROJECT_CONSTRAINTS = 7  # Timeline, sponsor, critérios de sucesso
+    # OPCIONAIS - Enriquecem diagnostico (Kaplan & Norton best practices)
+    MVV = 7  # Missao, Visao, Valores (Stage 1 - Execution Premium)
+    COMPETITIVE_CONTEXT = 8  # Concorrentes, diferenciacao
+    ORGANIZATION_STRUCTURE = 9  # Departamentos, sistemas, pessoas, processos
+    PROJECT_CONSTRAINTS = 10  # Timeline, sponsor, criterios de sucesso
+
+    # PERSPECTIVAS BSC DETALHADAS (sob demanda para aprofundamento)
+    BSC_FINANCIAL = 11  # Perspectiva Financeira detalhada
+    BSC_CUSTOMER = 12  # Perspectiva Clientes detalhada
+    BSC_PROCESS = 13  # Perspectiva Processos detalhada
+    BSC_LEARNING = 14  # Perspectiva Aprendizado detalhada
 
 
 class OnboardingAgent:
@@ -176,7 +189,9 @@ class OnboardingAgent:
 
         # Buffer local de conversação (resetado a cada onboarding)
         self.conversation_history: list[dict[str, str]] = []
-        self.followup_count: dict[int, int] = {1: 0, 2: 0, 3: 0}
+        # SESSAO 50 (Dez/2025): Usar defaultdict para evitar KeyError quando acessar
+        # qualquer step (int ou IntEnum). defaultdict(int) retorna 0 para keys inexistentes.
+        self.followup_count: dict[int, int] = defaultdict(int)
 
         logger.info(
             "[INIT] OnboardingAgent inicializado com max_followups=%d", max_followups_per_step
@@ -210,7 +225,8 @@ class OnboardingAgent:
 
         # Reset buffer local
         self.conversation_history = []
-        self.followup_count = {1: 0, 2: 0, 3: 0}
+        # SESSAO 50: Manter como defaultdict para evitar KeyError com novos steps
+        self.followup_count = defaultdict(int)
 
         # Garantir ClientProfile inicializado
         if state.client_profile is None:
@@ -432,12 +448,20 @@ class OnboardingAgent:
         # STEP 1: Extrair entidades da mensagem atual
         print("[DEBUG COLLECT] Chamando _extract_all_entities...", flush=True)
         extraction_result = await self._extract_all_entities(user_message)
+        # SESSAO 50 (Dez/2025): Expandir debug para mostrar TODOS os campos relevantes
         print(
             f"[DEBUG COLLECT] Extração completa: "
             f"has_company_info={extraction_result.has_company_info}, "
             f"company_name={extraction_result.company_info.name if extraction_result.company_info else None}, "
             f"challenges={len(extraction_result.challenges)}, "
-            f"objectives={len(extraction_result.objectives)}",
+            f"objectives={len(extraction_result.objectives)}, "
+            f"has_investments_projects={extraction_result.has_investments_projects}, "
+            f"pending_projects={len(extraction_result.pending_projects)}, "
+            f"investments_needed={len(extraction_result.investments_needed)}, "
+            f"has_mvv={extraction_result.has_mvv}, "
+            f"has_competitive_context={extraction_result.has_competitive_context}, "
+            f"business_stage={extraction_result.business_stage}, "
+            f"has_business_stage={extraction_result.has_business_stage}",
             flush=True,
         )
 
@@ -465,6 +489,8 @@ class OnboardingAgent:
             "competitors": extraction_result.competitors,
             "competitive_advantages": extraction_result.competitive_advantages,
             "target_customers": extraction_result.target_customers,
+            # BUSINESS STAGE (SESSAO 50)
+            "business_stage": extraction_result.business_stage,
             # ORGANIZATION
             "departments": extraction_result.departments,
             "key_systems": extraction_result.key_systems,
@@ -504,6 +530,8 @@ class OnboardingAgent:
             "competitors": 1.0 if extraction_result.has_competitive_context else 0.0,
             "competitive_advantages": 1.0 if extraction_result.has_competitive_context else 0.0,
             "target_customers": 1.0 if extraction_result.has_competitive_context else 0.0,
+            # BUSINESS STAGE (SESSAO 50)
+            "business_stage": 1.0 if extraction_result.has_business_stage else 0.0,
             # ORGANIZATION
             "departments": 1.0 if extraction_result.has_organization_structure else 0.0,
             "key_systems": 1.0 if extraction_result.has_organization_structure else 0.0,
@@ -524,7 +552,9 @@ class OnboardingAgent:
             "timeline": 1.0 if extraction_result.has_project_constraints else 0.0,
             "sponsor_name": 1.0 if extraction_result.has_project_constraints else 0.0,
             "success_criteria": 1.0 if extraction_result.has_project_constraints else 0.0,
-            "previous_initiatives": 1.0 if extraction_result.has_project_constraints else 0.0,  # SESSAO 47: Bug fix
+            "previous_initiatives": (
+                1.0 if extraction_result.has_project_constraints else 0.0
+            ),  # SESSAO 47: Bug fix
         }
 
         # ========================================================================
@@ -550,6 +580,8 @@ class OnboardingAgent:
                 "competitors": [],
                 "competitive_advantages": [],
                 "target_customers": [],
+                # BUSINESS STAGE (SESSAO 50)
+                "business_stage": None,
                 # ORGANIZATION
                 "departments": [],
                 "key_systems": [],
@@ -573,6 +605,9 @@ class OnboardingAgent:
                 "previous_initiatives": [],  # SESSAO 47: Bug fix - campo estava no schema mas nao inicializado
                 # CONFIDENCE TRACKING (Best Practice Sparkco 2025)
                 "confidence_scores": {},  # score por campo
+                # SESSAO 49: Rastrear perguntas já feitas para evitar repetição
+                # mesmo quando usuário responde "não sei/não sabemos"
+                "questions_asked": [],  # lista de topics já perguntados
             }
         else:
             print(
@@ -588,6 +623,13 @@ class OnboardingAgent:
             )
 
         partial_profile = state.metadata["partial_profile"]
+
+        # SESSAO 49: Bug fix - Salvar profile ANTES da atualizacao para detectar repeticao corretamente
+        # Problema: _detect_user_repetition comparava mensagem com dados recem-extraidos dela mesma
+        # Solucao: Usar profile ANTERIOR para detectar repeticao (nao o atualizado)
+        import copy
+
+        partial_profile_before_update = copy.deepcopy(partial_profile)
 
         # ========================================================================
         # STEP 3: Acumular conhecimento com Update-on-Change
@@ -618,6 +660,7 @@ class OnboardingAgent:
             "success_criteria",
         ]
         DICT_FIELDS = ["team_distribution", "production_metrics", "financial_metrics"]
+        # SESSAO 50 (Dez/2025): Adicionado business_stage para fluxo de 14 steps
         STRING_FIELDS = [
             "company_name",
             "industry",
@@ -625,6 +668,7 @@ class OnboardingAgent:
             "revenue",
             "mission",
             "vision",
+            "business_stage",  # NOVO: Growth/Sustain/Harvest
             "business_process_description",
             "timeline",
             "sponsor_name",
@@ -694,13 +738,16 @@ class OnboardingAgent:
         state.metadata["partial_profile"] = partial_profile
 
         # DEBUGGING: Log completo do partial_profile
+        # SESSAO 50 (Dez/2025): Expandir para incluir pending_projects, investments_needed
         print(
             f"[DEBUG COLLECT] Perfil acumulado: "
             f"company_name={partial_profile.get('company_name')}, "
             f"industry={partial_profile.get('industry')}, "
             f"size={partial_profile.get('size')}, "
             f"challenges={len(partial_profile.get('challenges', []))}, "
-            f"goals={len(partial_profile.get('goals', []))}",
+            f"goals={len(partial_profile.get('goals', []))}, "
+            f"pending_projects={len(partial_profile.get('pending_projects', []))}, "
+            f"investments_needed={len(partial_profile.get('investments_needed', []))}",
             flush=True,
         )
         logger.info("[COLLECT] Perfil acumulado COMPLETO: %s", partial_profile)
@@ -712,23 +759,108 @@ class OnboardingAgent:
             len(partial_profile.get("goals", [])),
         )
 
+        # ========================================================================
+        # SESSAO DEZ/2025: PROCESSAMENTO FASES 2 E 3 (Steps 7-14)
+        # Kaplan & Norton best practices: Enriquecimento + Perspectivas BSC
+        # ========================================================================
+        current_onboarding_phase = state.metadata.get("onboarding_phase", "identification")
+        current_enrichment_step = state.metadata.get("current_enrichment_step")
+
+        print(
+            f"[DEBUG COLLECT] Fase atual: {current_onboarding_phase} | Step: {current_enrichment_step}",
+            flush=True,
+        )
+
+        # Verificar se estamos em FASE 2 (enrichment) ou FASE 3 (bsc_kpis)
+        if current_onboarding_phase in ["enrichment", "bsc_kpis"]:
+            # Processar resposta do usuario para os steps 7-14
+            result = await self._process_enrichment_step(
+                user_message=user_message,
+                state=state,
+                partial_profile=partial_profile,
+                extracted_entities=extracted_entities,
+                extraction_result=extraction_result,
+            )
+
+            if result is not None:
+                # Step processado, retornar resultado
+                return result
+
         # STEP 4: Verificar se informações mínimas estão completas
+        # STEP 1: COMPANY_INFO - Dados básicos da empresa
         has_company_name = partial_profile.get("company_name") is not None
         has_industry = partial_profile.get("industry") is not None
         has_size_or_revenue = (
             partial_profile.get("size") is not None or partial_profile.get("revenue") is not None
         )
-        has_min_challenges = len(partial_profile.get("challenges", [])) >= 2
-        has_min_objectives = (
-            len(partial_profile.get("goals", [])) >= 3
-        )  # CRÍTICO: exigir 3+ objectives
 
+        # STEP 2: STRATEGY_VISION - Proposta de valor única (OBRIGATÓRIO desde Dez/2025)
+        # Usa campos existentes: vision, competitive_advantages, mission
+        # IMPORTANTE: competitive_advantages é LISTA, verificar len > 0
+        has_strategy_vision = (
+            (partial_profile.get("vision") is not None and partial_profile.get("vision") != "")
+            or len(partial_profile.get("competitive_advantages", [])) > 0
+            or (partial_profile.get("mission") is not None and partial_profile.get("mission") != "")
+        )
+
+        # STEP 3: BUSINESS_STAGE - Fase do negócio (OBRIGATÓRIO desde Dez/2025)
+        has_business_stage = partial_profile.get("business_stage") is not None
+
+        # STEP 4: CUSTOMER_SEGMENTATION - Segmentos de clientes (OBRIGATÓRIO desde Dez/2025)
+        # Usa campo existente: target_customers (lista)
+        has_customer_segmentation = (
+            partial_profile.get("target_customers") is not None
+            and len(partial_profile.get("target_customers", [])) > 0
+        )
+
+        # STEP 5: CHALLENGES - Mínimo 2 desafios estratégicos
+        has_min_challenges = len(partial_profile.get("challenges", [])) >= 2
+
+        # STEP 6: OBJECTIVES - Mínimo 2 objetivos (reduzido de 3 para 2)
+        has_min_objectives = len(partial_profile.get("goals", [])) >= 2
+
+        # SESSAO DEZ/2025: Verificar TODOS os 6 steps obrigatórios do BSC Onboarding Workflow
         minimum_info_complete = (
+            # Step 1: Company Info
             has_company_name
             and has_industry
             and has_size_or_revenue
+            # Step 2: Strategy Vision (NOVO)
+            and has_strategy_vision
+            # Step 3: Business Stage (NOVO)
+            and has_business_stage
+            # Step 4: Customer Segmentation (NOVO)
+            and has_customer_segmentation
+            # Step 5: Challenges
             and has_min_challenges
-            and has_min_objectives  # NOVO: objectives obrigatórios para diagnóstico confiável
+            # Step 6: Objectives
+            and has_min_objectives
+        )
+
+        # DEBUG: Mostrar quais steps estão completos
+        print(
+            f"[DEBUG COLLECT] Steps Status: "
+            f"1.CompanyInfo={has_company_name and has_industry and has_size_or_revenue} | "
+            f"2.StrategyVision={has_strategy_vision} | "
+            f"3.BusinessStage={has_business_stage} | "
+            f"4.CustomerSeg={has_customer_segmentation} | "
+            f"5.Challenges={has_min_challenges} | "
+            f"6.Objectives={has_min_objectives} | "
+            f"COMPLETE={minimum_info_complete}",
+            flush=True,
+        )
+
+        # DEBUG EXTRA: Mostrar valores dos campos para diagnóstico
+        print(
+            f"[DEBUG COLLECT] Campos Step 2: vision={partial_profile.get('vision')}, "
+            f"competitive_advantages={partial_profile.get('competitive_advantages')}, "
+            f"mission={partial_profile.get('mission')}",
+            flush=True,
+        )
+        print(
+            f"[DEBUG COLLECT] Campos Step 3-4: business_stage={partial_profile.get('business_stage')}, "
+            f"target_customers={partial_profile.get('target_customers')}",
+            flush=True,
         )
 
         # STEP 5: Decidir próxima ação
@@ -925,12 +1057,15 @@ class OnboardingAgent:
             is_negation = any(keyword in user_message_lower for keyword in negacao_keywords)
 
             if is_confirmation and not is_negation:
-                # CONFIRMADO! Atualizar ClientProfile e transicionar para DISCOVERY
+                # CONFIRMADO Steps 1-6! Verificar em qual fase estamos
+                current_onboarding_phase = state.metadata.get("onboarding_phase", "identification")
+
                 logger.info(
-                    "[COLLECT] ===== CONFIRMAÇÃO RECEBIDA! Transicionando para DISCOVERY ====="
+                    "[COLLECT] ===== CONFIRMACAO RECEBIDA! Fase atual: %s =====",
+                    current_onboarding_phase,
                 )
 
-                # Atualizar ClientProfile no state
+                # Atualizar ClientProfile no state (fazer em qualquer fase)
                 if state.client_profile is None:
                     from src.memory.schemas import ClientProfile
 
@@ -948,31 +1083,132 @@ class OnboardingAgent:
                 if partial_profile.get("goals"):
                     state.client_profile.context.strategic_objectives = partial_profile["goals"]
 
-                # Transição para DISCOVERY
-                state.current_phase = ConsultingPhase.DISCOVERY
-                logger.info(
-                    "[COLLECT] ===== STATE.CURRENT_PHASE ATUALIZADO PARA: %s =====",
-                    state.current_phase,
-                )
+                # SESSAO DEZ/2025: FLUXO DE 14 STEPS (Kaplan & Norton)
+                # FASE 1 (identification) -> FASE 2 (enrichment) -> FASE 3 (bsc_kpis) -> DISCOVERY
 
-                # Limpar flag de confirmação
-                state.metadata["awaiting_confirmation"] = False
+                if current_onboarding_phase == "identification":
+                    # Steps 1-6 completos! Iniciar FASE 2 (Steps 7-10 - Enriquecimento)
+                    logger.info(
+                        "[COLLECT] ===== INICIANDO FASE 2 - ENRIQUECIMENTO (Steps 7-10) ====="
+                    )
 
-                completion_message = (
-                    f"Show! Vamos lá então. Iniciando diagnóstico BSC completo para {partial_profile.get('company_name')}...\n\n"
-                    "_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas do BSC._"
-                )
+                    state.metadata["awaiting_confirmation"] = False
+                    state.metadata["onboarding_phase"] = "enrichment"
+                    state.metadata["current_enrichment_step"] = 7  # MVV
 
-                return {
-                    "question": completion_message,
-                    "is_complete": True,
-                    "extracted_entities": extracted_entities,
-                    "accumulated_profile": partial_profile,
-                    "metadata": {
-                        "partial_profile": partial_profile,
-                        "awaiting_confirmation": False,
-                    },
-                }
+                    # Pergunta Step 7: MVV (Missao, Visao, Valores)
+                    enrichment_intro = (
+                        f"Perfeito! As informacoes basicas de {partial_profile.get('company_name', 'sua empresa')} "
+                        f"estao registradas.\n\n"
+                        f"Agora vou fazer algumas perguntas de **enriquecimento** para um diagnostico BSC mais completo. "
+                        f"Se voce nao souber ou preferir pular, basta responder 'nao sei' ou 'pular'.\n\n"
+                        f"**Step 7 - Missao, Visao e Valores:**\n"
+                        f"Qual a **missao** (razao de existir), **visao** (onde querem chegar em 5-10 anos) "
+                        f"e **valores** (principios que guiam a empresa) da {partial_profile.get('company_name', 'empresa')}?"
+                    )
+
+                    return {
+                        "question": enrichment_intro,
+                        "is_complete": False,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": False,
+                            "onboarding_phase": "enrichment",
+                            "current_enrichment_step": 7,
+                            "conversation_history": state.metadata.get("conversation_history", []),
+                        },
+                    }
+
+                elif current_onboarding_phase == "enrichment":
+                    # FASE 2 completa! Iniciar FASE 3 (Steps 11-14 - Perspectivas BSC)
+                    logger.info(
+                        "[COLLECT] ===== INICIANDO FASE 3 - PERSPECTIVAS BSC (Steps 11-14) ====="
+                    )
+
+                    state.metadata["awaiting_confirmation"] = False
+                    state.metadata["onboarding_phase"] = "bsc_kpis"
+                    state.metadata["current_enrichment_step"] = 11  # Financeira
+
+                    # Pergunta Step 11: Perspectiva Financeira
+                    bsc_intro = (
+                        f"Otimo! Agora vamos detalhar os **KPIs por perspectiva BSC**.\n\n"
+                        f"**Step 11 - Perspectiva Financeira:**\n"
+                        f"Quais **KPIs financeiros** a {partial_profile.get('company_name', 'empresa')} "
+                        f"acompanha ou gostaria de acompanhar?\n"
+                        f"_Exemplos: ROI, EBITDA, Margem Bruta, Margem Liquida, Faturamento, Fluxo de Caixa, etc._"
+                    )
+
+                    return {
+                        "question": bsc_intro,
+                        "is_complete": False,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": False,
+                            "onboarding_phase": "bsc_kpis",
+                            "current_enrichment_step": 11,
+                            "conversation_history": state.metadata.get("conversation_history", []),
+                        },
+                    }
+
+                elif current_onboarding_phase == "bsc_kpis":
+                    # FASE 3 completa! Agora sim, transicionar para DISCOVERY
+                    logger.info(
+                        "[COLLECT] ===== TODAS FASES COMPLETAS! Transicionando para DISCOVERY ====="
+                    )
+
+                    # Transicao para DISCOVERY
+                    state.current_phase = ConsultingPhase.DISCOVERY
+                    logger.info(
+                        "[COLLECT] ===== STATE.CURRENT_PHASE ATUALIZADO PARA: %s =====",
+                        state.current_phase,
+                    )
+
+                    # Limpar flags
+                    state.metadata["awaiting_confirmation"] = False
+                    state.metadata["onboarding_phase"] = "complete"
+
+                    completion_message = (
+                        f"Excelente! Onboarding completo para {partial_profile.get('company_name')}!\n\n"
+                        f"Coletamos:\n"
+                        f"- **FASE 1:** Informacoes basicas, desafios e objetivos\n"
+                        f"- **FASE 2:** MVV, contexto competitivo, estrutura e projetos\n"
+                        f"- **FASE 3:** KPIs das 4 perspectivas BSC\n\n"
+                        f"Iniciando **diagnostico BSC completo**...\n"
+                        f"_Isso vai levar alguns minutos enquanto analiso as 4 perspectivas._"
+                    )
+
+                    return {
+                        "question": completion_message,
+                        "is_complete": True,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {
+                            "partial_profile": partial_profile,
+                            "awaiting_confirmation": False,
+                            "onboarding_phase": "complete",
+                        },
+                    }
+
+                else:
+                    # Fallback: fase desconhecida, ir para DISCOVERY
+                    logger.warning(
+                        "[COLLECT] Fase de onboarding desconhecida: %s. Indo para DISCOVERY.",
+                        current_onboarding_phase,
+                    )
+                    state.current_phase = ConsultingPhase.DISCOVERY
+                    state.metadata["awaiting_confirmation"] = False
+
+                    return {
+                        "question": f"Iniciando diagnostico BSC para {partial_profile.get('company_name')}...",
+                        "is_complete": True,
+                        "extracted_entities": extracted_entities,
+                        "accumulated_profile": partial_profile,
+                        "metadata": {"partial_profile": partial_profile},
+                    }
 
             if is_negation:
                 # NEGADO! Limpar flag e permitir correções
@@ -1046,11 +1282,13 @@ class OnboardingAgent:
 
             # STEP 6.3: Gerar resposta contextual adaptativa (BLOCO 1 - ETAPA 5)
             # CRÍTICO: Passar partial_profile (acumulado) ao invés de extraction_result (só turno atual)
+            # SESSAO 49: Passar profile ANTES da atualizacao para detectar repeticao corretamente
             next_question = await self._generate_contextual_response(
                 context=context,
                 user_message=user_message,
                 extracted_entities=extraction_result,
                 partial_profile=partial_profile,  # NOVO: dados acumulados
+                profile_before_update=partial_profile_before_update,  # SESSAO 49: Para detectar repeticao
             )
 
             logger.info(
@@ -1230,6 +1468,26 @@ class OnboardingAgent:
                 if len(variation) >= 3 and variation in user_lower:
                     repeated_info.append("company_name")
                     break
+
+        # SESSAO 49: Detectar respostas negativas e registrar tópico da última pergunta
+        NEGATIVE_RESPONSES = [
+            "nao sei",
+            "nao sabemos",
+            "desconheco",
+            "nao tenho",
+            "nao temos",
+            "nao possuo",
+            "nao possuimos",
+            "sem essa informacao",
+            "nao mensuro",
+            "nao mensuramos",
+            "nao acompanho",
+            "nao acompanhamos",
+        ]
+        is_negative_response = any(neg in user_lower for neg in NEGATIVE_RESPONSES)
+        if is_negative_response:
+            # Registrar que o usuário não sabe - devemos avançar para outro tópico
+            repeated_info.append("_negative_response_")
 
         # Verificar setor já mencionado
         industry = partial_profile.get("industry")
@@ -1451,32 +1709,80 @@ Gere a mensagem de confirmacao:"""
             1-3: Obrigatórios (sempre pergunta)
             4-7: Opcionais (pergunta se há tempo/interesse)
         """
-        # TOM: Entrevista casual - Uma pergunta por vez (progressive disclosure)
-        # SESSAO 45: Expandido para 7 steps baseado em Kaplan & Norton best practices
-        questions = {
-            # OBRIGATÓRIOS (Core do diagnóstico BSC)
-            OnboardingStep.COMPANY_INFO: "Me conta um pouquinho: como se chama sua empresa?",
-            OnboardingStep.CHALLENGES: "E ai, quais os principais perrengues que voces enfrentam hoje?",
-            OnboardingStep.OBJECTIVES: "Legal! Agora me conta: o que voces querem alcancar nos proximos meses?",
-            # OPCIONAIS (Enriquecem diagnóstico - Kaplan & Norton 2004/2008)
-            OnboardingStep.MVV: (
-                "Para entender melhor sua empresa: voces tem uma missao, visao ou "
-                "valores definidos? Se sim, pode me contar brevemente?"
-            ),
-            OnboardingStep.COMPETITIVE_CONTEXT: (
-                "Quem sao seus principais concorrentes? O que diferencia voces deles?"
-            ),
-            OnboardingStep.ORGANIZATION_STRUCTURE: (
-                "Como a empresa esta organizada? Quantas pessoas, quais departamentos, "
-                "e que sistemas voces usam (ERP, CRM, etc)?"
-            ),
-            OnboardingStep.PROJECT_CONSTRAINTS: (
-                "Para fechar: qual o prazo ideal para implementar o BSC? "
-                "Quem sera o sponsor/responsavel pelo projeto?"
-            ),
-        }
+        # SESSAO 48: TOM PROFISSIONAL - Usar prompts de onboarding_prompts.py
+        # Best Practice McKinsey: Perguntas específicas e quantificadas
+        # Removido tom casual ("perrengues", "legal") - agora usa tom consultivo
+        from src.prompts.onboarding_prompts import get_initial_question
 
-        return questions.get(step, "")
+        # get_initial_question retorna prompts V2 (com métricas e SMART)
+        step_number = step.value if hasattr(step, "value") else step
+        prompt = get_initial_question(step_number)
+
+        # Fallback para prompts inline se modulo nao retornar nada
+        # SESSAO 49: Atualizado para 14 steps (Kaplan & Norton best practices)
+        if not prompt:
+            questions = {
+                # OBRIGATORIOS (Core do diagnostico BSC - ordem Kaplan & Norton)
+                OnboardingStep.COMPANY_INFO: (
+                    "Para iniciar o diagnostico BSC, preciso conhecer sua empresa. "
+                    "Qual o nome da empresa, setor de atuacao e numero aproximado de colaboradores?"
+                ),
+                OnboardingStep.STRATEGY_VISION: (
+                    "Para um diagnostico efetivo, preciso entender a estrategia. "
+                    "Qual a visao de longo prazo da empresa? Por que os clientes compram de voces?"
+                ),
+                OnboardingStep.BUSINESS_STAGE: (
+                    "A empresa esta focada em CRESCER rapidamente, MANTER lucratividade "
+                    "ou MAXIMIZAR fluxo de caixa?"
+                ),
+                OnboardingStep.CUSTOMER_SEGMENTATION: (
+                    "Quais sao os principais tipos/segmentos de clientes que voces atendem? "
+                    "Qual e o mais lucrativo?"
+                ),
+                OnboardingStep.CHALLENGES: (
+                    "Quais sao os principais desafios estrategicos que a empresa enfrenta atualmente? "
+                    "Podem ser relacionados a crescimento, eficiencia operacional ou gestao de pessoas."
+                ),
+                OnboardingStep.OBJECTIVES: (
+                    "Quais sao os objetivos estrategicos da empresa para os proximos 12 meses? "
+                    "Tente incluir metricas (%, R$, unidades) e prazos."
+                ),
+                # OPCIONAIS (Enriquecem diagnostico - Kaplan & Norton 2004/2008)
+                OnboardingStep.MVV: (
+                    "Voces tem missao, visao ou valores definidos? Se sim, pode compartilhar?"
+                ),
+                OnboardingStep.COMPETITIVE_CONTEXT: (
+                    "Quem sao seus principais concorrentes? O que diferencia voces deles?"
+                ),
+                OnboardingStep.ORGANIZATION_STRUCTURE: (
+                    "Como a empresa esta organizada? Quantos colaboradores, departamentos, "
+                    "sistemas de gestao (ERP, CRM, BI)?"
+                ),
+                OnboardingStep.PROJECT_CONSTRAINTS: (
+                    "Qual o prazo ideal para implementar o BSC? "
+                    "Quem sera o patrocinador/responsavel pelo projeto?"
+                ),
+                # PERSPECTIVAS BSC DETALHADAS (sob demanda)
+                OnboardingStep.BSC_FINANCIAL: (
+                    "Para a perspectiva Financeira: qual o faturamento atual e meta? "
+                    "Qual a margem EBITDA atual e meta?"
+                ),
+                OnboardingStep.BSC_CUSTOMER: (
+                    "Para a perspectiva Clientes: quantos clientes ativos? "
+                    "Qual a taxa de retencao? Como esta a satisfacao (NPS)?"
+                ),
+                OnboardingStep.BSC_PROCESS: (
+                    "Para a perspectiva Processos: qual o lead time atual? "
+                    "Qual o principal gargalo operacional?"
+                ),
+                OnboardingStep.BSC_LEARNING: (
+                    "Para a perspectiva Aprendizado: quantos funcionarios? "
+                    "Taxa de rotatividade? Quais sistemas utilizam?"
+                ),
+            }
+            prompt = questions.get(step, "")
+
+        return prompt
 
     async def _extract_all_entities(
         self, user_message: str, conversation_history: list[dict[str, str]] | None = None
@@ -1709,23 +2015,75 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             # VALIDACAO: Historico nao pode estar vazio
             if not conversation_history or len(conversation_history) == 0:
                 logger.warning("[ANALYZE_CONTEXT] Historico vazio, retornando standard_flow")
+                # SESSAO 48: Usar partial_profile se disponivel (mesmo com historico vazio)
+                if partial_profile:
+                    _completeness = self._calculate_completeness_from_profile(partial_profile)
+                    _missing = self._calculate_missing_info_from_profile(partial_profile)
+                else:
+                    _completeness = self._calculate_completeness(extracted_entities)
+                    _missing = self._calculate_missing_info(extracted_entities)
                 return ConversationContext(
                     scenario="standard_flow",
                     user_sentiment="neutral",
-                    missing_info=self._calculate_missing_info(extracted_entities),
-                    completeness=self._calculate_completeness(extracted_entities),
+                    missing_info=_missing,
+                    completeness=_completeness,
                     should_confirm=False,
                     context_summary="Conversa iniciando",
                 )
 
             # STEP 1: Calcular completeness e missing_info MANUALMENTE (nao confiar apenas no LLM)
-            completeness = self._calculate_completeness(extracted_entities)
-            missing_info = self._calculate_missing_info(extracted_entities)
+            # SESSAO 48: CORRECAO CRITICA - Usar partial_profile (acumulado) ao inves de
+            # extracted_entities (turno atual) para evitar loop de perguntas repetidas.
+            # Best Practice Context Engineering (LangChain Jul/2025):
+            # "Use dados escritos no scratchpad/state como fonte de verdade"
+            if partial_profile:
+                completeness = self._calculate_completeness_from_profile(partial_profile)
+                missing_info = self._calculate_missing_info_from_profile(partial_profile)
+                logger.info(
+                    "[ANALYZE_CONTEXT] Usando partial_profile (ACUMULADO) | "
+                    "completeness=%.2f | missing=%s",
+                    completeness,
+                    missing_info[:3],  # Log apenas primeiros 3 para brevidade
+                )
+            else:
+                # Fallback para extracted_entities (primeira mensagem, sem historico)
+                completeness = self._calculate_completeness(extracted_entities)
+                missing_info = self._calculate_missing_info(extracted_entities)
+                logger.info(
+                    "[ANALYZE_CONTEXT] Usando extracted_entities (TURNO ATUAL - sem partial_profile)"
+                )
 
             # STEP 2: Determinar should_confirm
             # CRÍTICO: Só confirmar quando dados estiverem COMPLETOS (completeness >= 1.0)
             # Confirmação prematura causa loop infinito!
             should_confirm = completeness >= 1.0
+
+            # STEP 2.5: FASE 3 - Validacoes MECE e SMART (Dez/2025)
+            # Best Practice McKinsey: Garantir cobertura balanceada das 4 perspectivas BSC
+            mece_validation = None
+            smart_validation = None
+
+            if partial_profile:
+                # Validar cobertura MECE (perspectivas BSC)
+                mece_validation = self._validate_mece_coverage(partial_profile)
+
+                # Validar objetivos SMART
+                goals = partial_profile.get("goals", [])
+                if goals:
+                    smart_validation = self._validate_smart_objectives(goals)
+
+                # Se cobertura MECE desbalanceada, adicionar perspectivas faltantes ao missing_info
+                if mece_validation and not mece_validation["is_balanced"]:
+                    for perspective in mece_validation["missing_perspectives"]:
+                        perspective_missing = f"challenges_{perspective}"
+                        if perspective_missing not in missing_info and len(missing_info) < 5:
+                            missing_info.append(perspective_missing)
+
+                # Log validacoes
+                logger.info(
+                    f"[ANALYZE_CONTEXT] MECE: balanced={mece_validation.get('is_balanced') if mece_validation else 'N/A'} | "
+                    f"SMART: score={smart_validation.get('overall_score') if smart_validation else 'N/A'}"
+                )
 
             # STEP 3: Usar contexto EFETIVO (Progressive Summarization) - Best Practice Nov/2025
             # Evita "Lost in Middle" problem (MS/Salesforce 2025: -39% performance em multi-turn)
@@ -1829,11 +2187,18 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         except Exception as e:
             logger.error("[ANALYZE_CONTEXT] Erro na analise: %s", str(e), exc_info=True)
             # Fallback: Retornar contexto padrao
+            # SESSAO 48: Usar partial_profile se disponivel (mesmo em erro)
+            if partial_profile:
+                _completeness = self._calculate_completeness_from_profile(partial_profile)
+                _missing = self._calculate_missing_info_from_profile(partial_profile)
+            else:
+                _completeness = self._calculate_completeness(extracted_entities)
+                _missing = self._calculate_missing_info(extracted_entities)
             return ConversationContext(
                 scenario="standard_flow",
                 user_sentiment="neutral",
-                missing_info=self._calculate_missing_info(extracted_entities),
-                completeness=self._calculate_completeness(extracted_entities),
+                missing_info=_missing,
+                completeness=_completeness,
                 should_confirm=False,
                 context_summary=f"Erro na analise: {str(e)[:50]}",
             )
@@ -2010,6 +2375,160 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
         return round(min(completeness, 1.0), 2)  # Cap at 1.0
 
+    def _calculate_completeness_from_profile(self, partial_profile: dict[str, Any]) -> float:
+        """Calcula completeness baseado em partial_profile (dados ACUMULADOS).
+
+        SESSAO 48: Correcao bug loop de perguntas.
+        Best Practice Context Engineering (LangChain Jul/2025):
+        - Usar dados acumulados (scratchpad/state) como fonte de verdade
+        - NAO recalcular apenas do turno atual (extracted_entities)
+
+        Args:
+            partial_profile: Dict com dados acumulados entre turnos
+
+        Returns:
+            Float entre 0.0 e 1.0
+
+        Notes:
+            Mapeamento partial_profile -> ExtractedEntities:
+            - company_name, industry, size -> company_info
+            - challenges -> challenges
+            - goals -> objectives
+        """
+        completeness = 0.0
+
+        # ====================================================================
+        # OBRIGATORIOS (40% do peso total) - Simplificado para campos CORE
+        # ====================================================================
+
+        # Company info: 15%
+        has_company = bool(partial_profile.get("company_name") and partial_profile.get("industry"))
+        if has_company:
+            completeness += 0.15
+
+        # Challenges: 15%
+        challenges = partial_profile.get("challenges", [])
+        if len(challenges) >= 2:
+            completeness += 0.15
+        elif len(challenges) >= 1:
+            completeness += 0.08
+
+        # Objectives/Goals: 10%
+        goals = partial_profile.get("goals", [])
+        if len(goals) >= 3:
+            completeness += 0.10
+        elif len(goals) >= 1:
+            completeness += 0.10 * (len(goals) / 3.0)
+
+        # ====================================================================
+        # ESTRUTURA ORGANIZACIONAL (30%)
+        # ====================================================================
+
+        # Key People: 10%
+        key_people = partial_profile.get("key_people", [])
+        if key_people:
+            people_count = len(key_people)
+            if people_count >= 3:
+                completeness += 0.10
+            elif people_count >= 1:
+                completeness += 0.10 * (people_count / 3.0)
+
+        # Team Structure: 5%
+        if partial_profile.get("employee_count") or partial_profile.get("team_distribution"):
+            team_score = 0.0
+            if partial_profile.get("employee_count"):
+                team_score += 0.03
+            if partial_profile.get("team_distribution"):
+                team_score += 0.02
+            completeness += min(team_score, 0.05)
+
+        # Business Process: 10%
+        if partial_profile.get("business_process_description") or partial_profile.get(
+            "process_bottlenecks"
+        ):
+            proc_score = 0.0
+            if partial_profile.get("business_process_description"):
+                proc_score += 0.07
+            if partial_profile.get("process_bottlenecks"):
+                proc_score += 0.03
+            completeness += min(proc_score, 0.10)
+
+        # Organization/Systems: 5%
+        if partial_profile.get("departments") or partial_profile.get("key_systems"):
+            org_score = 0.0
+            if partial_profile.get("departments"):
+                org_score += 0.02
+            if partial_profile.get("key_systems"):
+                org_score += 0.02
+            if partial_profile.get("current_metrics"):
+                org_score += 0.01
+            completeness += min(org_score, 0.05)
+
+        # ====================================================================
+        # METRICAS E CONTEXTO (20%)
+        # ====================================================================
+
+        # Production/Financial Metrics: 10%
+        if partial_profile.get("production_metrics") or partial_profile.get("financial_metrics"):
+            metrics_score = 0.0
+            if partial_profile.get("production_metrics"):
+                metrics_score += 0.05
+            if partial_profile.get("financial_metrics"):
+                metrics_score += 0.05
+            completeness += min(metrics_score, 0.10)
+
+        # Competitive Context: 5%
+        if partial_profile.get("competitors") or partial_profile.get("target_customers"):
+            comp_score = 0.0
+            if partial_profile.get("competitors"):
+                comp_score += 0.02
+            if partial_profile.get("competitive_advantages"):
+                comp_score += 0.02
+            if partial_profile.get("target_customers"):
+                comp_score += 0.01
+            completeness += min(comp_score, 0.05)
+
+        # Pain Points/Technology Gaps: 5%
+        if partial_profile.get("pain_points") or partial_profile.get("technology_gaps"):
+            pain_score = 0.0
+            if partial_profile.get("pain_points"):
+                pain_score += 0.03
+            if partial_profile.get("technology_gaps"):
+                pain_score += 0.02
+            completeness += min(pain_score, 0.05)
+
+        # ====================================================================
+        # OPCIONAIS (10%)
+        # ====================================================================
+
+        # MVV: 5%
+        if (
+            partial_profile.get("mission")
+            or partial_profile.get("vision")
+            or partial_profile.get("core_values")
+        ):
+            mvv_score = 0.0
+            if partial_profile.get("mission"):
+                mvv_score += 0.02
+            if partial_profile.get("vision"):
+                mvv_score += 0.02
+            if partial_profile.get("core_values"):
+                mvv_score += 0.01
+            completeness += min(mvv_score, 0.05)
+
+        # Project Constraints: 5%
+        if partial_profile.get("timeline") or partial_profile.get("sponsor_name"):
+            proj_score = 0.0
+            if partial_profile.get("timeline"):
+                proj_score += 0.02
+            if partial_profile.get("sponsor_name"):
+                proj_score += 0.02
+            if partial_profile.get("success_criteria"):
+                proj_score += 0.01
+            completeness += min(proj_score, 0.05)
+
+        return round(min(completeness, 1.0), 2)  # Cap at 1.0
+
     def _calculate_missing_info(self, entities: ExtractedEntities) -> list[str]:
         """Identifica categorias de informacao ainda faltantes.
 
@@ -2101,6 +2620,449 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         result = missing_high + missing_medium + missing_low
         return result[:5]  # Limitar a 5 itens mais importantes
 
+    def _calculate_missing_info_from_profile(self, partial_profile: dict[str, Any]) -> list[str]:
+        """Identifica informacoes faltantes baseado em partial_profile (dados ACUMULADOS).
+
+        SESSAO 48: Correcao bug loop de perguntas.
+        Best Practice ChatMetrics (Dec/2024):
+        - Tracking de conversation history para evitar re-perguntas
+        - Usar dados acumulados para decidir o que perguntar
+
+        Args:
+            partial_profile: Dict com dados acumulados entre turnos
+
+        Returns:
+            Lista de strings ordenada por prioridade (max 5 itens)
+
+        Notes:
+            Mapeamento partial_profile -> missing_info:
+            - company_name + industry -> "company_info"
+            - challenges -> "challenges"
+            - goals -> "objectives"
+        """
+        missing_high = []  # Alta prioridade
+        missing_medium = []  # Media prioridade
+        missing_low = []  # Baixa prioridade
+
+        # ====================================================================
+        # ALTA PRIORIDADE (obrigatorios para diagnostico basico)
+        # ====================================================================
+
+        # Company info
+        if not partial_profile.get("company_name") or not partial_profile.get("industry"):
+            missing_high.append("company_info")
+
+        # Challenges (minimo 2)
+        challenges = partial_profile.get("challenges", [])
+        if len(challenges) < 2:
+            missing_high.append("challenges")
+
+        # Objectives/Goals (minimo 3)
+        goals = partial_profile.get("goals", [])
+        if len(goals) < 3:
+            missing_high.append("objectives")
+
+        # Key People (CRITICO para BSC)
+        key_people = partial_profile.get("key_people", [])
+        if not key_people:
+            missing_high.append("key_people")
+
+        # Business Process (CRITICO para perspectiva Processos)
+        if not partial_profile.get("business_process_description"):
+            missing_high.append("business_process")
+
+        # ====================================================================
+        # MEDIA PRIORIDADE
+        # ====================================================================
+
+        # Metricas operacionais
+        if not partial_profile.get("production_metrics") and not partial_profile.get(
+            "financial_metrics"
+        ):
+            missing_medium.append("operational_metrics")
+
+        # Pain points
+        if not partial_profile.get("pain_points") and not partial_profile.get("technology_gaps"):
+            missing_medium.append("pain_points")
+
+        # Team structure
+        if not partial_profile.get("employee_count") and not partial_profile.get(
+            "team_distribution"
+        ):
+            missing_medium.append("team_structure")
+
+        # Organization structure
+        if not partial_profile.get("departments") and not partial_profile.get("key_systems"):
+            missing_medium.append("organization_structure")
+
+        # ====================================================================
+        # BAIXA PRIORIDADE
+        # ====================================================================
+
+        if not partial_profile.get("mission") and not partial_profile.get("vision"):
+            missing_low.append("mvv")
+
+        if not partial_profile.get("competitors"):
+            missing_low.append("competitive_context")
+
+        if not partial_profile.get("timeline"):
+            missing_low.append("project_constraints")
+
+        if not partial_profile.get("investments_needed") and not partial_profile.get(
+            "pending_projects"
+        ):
+            missing_low.append("investments_projects")
+
+        # Retornar priorizado (max 5 itens)
+        result = missing_high + missing_medium + missing_low
+        return result[:5]
+
+    # =========================================================================
+    # FASE 3 - VALIDACAO MECE E SMART (Dez/2025)
+    # Best Practice McKinsey: Issue Tree / MECE Framework
+    # Best Practice BCG: Objetivos SMART
+    # =========================================================================
+
+    def _validate_mece_coverage(self, partial_profile: dict[str, Any]) -> dict[str, Any]:
+        """Valida cobertura MECE dos desafios nas 4 perspectivas BSC.
+
+        MECE = Mutuamente Exclusivo, Coletivamente Exaustivo
+        Garante que desafios cobrem todas perspectivas BSC sem sobreposicao excessiva.
+
+        Args:
+            partial_profile: Dados acumulados do cliente
+
+        Returns:
+            {
+                "is_balanced": bool,  # True se cobertura >= 2 perspectivas
+                "missing_perspectives": list[str],  # Perspectivas sem desafios
+                "dominant_perspective": str | None,  # Perspectiva com mais desafios (se desbalanceado)
+                "coverage": dict[str, int],  # Contagem por perspectiva
+                "recommendations": list[str]  # Sugestoes de melhoria
+            }
+        """
+        BSC_PERSPECTIVES = ["financeira", "clientes", "processos", "aprendizado"]
+
+        challenges = partial_profile.get("challenges", [])
+        goals = partial_profile.get("goals", [])
+
+        # Keywords por perspectiva BSC
+        FINANCIAL_KEYWORDS = [
+            "faturamento",
+            "receita",
+            "margem",
+            "custo",
+            "lucro",
+            "ebitda",
+            "roi",
+            "fluxo de caixa",
+            "rentabilidade",
+            "capital",
+            "investimento",
+            "preco",
+            "orcamento",
+            "reducao de custos",
+            "r$",
+            "milhoes",
+        ]
+        CUSTOMER_KEYWORDS = [
+            "cliente",
+            "nps",
+            "churn",
+            "satisfacao",
+            "retencao",
+            "market share",
+            "segmento",
+            "fidelizacao",
+            "reclamacao",
+            "atendimento",
+            "vendas",
+            "prospect",
+            "conversao",
+            "aquisicao",
+            "relacionamento",
+        ]
+        PROCESS_KEYWORDS = [
+            "producao",
+            "lead time",
+            "capacidade",
+            "processo",
+            "gargalo",
+            "eficiencia",
+            "qualidade",
+            "defeito",
+            "produtividade",
+            "estoque",
+            "logistica",
+            "entrega",
+            "operacao",
+            "setup",
+            "perfiladeira",
+            "maquina",
+            "equipamento",
+            "ton/mes",
+            "toneladas",
+        ]
+        LEARNING_KEYWORDS = [
+            "funcionario",
+            "equipe",
+            "treinamento",
+            "rotatividade",
+            "cultura",
+            "competencia",
+            "capacitacao",
+            "engajamento",
+            "lideranca",
+            "rh",
+            "sistema",
+            "erp",
+            "crm",
+            "bi",
+            "tecnologia",
+            "inovacao",
+            "desenvolvimento",
+            "aprendizado",
+        ]
+
+        # Classificar desafios e objetivos por perspectiva
+        perspective_coverage = dict.fromkeys(BSC_PERSPECTIVES, 0)
+        all_items = challenges + goals
+
+        for item in all_items:
+            item_lower = str(item).lower()
+
+            # Classificar (pode cair em multiplas, mas contamos a primeira match)
+            if any(kw in item_lower for kw in FINANCIAL_KEYWORDS):
+                perspective_coverage["financeira"] += 1
+            elif any(kw in item_lower for kw in CUSTOMER_KEYWORDS):
+                perspective_coverage["clientes"] += 1
+            elif any(kw in item_lower for kw in PROCESS_KEYWORDS):
+                perspective_coverage["processos"] += 1
+            elif any(kw in item_lower for kw in LEARNING_KEYWORDS):
+                perspective_coverage["aprendizado"] += 1
+            # Se nao classificou, conta como "processos" (default mais comum)
+            else:
+                perspective_coverage["processos"] += 1
+
+        # Analise de balanceamento
+        missing = [p for p, count in perspective_coverage.items() if count == 0]
+        covered = [p for p, count in perspective_coverage.items() if count > 0]
+        dominant = max(perspective_coverage, key=perspective_coverage.get)
+        dominant_count = perspective_coverage[dominant]
+
+        # Balanceado se: cobertura >= 2 perspectivas E nenhuma perspectiva tem >60% dos itens
+        total_items = sum(perspective_coverage.values())
+        is_balanced = len(covered) >= 2 and (dominant_count / max(total_items, 1)) <= 0.6
+
+        # Recomendacoes
+        recommendations = []
+        if missing:
+            perspective_names = {
+                "financeira": "Financeira (faturamento, margens, custos)",
+                "clientes": "Clientes (NPS, churn, satisfacao)",
+                "processos": "Processos (lead time, capacidade, gargalos)",
+                "aprendizado": "Aprendizado (pessoas, sistemas, cultura)",
+            }
+            missing_names = [perspective_names.get(p, p) for p in missing]
+            recommendations.append(
+                f"Explorar perspectiva(s) faltante(s): {', '.join(missing_names)}"
+            )
+
+        if dominant_count > 3 and len(all_items) > 4:
+            recommendations.append(
+                f"Muitos itens na perspectiva '{dominant}' ({dominant_count}/{total_items}). "
+                f"Diversificar para outras perspectivas."
+            )
+
+        if len(all_items) < 3:
+            recommendations.append(
+                "Coletar mais desafios/objetivos (minimo 3 para diagnostico BSC completo)"
+            )
+
+        logger.info(
+            f"[VALIDATE_MECE] Coverage: {perspective_coverage} | "
+            f"Balanced: {is_balanced} | Missing: {missing}"
+        )
+
+        return {
+            "is_balanced": is_balanced,
+            "missing_perspectives": missing,
+            "dominant_perspective": dominant if not is_balanced and dominant_count > 2 else None,
+            "coverage": perspective_coverage,
+            "total_items": total_items,
+            "recommendations": recommendations,
+        }
+
+    def _validate_smart_objectives(self, objectives: list[str]) -> dict[str, Any]:
+        """Valida se objetivos sao SMART.
+
+        SMART = Especifico, Mensuravel, Alcancavel, Relevante, Temporal
+
+        Args:
+            objectives: Lista de objetivos do cliente
+
+        Returns:
+            {
+                "valid_count": int,  # Objetivos SMART validos
+                "total_count": int,  # Total de objetivos
+                "invalid_objectives": list[dict],  # Objetivos invalidos com sugestoes
+                "overall_score": float  # 0.0 a 1.0
+            }
+        """
+        if not objectives:
+            return {
+                "valid_count": 0,
+                "total_count": 0,
+                "invalid_objectives": [],
+                "overall_score": 0.0,
+            }
+
+        invalid = []
+        valid_count = 0
+
+        # Keywords que indicam metrica (Mensuravel)
+        METRIC_KEYWORDS = [
+            "%",
+            "r$",
+            "milhao",
+            "milhoes",
+            "ton",
+            "toneladas",
+            "dias",
+            "horas",
+            "unidades",
+            "pedidos",
+            "clientes",
+            "funcionarios",
+            "colaboradores",
+            "meta",
+            "reducao",
+            "aumento",
+            "crescimento",
+            "dobrar",
+            "triplicar",
+            "duplicar",
+        ]
+
+        # Keywords que indicam prazo (Temporal)
+        TIMELINE_KEYWORDS = [
+            "mes",
+            "meses",
+            "ano",
+            "anos",
+            "trimestre",
+            "semestre",
+            "dezembro",
+            "janeiro",
+            "fevereiro",
+            "marco",
+            "abril",
+            "maio",
+            "junho",
+            "julho",
+            "agosto",
+            "setembro",
+            "outubro",
+            "novembro",
+            "2025",
+            "2026",
+            "2027",
+            "curto prazo",
+            "medio prazo",
+            "longo prazo",
+            "em 6",
+            "em 12",
+            "em 18",
+            "em 24",
+            "ate o final",
+            "proximo ano",
+        ]
+
+        for obj in objectives:
+            obj_lower = str(obj).lower()
+
+            # Verifica se tem NUMERO (Mensuravel)
+            has_number = any(char.isdigit() for char in obj)
+            has_metric_keyword = any(kw in obj_lower for kw in METRIC_KEYWORDS)
+            is_measurable = has_number or has_metric_keyword
+
+            # Verifica se tem PRAZO (Temporal)
+            has_timeline = any(kw in obj_lower for kw in TIMELINE_KEYWORDS)
+
+            # Verifica se e ESPECIFICO (nao generico) - pelo menos 6 palavras
+            word_count = len(obj.split())
+            is_specific = word_count >= 6
+
+            # Score do objetivo (0-1)
+            score = (is_measurable + has_timeline + is_specific) / 3.0
+
+            if score >= 0.66:  # Pelo menos 2 de 3 criterios
+                valid_count += 1
+            else:
+                issues = []
+                suggestions = []
+
+                if not is_measurable:
+                    issues.append("falta_metrica")
+                    suggestions.append(
+                        "adicionar numero ou % (ex: 'aumentar 30%', 'atingir R$30M')"
+                    )
+
+                if not has_timeline:
+                    issues.append("falta_prazo")
+                    suggestions.append("definir prazo (ex: 'em 12 meses', 'ate dezembro 2025')")
+
+                if not is_specific:
+                    issues.append("muito_generico")
+                    suggestions.append("detalhar mais (ex: 'reduzir lead time de 40 para 25 dias')")
+
+                invalid.append(
+                    {
+                        "objective": obj,
+                        "issues": issues,
+                        "suggestions": suggestions,
+                        "score": round(score, 2),
+                    }
+                )
+
+        overall_score = valid_count / max(len(objectives), 1)
+
+        logger.info(
+            f"[VALIDATE_SMART] Valid: {valid_count}/{len(objectives)} | "
+            f"Score: {overall_score:.2f} | Invalid: {len(invalid)}"
+        )
+
+        return {
+            "valid_count": valid_count,
+            "total_count": len(objectives),
+            "invalid_objectives": invalid,
+            "overall_score": round(overall_score, 2),
+        }
+
+    def _suggest_smart_improvement(self, objective: str, issues: list[str]) -> str:
+        """Gera sugestao para tornar objetivo SMART.
+
+        Args:
+            objective: Objetivo original
+            issues: Lista de issues identificados
+
+        Returns:
+            Sugestao de melhoria formatada
+        """
+        suggestions = []
+
+        if "falta_metrica" in issues:
+            suggestions.append("adicionar metrica quantitativa (%, R$, unidades)")
+
+        if "falta_prazo" in issues:
+            suggestions.append("definir prazo (ex: 'em 12 meses', 'ate dezembro 2025')")
+
+        if "muito_generico" in issues:
+            suggestions.append("ser mais especifico sobre o que sera alcancado")
+
+        obj_preview = objective[:40] + "..." if len(objective) > 40 else objective
+        return f"Objetivo '{obj_preview}' - melhorar: {', '.join(suggestions)}"
+
     def _format_conversation_history(self, history: list[dict[str, str]]) -> str:
         """Formata historico para o prompt (formato USER:/AGENT:).
 
@@ -2127,12 +3089,444 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
         return "\n".join(formatted_lines)
 
+    def _validate_question_not_redundant(
+        self,
+        proposed_response: str,
+        partial_profile: dict[str, Any] | None,
+    ) -> tuple[bool, str | None]:
+        """Valida se resposta proposta contem pergunta redundante com dados ja coletados.
+
+        FASE 1.2 - Implementado para resolver loop de perguntas repetidas identificado
+        na conversa Engelar (Dez/2025). Problema: agente reconhecia informacao mas
+        perguntava novamente ("capacidade ja consta... qual a capacidade?").
+
+        Args:
+            proposed_response: Resposta gerada pelo LLM para o usuario
+            partial_profile: Dados acumulados do cliente
+
+        Returns:
+            (True, None) se resposta e valida (nao tem pergunta redundante)
+            (False, suggestion) se redundante (retorna sugestao de aprofundamento)
+        """
+        if not partial_profile:
+            return True, None
+
+        response_lower = proposed_response.lower()
+
+        # STEP 1: Detectar se LLM esta repetindo pergunta "equipamento, pessoas ou processo"
+        # Bug identificado Dez/2025: Esta pergunta especifica causa loop infinito
+        REPETITIVE_PATTERNS = [
+            "equipamento, pessoas ou processo",
+            "limitacao de equipamento",
+            "por equipamento, pessoas",
+        ]
+
+        for pattern in REPETITIVE_PATTERNS:
+            if pattern in response_lower:
+                # Verificar se usuario JA respondeu (challenges contem "equipamento")
+                challenges = partial_profile.get("challenges", [])
+                challenges_str = " ".join(challenges).lower() if challenges else ""
+
+                if "equipamento" in challenges_str or "perfiladeira" in challenges_str:
+                    # Usuario JA respondeu! Avancar para outra perspectiva
+                    logger.warning(
+                        "[VALIDATE_REDUNDANT] Loop detectado! Pergunta 'equipamento/pessoas/processo' "
+                        "ja respondida. Avancando para proxima perspectiva."
+                    )
+                    # Verificar qual perspectiva falta e sugerir
+                    return False, self._get_next_perspective_question(partial_profile)
+
+        # STEP 2: Mapeia keywords de metricas para campos do partial_profile
+        METRIC_CHECKS = [
+            {
+                "keywords": ["capacidade", "toneladas", "ton/mes", "producao mensal"],
+                "fields": ["challenges", "production_metrics"],
+                "check_content": ["ton", "capacidade", "producao", "perfiladeira", "equipamento"],
+                # Followup DIFERENTE - avanca para financeiro
+                "followup": "Qual o investimento estimado para resolver esse gargalo de capacidade?",
+            },
+            {
+                "keywords": ["faturamento", "receita", "revenue"],
+                "fields": ["financial_metrics", "goals"],
+                "check_content": ["faturamento", "receita", "milhoes", "milhao", "R$"],
+                "followup": "Qual a margem EBITDA atual e a meta para 12 meses?",
+            },
+            # SESSAO 49: Adicionar verificacao para margem EBITDA
+            {
+                "keywords": ["margem", "ebitda", "lucratividade"],
+                "fields": ["financial_metrics", "goals"],
+                "check_content": ["ebitda", "margem", "%", "35%", "25%"],
+                "followup": "Qual o fluxo de caixa operacional medio mensal nos ultimos 12 meses?",
+            },
+            # SESSAO 49: Adicionar verificacao para fluxo de caixa
+            {
+                "keywords": ["fluxo de caixa", "caixa operacional", "cash flow"],
+                "fields": ["financial_metrics"],
+                "check_content": ["fluxo", "caixa", "mensal"],
+                "followup": "Quantos clientes ativos a empresa possui atualmente?",
+            },
+            {
+                "keywords": ["lead time", "prazo de entrega", "tempo de entrega"],
+                "fields": ["challenges", "production_metrics"],
+                "check_content": ["lead time", "dias", "prazo"],
+                "followup": "Qual etapa do processo mais contribui para esse lead time?",
+            },
+            {
+                "keywords": ["funcionarios", "colaboradores", "equipe", "headcount"],
+                "fields": ["employee_count", "team_info"],
+                "check_content": ["funcionarios", "colaboradores", "pessoas"],
+                "followup": "Qual a taxa de rotatividade anual e as competencias mais criticas?",
+            },
+            {
+                "keywords": ["nps", "satisfacao cliente", "churn"],
+                "fields": ["customer_metrics", "challenges"],
+                "check_content": ["nps", "satisfacao", "churn", "cliente"],
+                "followup": "Quais os principais motivos de insatisfacao dos clientes?",
+            },
+        ]
+
+        # Verifica se a resposta esta perguntando algo ja coletado
+        # SESSAO 49: Verificar questions_asked para evitar repetir perguntas
+        # mesmo quando usuário respondeu "não sei/não sabemos"
+        questions_asked = partial_profile.get("questions_asked", [])
+
+        # SESSAO 50 (Dez/2025): Helper para converter field_value em string buscavel
+        def _field_value_to_searchable_string(field_value: Any) -> str:
+            """Converte valor de campo em string buscavel.
+
+            BUGFIX Dez/2025: financial_metrics e dict com keys como 'margem_atual'
+            que nao contem 'ebitda'. Precisamos verificar VALORES + KEYS do dict.
+            """
+            if field_value is None:
+                return ""
+            if isinstance(field_value, dict):
+                # Extrair keys E values do dict para busca
+                parts = []
+                for k, v in field_value.items():
+                    parts.append(str(k).lower())
+                    parts.append(str(v).lower())
+                return " ".join(parts)
+            if isinstance(field_value, list):
+                # Juntar lista em string
+                return " ".join(str(item).lower() for item in field_value)
+            return str(field_value).lower()
+
+        # SESSAO 50 (Dez/2025): Helper para verificar se um followup tambem ja foi respondido
+        def _is_followup_also_answered(followup: str) -> bool:
+            """Verifica se a pergunta de followup tambem ja foi respondida."""
+            followup_lower = followup.lower()
+            for other_check in METRIC_CHECKS:
+                # Verifica se o followup contem keywords de outro check
+                if not any(kw in followup_lower for kw in other_check["keywords"]):
+                    continue
+                # Verifica se esse check ja foi respondido
+                for field in other_check["fields"]:
+                    field_value = partial_profile.get(field)
+                    if not field_value:
+                        continue
+                    # BUGFIX Dez/2025: Usar helper para extrair string buscavel
+                    field_str = _field_value_to_searchable_string(field_value)
+                    if any(content in field_str for content in other_check["check_content"]):
+                        logger.debug(
+                            f"[FOLLOWUP_CHECK] Followup ja respondido! "
+                            f"followup='{followup[:50]}', field={field}, "
+                            f"matched_content={[c for c in other_check['check_content'] if c in field_str]}"
+                        )
+                        return True
+            return False
+
+        def _get_next_unanswered_followup(current_check_idx: int) -> str | None:
+            """Encontra o proximo followup que ainda nao foi respondido."""
+            for i in range(current_check_idx + 1, len(METRIC_CHECKS)):
+                candidate = METRIC_CHECKS[i]["followup"]
+                if not _is_followup_also_answered(candidate):
+                    return candidate
+            # Se todos os followups foram respondidos, usar perspectiva diferente
+            return self._get_next_perspective_question(partial_profile)
+
+        for check_idx, check in enumerate(METRIC_CHECKS):
+            # Verifica se a resposta contem keyword de pergunta
+            question_keywords_in_response = any(kw in response_lower for kw in check["keywords"])
+            if not question_keywords_in_response:
+                continue
+
+            # SESSAO 49: Verificar se esse tópico já foi perguntado
+            topic_id = "_".join(check["keywords"][:2])  # ID único do tópico
+            if topic_id in questions_asked:
+                logger.warning(
+                    f"[VALIDATE_REDUNDANT] Tópico já perguntado! "
+                    f"topic_id: {topic_id}, questions_asked: {questions_asked}"
+                )
+                # SESSAO 50: Verificar se followup tambem ja foi respondido
+                followup = check["followup"]
+                if _is_followup_also_answered(followup):
+                    followup = _get_next_unanswered_followup(check_idx)
+                    logger.warning(
+                        f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup[:50]}..."
+                    )
+                return False, followup
+
+            # Verifica se ja temos esse dado no partial_profile
+            for field in check["fields"]:
+                field_value = partial_profile.get(field)
+                if not field_value:
+                    continue
+
+                # Se o campo tem valor, verifica se contem a metrica
+                field_str = str(field_value).lower()
+                has_metric = any(content in field_str for content in check["check_content"])
+
+                if has_metric:
+                    # Pergunta e redundante! Ja temos essa informacao
+                    logger.warning(
+                        f"[VALIDATE_REDUNDANT] Pergunta redundante detectada! "
+                        f"Keywords: {check['keywords']}, Campo: {field}, Valor: {field_value[:100] if isinstance(field_value, str) else field_value}"
+                    )
+                    # SESSAO 50: Verificar se followup tambem ja foi respondido
+                    followup = check["followup"]
+                    if _is_followup_also_answered(followup):
+                        followup = _get_next_unanswered_followup(check_idx)
+                        logger.warning(
+                            f"[VALIDATE_REDUNDANT] Followup original ja respondido! Usando: {followup[:50]}..."
+                        )
+                    return False, followup
+
+        return True, None
+
+    def _extract_question_topic(self, question: str) -> str | None:
+        """Extrai o topico BSC de uma pergunta para rastreamento.
+
+        SESSAO 49: Best Practice Crisp.chat (Nov 2025) - Track Topics Asked
+        Usado para evitar loops mesmo quando usuario responde negativamente.
+
+        Args:
+            question: Pergunta a analisar
+
+        Returns:
+            str: Topico identificado (financeira, clientes, processos, aprendizado) ou None
+        """
+        question_lower = question.lower()
+
+        TOPIC_KEYWORDS = {
+            "financeira_faturamento": ["faturamento", "receita", "revenue"],
+            "financeira_ebitda": ["ebitda", "margem", "lucratividade"],
+            "financeira_fluxo_caixa": ["fluxo de caixa", "caixa operacional", "cash flow"],
+            "clientes_quantidade": ["clientes ativos", "quantos clientes", "numero de clientes"],
+            "clientes_nps": ["nps", "satisfacao", "churn", "retencao"],
+            "clientes_motivos": ["motivos de insatisfacao", "principais motivos"],
+            "processos_capacidade": ["capacidade", "toneladas", "producao"],
+            "processos_lead_time": ["lead time", "prazo de entrega", "tempo de entrega"],
+            "aprendizado_sistemas": ["sistema", "erp", "crm", "bi"],
+            "aprendizado_equipe": ["funcionario", "equipe", "rotatividade", "treinamento"],
+        }
+
+        for topic, keywords in TOPIC_KEYWORDS.items():
+            if any(kw in question_lower for kw in keywords):
+                return topic
+
+        return None
+
+    def _register_question_asked(self, partial_profile: dict[str, Any], question: str) -> None:
+        """Registra topico da pergunta feita para evitar repeticao.
+
+        SESSAO 49: Best Practice Tencent Cloud (Sep 2025) - Context Awareness
+        Mantém memória de curto prazo do que já foi perguntado.
+
+        Args:
+            partial_profile: Perfil acumulado
+            question: Pergunta feita
+        """
+        topic = self._extract_question_topic(question)
+        if topic:
+            questions_asked = partial_profile.get("questions_asked", [])
+            if topic not in questions_asked:
+                questions_asked.append(topic)
+                partial_profile["questions_asked"] = questions_asked
+                logger.info(
+                    f"[QUESTIONS_ASKED] Registrado topico: {topic} | Total: {len(questions_asked)}"
+                )
+
+    def _get_next_perspective_question(self, partial_profile: dict[str, Any]) -> str:
+        """Retorna pergunta da proxima perspectiva BSC nao coberta.
+
+        Usado para quebrar loops de perguntas repetidas, avancando
+        para uma perspectiva diferente.
+
+        SESSAO 49: Best Practice Medium/Faruk Alpay (Aug 2025) - Escape Saddle Points
+        Quando detecta estagnacao, muda de abordagem radicalmente.
+        """
+        challenges = partial_profile.get("challenges", [])
+        goals = partial_profile.get("goals", [])
+        challenges_str = " ".join(challenges).lower() if challenges else ""
+        goals_str = " ".join(goals).lower() if goals else ""
+        questions_asked = partial_profile.get("questions_asked", [])
+
+        # Verificar cobertura MECE das 4 perspectivas
+        # SESSAO 49: Adicionar topics para verificar se ja foi perguntado
+        PERSPECTIVES = {
+            "financeira": {
+                "keywords": [
+                    "faturamento",
+                    "receita",
+                    "margem",
+                    "custo",
+                    "lucro",
+                    "ebitda",
+                    "investimento",
+                ],
+                "topics": ["financeira_faturamento", "financeira_ebitda", "financeira_fluxo_caixa"],
+                "question": "Qual o faturamento anual atual e qual a meta para os proximos 12 meses?",
+            },
+            "clientes": {
+                "keywords": ["cliente", "nps", "satisfacao", "churn", "contrato"],
+                "topics": ["clientes_quantidade", "clientes_nps", "clientes_motivos"],
+                "question": "Quantos clientes ativos a empresa possui e qual a taxa de conversao de orcamentos em contratos?",
+            },
+            "processos": {
+                "keywords": [
+                    "lead time",
+                    "prazo",
+                    "producao",
+                    "capacidade",
+                    "eficiencia",
+                    "gargalo",
+                ],
+                "topics": ["processos_capacidade", "processos_lead_time"],
+                "question": "Qual o tempo medio entre o pedido do cliente e a entrega final (lead time)?",
+            },
+            "aprendizado": {
+                "keywords": [
+                    "funcionario",
+                    "equipe",
+                    "rotatividade",
+                    "treinamento",
+                    "cultura",
+                    "sistema",
+                ],
+                "topics": ["aprendizado_sistemas", "aprendizado_equipe"],
+                "question": "Quais sistemas de gestao a empresa utiliza atualmente (ERP, CRM, BI)?",
+            },
+        }
+
+        all_text = f"{challenges_str} {goals_str}"
+
+        # SESSAO 49: Encontrar perspectiva menos coberta E nao perguntada
+        for perspective, config in PERSPECTIVES.items():
+            has_coverage = any(kw in all_text for kw in config["keywords"])
+            already_asked = any(topic in questions_asked for topic in config["topics"])
+
+            if not has_coverage and not already_asked:
+                logger.info(
+                    f"[NEXT_PERSPECTIVE] Avancando para perspectiva: {perspective} "
+                    f"(coverage={has_coverage}, asked={already_asked})"
+                )
+                # Registrar que vamos perguntar sobre esta perspectiva
+                self._register_question_asked(partial_profile, config["question"])
+                return config["question"]
+
+        # SESSAO 49: Se todas perspectivas ja foram perguntadas, avançar para objetivos
+        if len(goals) < 3:
+            return "Quais sao os 3 principais objetivos estrategicos para os proximos 12 meses, com metas especificas?"
+
+        # Fallback: perguntar sobre indicadores
+        return "Quais indicadores (KPIs) a empresa acompanha atualmente para medir desempenho?"
+
+    def _replace_redundant_question(
+        self,
+        original_response: str,
+        followup_suggestion: str,
+    ) -> str:
+        """Substitui pergunta redundante por aprofundamento de causa-raiz.
+
+        Args:
+            original_response: Resposta original com pergunta redundante
+            followup_suggestion: Sugestao de pergunta de aprofundamento
+
+        Returns:
+            Resposta corrigida com pergunta de aprofundamento
+        """
+        # Encontra a ultima sentenca (provavelmente a pergunta)
+        sentences = original_response.replace("?", "?.").split(".")
+        sentences = [s.strip() for s in sentences if s.strip()]
+
+        if len(sentences) <= 1:
+            # Resposta muito curta, retorna sugestao diretamente
+            return followup_suggestion
+
+        # Mantem as sentencas de contexto, substitui a pergunta
+        context_sentences = sentences[:-1]  # Todas menos a ultima (pergunta)
+        new_response = ". ".join(context_sentences) + ". " + followup_suggestion
+
+        return new_response
+
+    def _validate_premature_confirmation(
+        self,
+        generated_text: str,
+        context: ConversationContext,
+    ) -> tuple[bool, str | None]:
+        """OUTPUT GUARDRAIL: Detecta confirmacao prematura na resposta.
+
+        Best Practice 2025 (Leanware, Orq.ai): Output validation pos-LLM
+        para garantir que respostas sigam regras de negocio mesmo quando
+        LLM ignora instrucoes do prompt.
+
+        Problema resolvido (Dez/2025 - Conversa Engelar):
+        LLM gerou "Confirmacao das Informacoes Coletadas" apos apenas 3 turnos,
+        com completeness ~40% e should_confirm=False. Isso causa:
+        - Experiencia ruim (usuario confirma dados incompletos)
+        - Perda de metricas importantes (MECE nao atingido)
+        - Diagnostico BSC superficial
+
+        Args:
+            generated_text: Resposta gerada pelo LLM
+            context: ConversationContext com should_confirm e completeness
+
+        Returns:
+            (True, None) se resposta e valida
+            (False, "premature_confirmation") se confirmacao prematura detectada
+        """
+        import re
+
+        # Se should_confirm=True E completeness >= 1.0, confirmacao e permitida
+        if context.should_confirm and context.completeness >= 1.0:
+            return True, None
+
+        response_lower = generated_text.lower()
+
+        # Padroes que indicam confirmacao estruturada (extraidos da conversa real Engelar)
+        CONFIRMATION_PATTERNS = [
+            r"confirm[aç]",  # confirmar, confirmacao
+            r"informac[oõ]es?\s+coletadas?",
+            r"responda.*sim.*continuar",
+            r"resumo\s*:",
+            r"\d+\.\s*(dados|empresa|processos|desafios|objetivos|metricas)",  # Lista numerada
+            r"posso\s+(confirmar|prosseguir)",
+            r"estas?\s+corretas?",
+            r"sim.*para\s+continuar",
+            r"nao.*corrigir",
+            r"consolidac[aã]o\s+estruturada",
+        ]
+
+        for pattern in CONFIRMATION_PATTERNS:
+            if re.search(pattern, response_lower):
+                logger.warning(
+                    f"[OUTPUT_GUARDRAIL] Confirmacao prematura detectada! "
+                    f"Pattern: '{pattern}' | should_confirm={context.should_confirm} | "
+                    f"completeness={context.completeness}"
+                )
+                return False, "premature_confirmation"
+
+        return True, None
+
     async def _generate_contextual_response(
         self,
         context: ConversationContext,
         user_message: str,
         extracted_entities: ExtractedEntities,
         partial_profile: dict[str, Any] | None = None,
+        profile_before_update: (
+            dict[str, Any] | None
+        ) = None,  # SESSAO 49: Profile ANTES da atualizacao
     ) -> str:
         """Gera resposta contextual adaptativa baseada no estado da conversa.
 
@@ -2189,8 +3583,24 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
             # STEP 0: Detectar se usuário está REPETINDO informações já coletadas
             # Best Practice Nov/2025 (Telepathy Labs): Repetição indica frustração
-            repeated_info = self._detect_user_repetition(user_message, partial_profile)
-            if repeated_info:
+            # SESSAO 49: Usar profile ANTES da atualizacao para evitar falso positivo
+            # Bug fix: Antes comparava mensagem com dados recem-extraidos dela mesma
+            profile_for_repetition = profile_before_update or partial_profile
+            repeated_info = self._detect_user_repetition(user_message, profile_for_repetition)
+
+            # SESSAO 49: Tratamento especial para respostas negativas ("não sei/não sabemos")
+            # Quando usuário responde negativamente, devemos avançar para outra perspectiva
+            is_negative_response = "_negative_response_" in repeated_info
+            if is_negative_response:
+                logger.info(
+                    "[GENERATE_RESPONSE] Resposta negativa detectada ('não sei/não sabemos'). "
+                    "Avançando para próxima perspectiva."
+                )
+                # Registrar última pergunta como "já feita" para evitar repetição
+                # (será tratado na validação da resposta)
+                context.scenario = "negative_response"
+                context.user_sentiment = "cooperative"
+            elif repeated_info:
                 logger.warning(
                     "[GENERATE_RESPONSE] REPETIÇÃO DETECTADA: %s | "
                     "Usuário pode estar frustrado - adaptar resposta",
@@ -2295,9 +3705,40 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 )
                 return self._get_fallback_response(context, extracted_entities, partial_profile)
 
+            # STEP 6: FASE 1.2 - Validar se resposta contem pergunta redundante
+            # Resolve loop de perguntas identificado na conversa Engelar (Dez/2025)
+            is_valid, followup_suggestion = self._validate_question_not_redundant(
+                generated_text, partial_profile
+            )
+
+            if not is_valid and followup_suggestion:
+                logger.warning(
+                    f"[GENERATE_RESPONSE] Pergunta redundante detectada! "
+                    f"Substituindo por aprofundamento: {followup_suggestion[:50]}..."
+                )
+                generated_text = self._replace_redundant_question(
+                    generated_text, followup_suggestion
+                )
+
+            # STEP 7: OUTPUT GUARDRAIL - Detectar confirmacao prematura (Best Practice 2025)
+            # Leanware/Orq.ai: Validacao pos-LLM para garantir regras de negocio
+            # Problema: LLM pode ignorar should_confirm=False e gerar confirmacao estruturada
+            is_valid_confirm, confirm_reason = self._validate_premature_confirmation(
+                generated_text, context
+            )
+
+            if not is_valid_confirm:
+                logger.warning(
+                    f"[GENERATE_RESPONSE] Confirmacao prematura bloqueada! "
+                    f"Reason: {confirm_reason} | completeness={context.completeness} | "
+                    f"should_confirm={context.should_confirm} | Usando fallback..."
+                )
+                return self._get_fallback_response(context, extracted_entities, partial_profile)
+
             logger.info(
                 f"[GENERATE_RESPONSE] Resposta gerada com sucesso | "
-                f"Length: {len(generated_text)} chars"
+                f"Length: {len(generated_text)} chars | Redundancy_fixed: {not is_valid} | "
+                f"Confirmation_blocked: {not is_valid_confirm}"
             )
 
             return generated_text
@@ -2310,6 +3751,287 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             logger.error(f"[GENERATE_RESPONSE] Erro ao gerar resposta: {e}", exc_info=True)
             return self._get_fallback_response(context, extracted_entities, partial_profile)
 
+    # ========================================================================
+    # SESSAO DEZ/2025: PROCESSAMENTO STEPS 7-14 (FASES 2 E 3)
+    # Kaplan & Norton - Execution Premium (2008): Fluxo completo de 14 steps
+    # ========================================================================
+
+    async def _process_enrichment_step(
+        self,
+        user_message: str,
+        state: BSCState,
+        partial_profile: dict[str, Any],
+        extracted_entities: dict[str, Any],
+        extraction_result: ExtractedEntities,
+    ) -> dict[str, Any] | None:
+        """Processa respostas do usuario para Steps 7-14 (FASES 2 e 3).
+
+        FASE 2 - ENRIQUECIMENTO (Steps 7-10):
+        - Step 7: MVV (Missao, Visao, Valores)
+        - Step 8: COMPETITIVE_CONTEXT (Concorrentes, Market Share)
+        - Step 9: ORGANIZATION_STRUCTURE (Pessoas-chave, Organograma)
+        - Step 10: PROJECT_CONSTRAINTS (Timeline, Sponsor, Criterios)
+
+        FASE 3 - PERSPECTIVAS BSC (Steps 11-14):
+        - Step 11: BSC_FINANCIAL (ROI, EBITDA, Margem)
+        - Step 12: BSC_CUSTOMER (NPS, Churn, LTV)
+        - Step 13: BSC_PROCESS (Lead Time, Produtividade)
+        - Step 14: BSC_LEARNING (Retencao, Treinamento)
+
+        Regra "Nao Sei": Aceitar sem julgamento e avancar imediatamente.
+
+        Args:
+            user_message: Mensagem do usuario
+            state: BSCState atual
+            partial_profile: Perfil acumulado
+            extracted_entities: Entidades extraidas neste turno
+            extraction_result: ExtractedEntities (objeto Pydantic)
+
+        Returns:
+            Dict com proxima pergunta ou None se nao estiver em fase de enriquecimento
+        """
+        current_phase = state.metadata.get("onboarding_phase", "identification")
+        current_step = state.metadata.get("current_enrichment_step")
+
+        if current_phase not in ["enrichment", "bsc_kpis"] or current_step is None:
+            return None
+
+        logger.info(
+            "[ENRICHMENT] Processando Step %d (Fase: %s) | Mensagem: %s",
+            current_step,
+            current_phase,
+            user_message[:100],
+        )
+
+        # Detectar resposta "nao sei" / "pular"
+        user_lower = user_message.lower().strip()
+        skip_keywords = [
+            "nao sei",
+            "não sei",
+            "desconheco",
+            "desconheço",
+            "pular",
+            "skip",
+            "proximo",
+            "próximo",
+            "nao temos",
+            "não temos",
+            "nao sabemos",
+            "não sabemos",
+            "ainda nao",
+            "ainda não",
+        ]
+        is_skip = any(kw in user_lower for kw in skip_keywords)
+
+        company_name = partial_profile.get("company_name", "sua empresa")
+
+        # ========================================================================
+        # DEFINICAO DAS PERGUNTAS POR STEP
+        # ========================================================================
+        step_questions = {
+            # FASE 2 - ENRIQUECIMENTO
+            7: {
+                "name": "MVV - Missao, Visao, Valores",
+                "question": (
+                    f"**Step 7 - Missao, Visao e Valores:**\n"
+                    f"Qual a **missao** (razao de existir), **visao** (onde querem chegar em 5-10 anos) "
+                    f"e **valores** (principios que guiam a empresa) da {company_name}?"
+                ),
+                "fields": ["mission", "vision", "core_values"],
+            },
+            8: {
+                "name": "Contexto Competitivo",
+                "question": (
+                    f"**Step 8 - Contexto Competitivo:**\n"
+                    f"Quem sao os **principais concorrentes** da {company_name}? "
+                    f"Qual o **market share** estimado? "
+                    f"Quais os **diferenciais competitivos**?"
+                ),
+                "fields": ["competitors", "competitive_advantages"],
+            },
+            9: {
+                "name": "Estrutura Organizacional",
+                "question": (
+                    f"**Step 9 - Estrutura Organizacional:**\n"
+                    f"Quem sao as **pessoas-chave** (lideres, gestores) da {company_name}? "
+                    f"Como e o **organograma** simplificado? "
+                    f"Quantos colaboradores em cada area principal?"
+                ),
+                "fields": ["key_people", "departments", "employee_count", "team_distribution"],
+            },
+            10: {
+                "name": "Restricoes do Projeto",
+                "question": (
+                    "**Step 10 - Restricoes do Projeto BSC:**\n"
+                    "Qual o **timeline** desejado para implementacao do BSC? "
+                    "Quem e o **sponsor** (patrocinador executivo)? "
+                    "Quais os **criterios de sucesso** do projeto?"
+                ),
+                "fields": ["timeline", "sponsor_name", "success_criteria"],
+            },
+            # FASE 3 - PERSPECTIVAS BSC
+            11: {
+                "name": "Perspectiva Financeira",
+                "question": (
+                    f"**Step 11 - Perspectiva Financeira:**\n"
+                    f"Quais **KPIs financeiros** a {company_name} acompanha ou gostaria de acompanhar?\n"
+                    f"_Exemplos: ROI, EBITDA, Margem Bruta, Margem Liquida, Faturamento, Fluxo de Caixa, etc._"
+                ),
+                "fields": ["financial_metrics"],
+            },
+            12: {
+                "name": "Perspectiva Clientes",
+                "question": (
+                    f"**Step 12 - Perspectiva Clientes:**\n"
+                    f"Quais **KPIs de clientes** a {company_name} acompanha ou gostaria de acompanhar?\n"
+                    f"_Exemplos: NPS, Taxa de Churn, LTV, CAC, Satisfacao, Retencao, etc._"
+                ),
+                "fields": ["current_metrics"],
+            },
+            13: {
+                "name": "Perspectiva Processos Internos",
+                "question": (
+                    f"**Step 13 - Perspectiva Processos Internos:**\n"
+                    f"Quais **KPIs de processos** a {company_name} acompanha ou gostaria de acompanhar?\n"
+                    f"_Exemplos: Lead Time, Produtividade, Taxa de Defeitos, Eficiencia, Cycle Time, etc._"
+                ),
+                "fields": ["production_metrics", "process_bottlenecks"],
+            },
+            14: {
+                "name": "Perspectiva Aprendizado e Crescimento",
+                "question": (
+                    f"**Step 14 - Perspectiva Aprendizado e Crescimento:**\n"
+                    f"Quais **KPIs de pessoas/aprendizado** a {company_name} acompanha ou gostaria?\n"
+                    f"_Exemplos: Retencao Talentos, Horas Treinamento, Engajamento, eNPS, Turnover, etc._"
+                ),
+                "fields": ["technology_gaps", "key_systems"],
+            },
+        }
+
+        # ========================================================================
+        # LOGICA DE AVANCO DE STEPS
+        # ========================================================================
+
+        # Registrar resposta do step atual (a menos que seja skip)
+        if not is_skip:
+            logger.info("[ENRICHMENT] Registrando resposta do Step %d", current_step)
+            # A extracao ja foi feita acima (extracted_entities), apenas logar
+            step_info = step_questions.get(current_step, {})
+            logger.info(
+                "[ENRICHMENT] Step %d (%s) - Campos extraidos: %s",
+                current_step,
+                step_info.get("name", "Unknown"),
+                {f: extracted_entities.get(f) for f in step_info.get("fields", [])},
+            )
+        else:
+            logger.info(
+                "[ENRICHMENT] Step %d PULADO (usuario disse 'nao sei' / 'pular')", current_step
+            )
+            # Registrar como GAP no metadata
+            gaps = state.metadata.get("onboarding_gaps", [])
+            step_info = step_questions.get(current_step, {})
+            gaps.append(
+                {
+                    "step": current_step,
+                    "name": step_info.get("name", f"Step {current_step}"),
+                    "reason": "Usuario nao possui informacao",
+                }
+            )
+            state.metadata["onboarding_gaps"] = gaps
+
+        # Determinar proximo step
+        next_step = current_step + 1
+
+        # Verificar transicoes de fase
+        if current_phase == "enrichment" and current_step == 10:
+            # Fim da FASE 2, pedir confirmacao para FASE 3
+            logger.info("[ENRICHMENT] ===== FIM DA FASE 2 - Pedindo confirmacao para FASE 3 =====")
+
+            state.metadata["current_enrichment_step"] = 10
+            state.metadata["awaiting_confirmation"] = True
+
+            confirmation_msg = (
+                f"Perfeito! **FASE 2 (Enriquecimento) concluida** para {company_name}.\n\n"
+                f"Agora vou coletar informacoes sobre **KPIs das 4 perspectivas BSC** (Steps 11-14).\n\n"
+                f"_(Responda 'sim' para continuar ou 'pular' para ir direto ao diagnostico)_"
+            )
+
+            return {
+                "question": confirmation_msg,
+                "is_complete": False,
+                "extracted_entities": extracted_entities,
+                "accumulated_profile": partial_profile,
+                "metadata": {
+                    "partial_profile": partial_profile,
+                    "onboarding_phase": "enrichment",
+                    "current_enrichment_step": 10,
+                    "awaiting_confirmation": True,
+                    "conversation_history": state.metadata.get("conversation_history", []),
+                },
+            }
+
+        elif current_phase == "bsc_kpis" and current_step == 14:
+            # Fim da FASE 3, pedir confirmacao final
+            logger.info("[ENRICHMENT] ===== FIM DA FASE 3 - Pedindo confirmacao final =====")
+
+            state.metadata["current_enrichment_step"] = 14
+            state.metadata["awaiting_confirmation"] = True
+
+            # Contar gaps
+            gaps = state.metadata.get("onboarding_gaps", [])
+            gaps_text = ""
+            if gaps:
+                gaps_text = f"\n\n_Obs: {len(gaps)} informacoes foram marcadas como 'nao disponivel' (gaps)._"
+
+            confirmation_msg = (
+                f"Excelente! **FASE 3 (KPIs BSC) concluida** para {company_name}.\n\n"
+                f"Todas as 14 etapas do onboarding foram coletadas!{gaps_text}\n\n"
+                f"_(Responda 'sim' para iniciar o diagnostico BSC completo)_"
+            )
+
+            return {
+                "question": confirmation_msg,
+                "is_complete": False,
+                "extracted_entities": extracted_entities,
+                "accumulated_profile": partial_profile,
+                "metadata": {
+                    "partial_profile": partial_profile,
+                    "onboarding_phase": "bsc_kpis",
+                    "current_enrichment_step": 14,
+                    "awaiting_confirmation": True,
+                    "conversation_history": state.metadata.get("conversation_history", []),
+                },
+            }
+
+        # Avancar para proximo step
+        logger.info("[ENRICHMENT] Avancando para Step %d", next_step)
+
+        state.metadata["current_enrichment_step"] = next_step
+        state.metadata["awaiting_confirmation"] = False
+
+        # Obter pergunta do proximo step
+        next_step_info = step_questions.get(next_step, {})
+        next_question = next_step_info.get(
+            "question", f"Step {next_step}: Por favor, forneca mais informacoes."
+        )
+
+        # Adicionar instrucao de skip
+        next_question += "\n\n_(Se nao souber, responda 'nao sei' ou 'pular')_"
+
+        return {
+            "question": next_question,
+            "is_complete": False,
+            "extracted_entities": extracted_entities,
+            "accumulated_profile": partial_profile,
+            "metadata": {
+                "partial_profile": partial_profile,
+                "onboarding_phase": current_phase,
+                "current_enrichment_step": next_step,
+                "awaiting_confirmation": False,
+                "conversation_history": state.metadata.get("conversation_history", []),
+            },
+        }
+
     def _get_fallback_response(
         self,
         context: ConversationContext,
@@ -2320,6 +4042,9 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
         Resposta segura baseada em missing_info (proxima informacao faltante).
         Usa partial_profile quando disponível para personalizar perguntas.
+
+        SESSAO 49: Best Practice Tencent Cloud (Sep 2025) - Fallback Detection
+        Quando detecta loop, triggar: "Vamos para outra perspectiva."
 
         Args:
             context: ConversationContext atual
@@ -2340,6 +4065,15 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 "Posso confirmar se esta tudo correto antes de prosseguirmos?"
             )
 
+        # SESSAO 49: Tratamento especial para respostas negativas ("nao sei/nao sabemos")
+        # Best Practice Crisp.chat (Nov 2025): Aceitar e avancar para outra perspectiva
+        if context.scenario == "negative_response" and partial_profile:
+            logger.info(
+                "[FALLBACK] Resposta negativa detectada. Avancando para proxima perspectiva."
+            )
+            next_question = self._get_next_perspective_question(partial_profile)
+            return f"Entendido. Para avancar no diagnostico, {next_question.lower()}"
+
         # Se frustration detectada, oferecer ajuda
         if context.scenario == "frustration_detected":
             return (
@@ -2347,16 +4081,87 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 "registradas corretamente. Pode me contar o que falta?"
             )
 
-        # Default: Perguntar proxima info faltante (usando company_name se disponível)
-        if "company_info" in context.missing_info:
+        # SESSAO 50 (Dez/2025): Fluxo estruturado de 14 steps (Kaplan & Norton)
+        # Ordem: COMPANY_INFO -> STRATEGY_VISION -> BUSINESS_STAGE -> CUSTOMER_SEGMENTATION -> CHALLENGES -> OBJECTIVES
+        # Depois: MVV, COMPETITIVE_CONTEXT, OPERATIONAL_METRICS, INVESTMENTS_PROJECTS (opcionais)
+
+        # Verificar partial_profile para determinar proximo step
+        # SESSAO DEZ/2025: Corrigido para verificar listas com len() e strings com != ""
+        has_company = bool(partial_profile and partial_profile.get("company_name"))
+        has_strategy = bool(
+            partial_profile
+            and (
+                (partial_profile.get("vision") and partial_profile.get("vision") != "")
+                or len(partial_profile.get("competitive_advantages", [])) > 0
+                or (partial_profile.get("mission") and partial_profile.get("mission") != "")
+            )
+        )
+        has_business_stage = bool(partial_profile and partial_profile.get("business_stage"))
+        has_customer_seg = bool(
+            partial_profile and len(partial_profile.get("target_customers", [])) > 0
+        )
+        has_challenges = bool(partial_profile and len(partial_profile.get("challenges", [])) >= 2)
+        has_objectives = bool(partial_profile and len(partial_profile.get("goals", [])) >= 2)
+
+        # STEP 1: COMPANY_INFO (obrigatorio)
+        if not has_company or "company_info" in context.missing_info:
             return "Para comecar, pode me contar o nome da empresa e o setor de atuacao?"
-        if "challenges" in context.missing_info:
+
+        # STEP 2: STRATEGY_VISION (Kaplan & Norton - Strategy Maps 2004)
+        if not has_strategy:
+            name_part = f" da {company_name}" if company_name else ""
+            return (
+                f"Para um diagnostico BSC efetivo{name_part}, preciso entender a estrategia. "
+                "Qual a visao de longo prazo? Por que os clientes compram de voces?"
+            )
+
+        # STEP 3: BUSINESS_STAGE (Growth/Sustain/Harvest - determina KPIs)
+        if not has_business_stage:
+            name_part = f"A {company_name}" if company_name else "A empresa"
+            return (
+                f"{name_part} esta focada em CRESCER rapidamente, MANTER lucratividade, "
+                "ou MAXIMIZAR fluxo de caixa? Isso determina os KPIs prioritarios."
+            )
+
+        # STEP 4: CUSTOMER_SEGMENTATION (Strategy Maps - Customer Perspective)
+        if not has_customer_seg:
+            return (
+                "Quais sao os principais tipos/segmentos de clientes que voces atendem? "
+                "Qual e o mais lucrativo?"
+            )
+
+        # STEP 5: CHALLENGES (minimo 2)
+        if not has_challenges or "challenges" in context.missing_info:
             name_part = f" na {company_name}" if company_name else ""
-            return f"Quais sao os principais desafios{name_part} que voces enfrentam atualmente?"
-        if "objectives" in context.missing_info:
+            return f"Quais sao os principais desafios estrategicos{name_part} que voces enfrentam atualmente?"
+
+        # STEP 6: OBJECTIVES (minimo 2)
+        if not has_objectives or "objectives" in context.missing_info:
             name_part = f" da {company_name}" if company_name else ""
             return f"Quais sao os principais objetivos estrategicos{name_part}?"
-        return "Entendi. Pode me contar mais?"
+
+        # STEPS OPCIONAIS (7-14): Se chegou aqui, dados minimos coletados
+        # Verificar se falta algum dado opcional relevante
+        has_operational_metrics = bool(
+            partial_profile and partial_profile.get("production_metrics")
+        )
+        has_investments = bool(
+            partial_profile
+            and (
+                partial_profile.get("investments_needed") or partial_profile.get("pending_projects")
+            )
+        )
+
+        if not has_operational_metrics:
+            name_part = f" da {company_name}" if company_name else ""
+            return f"Para completar o diagnostico{name_part}, quais sao as principais metricas operacionais atuais (producao, vendas, etc)?"
+
+        if not has_investments:
+            return "Ha algum investimento planejado ou projeto em andamento que devo considerar no diagnostico?"
+
+        return (
+            "Entendi. Pode me contar mais detalhes que considere relevantes para o diagnostico BSC?"
+        )
 
     def _extract_information(
         self, user_message: str, current_step: int, state: BSCState
@@ -2646,14 +4451,30 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
         """
         Marca step como completo no onboarding_progress.
 
+        SESSAO 50 (Dez/2025): Atualizado para incluir todos os 14 steps do enum.
+
         Args:
-            step: Step a marcar (1, 2, ou 3)
+            step: Step a marcar (1-14)
             state: BSCState atual
         """
         step_keys = {
+            # Steps obrigatorios (1-6)
             OnboardingStep.COMPANY_INFO: "company_info",
+            OnboardingStep.STRATEGY_VISION: "strategy_vision",
+            OnboardingStep.BUSINESS_STAGE: "business_stage",
+            OnboardingStep.CUSTOMER_SEGMENTATION: "customer_segmentation",
             OnboardingStep.CHALLENGES: "challenges",
             OnboardingStep.OBJECTIVES: "objectives",
+            # Steps opcionais (7-10)
+            OnboardingStep.MVV: "mvv",
+            OnboardingStep.COMPETITIVE_CONTEXT: "competitive_context",
+            OnboardingStep.ORGANIZATION_STRUCTURE: "organization_structure",
+            OnboardingStep.PROJECT_CONSTRAINTS: "project_constraints",
+            # Perspectivas BSC (11-14)
+            OnboardingStep.BSC_FINANCIAL: "bsc_financial",
+            OnboardingStep.BSC_CUSTOMER: "bsc_customer",
+            OnboardingStep.BSC_PROCESS: "bsc_process",
+            OnboardingStep.BSC_LEARNING: "bsc_learning",
         }
 
         key = step_keys.get(step)
