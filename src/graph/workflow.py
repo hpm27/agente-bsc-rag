@@ -1012,6 +1012,17 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
         try:
             # Validar se alignment_report existe
             if not state.alignment_report:
+                # SESSAO 50 (Dez/2025): Verificar se erro veio do design_solution
+                # Se sim, ir para finalize (evitar loop infinito)
+                solution_design_error = state.metadata.get("solution_design_error", "") if state.metadata else ""
+                
+                if solution_design_error:
+                    logger.warning(
+                        f"[WARN] [ROUTING] alignment_report ausente devido a erro em design_solution: "
+                        f"{solution_design_error}. Fallback para finalize (evitar loop)."
+                    )
+                    return "finalize"
+                
                 logger.warning(
                     "[WARN] [ROUTING] alignment_report ausente. "
                     "Fallback para discovery (refazer diagnóstico)."
@@ -1034,11 +1045,13 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
             return next_node
 
         except Exception as e:
+            # SESSAO 50 (Dez/2025): Fallback para finalize ao invés de discovery
+            # Evita loop infinito quando há erro no routing
             logger.error(
                 f"[ERROR] [ROUTING] Erro ao decidir routing por alignment score: {e}. "
-                "Fallback para discovery."
+                "Fallback para finalize (evitar loop)."
             )
-            return "discovery"
+            return "finalize"
 
     def approval_handler(self, state: BSCState) -> dict[str, Any]:
         """
@@ -1216,6 +1229,26 @@ Enderece especificamente os problemas identificados e siga as sugestoes.
                     "metadata": {
                         **state.metadata,
                         "solution_design_error": "diagnostic_not_approved",
+                    },
+                }
+
+            # SESSAO 50 (Dez/2025): Validar client_profile ANTES de chamar StrategyMapDesigner
+            # BUG FIX: StrategyMapDesigner acessa client_profile.company sem verificar None
+            if not state.client_profile:
+                logger.error(
+                    "[ERROR] [SOLUTION_DESIGN] ClientProfile ausente. "
+                    "StrategyMapDesigner requer client_profile para contexto da empresa."
+                )
+                return {
+                    "final_response": (
+                        "Erro: Perfil do cliente ausente. "
+                        "O sistema não conseguiu carregar as informações da empresa. "
+                        "Por favor, inicie uma nova conversa para recoletar os dados."
+                    ),
+                    "current_phase": ConsultingPhase.FINALIZE,  # Evita loop - vai para END
+                    "metadata": {
+                        **state.metadata,
+                        "solution_design_error": "client_profile_missing",
                     },
                 }
 
