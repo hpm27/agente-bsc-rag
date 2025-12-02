@@ -1625,7 +1625,8 @@ class OnboardingAgent:
         financial_kpis_str = ""
         if financial_metrics:
             if isinstance(financial_metrics, dict):
-                financial_kpis_str = ", ".join(f"{k}: {v}" for k, v in financial_metrics.items())
+                # BUGFIX Dez/2025: Limitar a 4 itens para consistencia com listas
+                financial_kpis_str = ", ".join(f"{k}: {v}" for k, v in list(financial_metrics.items())[:4])
             elif isinstance(financial_metrics, list):
                 financial_kpis_str = ", ".join(str(m) for m in financial_metrics[:4])
             else:
@@ -1633,7 +1634,8 @@ class OnboardingAgent:
         customer_kpis_str = ""
         if customer_metrics:
             if isinstance(customer_metrics, dict):
-                customer_kpis_str = ", ".join(f"{k}: {v}" for k, v in customer_metrics.items())
+                # BUGFIX Dez/2025: Limitar a 4 itens para consistencia com listas
+                customer_kpis_str = ", ".join(f"{k}: {v}" for k, v in list(customer_metrics.items())[:4])
             elif isinstance(customer_metrics, list):
                 customer_kpis_str = ", ".join(str(m) for m in customer_metrics[:4])
             else:
@@ -1641,7 +1643,8 @@ class OnboardingAgent:
         process_kpis_str = ""
         if process_metrics:
             if isinstance(process_metrics, dict):
-                process_kpis_str = ", ".join(f"{k}: {v}" for k, v in process_metrics.items())
+                # BUGFIX Dez/2025: Limitar a 4 itens para consistencia com listas
+                process_kpis_str = ", ".join(f"{k}: {v}" for k, v in list(process_metrics.items())[:4])
             elif isinstance(process_metrics, list):
                 process_kpis_str = ", ".join(str(m) for m in process_metrics[:4])
             else:
@@ -1649,7 +1652,8 @@ class OnboardingAgent:
         learning_kpis_str = ""
         if learning_metrics:
             if isinstance(learning_metrics, dict):
-                learning_kpis_str = ", ".join(f"{k}: {v}" for k, v in learning_metrics.items())
+                # BUGFIX Dez/2025: Limitar a 4 itens para consistencia com listas
+                learning_kpis_str = ", ".join(f"{k}: {v}" for k, v in list(learning_metrics.items())[:4])
             elif isinstance(learning_metrics, list):
                 learning_kpis_str = ", ".join(str(m) for m in learning_metrics[:4])
             else:
