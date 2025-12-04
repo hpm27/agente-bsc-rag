@@ -3831,8 +3831,11 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 partial_profile.get("mission")
             ) else "FALTANDO"
             
+            # BUGFIX Dez/2025: Usar 'is not None' ao invés de 'or "FALTANDO"'
+            # String vazia "" é falsy mas é valor presente, não deve mostrar "FALTANDO"
+            business_stage_value = partial_profile.get("business_stage")
             business_stage_status = (
-                partial_profile.get("business_stage", "FALTANDO") or "FALTANDO"
+                business_stage_value if business_stage_value is not None else "FALTANDO"
             )
             
             customer_segments_status = (
