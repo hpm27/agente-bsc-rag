@@ -1444,6 +1444,12 @@ Informacoes Faltantes: {missing_info}
 Completeness: {completeness}%
 Resumo do Contexto: {context_summary}
 
+*** STEP ATUAL DO WORKFLOW: {current_step} ***
+*** PROXIMO STEP A PERGUNTAR: {next_step} ***
+
+REGRA CRITICA: Voce DEVE perguntar sobre o STEP indicado acima ({next_step}).
+NAO pule para outros steps. NAO confunda a resposta do usuario com outros campos.
+
 Ultima Mensagem do Usuario:
 "{user_message}"
 
@@ -1453,6 +1459,9 @@ Informacoes Ja Coletadas (USE SEMPRE QUE POSSIVEL!):
 - Porte: {size} [SE != "N/A", NUNCA PERGUNTE NOVAMENTE!]
 - Challenges: {challenges_list} [SE != "Nenhum ainda", JA TEM!]
 - Objectives: {objectives_list} [SE != "Nenhum ainda", JA TEM!]
+- Strategy/Vision: {strategy_vision_status}
+- Business Stage: {business_stage_status}
+- Customer Segments: {customer_segments_status}
 
 ---
 DIRETRIZES POR CENARIO:

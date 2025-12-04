@@ -2457,6 +2457,80 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
 
         return round(min(completeness, 1.0), 2)  # Cap at 1.0
 
+    def _calculate_current_and_next_step(
+        self, partial_profile: dict[str, Any]
+    ) -> tuple[str, str]:
+        """Calcula step atual e proximo step baseado em partial_profile.
+
+        SESSAO 50 (Dez/2025): Correcao bug - agente pulava steps aleatoriamente.
+        Agora passa step atual e proximo ao LLM para garantir sequencia correta.
+
+        Args:
+            partial_profile: Dict com dados acumulados entre turnos
+
+        Returns:
+            Tuple (current_step_desc, next_step_desc) com descricoes em portugues
+
+        Example:
+            >>> current, next_step = agent._calculate_current_and_next_step(profile)
+            >>> print(f"Atual: {current}, Proximo: {next_step}")
+            "Atual: Step 1 - COMPANY_INFO (completo), Proximo: Step 2 - STRATEGY_VISION"
+        """
+        # Step 1: Company Info
+        has_company_info = (
+            partial_profile.get("company_name") is not None
+            and partial_profile.get("industry") is not None
+        )
+
+        # Step 2: Strategy Vision (proposta de valor, diferenciais)
+        has_strategy_vision = (
+            (partial_profile.get("vision") is not None and partial_profile.get("vision") != "")
+            or len(partial_profile.get("competitive_advantages", [])) > 0
+            or (partial_profile.get("mission") is not None and partial_profile.get("mission") != "")
+        )
+
+        # Step 3: Business Stage (growth/sustain/harvest)
+        has_business_stage = partial_profile.get("business_stage") is not None
+
+        # Step 4: Customer Segmentation
+        has_customer_segmentation = (
+            partial_profile.get("target_customers") is not None
+            and len(partial_profile.get("target_customers", [])) > 0
+        )
+
+        # Step 5: Challenges (minimo 2)
+        has_min_challenges = len(partial_profile.get("challenges", [])) >= 2
+
+        # Step 6: Objectives (minimo 2)
+        has_min_objectives = len(partial_profile.get("goals", [])) >= 2
+
+        # Determinar step atual e proximo
+        step_status = [
+            (1, "COMPANY_INFO", has_company_info, "Nome, setor e porte da empresa"),
+            (2, "STRATEGY_VISION", has_strategy_vision, "Proposta de valor e diferenciais"),
+            (3, "BUSINESS_STAGE", has_business_stage, "Fase do negocio (crescimento/manutencao/colheita)"),
+            (4, "CUSTOMER_SEGMENTATION", has_customer_segmentation, "Segmentos de clientes"),
+            (5, "CHALLENGES", has_min_challenges, "Desafios estrategicos (minimo 2)"),
+            (6, "OBJECTIVES", has_min_objectives, "Objetivos quantificaveis (minimo 2)"),
+        ]
+
+        current_step = "Todos os 6 steps obrigatorios completos"
+        next_step = "FASE 2 - Enriquecimento (Steps 7-10)"
+
+        for step_num, step_name, is_complete, description in step_status:
+            if not is_complete:
+                # Primeiro step incompleto = proximo a perguntar
+                if step_num == 1:
+                    current_step = "Iniciando onboarding"
+                else:
+                    prev_step = step_status[step_num - 2]  # step anterior (indice = num - 2)
+                    current_step = f"Step {prev_step[0]} - {prev_step[1]} (completo)"
+
+                next_step = f"Step {step_num} - {step_name}: {description}"
+                break
+
+        return current_step, next_step
+
     def _calculate_completeness_from_profile(self, partial_profile: dict[str, Any]) -> float:
         """Calcula completeness baseado em partial_profile (dados ACUMULADOS).
 
@@ -3746,6 +3820,27 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 ", ".join(context.missing_info) if context.missing_info else "Nenhuma"
             )
 
+            # SESSAO 50 (Dez/2025): Calcular step atual e proximo step
+            # Isso garante que o LLM pergunte o step correto na sequencia
+            current_step, next_step = self._calculate_current_and_next_step(partial_profile)
+            
+            # Status dos novos campos (Steps 2-4)
+            strategy_vision_status = "Coletado" if (
+                partial_profile.get("vision") or 
+                len(partial_profile.get("competitive_advantages", [])) > 0 or
+                partial_profile.get("mission")
+            ) else "FALTANDO"
+            
+            business_stage_status = (
+                partial_profile.get("business_stage", "FALTANDO") or "FALTANDO"
+            )
+            
+            customer_segments_status = (
+                ", ".join(partial_profile.get("target_customers", [])[:2])
+                if partial_profile.get("target_customers")
+                else "FALTANDO"
+            )
+
             # STEP 2: Construir prompt com todas variaveis
             from src.prompts.client_profile_prompts import GENERATE_CONTEXTUAL_RESPONSE_PROMPT
 
@@ -3764,6 +3859,11 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 size=size,
                 challenges_list=challenges_list,
                 objectives_list=objectives_list,
+                current_step=current_step,
+                next_step=next_step,
+                strategy_vision_status=strategy_vision_status,
+                business_stage_status=business_stage_status,
+                customer_segments_status=customer_segments_status,
             )
 
             # Adicionar data atual no início do prompt
