@@ -2476,10 +2476,16 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             >>> print(f"Atual: {current}, Proximo: {next_step}")
             "Atual: Step 1 - COMPANY_INFO (completo), Proximo: Step 2 - STRATEGY_VISION"
         """
-        # Step 1: Company Info
+        # Step 1: Company Info (name, industry, AND size/employee_count)
+        # BUGFIX Dez/2025: Especificacao pede 3 campos mas validacao so checava 2
+        # COMPANY_INFO_QUESTION: "nome da empresa, setor/industria, tamanho (funcionarios)"
         has_company_info = (
             partial_profile.get("company_name") is not None
             and partial_profile.get("industry") is not None
+            and (
+                partial_profile.get("size") is not None
+                or partial_profile.get("employee_count") is not None
+            )
         )
 
         # Step 2: Strategy Vision (proposta de valor, diferenciais)
@@ -3831,11 +3837,8 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
                 partial_profile.get("mission")
             ) else "FALTANDO"
             
-            # BUGFIX Dez/2025: Usar 'is not None' ao invés de 'or "FALTANDO"'
-            # String vazia "" é falsy mas é valor presente, não deve mostrar "FALTANDO"
-            business_stage_value = partial_profile.get("business_stage")
             business_stage_status = (
-                business_stage_value if business_stage_value is not None else "FALTANDO"
+                partial_profile.get("business_stage", "FALTANDO") or "FALTANDO"
             )
             
             customer_segments_status = (
