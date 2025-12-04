@@ -2376,6 +2376,126 @@ class BenchmarkReport(BaseModel):
 # ===================================================================
 
 
+# ===================================================================
+# FASE 4 - PRIORIZACAO DE PROBLEMAS (Dez/2025)
+# Best Practice BCG: Prioritization Matrix (Impacto x Urgencia)
+# ===================================================================
+
+
+class PrioritizedChallenge(BaseModel):
+    """Desafio estrategico com informacoes de priorizacao.
+
+    Permite priorizar desafios usando matriz Impacto x Urgencia
+    (Best Practice BCG Prioritization Matrix).
+
+    Attributes:
+        description: Descricao do desafio/problema
+        perspective: Perspectiva BSC (financeira, clientes, processos, aprendizado)
+        impact_score: Score de impacto no resultado (1-10)
+        urgency_score: Score de urgencia de resolucao (1-10)
+        priority_level: Nivel de prioridade calculado (CRITICA, ALTA, MEDIA, BAIXA)
+        quantified_gap: Gap quantificado (ex: "50 ton/mes vs 250 ton/mes")
+        root_cause: Causa-raiz identificada (se conhecida)
+        attempted_solutions: Solucoes ja tentadas (se conhecidas)
+
+    Example:
+        >>> challenge = PrioritizedChallenge(
+        ...     description="Capacidade produtiva limitada a 50 ton/mes",
+        ...     perspective="processos",
+        ...     impact_score=9,
+        ...     urgency_score=8,
+        ...     priority_level="CRITICA",
+        ...     quantified_gap="Atual: 50 ton/mes | Meta: 250 ton/mes",
+        ...     root_cause="Gargalo na linha de corte e dobra",
+        ...     attempted_solutions=["Contratacao de terceiros (parcial)"]
+        ... )
+        >>> challenge.composite_score
+        8.6
+    """
+
+    description: str = Field(
+        min_length=10,
+        description="Descricao do desafio estrategico"
+    )
+    perspective: Literal["financeira", "clientes", "processos", "aprendizado"] | None = Field(
+        None,
+        description="Perspectiva BSC do desafio"
+    )
+    impact_score: int | None = Field(
+        None,
+        ge=1,
+        le=10,
+        description="Score de impacto no resultado (1=baixo, 10=muito alto)"
+    )
+    urgency_score: int | None = Field(
+        None,
+        ge=1,
+        le=10,
+        description="Score de urgencia de resolucao (1=pode esperar, 10=critico agora)"
+    )
+    priority_level: Literal["CRITICA", "ALTA", "MEDIA", "BAIXA"] | None = Field(
+        None,
+        description="Nivel de prioridade (calculado ou informado)"
+    )
+    quantified_gap: str | None = Field(
+        None,
+        description="Gap quantificado entre situacao atual e desejada"
+    )
+    root_cause: str | None = Field(
+        None,
+        description="Causa-raiz identificada do problema"
+    )
+    attempted_solutions: list[str] = Field(
+        default_factory=list,
+        description="Lista de solucoes ja tentadas pelo cliente"
+    )
+
+    @property
+    def composite_score(self) -> float | None:
+        """Calcula score composto (60% impacto + 40% urgencia).
+
+        Returns:
+            Score composto ou None se scores nao definidos
+        """
+        if self.impact_score and self.urgency_score:
+            return round((self.impact_score * 0.6) + (self.urgency_score * 0.4), 1)
+        return None
+
+    def calculate_priority_level(self) -> str:
+        """Calcula nivel de prioridade baseado nos scores.
+
+        Returns:
+            CRITICA (>=8), ALTA (>=6), MEDIA (>=4), BAIXA (<4)
+        """
+        score = self.composite_score
+        if score is None:
+            return "MEDIA"  # Default se scores nao definidos
+
+        if score >= 8.0:
+            return "CRITICA"
+        elif score >= 6.0:
+            return "ALTA"
+        elif score >= 4.0:
+            return "MEDIA"
+        else:
+            return "BAIXA"
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "description": "Capacidade produtiva limitada impede crescimento",
+                "perspective": "processos",
+                "impact_score": 9,
+                "urgency_score": 8,
+                "priority_level": "CRITICA",
+                "quantified_gap": "Atual: 50 ton/mes | Meta: 250 ton/mes",
+                "root_cause": "Linha de corte e dobra e gargalo",
+                "attempted_solutions": ["Terceirizacao parcial"]
+            }
+        }
+    )
+
+
 class ExtractedEntities(BaseModel):
     """Entidades extraidas simultaneamente de mensagem do usuario.
 
@@ -2466,6 +2586,19 @@ class ExtractedEntities(BaseModel):
     )
     has_competitive_context: bool = Field(
         False, description="True se usuario forneceu contexto competitivo"
+    )
+
+    # SESSAO 50 (Dez/2025): Business Stage - Kaplan & Norton Strategy Maps 2004
+    # Determina tipo de KPIs prioritarios (Growth = receita, Sustain = lucro, Harvest = caixa)
+    business_stage: Literal["growth", "sustain", "harvest"] | None = Field(
+        None,
+        description=(
+            "Estagio do negocio: 'growth' (crescimento rapido), "
+            "'sustain' (manter lucratividade), 'harvest' (maximizar caixa)"
+        ),
+    )
+    has_business_stage: bool = Field(
+        False, description="True se usuario forneceu estagio do negocio"
     )
 
     # Organization Structure
@@ -2761,9 +2894,10 @@ class ConversationContext(BaseModel):
         "frustration_detected",
         "information_complete",
         "information_repeated",
+        "negative_response",  # SESSAO 49: Usuario respondeu "nao sei/nao sabemos"
         "standard_flow",
     ] = Field(description="Cenario conversacional detectado")
-    user_sentiment: Literal["frustrated", "neutral", "positive"] = Field(
+    user_sentiment: Literal["frustrated", "neutral", "positive", "cooperative"] = Field(
         description="Sentimento do usuario neste turn"
     )
     missing_info: list[str] = Field(

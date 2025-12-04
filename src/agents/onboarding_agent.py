@@ -2476,9 +2476,9 @@ Retorne JSON estruturado conforme schema ExtractedEntities."""
             >>> print(f"Atual: {current}, Proximo: {next_step}")
             "Atual: Step 1 - COMPANY_INFO (completo), Proximo: Step 2 - STRATEGY_VISION"
         """
-        # Step 1: Company Info (name, industry, AND size/employee_count)
-        # BUGFIX Dez/2025: Especificacao pede 3 campos mas validacao so checava 2
-        # COMPANY_INFO_QUESTION: "nome da empresa, setor/industria, tamanho (funcionarios)"
+        # Step 1: Company Info (nome, setor E porte/funcionarios)
+        # BUGFIX Dez/2025: Alinhar com _validate_extraction() que exige 3 campos
+        # e com descricao (linha 2509): "Nome, setor e porte da empresa"
         has_company_info = (
             partial_profile.get("company_name") is not None
             and partial_profile.get("industry") is not None

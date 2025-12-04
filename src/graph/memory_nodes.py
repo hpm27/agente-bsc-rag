@@ -218,10 +218,12 @@ def load_client_memory(state: BSCState) -> dict[str, Any]:
 
 
 def save_client_memory(state: BSCState) -> dict[str, Any]:
-    """Node 2: Salva ClientProfile no Mem0 Platform.
+    """Node 2: Salva ClientProfile no Mem0 Platform e SQLite.
 
     Persiste o perfil do cliente (criação ou atualização) no Mem0.
-    Se não houver client_profile no state, skip (nada a salvar).
+    SESSAO 50 (Dez/2025): TAMBÉM salva no SQLite para lista de consultas anteriores.
+    
+    Se não houver client_profile no state, tenta extrair de partial_profile (onboarding).
     Se não houver user_id, gera um novo UUID automaticamente.
 
     Atualiza automaticamente:
@@ -254,13 +256,49 @@ def save_client_memory(state: BSCState) -> dict[str, Any]:
     start_time = time.time()
 
     try:
-        # Skip se não há profile para salvar
-        if not state.client_profile:
-            logger.info("[INFO] [save_client_memory] Skip - sem client_profile para salvar")
-            return {}
-
         # Gera user_id se não existir
         user_id = state.user_id or str(uuid4())
+        
+        # SESSAO 50 (Dez/2025): Salvar no SQLite MESMO durante onboarding (partial_profile)
+        # Isso garante que consultas aparecem na lista "Gerenciar Consultas"
+        partial_profile = state.metadata.get("partial_profile", {}) if state.metadata else {}
+        has_partial_data = partial_profile.get("company_name") or partial_profile.get("industry")
+        
+        if has_partial_data and not state.client_profile:
+            # Salvar dados básicos do onboarding no SQLite
+            try:
+                from src.database import get_db_session
+                from src.database.repository import ClientProfileRepository
+                
+                company_name = partial_profile.get("company_name", "[Consulta em andamento]")
+                sector = partial_profile.get("industry", "")
+                
+                with get_db_session() as db:
+                    # Verificar se já existe
+                    existing = ClientProfileRepository.get_by_user_id(db, user_id)
+                    if not existing:
+                        ClientProfileRepository.create(db, user_id, company_name, sector)
+                        logger.info(
+                            f"[SQLite] [save_client_memory] Client criado do partial_profile | "
+                            f"user_id: {user_id[:8]}... | company: {company_name}"
+                        )
+                    else:
+                        # Atualizar se já existe mas nome mudou
+                        if company_name and company_name != "[Consulta em andamento]":
+                            ClientProfileRepository.update(
+                                db, user_id, company_name=company_name, sector=sector
+                            )
+                            logger.info(
+                                f"[SQLite] [save_client_memory] Client atualizado | "
+                                f"user_id: {user_id[:8]}... | company: {company_name}"
+                            )
+            except Exception as e:
+                logger.warning(f"[WARN] [save_client_memory] Falha ao salvar partial no SQLite: {e}")
+        
+        # Skip Mem0 se não há profile completo para salvar
+        if not state.client_profile:
+            logger.info("[INFO] [save_client_memory] Skip Mem0 - sem client_profile completo")
+            return {"user_id": user_id}
 
         phase_for_log = (
             state.current_phase.value if getattr(state, "current_phase", None) else "UNKNOWN"
